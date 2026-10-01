@@ -1,0 +1,1180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F4D3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Farmer ID">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>Farmer ID Tracker</title>
+<style>
+:root{
+  --pine:#1F4D3A; --pine2:#2C6B52; --ink:#17201C; --mute:#56625C; --line:#D5DDD8; --bg:#F1F4F2; --card:#FFFFFF;
+  --made:#16794A; --ta:#B42318; --tb:#B45309; --tc:#1F57C3; --ns:#98A29D; --unl:#D9DEDB;
+  --warnbg:#FFF5E6; --errbg:#FDECEC; --okbg:#E8F4EC;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;-webkit-text-size-adjust:100%}
+body.noscroll{overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid #F2B705;outline-offset:2px}
+header#bar{position:sticky;top:0;z-index:20;background:var(--pine);color:#fff;display:flex;align-items:center;gap:8px;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;min-height:56px}
+#back{background:none;border:0;color:#fff;font-size:28px;line-height:1;padding:4px 10px 6px 2px}
+#title{flex:1;font-size:19px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{border:0;border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;background:rgba(255,255,255,.16);color:#fff;white-space:nowrap}
+.pill.wait{background:#F2B705;color:#2B2200}.pill.off{background:#56625C}.pill.err{background:#E5484D}.pill.busy{background:#2C6B52}
+main{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 40px)}
+.pad{padding:16px;max-width:720px;margin:0 auto}
+h1.big{font-size:28px;margin:8px 0 4px;letter-spacing:-.01em}
+h2{font-size:21px;margin:22px 0 8px}
+h3{font-size:18px;margin:20px 0 8px}
+.hint{color:var(--mute);margin:4px 0 14px}
+.who{margin:0 0 2px;font-size:20px}.who small{display:block;color:var(--mute);font-size:15px}
+.err{background:var(--errbg);color:#8A1C14;padding:12px 14px;border-radius:10px}
+.input,select.input,textarea.input{width:100%;min-height:52px;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+textarea.input{min-height:90px}
+.field{margin:0 0 14px}.field label{display:block;font-weight:600;margin-bottom:6px}.field small{display:block;color:var(--mute);margin-top:4px;font-size:14px}
+.btn{display:block;width:100%;min-height:52px;padding:12px 16px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:650;margin:8px 0;text-align:center}
+.btn-primary{background:var(--pine);border-color:var(--pine);color:#fff}
+.btn-made{background:var(--made);border-color:var(--made);color:#fff;font-size:19px;min-height:60px}
+.btn:disabled{opacity:.45}
+.link{background:none;border:0;color:var(--pine2);font-weight:600;padding:10px 0;text-decoration:underline}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* login */
+.names{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.names button{min-height:54px;text-align:left;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.names button small{display:block;color:var(--mute);font-size:14px}
+/* village cards */
+.vcard{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 14px 12px;margin:0 0 12px}
+.vtop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.vtop b{font-size:20px}.vtop span{color:var(--mute);font-size:14px}
+.vhead{font-size:15px;margin:6px 0 8px;color:var(--mute)}.vhead strong{color:var(--ink);font-size:24px;margin-right:4px}
+.vline{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--mute);margin-top:8px}
+.vline b{color:var(--ink)}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--warnbg);color:#7A4A00}
+.tehsil{font-size:15px;font-weight:700;color:var(--mute);margin:18px 0 8px}
+/* the strip: one visual language for every status */
+.strip{display:flex;height:16px;border-radius:8px;overflow:hidden;background:var(--unl)}
+.strip i{display:block;height:100%}
+.s-made{background:var(--made)}.s-C{background:var(--tc)}.s-B{background:var(--tb)}.s-A{background:var(--ta)}.s-ns{background:var(--ns)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin:8px 0 4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+/* banners */
+.banner{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--warnbg);border-radius:10px;padding:10px 12px;margin:10px 0}
+.banner p{margin:0;font-size:15px}.banner button{flex:none;border:0;background:var(--pine);color:#fff;border-radius:8px;padding:9px 12px;font-weight:650}
+.banner.info{background:#EAF1FB}.banner.ok{background:var(--okbg)}
+/* filters */
+.search{margin:12px 0 10px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chipf{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font-size:15px;font-weight:600;white-space:nowrap}
+.chipf b{color:var(--mute);font-weight:700;margin-left:2px}
+.chipf.on{background:var(--ink);border-color:var(--ink);color:#fff}.chipf.on b{color:#C9D3CE}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;margin:6px 0 4px}
+.seg button{border:0;background:#fff;min-height:44px;font-weight:650}.seg button.on{background:var(--pine);color:#fff}
+/* rows */
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;min-height:62px}
+.row .rt{flex:1;min-width:0}.row b{display:block;font-size:17px}
+.row small{display:block;color:var(--mute);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{flex:none;width:12px;height:12px;border-radius:50%}
+.d-made{background:var(--made)}.d-A{background:var(--ta)}.d-B{background:var(--tb)}.d-C{background:var(--tc)}.d-ns{background:#fff;border:2px solid var(--ns)}
+.st{flex:none;max-width:42%;font-size:13px;font-weight:700;padding:4px 8px;border-radius:6px;text-align:right}
+.st-made{color:var(--made);background:#E3F3EA}.st-A{color:var(--ta);background:#FBE9E7}.st-B{color:#8A4100;background:#FDF0E1}
+.st-C{color:var(--tc);background:#E7EEFB}.st-ns{color:var(--mute);background:#EEF1EF}
+.fam{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px}
+.fam b{font-size:17px}.fam small{display:block;color:var(--mute);font-size:14px;margin:2px 0 8px}
+.dots{display:flex;flex-wrap:wrap;gap:5px}
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:40;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sheet.hidden{display:none}
+.sheet-in{max-width:720px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px calc(env(safe-area-inset-bottom,0px) + 40px)}
+.snav{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg);padding:8px 0}
+.snav button{border:1.5px solid var(--line);background:#fff;border-radius:10px;min-height:44px;padding:8px 14px;font-weight:650}
+.snav span{color:var(--mute);font-size:15px}
+.nm{font-size:26px;margin:8px 0 2px;letter-spacing:-.01em}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:10px 0 12px;font-size:16px}
+.facts dt{color:var(--mute)}.facts dd{margin:0;font-weight:600;word-break:break-word}
+.now{margin:4px 0 14px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rbtn{display:flex;align-items:center;min-height:64px;padding:10px 12px;border:1.5px solid var(--line);border-left:9px solid var(--t,#999);
+  border-radius:10px;background:#fff;text-align:left;font-weight:650;font-size:16px;line-height:1.25}
+.rbtn.tA{--t:var(--ta)}.rbtn.tB{--t:var(--tb)}.rbtn.tC{--t:var(--tc)}
+.rbtn.cur{background:#FFFBE8;border-color:#E3C454}
+details.more,details.morer{margin:14px 0;border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:0 12px}
+details summary{min-height:52px;display:flex;align-items:center;font-weight:650;cursor:pointer}
+details[open]{padding-bottom:12px}
+.morer .rbtn{width:100%;margin:6px 0}
+.grp{font-weight:700;font-size:15px;margin:14px 0 4px}.grp.gA{color:var(--ta)}.grp.gB{color:var(--tb)}.grp.gC{color:var(--tc)}
+.toggle{display:flex;gap:8px}.toggle button{flex:1;min-height:48px;border:1.5px solid var(--line);background:#fff;border-radius:10px;font-weight:650}
+.toggle button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.box{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.mem{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #E6EBE8}
+.mem:last-child{border-bottom:0}
+.mem input{width:24px;height:24px;flex:none}
+.mem .rt{flex:1;min-width:0}.mem small{display:block;color:var(--mute);font-size:14px}
+.dcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px}
+.dconf{font-weight:700;margin:0 0 6px}.dconf.HIGH{color:var(--ta)}.dconf.MEDIUM{color:var(--tb)}.dconf.CONFIRMED{color:var(--made)}
+.dm{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #E6EBE8}
+.dm input{width:22px;height:22px;margin-top:3px;flex:none}
+.dm .rt{flex:1}.dm small{display:block;color:var(--mute);font-size:14px}
+.dm .link{padding:4px 0;font-size:15px}
+.ulist .row b{font-size:16px}
+.muted{color:var(--mute)}
+.prob{background:var(--errbg);border-radius:10px;padding:10px 12px;margin:6px 0;font-size:15px}
+.prev{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.prev h3{margin:0 0 6px}.prev ul{margin:6px 0;padding-left:18px}.prev .w{color:#8A4100}
+.hist{font-size:14px;border-top:1px solid #E6EBE8;padding:8px 0}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translate(-50%,30px);opacity:0;z-index:60;
+  background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;max-width:92vw;text-align:center;pointer-events:none;transition:.2s}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.office{margin-top:26px;padding-top:6px;border-top:1.5px solid var(--line)}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+@media (max-width:360px){.rgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header id="bar"><button id="back" aria-label="Back" hidden>‹</button><div id="title">Farmer ID</div><button id="pill" class="pill" hidden></button></header>
+<main id="view"></main>
+<div id="sheet" class="sheet hidden" role="dialog" aria-modal="true"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+/* ======================= CONFIG ======================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
+const APP_V = '1.0.0';
+const XLSX_URL = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+const TIER = { A: 'Cannot be claimed', B: 'Stuck', C: 'Workable' };
+const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
+const IMPLIES = { A02: 'Deceased', A03: 'Deceased', A08: 'Untraceable', B01: 'Not present in village', B02: 'Resident',
+  B03: 'Residing outside village', B04: 'Out of station / migrated', B05: 'Abroad', B11: 'Resident', C01: 'Resident' };
+const ROLE_LABEL = { ADMIN: 'Admin (all tehsils)', DA: 'Dealing Assistant', NT: 'View only', OPERATOR: 'Field staff (updates villages)' };
+const DESIG_ROLE = { 'Tehsildar': 'ADMIN', 'Dealing Assistant': 'DA', 'Naib Tehsildar': 'NT' };
+
+/* ======================= HELPERS ======================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const on = (root, sel, ev, fn) => $$(sel, root).forEach(e => e.addEventListener(ev, x => fn(e, x)));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function toast(msg, ms) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), ms || 2600); }
+function nowIST() {
+  const p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(new Date()).forEach(x => p[x.type] = x.value);
+  return `${p.year}-${p.month}-${p.day} ${p.hour === '24' ? '00' : p.hour}:${p.minute}:${p.second}`;
+}
+const todayIST = () => nowIST().slice(0, 10);
+const fmtDate = d => d ? d.slice(8, 10) + '.' + d.slice(5, 7) + '.' + d.slice(0, 4) : '';
+const VD = [[0,1,2,3,4,5,6,7,8,9],[1,2,3,4,0,6,7,8,9,5],[2,3,4,0,1,7,8,9,5,6],[3,4,0,1,2,8,9,5,6,7],[4,0,1,2,3,9,5,6,7,8],[5,9,8,7,6,0,4,3,2,1],[6,5,9,8,7,1,0,4,3,2],[7,6,5,9,8,2,1,0,4,3],[8,7,6,5,9,3,2,1,0,4],[9,8,7,6,5,4,3,2,1,0]];
+const VP = [[0,1,2,3,4,5,6,7,8,9],[1,5,7,6,2,8,3,0,9,4],[5,8,0,3,7,9,6,1,4,2],[8,9,1,6,0,4,3,5,2,7],[9,4,5,3,1,2,6,8,7,0],[4,2,8,6,5,7,3,9,0,1],[2,7,9,3,8,0,6,4,1,5],[7,0,4,6,9,1,3,2,5,8]];
+const validAadhaar = a => { if (!/^[2-9]\d{11}$/.test(a)) return false; let c = 0; a.split('').reverse().map(Number).forEach((d, i) => c = VD[c][VP[i % 8][d]]); return c === 0; };
+const validMobile = m => /^[6-9]\d{9}$/.test(m);
+const NAME_DROP = ['sh', 'shri', 'sri', 'smt', 'mst', 'musammat', 'mussammat', 'late', 'etc', 'so', 'do', 'wo'];
+const NAME_MAP = { mohd: 'mohammad', md: 'mohammad', muhammad: 'mohammad', mohammed: 'mohammad', mohamad: 'mohammad', gulam: 'ghulam', begam: 'begum', lall: 'lal', dei: 'devi', sing: 'singh', chandd: 'chand' };
+const normName = s => String(s || '').toLowerCase().replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(Boolean).filter(t => !NAME_DROP.includes(t)).map(t => NAME_MAP[t] || t).join(' ');
+const khKey = b => { const f = String(b.khasras || '').split(',')[0].trim(); const n = parseInt(f.replace(/^0+/, ''), 10); return isNaN(n) ? 1e9 : n; };
+const shortKh = k => { const a = String(k || '').split(',').map(x => x.trim()).filter(Boolean); return a.length > 4 ? a.slice(0, 4).join(', ') + ` +${a.length - 4} more` : a.join(', '); };
+
+/* ======================= LOCAL STORAGE (IndexedDB) ======================= */
+let _db;
+function idb() {
+  if (_db) return Promise.resolve(_db);
+  return new Promise((res, rej) => { const r = indexedDB.open('farmerid', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => { _db = r.result; res(_db); }; r.onerror = () => rej(r.error); });
+}
+async function kget(k) { const d = await idb(); return new Promise((res, rej) => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); }
+async function kput(k, v) { const d = await idb(); return new Promise((res, rej) => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); }
+async function kdel(k) { const d = await idb(); return new Promise(res => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').delete(k); t.oncomplete = () => res(); t.onerror = () => res(); }); }
+async function kkeys() { const d = await idb(); return new Promise(res => { const q = d.transaction('kv').objectStore('kv').getAllKeys(); q.onsuccess = () => res(q.result || []); q.onerror = () => res([]); }); }
+
+/* ======================= STATE & API ======================= */
+const S = { session: null, boot: null, buckets: {}, fetchedAt: {}, queue: [], problems: [], syncing: false, lastSync: '', stats: {}, top: {}, dirty: false };
+const me = () => S.session && S.session.user;
+const role = () => (me() || {}).role;
+const isOffice = () => ['ADMIN', 'DA'].includes(role());
+const reasons = () => (S.boot && S.boot.reasons) || [];
+const reason = c => reasons().find(r => r.code === c);
+const tierOf = c => (reason(c) || { tier: 'B' }).tier;
+const activeReasons = () => reasons().filter(r => r.active === 'Y').sort((a, b) => Number(a.sort) - Number(b.sort));
+const villages = () => (S.boot && S.boot.villages) || [];
+const villageById = id => villages().find(v => v.village_id === id) || { village_id: id, name: id };
+const tehsilName = id => (((S.boot && S.boot.tehsils) || []).find(t => t.tehsil_id === id) || {}).name || '';
+const qKey = () => 'queue:' + me().user_id;
+const pKey = () => 'problems:' + me().user_id;
+function canEditV(vid) {
+  const u = me(); if (!u) return false;
+  if (u.role === 'ADMIN') return true;
+  if (u.role === 'DA') return villageById(vid).tehsil_id === u.tehsil_id;
+  if (u.role === 'OPERATOR') return ((S.boot && S.boot.myVillages) || []).includes(vid);
+  return false;
+}
+
+class NetError extends Error {}
+async function api(action, payload, timeout) {
+  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), timeout || 45000);
+  let res;
+  try {
+    const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', signal: ctrl.signal,
+      body: JSON.stringify(Object.assign({ action, token: S.session ? S.session.token : '' }, payload || {})) });
+    res = await r.json();
+  } catch (e) { throw new NetError('No internet connection. Try again when you have signal.'); }
+  finally { clearTimeout(t); }
+  if (!res.ok) {
+    if (res.error === 'SESSION_EXPIRED') { await expireSession(); throw new Error('Please log in again.'); }
+    throw new Error(res.error || 'Something went wrong.');
+  }
+  return res;
+}
+
+async function expireSession() {
+  S.session = null; await kdel('session');
+  NAV.stack = [{ name: 'login', args: {} }]; closeAllSheets(); render();
+  toast('Please log in again. Your saved work is kept on this phone.');
+}
+
+/* ======================= OFFLINE QUEUE & SYNC ======================= */
+async function persistQueue() { await kput(qKey(), S.queue); await kput(pKey(), S.problems); }
+async function enqueue(action, payload, local) {
+  S.queue.push({ id: uid(), action, payload, local: local || [], ts: nowIST() });
+  await persistQueue(); updatePill(); scheduleSync(1500);
+}
+function scheduleSync(ms) { clearTimeout(scheduleSync._t); scheduleSync._t = setTimeout(sync, ms || 0); }
+
+async function sync() {
+  if (S.syncing || !S.session || !S.queue.length || !navigator.onLine) { updatePill(); return; }
+  S.syncing = true; updatePill();
+  let conflicts = false;
+  try {
+    while (S.queue.length) {
+      const first = S.queue[0];
+      if (first.action === 'saveBuckets') {
+        let n = 0; const batch = [];
+        while (n < S.queue.length && S.queue[n].action === 'saveBuckets' && batch.length < 150) { batch.push(...S.queue[n].payload.updates); n++; }
+        const r = await api('saveBuckets', { updates: batch }, 90000);
+        r.results.forEach(x => {
+          if (!x.ok) { S.problems.push({ bucket_id: x.bucket_id, error: x.error, ts: nowIST() }); if (x.conflict) conflicts = true; }
+          else markUploaded(x);
+        });
+        S.queue.splice(0, n);
+      } else {
+        try { await api(first.action, first.payload, 60000); }
+        catch (e) { if (e instanceof NetError) throw e; S.problems.push({ error: e.message, ts: nowIST() }); conflicts = true; }
+        S.queue.shift();
+      }
+      await persistQueue();
+    }
+    S.lastSync = nowIST(); await kput('lastSync', S.lastSync);
+    refreshStats(true, true);
+    if (conflicts) await refreshLoadedVillages();
+  } catch (e) { /* offline again: keep queue */ }
+  finally { S.syncing = false; updatePill(); }
+}
+
+function markUploaded(x) {
+  Object.keys(S.buckets).forEach(vid => {
+    const b = (S.buckets[vid] || []).find(y => y.bucket_id === x.bucket_id);
+    if (b) { b._pending = false; b.updated_at = x.updated_at; if (x.flag !== undefined) b.flag = x.flag; }
+  });
+}
+
+/* Apply a change locally exactly as the server will. */
+function applyLocal(b, f) {
+  const wasClaimed = b.status === 'CLAIMED';
+  Object.assign(b, f);
+  if (f.gender !== undefined) b.gender_source = 'USER';
+  if (b.status === 'CLAIMED') b.reason_code = '';
+  if (b.status === 'REASON' && f.residence === undefined && f.reason_code && IMPLIES[f.reason_code]) b.residence = IMPLIES[f.reason_code];
+  if (b.status === 'CLAIMED' && !wasClaimed) { b.claimed_source = 'FIELD'; b.claimed_date = todayIST(); b.claimed_by = me().user_id; }
+  if (b.status !== 'CLAIMED' && wasClaimed) { b.claimed_source = ''; b.claimed_date = ''; b.claimed_by = ''; }
+  if (b.status !== 'NOT_SURVEYED' && !b.surveyed_date) { b.surveyed_date = todayIST(); }
+  if (b.status === 'NOT_SURVEYED') { b.surveyed_date = ''; b.reason_code = ''; }
+  if ((b.flag === 'NEW' || b.flag === 'REOPENED') && b.status !== 'NOT_SURVEYED') b.flag = '';
+  if (b.flag === 'NO_FIELD_ENTRY' && b.mobile) b.flag = 'CONFIRMED';
+  b.updated_by = me().user_id; b.updated_by_name = me().name; b.updated_at = nowIST(); b._pending = true;
+}
+
+function overlayPending(vid, arr) {
+  const idx = {}; arr.forEach(b => idx[b.bucket_id] = b);
+  S.queue.forEach(q => (q.local || []).forEach(l => { if (idx[l.bucket_id]) { const keep = idx[l.bucket_id]; Object.assign(keep, l.fields); keep._pending = true; } }));
+}
+
+async function loadVillage(vid, force) {
+  if (!force && S.buckets[vid]) return S.buckets[vid];
+  if (!force) { const c = await kget('b:' + vid); if (c) { S.buckets[vid] = c; return c; } }
+  try {
+    const r = await api('getBuckets', { village_id: vid }, 90000);
+    overlayPending(vid, r.buckets);
+    S.buckets[vid] = r.buckets; S.fetchedAt[vid] = Date.now(); delete S.top[vid];
+    await kput('b:' + vid, r.buckets);
+    return r.buckets;
+  } catch (e) {
+    if (S.buckets[vid]) return S.buckets[vid];
+    const c = await kget('b:' + vid); if (c) { S.buckets[vid] = c; return c; }
+    if (e instanceof NetError) throw new Error('This village is not saved on this phone yet. Connect to the internet once to download it.');
+    throw e;
+  }
+}
+async function refreshLoadedVillages() { for (const vid of Object.keys(S.buckets)) { try { await loadVillage(vid, true); } catch (e) {} } S.dirty = true; if (!SHEET) render(); }
+
+async function refreshBoot() {
+  if (!navigator.onLine || !S.session) return;
+  try {
+    const r = await api('bootstrap');
+    S.boot = r; await kput('boot', r);
+    if (role() === 'OPERATOR') {
+      for (const v of r.villages) {
+        if (!S.buckets[v.village_id] || !S.fetchedAt[v.village_id] || Date.now() - S.fetchedAt[v.village_id] > 600000) {
+          try { await loadVillage(v.village_id, true); } catch (e) {}
+        }
+      }
+    }
+    await refreshStats();
+    if (!SHEET && current() && current().name === 'home') render();
+  } catch (e) {}
+}
+
+async function refreshStats(rerender, force) {
+  if (!navigator.onLine || !S.boot) return;
+  if (refreshStats._busy || (refreshStats._at && Date.now() - refreshStats._at < 90000 && !force)) return;
+  refreshStats._busy = true;
+  try {
+    const ts = role() === 'ADMIN' ? S.boot.tehsils.map(t => t.tehsil_id) : [me().tehsil_id];
+    for (const t of ts) { try { const r = await api('getStats', { tehsil_id: t }); S.stats[t] = r; await kput('stats:' + t, r); } catch (e) {} }
+    refreshStats._at = Date.now();
+    if (rerender && !SHEET && current() && current().name === 'home') render();
+  } finally { refreshStats._busy = false; }
+}
+
+function updatePill() {
+  const p = $('#pill'); if (!S.session) { p.hidden = true; return; }
+  p.hidden = false; const n = S.queue.length; let t, c;
+  if (S.syncing) { t = 'Uploading'; c = 'busy'; }
+  else if (S.problems.length) { t = S.problems.length + (S.problems.length > 1 ? ' problems' : ' problem'); c = 'err'; }
+  else if (!navigator.onLine) { t = n ? `Offline, ${n} saved` : 'Offline'; c = 'off'; }
+  else if (n) { t = `${n} to upload`; c = 'wait'; }
+  else { t = 'All uploaded'; c = ''; }
+  p.textContent = t; p.className = 'pill ' + c;
+}
+
+/* ======================= NAVIGATION & SHEETS ======================= */
+const NAV = { stack: [] };
+const current = () => NAV.stack[NAV.stack.length - 1];
+function go(name, args) { NAV.stack.push({ name, args: args || {} }); history.pushState({ v: NAV.stack.length }, ''); window.scrollTo(0, 0); render(); }
+function setHeader(title) { $('#title').textContent = title; $('#back').hidden = NAV.stack.length < 2; }
+async function render() {
+  const c = current(); if (!c) return;
+  try { await VIEWS[c.name](c.args); } catch (e) { $('#view').innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; }
+  updatePill();
+}
+let SHEET = null;
+function openSheet(build) { SHEET = { build }; history.pushState({ sheet: 1 }, ''); drawSheet(); }
+function drawSheet() {
+  const el = $('#sheet'); const r = SHEET.build();
+  el.innerHTML = `<div class="sheet-in">${r.html}</div>`; el.classList.remove('hidden'); el.scrollTop = 0;
+  document.body.classList.add('noscroll'); if (r.mount) r.mount(el);
+}
+function closeSheet(after) { if (!SHEET) { if (after) after(); return; } SHEET.after = after; history.back(); }
+function closeAllSheets() { SHEET = null; const el = $('#sheet'); el.classList.add('hidden'); el.innerHTML = ''; document.body.classList.remove('noscroll'); }
+window.addEventListener('popstate', () => {
+  if (SHEET) { const after = SHEET.after; closeAllSheets(); if (S.dirty) { S.dirty = false; render(); } if (after) after(); return; }
+  if (NAV.stack.length > 1) { NAV.stack.pop(); render(); }
+});
+$('#back').addEventListener('click', () => history.back());
+$('#pill').addEventListener('click', openSyncSheet);
+
+/* ======================= SHARED UI PIECES ======================= */
+function countsLocal(arr) {
+  const c = { total: arr.length, made: 0, A: 0, B: 0, C: 0, ns: 0, unl: 0, today: 0 }; const t = todayIST();
+  arr.forEach(b => {
+    if (b.status === 'CLAIMED') { c.made++; if (b.claimed_date === t) c.today++; }
+    else if (b.status === 'NOT_SURVEYED') c.ns++;
+    else c[tierOf(b.reason_code)]++;
+  });
+  return c;
+}
+function stripHtml(c) {
+  const t = Math.max(1, c.total);
+  const seg = (n, cls) => n > 0 ? `<i class="${cls}" style="width:${(n * 100 / t).toFixed(2)}%"></i>` : '';
+  return `<div class="strip" aria-hidden="true">${seg(c.made, 's-made')}${seg(c.C, 's-C')}${seg(c.B, 's-B')}${seg(c.A, 's-A')}${seg(c.ns, 's-ns')}</div>`;
+}
+function legendHtml(c) {
+  const it = (n, col, l) => `<span><i style="background:${col}"></i>${l} <b>${n}</b></span>`;
+  return `<div class="legend">${it(c.made, 'var(--made)', 'ID made')}${it(c.C, 'var(--tc)', 'Workable')}${it(c.B, 'var(--tb)', 'Stuck')}${it(c.A, 'var(--ta)', 'Cannot')}${it(c.ns, 'var(--ns)', 'To do')}${c.unl > 0 ? it(c.unl, 'var(--unl)', 'Not in list') : ''}</div>`;
+}
+function statusOf(b) {
+  if (b.status === 'CLAIMED') return { cls: 'made', text: 'ID made' };
+  if (b.status === 'NOT_SURVEYED') return { cls: 'ns', text: 'To do' };
+  const r = reason(b.reason_code); return { cls: tierOf(b.reason_code), text: r ? r.label : b.reason_code };
+}
+function rowHtml(b) {
+  const s = statusOf(b);
+  return `<button class="row" data-id="${esc(b.bucket_id)}"><span class="dot d-${s.cls}"></span><span class="rt"><b>${esc(b.name)}</b><small>${esc(b.parentage)}${b.khasras ? ', khasra ' + esc(shortKh(b.khasras)) : ''}</small></span><span class="st st-${s.cls}">${esc(s.text)}</span></button>`;
+}
+function topReasons(vid) {
+  if (S.top[vid]) return S.top[vid];
+  const freq = {}; (S.buckets[vid] || []).forEach(b => { if (b.status === 'REASON') freq[b.reason_code] = (freq[b.reason_code] || 0) + 1; });
+  const pos = c => { const i = DEFAULT_TOP.indexOf(c); return i < 0 ? 99 : i; };
+  const list = activeReasons().filter(r => r.code !== 'A01' && r.code !== 'C02')
+    .sort((x, y) => (freq[y.code] || 0) - (freq[x.code] || 0) || pos(x.code) - pos(y.code)).slice(0, 6);
+  S.top[vid] = list; return list;
+}
+function reasonGrid(vid, curCode) {
+  const top = topReasons(vid), topCodes = top.map(r => r.code);
+  const btn = r => `<button class="rbtn t${r.tier}${r.code === curCode ? ' cur' : ''}" data-code="${r.code}">${esc(r.label)}</button>`;
+  const rest = activeReasons().filter(r => !topCodes.includes(r.code));
+  const grp = t => { const l = rest.filter(r => r.tier === t); return l.length ? `<p class="grp g${t}">${TIER[t]}</p>${l.map(btn).join('')}` : ''; };
+  return `<div class="rgrid">${top.map(btn).join('')}</div><details class="morer"><summary>More reasons</summary>${grp('A')}${grp('B')}${grp('C')}</details>`;
+}
+
+/* ======================= SAVING ======================= */
+function validate(b, f) {
+  const m = Object.assign({}, b, f);
+  if (f.aadhaar && !validAadhaar(f.aadhaar)) return 'Aadhaar number is not valid. Check all 12 digits.';
+  if (f.mobile && !validMobile(f.mobile)) return 'Mobile must be 10 digits starting with 6, 7, 8 or 9.';
+  if (b.status === 'CLAIMED' && b.claimed_source === 'PORTAL' && m.status !== 'CLAIMED') return 'Portal shows this bucket as claimed. It cannot be changed.';
+  if (m.status === 'CLAIMED' && b.status !== 'CLAIMED' && !m.mobile) return 'Enter the farmer\'s mobile number.';
+  if (m.status === 'REASON' && !reason(m.reason_code)) return 'Choose a reason.';
+  if (m.status === 'REASON' && m.reason_code === 'B10' && !m.remarks) return 'Write the reason in remarks.';
+  return '';
+}
+async function saveMany(vid, items) {
+  const updates = [], local = []; const ts = nowIST();
+  for (const it of items) {
+    const err = validate(it.b, it.f); if (err) throw new Error(err);
+  }
+  items.forEach(it => { applyLocal(it.b, it.f); updates.push(Object.assign({ bucket_id: it.b.bucket_id, client_ts: ts }, it.f)); local.push({ bucket_id: it.b.bucket_id, fields: it.f }); });
+  await kput('b:' + vid, S.buckets[vid]);
+  S.dirty = true;
+  await enqueue('saveBuckets', { updates }, local);
+}
+const saveOne = (vid, b, f) => saveMany(vid, [{ b, f }]);
+
+/* ======================= VIEWS ======================= */
+const VIEWS = {};
+
+/* ---------- Login ---------- */
+VIEWS.login = async function (a) {
+  setHeader('Farmer ID Tracker');
+  const main = $('#view');
+  let list = (await kget('loginList')) || [];
+  main.innerHTML = `<section class="pad">
+    <h1 class="big">Log in</h1>
+    <p class="hint">Type your first name, tap it, then enter your PIN.</p>
+    <div id="step1"><input id="q" class="input" placeholder="Your first name" autocomplete="off" autocapitalize="words"><div id="names" class="names"></div></div>
+    <div id="step2" hidden>
+      <div class="box"><b id="who"></b><br><button class="link" id="change">Choose a different name</button></div>
+      <div class="field"><label for="pin">PIN</label><input id="pin" class="input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="current-password"></div>
+      <button id="go" class="btn btn-primary">Log in</button>
+    </div>
+    <p class="hint" style="margin-top:28px">Version ${APP_V}</p></section>`;
+  let chosen = null;
+  const draw = () => {
+    const q = $('#q').value.trim().toLowerCase();
+    const l = list.filter(u => !q || u.label.toLowerCase().includes(q)).slice(0, 40);
+    $('#names').innerHTML = l.length ? l.map(u => `<button data-id="${esc(u.user_id)}"><b>${esc(u.label)}</b><small>${esc(u.tehsil)}</small></button>`).join('')
+      : `<p class="hint">${navigator.onLine ? 'No name found. Ask the Dealing Assistant to add you.' : 'Connect to the internet to see the name list.'}</p>`;
+    on($('#names'), 'button', 'click', el => { chosen = list.find(u => u.user_id === el.dataset.id); $('#who').textContent = chosen.label; $('#step1').hidden = true; $('#step2').hidden = false; $('#pin').focus(); });
+  };
+  $('#q').addEventListener('input', draw);
+  $('#change').addEventListener('click', () => { $('#step1').hidden = false; $('#step2').hidden = true; $('#pin').value = ''; });
+  const doLogin = async () => {
+    const pin = $('#pin').value.trim(); if (!pin) { toast('Enter your PIN.'); return; }
+    $('#go').disabled = true; $('#go').textContent = 'Logging in';
+    try {
+      const r = await api('login', { user_id: chosen.user_id, pin });
+      S.session = { token: r.token, user: r.user }; await kput('session', S.session);
+      S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || [];
+      const boot = await api('bootstrap'); S.boot = boot; await kput('boot', boot);
+      NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render();
+      refreshBoot(); scheduleSync(500);
+    } catch (e) { toast(e.message, 4000); $('#go').disabled = false; $('#go').textContent = 'Log in'; }
+  };
+  $('#go').addEventListener('click', doLogin);
+  $('#pin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  draw();
+  if (navigator.onLine) { try { const r = await api('loginList'); list = r.users; await kput('loginList', list); draw(); } catch (e) {} }
+};
+
+/* ---------- Home ---------- */
+function statsFor(vid) { const v = villageById(vid); const st = S.stats[v.tehsil_id]; return st ? st.villages.find(x => x.village_id === vid) : null; }
+function villageCard(v) {
+  const st = statsFor(v.village_id), arr = S.buckets[v.village_id];
+  let c, head, today = null, target = null, survey = null;
+  if (arr) { c = countsLocal(arr); survey = c.total ? Math.round((c.total - c.ns) * 100 / c.total) : 0; today = c.today; }
+  if (st) {
+    if (!c) c = { total: st.total, made: st.claimed, A: st.tier_a, B: st.tier_b, C: st.tier_c, ns: st.not_surveyed, unl: Math.max(0, st.unlisted) };
+    else { c = Object.assign({}, c); c.unl = Math.max(0, st.unlisted); c.made = st.claimed; c.total = st.total; }
+    head = `<strong>${st.claimed}</strong> of ${st.total} buckets claimed`;
+    target = st.daily_target; if (today === null) today = st.claimed_today; if (survey === null) survey = Math.round(st.survey_pct);
+  } else if (c) head = `<strong>${c.made}</strong> claimed in this list of ${c.total}`;
+  const listMissing = st ? !st.list_received : (!arr && !st);
+  const staff = v.patwari_user_id && S.boot.users ? ((S.boot.users.find(u => u.user_id === v.patwari_user_id) || {}).name || '') : '';
+  return `<button class="vcard" data-v="${esc(v.village_id)}">
+    <div class="vtop"><b>${esc(v.name)}</b><span>${staff ? 'Patwari ' + esc(staff) : 'LGD ' + esc(v.village_id)}</span></div>
+    ${head ? `<div class="vhead">${head}</div>` : ''}
+    ${c ? stripHtml(c) : ''}
+    <div class="vline">
+      ${listMissing ? '<span class="tag">Bucket list not uploaded yet</span>' : ''}
+      ${today !== null ? `<span>Today <b>${today}</b>${target ? ' of ' + target : ''}</span>` : ''}
+      ${survey !== null && !listMissing ? `<span>Survey <b>${survey}%</b> done</span>` : ''}
+    </div></button>`;
+}
+VIEWS.home = async function () {
+  setHeader('Farmer ID');
+  const u = me(); const vs = villages().slice().sort((a, b) => a.name.localeCompare(b.name));
+  for (const t of Object.keys(S.stats).length ? [] : ((S.boot && S.boot.tehsils) || [])) { const c = await kget('stats:' + t.tehsil_id); if (c) S.stats[t.tehsil_id] = c; }
+  const ins = u.role === 'OPERATOR' ? 'Tap your village to update landholders.' : (u.role === 'NT' ? 'Tap a village to see its landholders.' : 'Tap a village to work on it. Office work is at the bottom.');
+  const byT = {}; vs.forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
+  const multi = Object.keys(byT).length > 1;
+  const cards = Object.keys(byT).map(t => (multi ? `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p>` : '') + byT[t].map(villageCard).join('')).join('');
+  $('#view').innerHTML = `<section class="pad">
+    <p class="who">${esc(u.name)}<small>${esc(u.designation)}${u.tehsil_id ? ', Tehsil ' + esc(tehsilName(u.tehsil_id)) : ''}</small></p>
+    <p class="hint">${ins}</p>
+    ${cards || '<p class="hint">No village is assigned to you yet. Ask the Dealing Assistant.</p>'}
+    ${u.role !== 'NT' ? '<button class="btn" id="camp">Record a camp</button>' : ''}
+    <button class="btn" id="help">Help</button>
+    ${isOffice() ? `<div class="office"><h2>Office work</h2>
+      <button class="btn" id="up">Upload bucket list</button>
+      <button class="btn" id="staff">Staff and logins</button>
+      <button class="btn" id="vil">Villages, staff assignment and portal figures</button>
+      <button class="btn" id="set">Deadlines, reasons and report text</button></div>` : ''}
+    <button class="link" id="out">Log out</button></section>`;
+  on($('#view'), '.vcard', 'click', el => go('village', { vid: el.dataset.v, filter: 'todo', mode: 'fam', q: '', n: 120 }));
+  const b = (id, fn) => { const e = $('#' + id); if (e) e.addEventListener('click', fn); };
+  b('camp', () => go('camp')); b('help', () => go('help')); b('up', () => go('upload')); b('staff', () => go('users'));
+  b('vil', () => go('villages')); b('set', () => go('settings')); b('out', logout);
+  refreshStats(true);
+};
+
+/* ---------- Village ---------- */
+const FILTERS = [
+  ['todo', 'To do', b => b.status === 'NOT_SURVEYED'],
+  ['dup', 'Same farmer?', b => b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED'],
+  ['C', 'Workable', b => b.status === 'REASON' && tierOf(b.reason_code) === 'C'],
+  ['B', 'Stuck', b => b.status === 'REASON' && tierOf(b.reason_code) === 'B'],
+  ['A', 'Cannot be claimed', b => b.status === 'REASON' && tierOf(b.reason_code) === 'A'],
+  ['made', 'ID made', b => b.status === 'CLAIMED'],
+  ['all', 'All', () => true]
+];
+const EXTRA_FILTERS = { noentry: b => b.status === 'CLAIMED' && b.flag === 'NO_FIELD_ENTRY', reopen: b => b.flag === 'REOPENED' };
+function filtered(a, arr) {
+  const f = EXTRA_FILTERS[a.filter] || (FILTERS.find(x => x[0] === a.filter) || FILTERS[6])[2];
+  const q = (a.q || '').trim().toLowerCase();
+  return arr.filter(b => f(b) && (!q || (b.name + ' ' + b.parentage + ' ' + b.khasras + ' ' + b.bucket_id).toLowerCase().includes(q)))
+    .sort((x, y) => khKey(x) - khKey(y) || x.name.localeCompare(y.name));
+}
+VIEWS.village = async function (a) {
+  const v = villageById(a.vid); setHeader(v.name);
+  const main = $('#view');
+  if (!S.buckets[a.vid]) main.innerHTML = '<p class="pad hint">Loading landholders…</p>';
+  const arr = await loadVillage(a.vid);
+  drawVillage(a, arr);
+  if (navigator.onLine && (!S.fetchedAt[a.vid] || Date.now() - S.fetchedAt[a.vid] > 120000) && !a._bg) {
+    a._bg = true;
+    loadVillage(a.vid, true).then(x => { a._bg = false; if (current().args === a && !SHEET) drawVillage(a, x); }).catch(() => { a._bg = false; });
+  }
+};
+function drawVillage(a, arr) {
+  const ro = !canEditV(a.vid); const c = countsLocal(arr);
+  const sug = arr.filter(b => b.status === 'NOT_SURVEYED' && b.suggested_code).length;
+  const dup = arr.filter(FILTERS[1][2]).length;
+  const noentry = arr.filter(EXTRA_FILTERS.noentry).length, reopen = arr.filter(EXTRA_FILTERS.reopen).length;
+  const banner = (cls, text, btn, id) => `<div class="banner ${cls}"><p>${text}</p>${btn && !ro ? `<button id="${id}">${btn}</button>` : ''}</div>`;
+  $('#view').innerHTML = `<section class="pad">
+    ${stripHtml(c)}${legendHtml(c)}
+    ${!arr.length ? '<p class="err">The bucket list for this village has not been uploaded yet.</p>' : ''}
+    ${sug ? banner('', `${sug} buckets look like State, Shamlat, department land or joint entries.`, 'Check', 'bSug') : ''}
+    ${dup ? banner('info', `${dup} buckets may belong to a farmer who has another bucket.`, 'Check', 'bDup') : ''}
+    ${noentry ? banner('ok', `${noentry} buckets were claimed on the portal. Add the farmer's mobile number.`, 'Show', 'bNo') : ''}
+    ${reopen ? banner('', `${reopen} buckets are unclaimed on the portal again.`, 'Show', 'bRe') : ''}
+    <input id="q" class="input search" type="search" placeholder="Search name, father's name or khasra" value="${esc(a.q)}">
+    <div class="chips">${FILTERS.map(f => `<button class="chipf ${a.filter === f[0] ? 'on' : ''}" data-f="${f[0]}">${f[1]} <b>${arr.filter(f[2]).length}</b></button>`).join('')}</div>
+    <div class="seg"><button data-m="fam" class="${a.mode === 'fam' ? 'on' : ''}">Families</button><button data-m="one" class="${a.mode === 'one' ? 'on' : ''}">One by one</button></div>
+    <p class="hint" id="ins"></p><div id="list" class="list"></div></section>`;
+  const v = $('#view');
+  on(v, '.chipf', 'click', el => { a.filter = el.dataset.f; a.n = 120; drawVillage(a, arr); });
+  on(v, '.seg button', 'click', el => { a.mode = el.dataset.m; a.n = 120; drawVillage(a, arr); });
+  $('#q').addEventListener('input', e => { a.q = e.target.value; a.n = 120; drawList(a, arr); });
+  const b = (id, fn) => { const e = $('#' + id); if (e) e.addEventListener('click', fn); };
+  b('bSug', () => openSuggestions(a.vid));
+  b('bDup', () => go('dups', { vid: a.vid }));
+  b('bNo', () => { a.filter = 'noentry'; a.mode = 'one'; drawVillage(a, arr); });
+  b('bRe', () => { a.filter = 'reopen'; a.mode = 'one'; drawVillage(a, arr); });
+  drawList(a, arr);
+}
+function drawList(a, arr) {
+  const items = filtered(a, arr); const ro = !canEditV(a.vid);
+  const box = $('#list'); const ins = $('#ins');
+  if (!items.length) { ins.textContent = ''; box.innerHTML = `<p class="hint">${a.filter === 'todo' && arr.length ? 'Nothing left to do in this list.' : 'No landholders here.'}</p>`; return; }
+  if (a.mode === 'fam') {
+    ins.textContent = ro ? 'Families are grouped by father or husband name.' : 'Tap a family to mark several landholders at once.';
+    const fams = {}; items.forEach(b => { const k = normName(b.parentage) || '-'; (fams[k] = fams[k] || []).push(b); });
+    const keys = Object.keys(fams).sort((x, y) => fams[y].length - fams[x].length || x.localeCompare(y));
+    box.innerHTML = keys.slice(0, a.n).map(k => {
+      const m = fams[k];
+      return `<button class="fam" data-k="${esc(k)}"><b>Family of ${esc(m[0].parentage || 'unknown')}</b><small>${m.length} landholder${m.length > 1 ? 's' : ''} in this list</small><span class="dots">${m.map(b => `<span class="dot d-${statusOf(b).cls}"></span>`).join('')}</span></button>`;
+    }).join('') + (keys.length > a.n ? `<button class="btn" id="more">Show more (${keys.length - a.n} more families)</button>` : '');
+    on(box, '.fam', 'click', el => openFamily(a.vid, el.dataset.k));
+  } else {
+    ins.textContent = ro ? 'Tap a landholder to see details.' : 'Tap a landholder to update. The next one opens after you save.';
+    box.innerHTML = items.slice(0, a.n).map(rowHtml).join('') + (items.length > a.n ? `<button class="btn" id="more">Show more (${items.length - a.n} more)</button>` : '');
+    const ids = items.map(b => b.bucket_id);
+    on(box, '.row', 'click', el => openBucket(a.vid, ids, ids.indexOf(el.dataset.id)));
+  }
+  const m = $('#more'); if (m) m.addEventListener('click', () => { a.n += 200; drawList(a, arr); });
+}
+
+/* ---------- Bucket sheet (one landholder) ---------- */
+function openBucket(vid, ids, i) { openSheet(() => bucketSheet(vid, ids, i)); }
+function advance(vid, ids, i) {
+  if (i + 1 < ids.length) { SHEET.build = () => bucketSheet(vid, ids, i + 1); drawSheet(); }
+  else closeSheet(() => toast('End of this list.'));
+}
+function bucketSheet(vid, ids, i) {
+  const b = (S.buckets[vid] || []).find(x => x.bucket_id === ids[i]);
+  if (!b) return { html: '<p class="err">Not found.</p><button class="btn" id="x">Close</button>', mount: r => $('#x', r).onclick = () => closeSheet() };
+  const ro = !canEditV(vid); const s = statusOf(b); const portalClaimed = b.status === 'CLAIMED' && b.claimed_source === 'PORTAL';
+  const sugR = b.status === 'NOT_SURVEYED' && b.suggested_code ? reason(b.suggested_code) : null;
+  const banners = [];
+  if (sugR && !ro) banners.push(`<div class="banner"><p>This looks like: <b>${esc(sugR.label)}</b></p><button id="sugYes">Yes, confirm</button></div>`);
+  if (b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED') banners.push(`<div class="banner info"><p>This may be the same farmer as another bucket.</p><button id="dupChk">Check</button></div>`);
+  if (b.dup_confirmed === 'Y') banners.push(`<div class="banner ok"><p>${b.dup_role === 'PRIMARY' ? 'Same farmer has other buckets. The Farmer ID is made through this bucket.' : 'Same farmer as another bucket. The Farmer ID is made through the other bucket.'}</p><button id="dupChk">See</button></div>`);
+  if (b.flag === 'NO_FIELD_ENTRY') banners.push(`<div class="banner ok"><p>The portal shows the Farmer ID as made. Enter the farmer's mobile number.</p></div>`);
+  if (b.flag === 'PENDING_CONFIRMATION') banners.push(`<div class="banner"><p>Marked as ID made, but the portal still shows it unclaimed. Check on the portal.</p></div>`);
+  if (b.flag === 'REOPENED') banners.push(`<div class="banner"><p>The portal shows this bucket as unclaimed again. Update it.</p></div>`);
+  const showMade = b.flag === 'NO_FIELD_ENTRY';
+  const html = `
+    <div class="snav"><button id="x">Close</button><span>${i + 1} of ${ids.length}</span><button id="skip">${i + 1 < ids.length ? 'Skip' : 'Done'}</button></div>
+    <h2 class="nm">${esc(b.name)}</h2>
+    <dl class="facts"><dt>Father / husband</dt><dd>${esc(b.parentage || '-')}</dd><dt>Khasra</dt><dd>${esc(b.khasras || '-')}</dd>
+      <dt>Village</dt><dd>${esc(villageById(vid).name)}</dd><dt>Bucket</dt><dd>…${esc(String(b.bucket_id).slice(-8))}</dd></dl>
+    <p class="now">Now: <span class="st st-${s.cls}">${esc(s.text)}</span>${b._pending ? ' <span class="muted">(waiting to upload)</span>' : ''}${b.updated_by_name ? `<br><small class="muted">Last updated by ${esc(b.updated_by_name)}, ${esc(b.updated_at)}</small>` : ''}</p>
+    ${banners.join('')}
+    ${ro ? '' : `
+      ${portalClaimed && !showMade ? '' : `<button class="btn btn-made" id="made">Farmer ID made</button>`}
+      <div class="box" id="madeBox" ${showMade ? '' : 'hidden'}>
+        <div class="field"><label for="mob">Farmer's mobile number</label><input id="mob" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(b.mobile)}" placeholder="10 digits"></div>
+        <div class="field"><label for="aad">Aadhaar number (optional)</label><input id="aad" class="input" inputmode="numeric" maxlength="14" value="${esc(b.aadhaar)}" placeholder="12 digits"></div>
+        <div class="field"><label for="fid">Farmer ID (optional)</label><input id="fid" class="input" inputmode="numeric" value="${esc(b.farmer_id)}" placeholder="Paste if you have it"></div>
+        <button class="btn btn-made" id="madeSave">Save: ID made</button>
+      </div>
+      ${portalClaimed ? '' : `<h3>Not made? Tap the reason</h3>${reasonGrid(vid, b.reason_code)}
+      <div class="box" id="otherBox" hidden><div class="field"><label for="rem2">Write the reason</label><textarea id="rem2" class="input">${esc(b.remarks)}</textarea></div><button class="btn btn-primary" id="otherSave">Save</button></div>`}
+      <details class="more"><summary>More details</summary>
+        <div class="field"><label>Male or female</label><div class="toggle" id="gen">
+          ${['M', 'F'].map(g => `<button data-g="${g}" class="${b.gender === g ? 'on' : ''}">${g === 'M' ? 'Male' : 'Female'}</button>`).join('')}</div>
+          ${b.gender_source === 'AUTO' ? '<small>Guessed from the name. Correct it if wrong.</small>' : ''}</div>
+        <div class="field"><label for="res">Where does the landholder live?</label><select id="res" class="input"><option value="">Not known</option>
+          ${S.boot.residence.map(r => `<option ${b.residence === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
+        <div class="field"><label for="loc">Present place (if outside)</label><input id="loc" class="input" value="${esc(b.current_location)}" placeholder="District or state"></div>
+        <div class="field"><label for="aad2">Aadhaar number</label><input id="aad2" class="input" inputmode="numeric" maxlength="14" value="${esc(b.aadhaar)}"></div>
+        <div class="field"><label for="mob2">Mobile number</label><input id="mob2" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(b.mobile)}"></div>
+        <div class="field"><label for="rem">Remarks</label><textarea id="rem" class="input">${esc(b.remarks)}</textarea></div>
+        <button class="btn btn-primary" id="detSave">Save details</button>
+        ${b.status !== 'NOT_SURVEYED' && !portalClaimed ? '<button class="btn" id="reset">Mark as not done yet</button>' : ''}
+      </details>`}
+    ${navigator.onLine ? '<button class="link" id="hist">See change history</button><div id="histBox"></div>' : ''}`;
+  const mount = r => {
+    const q = id => $('#' + id, r);
+    const run = async (fn, okMsg, next) => { try { await fn(); toast(okMsg); if (next) advance(vid, ids, i); else drawSheet(); } catch (e) { toast(e.message, 4000); } };
+    q('x').onclick = () => closeSheet();
+    q('skip').onclick = () => advance(vid, ids, i);
+    if (q('sugYes')) q('sugYes').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: b.suggested_code }), 'Saved: ' + sugR.label, true);
+    if (q('dupChk')) q('dupChk').onclick = () => closeSheet(() => go('dups', { vid, focus: b.dup_group }));
+    if (q('made')) q('made').onclick = () => { q('madeBox').hidden = false; q('mob').focus(); };
+    if (q('madeSave')) q('madeSave').onclick = () => {
+      const f = { status: 'CLAIMED', mobile: q('mob').value.replace(/\s/g, '') };
+      const ad = q('aad').value.replace(/\s/g, ''); if (ad) f.aadhaar = ad;
+      const fid = q('fid').value.trim(); if (fid) f.farmer_id = fid;
+      run(() => saveOne(vid, b, f), 'Saved: Farmer ID made', true);
+    };
+    $$('.rbtn', r).forEach(el => el.onclick = () => {
+      const code = el.dataset.code;
+      if (code === 'B10') { q('otherBox').hidden = false; q('rem2').focus(); return; }
+      run(() => saveOne(vid, b, { status: 'REASON', reason_code: code }), 'Saved: ' + reason(code).label, true);
+    });
+    if (q('otherSave')) q('otherSave').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: 'B10', remarks: q('rem2').value.trim() }), 'Saved', true);
+    let gender = b.gender;
+    $$('#gen button', r).forEach(el => el.onclick = () => { gender = el.dataset.g; $$('#gen button', r).forEach(x => x.classList.toggle('on', x === el)); });
+    if (q('detSave')) q('detSave').onclick = () => {
+      const f = { residence: q('res').value, current_location: q('loc').value.trim(), remarks: q('rem').value.trim() };
+      if (gender !== b.gender) f.gender = gender;
+      const ad = q('aad2').value.replace(/\s/g, ''), mo = q('mob2').value.replace(/\s/g, '');
+      if (ad !== b.aadhaar) f.aadhaar = ad; if (mo !== b.mobile) f.mobile = mo;
+      run(() => saveOne(vid, b, f), 'Details saved', false);
+    };
+    if (q('reset')) q('reset').onclick = () => run(() => saveOne(vid, b, { status: 'NOT_SURVEYED', reason_code: '' }), 'Marked as not done yet', false);
+    if (q('hist')) q('hist').onclick = async () => {
+      q('histBox').innerHTML = '<p class="hint">Loading…</p>';
+      try { const res = await api('getBucketLog', { bucket_id: b.bucket_id });
+        q('histBox').innerHTML = res.log.length ? res.log.reverse().map(l => `<div class="hist"><b>${esc(l.ts)}</b> ${esc(l.by)}: ${esc(l.field)} ${l.old_value ? esc(l.old_value) + ' to ' : 'set to '}${esc(l.new_value || 'blank')}</div>`).join('') : '<p class="hint">No changes recorded yet.</p>';
+      } catch (e) { q('histBox').innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+    };
+  };
+  return { html, mount };
+}
+
+/* ---------- Family sheet ---------- */
+function openFamily(vid, key) { const sel = new Set(); openSheet(() => familySheet(vid, key, sel)); }
+function familySheet(vid, key, sel) {
+  const ro = !canEditV(vid);
+  const members = (S.buckets[vid] || []).filter(b => (normName(b.parentage) || '-') === key).sort((x, y) => x.name.localeCompare(y.name));
+  const locked = b => b.status === 'CLAIMED';
+  const html = `
+    <div class="snav"><button id="x">Close</button><span>${members.length} landholders</span><span></span></div>
+    <h2 class="nm">Family of ${esc(members[0] ? members[0].parentage : '')}</h2>
+    <p class="hint">${ro ? 'Status of each landholder in this family.' : 'Tick the landholders this applies to, then tap the reason. Tap a name to open that landholder alone.'}</p>
+    ${ro ? '' : '<div class="row2"><button class="btn" id="all">Tick all not done</button><button class="btn" id="none">Untick all</button></div>'}
+    <div class="box">${members.map(b => { const s = statusOf(b); return `<div class="mem">
+      ${ro ? `<span class="dot d-${s.cls}"></span>` : `<input type="checkbox" data-id="${esc(b.bucket_id)}" ${sel.has(b.bucket_id) ? 'checked' : ''} ${locked(b) ? 'disabled' : ''} aria-label="${esc(b.name)}">`}
+      <span class="rt"><button class="link one" data-id="${esc(b.bucket_id)}" style="padding:0;text-align:left">${esc(b.name)}</button><small>Khasra ${esc(shortKh(b.khasras))}</small></span>
+      <span class="st st-${s.cls}">${esc(s.text)}</span></div>`; }).join('')}</div>
+    ${ro ? '' : `<h3>Reason for the ticked landholders</h3>${reasonGrid(vid, '')}
+      <div class="box" id="otherBox" hidden><div class="field"><label for="rem2">Write the reason</label><textarea id="rem2" class="input"></textarea></div><button class="btn btn-primary" id="otherSave">Save</button></div>`}`;
+  const mount = r => {
+    $('#x', r).onclick = () => closeSheet();
+    $$('input[type=checkbox]', r).forEach(c => c.onchange = () => { if (c.checked) sel.add(c.dataset.id); else sel.delete(c.dataset.id); });
+    if ($('#all', r)) $('#all', r).onclick = () => { members.forEach(b => { if (!locked(b) && b.status === 'NOT_SURVEYED') sel.add(b.bucket_id); }); drawSheet(); };
+    if ($('#none', r)) $('#none', r).onclick = () => { sel.clear(); drawSheet(); };
+    $$('.one', r).forEach(el => el.onclick = () => { const ids = members.map(b => b.bucket_id); SHEET.build = () => bucketSheet(vid, ids, ids.indexOf(el.dataset.id)); drawSheet(); });
+    const apply = async (f, label) => {
+      const items = members.filter(b => sel.has(b.bucket_id) && !locked(b)).map(b => ({ b, f: Object.assign({}, f) }));
+      if (!items.length) { toast('Tick at least one landholder first.'); return; }
+      try { await saveMany(vid, items); toast(`Saved for ${items.length}: ${label}`); sel.clear(); drawSheet(); } catch (e) { toast(e.message, 4000); }
+    };
+    $$('.rbtn', r).forEach(el => el.onclick = () => {
+      const code = el.dataset.code;
+      if (code === 'B10') { $('#otherBox', r).hidden = false; return; }
+      apply({ status: 'REASON', reason_code: code }, reason(code).label);
+    });
+    if ($('#otherSave', r)) $('#otherSave', r).onclick = () => { const t = $('#rem2', r).value.trim(); if (!t) { toast('Write the reason.'); return; } apply({ status: 'REASON', reason_code: 'B10', remarks: t }, 'Other'); };
+  };
+  return { html, mount };
+}
+
+/* ---------- Suggestions (State / Shamlat / Department / Joint) ---------- */
+function openSuggestions(vid) {
+  openSheet(() => {
+    const list = (S.buckets[vid] || []).filter(b => b.status === 'NOT_SURVEYED' && b.suggested_code);
+    const codes = [...new Set(list.map(b => b.suggested_code))];
+    const html = `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
+      <h2 class="nm">Check these buckets</h2>
+      <p class="hint">The names suggest these are not individual farmers. Confirm a group in one tap, or tap a name to mark it differently.</p>
+      ${codes.length ? codes.map(c => { const l = list.filter(b => b.suggested_code === c); return `<div class="box"><h3 style="margin-top:0">${esc(reason(c).label)}: ${l.length}</h3>
+        ${l.map(b => `<div class="mem"><span class="rt"><button class="link one" data-id="${esc(b.bucket_id)}" style="padding:0;text-align:left">${esc(b.name)}</button><small>${esc(b.parentage)}, khasra ${esc(shortKh(b.khasras))}</small></span></div>`).join('')}
+        <button class="btn btn-primary conf" data-c="${c}">Confirm all ${l.length} as ${esc(reason(c).label)}</button></div>`; }).join('') : '<p class="hint">Nothing left to check.</p>'}`;
+    const mount = r => {
+      $('#x', r).onclick = () => closeSheet();
+      $$('.conf', r).forEach(el => el.onclick = async () => {
+        const c = el.dataset.c; const l = list.filter(b => b.suggested_code === c);
+        const local = l.map(b => ({ bucket_id: b.bucket_id, fields: { status: 'REASON', reason_code: c } }));
+        l.forEach(b => applyLocal(b, { status: 'REASON', reason_code: c }));
+        await kput('b:' + vid, S.buckets[vid]); S.dirty = true;
+        await enqueue('confirmSuggestions', { village_id: vid, codes: [c] }, local);
+        toast(`Confirmed ${l.length}`); drawSheet();
+      });
+      $$('.one', r).forEach(el => el.onclick = () => { const ids = list.map(b => b.bucket_id); SHEET.build = () => bucketSheet(vid, ids, ids.indexOf(el.dataset.id)); drawSheet(); });
+    };
+    return { html, mount };
+  });
+}
+
+/* ---------- Same farmer check ---------- */
+function localGroups(vid) {
+  const g = {}; (S.buckets[vid] || []).forEach(b => { if (b.dup_group) (g[b.dup_group] = g[b.dup_group] || []).push(Object.assign({ village: villageById(vid).name, editable: canEditV(vid) }, b)); });
+  return Object.keys(g).filter(k => g[k].length >= 2).map(k => { const m = g[k]; const confirmed = m.every(x => x.dup_confirmed === 'Y');
+    return { group: k, members: m, confirmed, conf: confirmed ? 'CONFIRMED' : (m.some(x => x.dup_conf === 'HIGH') ? 'HIGH' : 'MEDIUM') }; });
+}
+function dupLocalEffects(members, primaryId) {
+  const out = [];
+  members.forEach(m => {
+    const f = { dup_confirmed: 'Y', dup_role: m.bucket_id === primaryId ? 'PRIMARY' : 'SECONDARY', dup_conf: 'CONFIRMED' };
+    if (m.status !== 'CLAIMED') {
+      if (f.dup_role === 'SECONDARY') { f.status = 'REASON'; f.reason_code = 'A01'; }
+      else if (m.status === 'NOT_SURVEYED' || m.reason_code === 'A01') { f.status = 'REASON'; f.reason_code = 'C02'; }
+    }
+    out.push({ bucket_id: m.bucket_id, fields: f });
+  });
+  return out;
+}
+function applyEffects(effects) {
+  const touched = new Set();
+  effects.forEach(e => Object.keys(S.buckets).forEach(vid => { const b = S.buckets[vid].find(x => x.bucket_id === e.bucket_id); if (b) { applyLocal(b, e.fields); touched.add(vid); } }));
+  return Promise.all([...touched].map(vid => kput('b:' + vid, S.buckets[vid])));
+}
+VIEWS.dups = async function (a) {
+  setHeader('Same farmer check'); const main = $('#view');
+  main.innerHTML = '<p class="pad hint">Loading…</p>';
+  await loadVillage(a.vid);
+  let groups = null, offline = false;
+  if (navigator.onLine) { try { groups = (await api('getDupGroups', { village_id: a.vid })).groups; } catch (e) { toast(e.message); } }
+  if (!groups) { groups = localGroups(a.vid); offline = true; }
+  const order = { HIGH: 0, MEDIUM: 1, CONFIRMED: 2 };
+  groups.sort((x, y) => (a.focus && x.group === a.focus ? -1 : 0) - (a.focus && y.group === a.focus ? -1 : 0) || order[x.conf] - order[y.conf]);
+  const draw = () => {
+    const live = groups.filter(g => g.members.length >= 2);
+    main.innerHTML = `<section class="pad">
+      <p class="hint">A farmer can get only one Farmer ID. If the same person has more than one bucket, pick the bucket where the ID will be made. The other buckets will be marked "Same farmer in multiple buckets".</p>
+      ${offline ? '<div class="banner"><p>You are offline. Matches in other villages are not shown.</p></div>' : ''}
+      ${live.length ? live.map(g => {
+        const primary = (g.members.find(m => m.status === 'CLAIMED') || g.members.find(m => m.dup_role === 'PRIMARY') ||
+          g.members.slice().sort((x, y) => Number(y.khasra_count) - Number(x.khasra_count))[0]).bucket_id;
+        const canAct = g.members.some(m => m.editable);
+        return `<div class="dcard" data-g="${esc(g.group)}">
+          <p class="dconf ${g.conf}">${g.conf === 'HIGH' ? 'Strong match' : g.conf === 'MEDIUM' ? 'Possible match' : 'Confirmed: same farmer'}</p>
+          ${g.members.map(m => `<label class="dm"><input type="radio" name="p-${esc(g.group)}" value="${esc(m.bucket_id)}" ${m.bucket_id === primary ? 'checked' : ''} ${canAct ? '' : 'disabled'}>
+            <span class="rt"><b>${esc(m.name)}</b><small>Father / husband: ${esc(m.parentage)}</small><small>${esc(m.village)}, khasra ${esc(shortKh(m.khasras))}</small>
+            <small>${esc(statusOf(m).text)}</small>${canAct ? `<button type="button" class="link nb" data-b="${esc(m.bucket_id)}">Not the same person</button>` : ''}</span></label>`).join('')}
+          ${canAct ? `<p class="hint" style="margin:10px 0 0">The ticked bucket is where the Farmer ID is made.</p><button class="btn btn-primary yes">${g.confirmed ? 'Save main bucket' : 'Yes, same farmer'}</button>`
+                   : '<p class="hint">Only staff of these villages can confirm.</p>'}</div>`;
+      }).join('') : '<p class="hint">No possible matches in this village.</p>'}</section>`;
+    on(main, '.yes', 'click', async el => {
+      const card = el.closest('.dcard'); const g = groups.find(x => x.group === card.dataset.g);
+      const primaryId = $('input[type=radio]:checked', card).value;
+      const effects = dupLocalEffects(g.members, primaryId);
+      await applyEffects(effects); S.dirty = true;
+      await enqueue('dupConfirm', { member_ids: g.members.map(m => m.bucket_id), primary_id: primaryId }, effects);
+      g.members.forEach(m => { Object.assign(m, effects.find(e => e.bucket_id === m.bucket_id).fields); });
+      g.confirmed = true; g.conf = 'CONFIRMED'; toast('Saved: same farmer'); draw();
+    });
+    on(main, '.nb', 'click', async (el, ev) => {
+      ev.preventDefault();
+      const card = el.closest('.dcard'); const g = groups.find(x => x.group === card.dataset.g); const id = el.dataset.b;
+      const m = g.members.find(x => x.bucket_id === id);
+      const revert = x => (x.status !== 'CLAIMED' && (x.reason_code === 'A01' || x.reason_code === 'C02')) ? { status: 'NOT_SURVEYED', reason_code: '' } : {};
+      const effects = [{ bucket_id: id, fields: Object.assign({ dup_confirmed: 'N', dup_group: '', dup_role: '', dup_conf: '' }, revert(m)) }];
+      g.members = g.members.filter(x => x.bucket_id !== id);
+      if (g.members.length === 1) { const x = g.members[0]; effects.push({ bucket_id: x.bucket_id, fields: Object.assign({ dup_confirmed: '', dup_group: '', dup_role: '', dup_conf: '' }, revert(x)) }); g.members = []; }
+      await applyEffects(effects); S.dirty = true;
+      await enqueue('dupBreak', { bucket_id: id }, effects);
+      toast('Saved: not the same person'); draw();
+    });
+  };
+  draw();
+};
+
+/* ---------- Camp ---------- */
+VIEWS.camp = async function () {
+  setHeader('Record a camp');
+  const vs = villages().filter(v => canEditV(v.village_id)).sort((a, b) => a.name.localeCompare(b.name));
+  $('#view').innerHTML = `<section class="pad"><p class="hint">Fill this after each Farmer ID camp. It saves even without internet.</p>
+    <div class="field"><label for="v">Village</label><select id="v" class="input">${vs.map(v => `<option value="${esc(v.village_id)}">${esc(v.name)}</option>`).join('')}</select></div>
+    <div class="field"><label for="d">Date</label><input id="d" type="date" class="input" value="${todayIST()}"></div>
+    <div class="field"><label for="p">Place</label><input id="p" class="input" placeholder="e.g. Panchayat Ghar"></div>
+    <div class="field"><label for="o">Officials present</label><input id="o" class="input" placeholder="Names"></div>
+    <div class="row2"><div class="field"><label for="n">People who came</label><input id="n" class="input" inputmode="numeric"></div>
+      <div class="field"><label for="i">Farmer IDs made</label><input id="i" class="input" inputmode="numeric"></div></div>
+    <button class="btn btn-primary" id="save">Save camp</button></section>`;
+  $('#save').onclick = async () => {
+    if (!vs.length) { toast('No village assigned to you.'); return; }
+    await enqueue('saveCamp', { village_id: $('#v').value, date: $('#d').value, venue: $('#p').value.trim(), officials: $('#o').value.trim(),
+      attended: $('#n').value.trim(), ids_generated: $('#i').value.trim() });
+    toast('Camp saved'); history.back();
+  };
+};
+
+/* ---------- Help ---------- */
+VIEWS.help = async function () {
+  setHeader('Help');
+  $('#view').innerHTML = `<section class="pad">
+    <h2>Put the app on your phone</h2>
+    <p><b>Android:</b> open this page in Chrome, tap the ⋮ menu, then <b>Add to Home screen</b> or <b>Install app</b>.</p>
+    <p><b>iPhone:</b> open this page in Safari, tap the Share button, then <b>Add to Home Screen</b>.</p>
+    <h2>Daily work</h2>
+    <p>1. Open the app once where there is signal. Your villages download to the phone.</p>
+    <p>2. Tap your village. Start with the yellow box at the top if there is one: confirm State land, Shamlat and similar buckets in one tap.</p>
+    <p>3. Use <b>Families</b> to mark a whole family at once, for example all heirs of a dead owner, or all members living outside.</p>
+    <p>4. Use <b>One by one</b> for the rest. Tap the reason; the next landholder opens by itself.</p>
+    <p>5. When a Farmer ID is made, tap <b>Farmer ID made</b> and enter the mobile number.</p>
+    <p>6. Work saves on the phone even without signal. The button at the top right shows how many changes are waiting. They upload by themselves when there is signal. Please get signal once before 2:30 PM.</p>
+    <h2>Colours</h2>
+    ${legendHtml({ made: '', C: '', B: '', A: '', ns: '', unl: 0 }).replace(/<b><\/b>/g, '')}
+    <p class="hint">Green: ID made. Blue: can be done with field work. Orange: stuck until the person or their Aadhaar is available. Red: can never be claimed. Grey: not checked yet.</p>
+    <h2>Mistakes</h2>
+    <p>Open the landholder again and tap the correct reason. You can correct any entry at any time.</p>
+    <button class="btn" id="out">Log out</button></section>`;
+  $('#out').onclick = logout;
+};
+
+/* ---------- Upload sheet (sync) ---------- */
+function openSyncSheet() {
+  openSheet(() => {
+    const names = {}; Object.values(S.buckets).forEach(arr => arr.forEach(b => names[b.bucket_id] = b.name));
+    const html = `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
+      <h2 class="nm">Uploads</h2>
+      <p>${S.queue.length ? `${S.queue.length} change${S.queue.length > 1 ? 's are' : ' is'} saved on this phone and waiting to upload.` : 'Everything you entered has been uploaded.'}</p>
+      <p class="hint">${navigator.onLine ? 'Internet: connected.' : 'Internet: not connected. Changes will upload when signal returns.'} Last upload: ${esc(S.lastSync || 'not yet')}</p>
+      ${S.problems.length ? `<h3>Not accepted by the server</h3>${S.problems.map(p => `<div class="prob">${p.bucket_id ? '<b>' + esc(names[p.bucket_id] || p.bucket_id.slice(-8)) + '</b>: ' : ''}${esc(p.error)}</div>`).join('')}
+        <p class="hint">Open these landholders again and correct them.</p><button class="btn" id="clr">Clear this list</button>` : ''}
+      <button class="btn btn-primary" id="up">Upload now</button>
+      <button class="btn" id="rf">Download latest data</button>`;
+    const mount = r => {
+      $('#x', r).onclick = () => closeSheet();
+      $('#up', r).onclick = async () => { if (!navigator.onLine) { toast('No internet connection.'); return; } await sync(); drawSheet(); toast(S.queue.length ? 'Some changes are still waiting.' : 'All uploaded'); };
+      $('#rf', r).onclick = async () => { if (!navigator.onLine) { toast('No internet connection.'); return; } toast('Downloading…'); await sync(); await refreshBoot(); await refreshLoadedVillages(); refreshStats(true, true); toast('Latest data downloaded'); drawSheet(); };
+      if ($('#clr', r)) $('#clr', r).onclick = async () => { S.problems = []; await persistQueue(); updatePill(); drawSheet(); };
+    };
+    return { html, mount };
+  });
+}
+
+async function logout() {
+  if (S.queue.length && !confirm(`${S.queue.length} changes are not uploaded yet. They will stay on this phone and upload after you log in again.\n\nLog out anyway?`)) return;
+  try { if (navigator.onLine) await api('logout'); } catch (e) {}
+  for (const k of await kkeys()) if (String(k).startsWith('b:') || String(k).startsWith('stats:')) await kdel(k);
+  S.session = null; S.buckets = {}; S.stats = {}; S.top = {}; await kdel('session'); await kdel('boot');
+  NAV.stack = [{ name: 'login', args: {} }]; history.replaceState({}, ''); render();
+}
+
+/* ======================= OFFICE: UPLOAD BUCKET LISTS ======================= */
+function loadXLSX() {
+  if (window.XLSX) return Promise.resolve();
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = XLSX_URL; s.onload = res; s.onerror = () => rej(new Error('Could not load the Excel reader. Check the internet.')); document.head.appendChild(s); });
+}
+async function parseBucketFile(f) {
+  const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' });
+  const hi = rows.findIndex(r => r.some(c => /^\s*bucket\s*id\s*$/i.test(String(c))));
+  if (hi < 0) throw new Error(f.name + ': not a bucket list (no "Bucket ID" column).');
+  const H = rows[hi].map(x => String(x).trim().toLowerCase());
+  const col = n => H.indexOf(n);
+  const ci = [col('bucket id'), col('village lgd code'), col('village name'), col('survey number'), col('farmer name'), col('identifier name')];
+  if (ci.some(x => x < 0)) throw new Error(f.name + ': some expected columns are missing (Bucket ID, Village LGD Code, Village Name, Survey Number, Farmer Name, Identifier Name).');
+  const out = [];
+  for (let i = hi + 1; i < rows.length; i++) { const r = rows[i]; if (!String(r[ci[0]] || '').trim()) continue; out.push(ci.map(c => String(r[c] == null ? '' : r[c]).trim())); }
+  const m = f.name.match(/(\d{13})/);
+  return { name: f.name, rows: out, file_ts: m ? m[1] : '' };
+}
+VIEWS.upload = async function () {
+  setHeader('Upload bucket list');
+  const admin = role() === 'ADMIN';
+  $('#view').innerHTML = `<section class="pad">
+    <p class="hint">Choose one or more "Buckets UnClaimed Report Details" Excel files from the portal. You will see what changes before anything is saved. Work already entered by staff is never erased.</p>
+    ${admin ? `<div class="field"><label for="t">Tehsil for villages not yet in the app</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}">${esc(t.name)}</option>`).join('')}</select></div>` : ''}
+    <div class="field"><label for="f">Excel files</label><input id="f" type="file" class="input" accept=".xlsx,.xls" multiple></div>
+    <div id="out"></div></section>`;
+  const out = $('#out');
+  $('#f').onchange = async e => {
+    const files = Array.from(e.target.files || []); if (!files.length) return;
+    if (!navigator.onLine) { toast('Uploading needs internet.'); return; }
+    out.innerHTML = '<p class="hint">Reading files…</p>';
+    try { await loadXLSX(); } catch (err) { out.innerHTML = `<p class="err">${esc(err.message)}</p>`; return; }
+    const jobs = [];
+    for (const f of files) {
+      try { const p = await parseBucketFile(f); const pv = await api('uploadPreview', { rows: p.rows, file_ts: p.file_ts, tehsil_id: admin ? $('#t').value : '' }, 120000); jobs.push({ p, pv, state: 'ready' }); }
+      catch (err) { jobs.push({ p: { name: f.name }, error: err.message, state: 'error' }); }
+    }
+    const drawJobs = () => {
+      out.innerHTML = jobs.map((j, k) => `<div class="prev"><h3>${esc(j.p.name)}</h3>
+        ${j.error ? `<p class="err">${esc(j.error)}</p>` : j.pv.villages.map(v => { const c = v.counts; return `<p><b>${esc(v.name)}</b> (LGD ${esc(v.lgd)})${v.is_new_village ? ', new village' : ''}</p>
+          <ul><li>${c.buckets} buckets in the file</li>
+          ${c.new ? `<li>${c.new} new bucket${c.new > 1 ? 's' : ''} will be added</li>` : ''}
+          ${c.gone ? `<li>${c.gone} no longer in the list (claimed on portal): ${c.confirmed} already marked by staff, ${c.portal_claimed_no_entry} not yet marked</li>` : ''}
+          ${c.reappeared ? `<li>${c.reappeared} came back as unclaimed</li>` : ''}
+          ${c.changed ? `<li>${c.changed} with changed name or khasra</li>` : ''}
+          ${c.pending_confirmation ? `<li>${c.pending_confirmation} marked "ID made" by staff but still unclaimed on portal</li>` : ''}</ul>
+          ${v.warnings.map(w => `<p class="w">${esc(w)}</p>`).join('')}`; }).join('')}
+        ${j.state === 'ready' ? `<button class="btn btn-primary ap" data-k="${k}">Apply this file</button>` : ''}
+        ${j.state === 'done' ? '<p class="banner ok" style="display:block">Applied.</p>' : ''}</div>`).join('') +
+        (jobs.filter(j => j.state === 'ready').length > 1 ? '<button class="btn btn-primary" id="apAll">Apply all files</button>' : '');
+      const applyJob = async j => {
+        try { const r = await api('uploadApply', { rows: j.p.rows, file_ts: j.p.file_ts, tehsil_id: admin ? $('#t').value : '' }, 180000);
+          j.state = 'done'; r.villages.forEach(v => { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); }); }
+        catch (err) { j.error = err.message; j.state = 'error'; }
+      };
+      on(out, '.ap', 'click', async el => { el.disabled = true; el.textContent = 'Applying…'; await applyJob(jobs[+el.dataset.k]); drawJobs(); await refreshBoot(); refreshStats(true, true); });
+      const all = $('#apAll'); if (all) all.onclick = async () => { all.disabled = true; all.textContent = 'Applying…'; for (const j of jobs) if (j.state === 'ready') await applyJob(j); drawJobs(); await refreshBoot(); refreshStats(true, true); };
+    };
+    drawJobs();
+  };
+};
+
+/* ======================= OFFICE: STAFF ======================= */
+VIEWS.users = async function () {
+  setHeader('Staff and logins');
+  const main = $('#view');
+  if (navigator.onLine) { try { const r = await api('listUsers'); S.boot.users = r.users; } catch (e) {} }
+  const users = (S.boot.users || []).slice().sort((a, b) => (a.active === b.active ? 0 : a.active === 'Y' ? -1 : 1) || a.name.localeCompare(b.name));
+  main.innerHTML = `<section class="pad"><p class="hint">Everyone logs in with their first name. The PIN is ${'123456'} unless changed by the Admin.</p>
+    <button class="btn btn-primary" id="add">Add a person</button>
+    <div class="list ulist" style="margin-top:12px">${users.map(u => `<button class="row" data-id="${esc(u.user_id)}" ${u.active === 'Y' ? '' : 'style="opacity:.5"'}><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}${u.tehsil_id ? ', ' + esc(tehsilName(u.tehsil_id)) : ''}</small></span><span class="st st-ns">${esc(ROLE_LABEL[u.role] || u.role)}</span></button>`).join('')}</div></section>`;
+  $('#add').onclick = () => openUser(null);
+  on(main, '.row', 'click', el => openUser(users.find(u => u.user_id === el.dataset.id)));
+};
+function openUser(u) {
+  const admin = role() === 'ADMIN';
+  const roles = admin ? ['OPERATOR', 'NT', 'DA', 'ADMIN'] : ['OPERATOR', 'NT'];
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
+      <h2 class="nm">${u ? esc(u.name) : 'Add a person'}</h2>
+      <div class="field"><label for="n">First name (used to log in)</label><input id="n" class="input" value="${esc(u ? u.name : '')}"></div>
+      <div class="field"><label for="d">Designation</label><select id="d" class="input">${S.boot.designations.map(d => `<option ${u && u.designation === d ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select></div>
+      <div class="field"><label for="m">Mobile number</label><input id="m" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(u ? u.mobile : '')}"></div>
+      <div class="field"><label for="r">What can this person do?</label><select id="r" class="input">${roles.map(r => `<option value="${r}" ${u && u.role === r ? 'selected' : ''}>${ROLE_LABEL[r]}</option>`).join('')}</select></div>
+      ${admin ? `<div class="field"><label for="t">Tehsil</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}" ${u && u.tehsil_id === t.tehsil_id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></div>` : ''}
+      ${u ? `<div class="field"><label for="a">Login</label><select id="a" class="input"><option value="Y" ${u.active === 'Y' ? 'selected' : ''}>Active</option><option value="N" ${u.active !== 'Y' ? 'selected' : ''}>Switched off</option></select></div>` : ''}
+      <button class="btn btn-primary" id="s">Save</button>
+      ${u ? '<button class="btn" id="pin">Reset PIN to 123456</button>' : ''}
+      <p class="hint">After adding a field person, assign villages in "Villages, staff assignment and portal figures".</p>`,
+    mount: r => {
+      $('#x', r).onclick = () => closeSheet();
+      $('#d', r).onchange = () => { const def = DESIG_ROLE[$('#d', r).value] || 'OPERATOR'; if (roles.includes(def)) $('#r', r).value = def; };
+      if (!u) $('#d', r).dispatchEvent(new Event('change'));
+      $('#s', r).onclick = async () => {
+        try {
+          await api('saveUser', { user_id: u ? u.user_id : '', name: $('#n', r).value.trim(), designation: $('#d', r).value, mobile: $('#m', r).value.trim(),
+            role: $('#r', r).value, tehsil_id: admin ? $('#t', r).value : me().tehsil_id, active: u ? $('#a', r).value : 'Y' });
+          toast('Saved'); S.dirty = true; closeSheet(); refreshBoot();
+        } catch (e) { toast(e.message, 4000); }
+      };
+      if ($('#pin', r)) $('#pin', r).onclick = async () => { try { await api('resetPin', { user_id: u.user_id }); toast('PIN reset to 123456'); } catch (e) { toast(e.message, 4000); } };
+    }
+  }));
+}
+
+/* ======================= OFFICE: VILLAGES ======================= */
+VIEWS.villages = async function () {
+  setHeader('Villages and staff');
+  const main = $('#view');
+  if (navigator.onLine) { await refreshBoot(); }
+  const asg = S.boot.assignments || []; const users = S.boot.users || [];
+  const staffOf = vid => asg.filter(a => a.village_id === vid).map(a => (users.find(u => u.user_id === a.user_id) || {}).name).filter(Boolean);
+  const byT = {}; villages().forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
+  main.innerHTML = `<section class="pad"><p class="hint">Tap a village to assign staff, enter the latest portal figures or set targets.</p>
+    <button class="btn btn-primary" id="add">Add a village</button>
+    ${Object.keys(byT).map(t => `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p><div class="list">${byT[t].sort((a, b) => a.name.localeCompare(b.name)).map(v => `<button class="row" data-id="${esc(v.village_id)}"><span class="rt"><b>${esc(v.name)}</b><small>${staffOf(v.village_id).length ? 'Staff: ' + esc(staffOf(v.village_id).join(', ')) : 'No staff assigned'}</small><small>Portal: ${esc(v.portal_claimed || 0)} of ${esc(v.portal_total || 0)} claimed${v.portal_as_on ? ', as on ' + fmtDate(v.portal_as_on) : ''}</small></span></button>`).join('')}</div>`).join('')}</section>`;
+  $('#add').onclick = () => openVillage(null);
+  on(main, '.row', 'click', el => openVillage(villageById(el.dataset.id)));
+};
+function openVillage(v) {
+  const admin = role() === 'ADMIN';
+  const tid = v ? v.tehsil_id : (admin ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
+  const field = (S.boot.users || []).filter(u => u.active === 'Y' && u.role === 'OPERATOR' && u.tehsil_id === tid).sort((a, b) => a.name.localeCompare(b.name));
+  const asg = (S.boot.assignments || []).filter(a => v && a.village_id === v.village_id);
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
+      <h2 class="nm">${v ? esc(v.name) : 'Add a village'}</h2>
+      ${v ? `<p class="hint">LGD ${esc(v.village_id)}, Tehsil ${esc(tehsilName(v.tehsil_id))}</p>` : `
+        <div class="field"><label for="lgd">LGD code</label><input id="lgd" class="input" inputmode="numeric"></div>
+        ${admin ? `<div class="field"><label for="t">Tehsil</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}">${esc(t.name)}</option>`).join('')}</select></div>` : ''}`}
+      <div class="field"><label for="nm">Village name</label><input id="nm" class="input" value="${esc(v ? v.name : '')}"></div>
+      <h3>Portal figures</h3><p class="hint">Copy from the portal's village summary whenever a new one comes.</p>
+      <div class="row2"><div class="field"><label for="pt">Total buckets</label><input id="pt" class="input" inputmode="numeric" value="${esc(v ? v.portal_total : '')}"></div>
+        <div class="field"><label for="pc">Claimed buckets</label><input id="pc" class="input" inputmode="numeric" value="${esc(v ? v.portal_claimed : '')}"></div></div>
+      <div class="field"><label for="pa">Figures as on</label><input id="pa" type="date" class="input" value="${esc(v ? v.portal_as_on : todayIST())}"></div>
+      ${v ? `<h3>Staff for this village</h3><p class="hint">Tick everyone who works in this village. Leave "share" empty to split the target equally.</p>
+      <div class="box">${field.length ? field.map(u => { const a = asg.find(x => x.user_id === u.user_id); return `<div class="mem"><input type="checkbox" class="sf" data-id="${esc(u.user_id)}" ${a ? 'checked' : ''}><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}</small></span><input class="input sh" data-id="${esc(u.user_id)}" style="width:96px;min-height:44px" inputmode="decimal" placeholder="share" value="${esc(a ? a.share : '')}"></div>`; }).join('') : '<p class="hint">No field staff in this tehsil yet. Add them in "Staff and logins".</p>'}</div>
+      <div class="field"><label for="pw">Patwari shown in reports</label><select id="pw" class="input"><option value="">Not set</option>${field.map(u => `<option value="${esc(u.user_id)}" ${v.patwari_user_id === u.user_id ? 'selected' : ''}>${esc(u.name)}, ${esc(u.designation)}</option>`).join('')}</select></div>
+      <h3>Targets</h3>
+      <div class="field"><label for="dt">Daily target</label><input id="dt" class="input" inputmode="numeric" value="${esc(v.manual_daily_target)}" placeholder="Empty = worked out from the deadline"><small>Leave empty and the app divides the remaining work by the days left.</small></div>
+      <div class="field"><label for="sd">Survey to be finished by</label><input id="sd" type="date" class="input" value="${esc(v.survey_deadline)}"><small>Leave empty to use the general survey deadline.</small></div>` : ''}
+      <button class="btn btn-primary" id="s">Save</button>`,
+    mount: r => {
+      $('#x', r).onclick = () => closeSheet();
+      $('#s', r).onclick = async () => {
+        try {
+          const p = { name: $('#nm', r).value.trim(), portal_total: $('#pt', r).value.trim(), portal_claimed: $('#pc', r).value.trim(), portal_as_on: $('#pa', r).value };
+          if (v) {
+            p.village_id = v.village_id; p.patwari_user_id = $('#pw', r).value; p.manual_daily_target = $('#dt', r).value.trim(); p.survey_deadline = $('#sd', r).value;
+            await api('saveVillage', p);
+            const items = $$('.sf', r).filter(c => c.checked).map(c => ({ user_id: c.dataset.id, share: ($$('.sh', r).find(x => x.dataset.id === c.dataset.id) || {}).value || '' }));
+            await api('saveAssignments', { village_id: v.village_id, items });
+          } else {
+            p.village_id = $('#lgd', r).value.trim(); p.tehsil_id = admin ? $('#t', r).value : me().tehsil_id;
+            await api('saveVillage', p);
+          }
+          toast('Saved'); S.dirty = true; await refreshBoot(); closeSheet();
+        } catch (e) { toast(e.message, 4000); }
+      };
+    }
+  }));
+}
+
+/* ======================= OFFICE: SETTINGS ======================= */
+VIEWS.settings = async function () {
+  setHeader('Deadlines and reasons');
+  if (navigator.onLine) await refreshBoot();
+  const s = S.boot.settings; const admin = role() === 'ADMIN';
+  const tehsils = S.boot.tehsils.filter(t => admin || t.tehsil_id === me().tehsil_id);
+  $('#view').innerHTML = `<section class="pad">
+    <h2>Deadlines</h2>
+    <div class="field"><label for="fd">Final deadline for Farmer IDs</label><input id="fd" type="date" class="input" value="${esc(s.final_deadline)}"></div>
+    <div class="field"><label for="sd">Every bucket surveyed by</label><input id="sd" type="date" class="input" value="${esc(s.survey_deadline)}"></div>
+    <div class="field"><label for="ld">Days allowed to survey a village uploaded later</label><input id="ld" class="input" inputmode="numeric" value="${esc(s.late_survey_days)}"></div>
+    <div class="field"><label for="cg">Flag a village with no camp for this many days</label><input id="cg" class="input" inputmode="numeric" value="${esc(s.camp_gap_days)}"></div>
+    <button class="btn btn-primary" id="sv">Save deadlines</button>
+    <h2>Report text</h2>
+    ${tehsils.map(t => `<div class="box"><h3 style="margin-top:0">Tehsil ${esc(t.name)}</h3>
+      <div class="field"><label>Report title</label><input class="input rt-t" data-t="${t.tehsil_id}" value="${esc(t.report_title)}"></div>
+      <div class="field"><label>Signature block</label><textarea class="input rt-s" data-t="${t.tehsil_id}">${esc(t.signature)}</textarea></div>
+      <div class="field"><label>Footnote</label><textarea class="input rt-f" data-t="${t.tehsil_id}">${esc(t.footnote)}</textarea></div>
+      <button class="btn btn-primary svt" data-t="${t.tehsil_id}">Save report text</button></div>`).join('')}
+    <h2>Reasons</h2><p class="hint">Tap a reason to change its wording or switch it off. New reasons appear on every phone after the next download.</p>
+    <button class="btn" id="addR">Add a reason</button>
+    <div class="list">${activeReasonsAll().map(r => `<button class="row" data-c="${r.code}" ${r.active === 'Y' ? '' : 'style="opacity:.5"'}><span class="dot d-${r.tier}"></span><span class="rt"><b>${esc(r.label)}</b><small>${TIER[r.tier]}. In report: ${esc(r.report_label)}</small></span></button>`).join('')}</div></section>`;
+  $('#sv').onclick = async () => {
+    try { await api('saveSettings', { values: { final_deadline: $('#fd').value, survey_deadline: $('#sd').value, late_survey_days: $('#ld').value, camp_gap_days: $('#cg').value } }); toast('Saved'); refreshBoot(); }
+    catch (e) { toast(e.message, 4000); }
+  };
+  on($('#view'), '.svt', 'click', async el => {
+    const t = el.dataset.t; const g = c => $(`.${c}[data-t="${t}"]`).value;
+    try { await api('saveTehsil', { tehsil_id: t, report_title: g('rt-t'), signature: g('rt-s'), footnote: g('rt-f') }); toast('Saved'); refreshBoot(); }
+    catch (e) { toast(e.message, 4000); }
+  });
+  $('#addR').onclick = () => openReason(null);
+  on($('#view'), '.row', 'click', el => openReason(reason(el.dataset.c)));
+};
+const activeReasonsAll = () => reasons().slice().sort((a, b) => Number(a.sort) - Number(b.sort));
+function openReason(rr) {
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
+      <h2 class="nm">${rr ? 'Change reason' : 'Add a reason'}</h2>
+      ${rr ? `<p class="hint">Group: ${TIER[rr.tier]}</p>` : `<div class="field"><label for="tr">Group</label><select id="tr" class="input"><option value="A">${TIER.A}</option><option value="B" selected>${TIER.B}</option><option value="C">${TIER.C}</option></select></div>`}
+      <div class="field"><label for="l">Wording on the phone</label><input id="l" class="input" value="${esc(rr ? rr.label : '')}"></div>
+      <div class="field"><label for="rl">Wording in the DC report</label><input id="rl" class="input" value="${esc(rr ? rr.report_label : '')}"></div>
+      <div class="field"><label for="cc">Column on the paper checklist (1 to 9, or empty)</label><input id="cc" class="input" inputmode="numeric" value="${esc(rr ? rr.checklist_col : '')}"></div>
+      ${rr ? `<div class="field"><label for="ac">Use this reason</label><select id="ac" class="input"><option value="Y" ${rr.active === 'Y' ? 'selected' : ''}>Yes</option><option value="N" ${rr.active !== 'Y' ? 'selected' : ''}>No, switch it off</option></select></div>` : ''}
+      <button class="btn btn-primary" id="s">Save</button>`,
+    mount: r => {
+      $('#x', r).onclick = () => closeSheet();
+      $('#s', r).onclick = async () => {
+        try {
+          await api('saveReason', { code: rr ? rr.code : '', tier: rr ? rr.tier : $('#tr', r).value, label: $('#l', r).value.trim(), report_label: $('#rl', r).value.trim(),
+            checklist_col: $('#cc', r).value.trim(), active: rr ? $('#ac', r).value : 'Y' });
+          toast('Saved'); S.top = {}; await refreshBoot(); S.dirty = true; closeSheet();
+        } catch (e) { toast(e.message, 4000); }
+      };
+    }
+  }));
+}
+
+/* ======================= START ======================= */
+async function start() {
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  try { S.session = await kget('session'); } catch (e) { $('#view').innerHTML = '<div class="pad"><p class="err">This browser cannot save data. Do not use private or incognito mode.</p></div>'; return; }
+  window.addEventListener('online', () => { updatePill(); sync(); refreshBoot(); });
+  window.addEventListener('offline', updatePill);
+  setInterval(() => { sync(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { sync(); refreshStats(); } });
+  if (!S.session) { NAV.stack = [{ name: 'login', args: {} }]; render(); return; }
+  S.boot = await kget('boot'); S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || []; S.lastSync = (await kget('lastSync')) || '';
+  if (S.boot) for (const t of S.boot.tehsils) { const c = await kget('stats:' + t.tehsil_id); if (c) S.stats[t.tehsil_id] = c; }
+  if (!S.boot) {
+    try { S.boot = await api('bootstrap'); await kput('boot', S.boot); }
+    catch (e) { NAV.stack = [{ name: 'login', args: {} }]; render(); return; }
+  }
+  NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render();
+  refreshBoot(); scheduleSync(800);
+}
+start();
+</script>
+</body>
+</html>
