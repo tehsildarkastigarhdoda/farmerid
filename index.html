@@ -235,7 +235,7 @@ table.grid td.gs{font-size:13px;font-weight:650;max-width:150px}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '2.1.0';
+const APP_V = '3.0.0';
 const XLSX_URL = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -336,6 +336,130 @@ const normName = s => String(s || '').toLowerCase().replace(/[^a-z\s]/g, ' ').sp
 const khKey = b => { const f = String(b.khasras || '').split(',')[0].trim(); const n = parseInt(f.replace(/^0+/, ''), 10); return isNaN(n) ? 1e9 : n; };
 const shortKh = k => { const a = String(k || '').split(',').map(x => x.trim()).filter(Boolean); return a.length > 4 ? a.slice(0, 4).join(', ') + ` +${a.length - 4} more` : a.join(', '); };
 
+/* ======================= LANGUAGE (English / Hinglish) ======================= */
+/* Every field-staff text lives here. Settings → Texts can override any of them without new code. */
+const TXT = {
+  saved_phone: ['Saved on this phone', 'Phone mein save ho gaya'],
+  reached: ['Reached the office', 'Office pahunch gaya'],
+  n_reached: ['{0} changes reached the office', '{0} entries office pahunch gayi'],
+  end_list: ['End of this list. Well done', 'List khatam. Shabash!'],
+  undone: ['Undone', 'Wapas kar diya'],
+  close: ['Close', 'Band karein'], skip: ['Skip', 'Chhodein'], done: ['Done', 'Ho gaya'], pos: ['{0} of {1}', '{0} / {1}'],
+  p_all: ['All uploaded', 'Sab upload'], p_wait: ['{0} to upload', '{0} upload baaki'], p_off: ['Offline', 'Network nahi'], p_offn: ['Offline, {0} saved', 'Network nahi, {0} save'],
+  p_busy: ['Uploading', 'Upload ho raha'], p_prob: ['{0} problem(s)', '{0} dikkat'], p_flash: ['\u2713 Uploaded', '\u2713 Upload ho gaya'],
+  greet_m: ['Good morning', 'Namaste'], greet_a: ['Good afternoon', 'Namaste'], greet_e: ['Good evening', 'Namaste'],
+  hero_of: ['of {0} records claimed', '/ {0} entries ki Farmer ID bani'], hero_mine: [' in your villages', ' (aapke gaon)'],
+  days_left: ['{0} day(s) left to {1}', '{1} tak {0} din baaki'], today_of: ['Today {0} of {1}', 'Aaj {0} / {1}'], no_figs: ['Figures appear here when the internet is available.', 'Internet aane par yahan aankde dikhenge.'],
+  start_t: ["Start today's work", 'Aaj ka kaam shuru karein'], start_s: ['The app guides you step by step', 'App aapko kadam-kadam batayega'],
+  your_v: ['Your villages', 'Aapke gaon'], villages: ['Villages', 'Gaon'], pace: ["Today's pace", 'Aaj ki raftaar'], you: ['you', 'aap'], n_checked: ['{0} checked', '{0} check kiye'],
+  camp_t: ['Record a camp', 'Camp darj karein'], camp_s: ['After every Farmer ID camp', 'Har Farmer ID camp ke baad'],
+  paper_t: ['Paper checklist', 'Kagaz wali list'], paper_s: ['Print, tick, type back', 'Print, tick, wapas bharein'],
+  help_t: ['Help', 'Madad'], help_s: ['How to use, call for help', 'Kaise chalayein, madad ke liye call'],
+  share_t: ['Share my day', 'Aaj ka kaam bhejein'], share_s: ['WhatsApp summary of today', 'WhatsApp par aaj ka hisaab'],
+  practice: ['Practice', 'Practice'], prac_sub: ['Learn here. Nothing is counted or reported.', 'Yahan seekhein. Yahan ka kuch bhi gina nahi jata.'],
+  logout: ['Log out', 'Log out'], no_village: ['No village is assigned to you yet. Ask the Dealing Assistant.', 'Aapko abhi koi gaon nahi diya gaya. Dealing Assistant se baat karein.'],
+  reminder: ['<b>Upload before 2:30 PM.</b> Get mobile signal now so your work reaches the office.', '<b>2:30 baje se pehle upload karein.</b> Abhi network mein aayein taaki kaam office pahunch jaye.'],
+  upload: ['Upload', 'Upload'], remind_toast: ['Get signal now: your work must reach the office before 2:30 PM.', 'Abhi network mein aayein: kaam 2:30 se pehle office pahunchna chahiye.'],
+  my_work: ['Your work today', 'Aaj ka aapka kaam'], ck_link: ['Registered farmers to link: {0}', 'Registered kisan jodne baaki: {0}'],
+  ck_check: ['Landholders not checked: {0}', 'Bina check kiye kisan: {0}'], ck_up_ok: ['All your work has reached the office', 'Aapka sab kaam office pahunch gaya'],
+  ck_up_wait: ['{0} entries still on your phone', '{0} entries abhi phone mein hain'],
+  claimed_of: ['{0} of {1} claimed', '{1} mein se {0} ID bani'], checked_pct: ['Checked {0}%', 'Check {0}%'], list_missing: ['Bucket list not uploaded yet', 'Bucket list abhi nahi aayi'],
+  appr_pend: ['Approved {0}, pending approval {1}', 'Approved {0}, approval baaki {1}'], patwari: ['Patwari {0}', 'Patwari {0}'], claimed_w: ['claimed', 'ID bani'],
+  lg_made: ['ID made', 'ID bani'], lg_C: ['Can be done', 'Ho sakta hai'], lg_B: ['Stuck', 'Atka hai'], lg_A: ["Can't be claimed", 'Nahi ho sakta'], lg_ns: ['Not checked', 'Check nahi'], lg_unl: ['List awaited', 'List baaki'],
+  st_made: ['ID made', 'ID bani'], st_reg: ['ID made \u2713 (portal)', 'ID bani \u2713 (portal se)'], st_ns: ['Not checked', 'Check nahi'],
+  f_todo: ['Not checked', 'Check nahi'], f_dup: ['Same farmer?', 'Ek hi kisan?'], f_all: ['All', 'Sab'],
+  search_ph: ["Search name, father's name or khasra", 'Naam, pita ka naam ya khasra dhoondhein'], m_fam: ['Families', 'Parivaar'], m_one: ['One by one', 'Ek-ek karke'],
+  ins_fam: ['Tap a family to mark several members at once. Switch to "One by one" for single landholders.', 'Parivaar par tap karke kai logon ko ek saath bharein. Akele kisan ke liye "Ek-ek karke" chunein.'],
+  ins_one: ['Tap a landholder and tap the reason. The next one opens by itself.', 'Kisan par tap karein aur wajah chunein. Agla kisan apne aap khulega.'],
+  ins_ro: ['Tap a landholder to see details.', 'Kisan par tap karke jaankari dekhein.'],
+  all_checked: ['Everyone in this village has been checked. Use the buttons above to see each group.', 'Is gaon ke sab kisan check ho gaye. Upar ke button se har group dekhein.'],
+  nobody: ['Nobody in this group.', 'Is group mein koi nahi.'], more_n: ['Show more ({0} more)', 'Aur dikhayein ({0})'], fam_of: ['Family of {0}', '{0} ka parivaar'], in_list: ['{0} in this list', 'Is list mein {0}'],
+  no_list: ['The bucket list for this village has not been uploaded yet.', 'Is gaon ki bucket list abhi upload nahi hui.'],
+  b_sug: ['<b>Step 1:</b> {0} entries look like State land, Shamlat deh, public use land, department land or joint entries.', '<b>Kadam 1:</b> {0} entries sarkari zameen, shamlat deh, aam rasta / abadi, mehkama ya sanjhi entry lagti hain.'],
+  b_confirm: ['Confirm', 'Pakka karein'], b_reg: ['{0} farmers already have a Farmer ID on the portal but are not linked to an entry yet.', '{0} kisanon ki Farmer ID portal par ban chuki hai, par entry se jude nahi.'],
+  b_link: ['Link', 'Jodein'], b_dup: ['{0} entries may be a farmer who has another entry.', '{0} entries shayad aise kisan ki hain jiski doosri entry bhi hai.'], b_check: ['Check', 'Dekhein'],
+  b_reopen: ['{0} entries are unclaimed on the portal again. Update them.', '{0} entries portal par phir se unclaimed hain. Dobara bharein.'], b_show: ['Show', 'Dikhayein'],
+  reg_line: ['Registered on the portal: <b>{0}</b> (approved {1}, pending approval {2})', 'Portal par registered: <b>{0}</b> (approved {1}, approval baaki {2})'],
+  father: ['Father / husband', 'Pita / pati'], khasra: ['Khasra', 'Khasra'], village: ['Village', 'Gaon'], portal_ref: ['Portal ref', 'Portal ref'],
+  appr: ['approved', 'approved'], pend: ['pending approval', 'approval baaki'], now: ['Now:', 'Abhi:'], waiting: ['(waiting to upload)', '(upload baaki)'], last_by: ['Last updated by {0}, {1}', 'Aakhri badlav: {0}, {1}'],
+  g_main: ['Why is the Farmer ID not being made? Tap the reason. The next landholder opens by itself.', 'Farmer ID kyun nahi ban rahi? Wajah chunein. Agla kisan apne aap khul jayega.'],
+  g_portal: ['The portal shows this Farmer ID as made. Nothing to do here.', 'Portal par is kisan ki Farmer ID ban chuki hai. Yahan kuch karne ki zaroorat nahi.'],
+  g_field: ['You marked this ID as made today. It is matched with the portal list automatically.', 'Aapne aaj ID bani darj ki hai. Portal list se yeh apne aap mil jayegi.'],
+  undo: ['Wrong entry? Mark as not checked', 'Galti hui? Wapas "check nahi" karein'], why: ['Not made? Tap the reason', 'ID nahi bani? Wajah chunein'],
+  more_hint: ['Not sure? Tap "More reasons" to see all of them with an explanation.', 'Pakka nahi? "Aur wajah" dabakar sab wajah samjhaane ke saath dekhein.'], more_r: ['More reasons', 'Aur wajah'],
+  write_r: ['Write the reason', 'Wajah likhein'], save: ['Save', 'Save karein'],
+  made_link: ['Made the Farmer ID on the portal today? Tap here', 'Aaj portal par ID banayi? Yahan tap karein'],
+  made_g: ["Use this only if you made the ID on the portal after today's portal file. It is matched automatically later.", 'Sirf tab use karein jab aaj ki portal file ke baad ID banayi ho. Baad mein yeh apne aap mil jayega.'],
+  made_pick: ['Is it one of these registered farmers? Tap to link.', 'Kya yeh inme se koi registered kisan hai? Tap karke jodein.'], made_yes: ['Yes, ID made today', 'Haan, aaj ID banayi'],
+  reg_hint: ['Maybe already registered: {0}', 'Shayad registered hai: {0}'], linked: ['Linked: {0}', 'Jod diya: {0}'],
+  unlink: ['Wrong person? Unlink', 'Galat kisan? Hatayein'], unlink_q: ['Unlink this registered farmer from this entry?', 'Is entry se registered kisan ko hatayein?'], unlinked: ['Unlinked', 'Hata diya'],
+  dup_maybe: ['This may be the same farmer as another entry.', 'Yeh shayad kisi doosri entry wala hi kisan hai.'],
+  dup_main: ['Same farmer has other entries. The Farmer ID is made through this entry.', 'Is kisan ki aur entries bhi hain. Farmer ID isi entry se banegi.'],
+  dup_other: ['Same farmer as another entry. The Farmer ID is made through the other entry.', 'Yeh kisan doosri entry wala hi hai. ID us entry se banegi.'],
+  looks: ['This looks like: <b>{0}</b>', 'Yeh lagta hai: <b>{0}</b>'], yes_c: ['Yes, confirm', 'Haan, pakka'],
+  reopened: ['The portal shows this entry as unclaimed again. Update it.', 'Portal par yeh entry phir unclaimed hai. Dobara bharein.'],
+  details: ['More details', 'Aur jaankari'], gender_q: ['Male or female', 'Purush ya mahila'], male: ['Male', 'Purush'], female: ['Female', 'Mahila'],
+  guessed: ['Guessed from the name. Correct it if wrong.', 'Naam se andaza lagaya hai. Galat ho to badlein.'], lives_q: ['Where does the landholder live?', 'Kisan kahan rehta hai?'], not_known: ['Not known', 'Pata nahi'],
+  place_now: ['Present place (if outside)', 'Abhi kahan hai (bahar ho to)'], place_ph: ['District or state', 'Zila ya rajya'], aadhaar: ['Aadhaar number', 'Aadhaar number'], mobile: ['Mobile number', 'Mobile number'],
+  remarks: ['Remarks', 'Tippani'], save_det: ['Save details', 'Jaankari save karein'], det_saved: ['Details saved', 'Jaankari save ho gayi'], history: ['See change history', 'Badlav ka record dekhein'],
+  v_aad: ['Aadhaar number is not valid. Check all 12 digits.', 'Aadhaar number galat hai. 12 ank dobara dekhein.'], v_mob: ['Mobile must be 10 digits starting with 6, 7, 8 or 9.', 'Mobile 10 ank ka ho aur 6, 7, 8 ya 9 se shuru ho.'],
+  v_lock: ['The portal shows a Farmer ID here. If it is the wrong person, use "Unlink".', 'Portal par yahan Farmer ID bani hai. Galat kisan ho to "Hatayein" use karein.'], v_reason: ['Choose a reason.', 'Wajah chunein.'], v_rem: ['Write the reason in remarks.', 'Wajah likhein.'],
+  fam_g: ['Tick the landholders this applies to, then tap the reason. Tap a name to open that landholder alone.', 'Jin par yeh baat lagu hai unhe tick karein, phir wajah chunein. Akele kisan ke liye naam par tap karein.'],
+  tick_all: ['Tick all not checked', 'Sab bina-check tick karein'], untick: ['Untick all', 'Sab tick hatayein'], reason_ticked: ['Reason for the ticked landholders', 'Tick kiye logon ki wajah'],
+  tick_first: ['Tick at least one landholder first.', 'Pehle kam se kam ek kisan tick karein.'], saved_for: ['Saved for {0}: {1}', '{0} ke liye save: {1}'], n_lh: ['{0} landholders', '{0} kisan'],
+  sug_t: ['Check these entries', 'In entries ko dekhein'], sug_g: ['The names suggest these are not individual farmers. Confirm a group in one tap, or tap a name to mark it differently.', 'Naam se lagta hai ye kisi vyakti ki zameen nahi. Ek tap mein poora group pakka karein, ya naam par tap karke alag wajah dein.'],
+  conf_all: ['Confirm all {0} as {1}', 'Sab {0} ko "{1}" pakka karein'], conf_n: ['Confirmed {0}', '{0} pakka kiye'], nothing: ['Nothing left to check.', 'Kuch baaki nahi.'],
+  lk_t: ['Link registered farmers', 'Registered kisan jodein'],
+  lk_g: ['These farmers already have a Farmer ID on the portal. Find their land entry: tick the right one and tap "Link". If none fits, search by name, or tap "Not in this village".', 'In kisanon ki Farmer ID portal par ban chuki hai. Inki zameen wali entry dhoondhein: sahi entry tick karke "Jodein" dabayein. Koi na mile to naam se dhoondhein, ya "Is gaon mein nahi" dabayein.'],
+  lk_none: ['Not in this village / none', 'Is gaon mein nahi / koi nahi'], lk_skip: ['Skip for now', 'Abhi chhodein'], lk_search: ['Search this village by name or khasra', 'Is gaon mein naam ya khasra se dhoondhein'],
+  lk_search_ph: ['Type at least 3 letters', 'Kam se kam 3 akshar likhein'], lk_done: ['All registered farmers of this village are linked.', 'Is gaon ke sab registered kisan jud gaye.'],
+  lk_same: ['Entries with the same name', 'Same naam wali entries'], lk_similar: ['Entries with a similar name', 'Milte-julte naam wali entries'], lk_noname: ['No entry with this name was found. Search below.', 'Is naam ki entry nahi mili. Neeche dhoondhein.'],
+  lk_status: ['Portal status', 'Portal status'], lk_tick: ['Tick an entry first.', 'Pehle entry tick karein.'], lk_marked_none: ['Marked: not in this village', 'Darj: is gaon mein nahi'], lk_link_btn: ['Link to the ticked entry', 'Tick wali entry se jodein'],
+  lk_found: ['No entry found.', 'Koi entry nahi mili.'], lk_hint_count: ['{0} of {1}. {2} have possible entries.', '{0} / {1}. {2} ke liye entries mili hain.'],
+  t_g: ['Do the steps from top to bottom. The step with the green border is the one to do now. Finished steps get a tick.', 'Upar se neeche kadam karein. Hare border wala kadam abhi karna hai. Pura hone par tick lag jayega.'],
+  t_choose: ['Choose the village you are working on today.', 'Aaj jis gaon mein kaam kar rahe hain, wo chunein.'],
+  s1_t: ['Confirm government and common land', 'Sarkari aur shamlat zameen pakki karein'], s1_d: ['State land, Shamlat deh, public use land and joint entries spotted by the app. One tap confirms a whole group.', 'App ne sarkari, shamlat deh, aam istemaal ki zameen aur sanjhi entries pehchani hain. Ek tap mein poora group pakka.'], s1_b: ['Check them', 'Dekhein'],
+  s2_t: ['Link registered farmers', 'Registered kisan jodein'], s2_d: ['Farmers who already got the Farmer ID on the portal. Pick their land entry with one tap.', 'Jinki Farmer ID portal par ban chuki hai. Ek tap mein unki zameen wali entry chunein.'], s2_b: ['Start linking', 'Jodna shuru karein'],
+  s3_t: ['Check same-farmer matches', 'Ek hi kisan ki entries dekhein'], s3_d: ['The same person in more than one entry can get only one Farmer ID.', 'Ek vyakti ki kai entries hon to ID sirf ek hi banegi.'], s3_b: ['Check matches', 'Dekhein'],
+  s4_t: ['Mark whole families', 'Poore parivaar ek saath bharein'], s4_d: ['Mark several members at once, for example all heirs of a dead owner, or a family living outside.', 'Kai logon ko ek saath bharein, jaise mare hue maalik ke sab waris, ya bahar rehne wala parivaar.'], s4_b: ['Open families', 'Parivaar kholein'],
+  s5_t: ['Give the reason for the rest', 'Baaki sab ki wajah batayein'], s5_d: ['Tap the reason for each landholder. The next one opens by itself.', 'Har kisan ki wajah chunein. Agla apne aap khulega.'], s5_b: ['Start', 'Shuru karein'],
+  s6_t: ['Call people to the camp', 'Logon ko camp mein bulayein'], s6_d: ['These landholders can get the ID now. Call them or send a WhatsApp invite.', 'In kisanon ki ID abhi ban sakti hai. Call karein ya WhatsApp par bulayein.'], s6_b: ['Open the call list', 'Call list kholein'],
+  fam_u: ['families', 'parivaar'], all_done: ['<b>All steps done for this village.</b> Well done.', '<b>Is gaon ke sab kadam pure.</b> Shabash!'], chg_v: ['Change village', 'Gaon badlein'],
+  cl_t: ['Camp call list', 'Camp call list'], cl_g: ['These landholders can get the Farmer ID now. Tap the phone to call, or the WhatsApp button to send an invite.', 'Inki Farmer ID abhi ban sakti hai. Phone dabakar call karein, ya WhatsApp se bulawa bhejein.'],
+  cl_nonum: ['No number yet', 'Number nahi'], cl_empty: ['Nobody in this list right now.', 'Abhi is list mein koi nahi.'],
+  wa_inv: ['Namaste {0} ji. Your Farmer ID can be made at the camp. Please come with your Aadhaar card and the mobile linked to it. - Patwari, {1}', 'Namaste {0} ji. Aapki Farmer ID camp mein ban sakti hai. Kripya Aadhaar card aur usse jude mobile ke saath aayein. - Patwari, {1}'],
+  c_g: ['Fill this after each Farmer ID camp. It saves even without internet.', 'Har Farmer ID camp ke baad yeh bharein. Bina internet bhi save hota hai.'], c_date: ['Date', 'Tareekh'], c_place: ['Place', 'Jagah'], c_place_ph: ['e.g. Panchayat Ghar', 'jaise Panchayat Ghar'],
+  c_off: ['Officials present', 'Maujood adhikari'], c_off_ph: ['Names', 'Naam'], c_people: ['People who came', 'Kitne log aaye'], c_ids: ['Farmer IDs made', 'Kitni Farmer ID bani'], c_save: ['Save camp', 'Camp save karein'],
+  c_saved: ['Camp saved on this phone', 'Camp phone mein save ho gaya'], c_place_need: ['Type the place of the camp.', 'Camp ki jagah likhein.'], c_novill: ['No village is assigned to you.', 'Aapko koi gaon nahi diya gaya.'],
+  share_line: ['{0}: today {1} checked, {2} Farmer IDs, {3} still not checked.', '{0}: aaj {1} check kiye, {2} Farmer ID, {3} abhi baaki.'], share_head: ['Farmer ID work, {0} ({1})', 'Farmer ID kaam, {0} ({1})'],
+  d_g: ['A farmer can get only one Farmer ID. If these entries are the same person, tick the entry where the ID will be made and tap "Yes, same farmer". If someone is a different person, tap "Not the same person" under that name.', 'Ek kisan ki sirf ek Farmer ID banti hai. Agar ye entries ek hi vyakti ki hain, to jis entry se ID banegi use tick karke "Haan, ek hi kisan" dabayein. Koi alag vyakti ho to uske naam ke neeche "Yeh alag vyakti hai" dabayein.'],
+  d_strong: ['Strong match', 'Pakka milaan'], d_possible: ['Possible match', 'Shayad milaan'], d_conf: ['Confirmed: same farmer', 'Pakka: ek hi kisan'], d_tick: ['The ticked entry is where the Farmer ID is made.', 'Tick wali entry se Farmer ID banegi.'],
+  d_yes: ['Yes, same farmer', 'Haan, ek hi kisan'], d_main: ['Save main entry', 'Mukhya entry save karein'], d_not: ['Not the same person', 'Yeh alag vyakti hai'], d_staff: ['Only staff of these villages can confirm.', 'Sirf in gaon ka staff pakka kar sakta hai.'],
+  d_off: ['You are offline. Matches in other villages are not shown.', 'Network nahi hai. Doosre gaon ki entries nahi dikh rahi.'], d_none: ['No possible matches in this village.', 'Is gaon mein koi milaan nahi.'], d_saved: ['Saved: same farmer', 'Save: ek hi kisan'], d_nsaved: ['Saved: not the same person', 'Save: alag vyakti'],
+  up_t: ['Uploads', 'Upload'], up_wait: ['{0} changes are saved on this phone and waiting to upload.', '{0} entries phone mein save hain aur upload baaki hai.'], up_all: ['Everything you entered has reached the office.', 'Aapka sab kaam office pahunch gaya.'],
+  net_y: ['Internet: connected.', 'Internet: chalu.'], net_n: ['Internet: not connected. Changes upload when signal returns.', 'Internet: band. Network aate hi upload ho jayega.'], last_up: ['Last upload: {0}', 'Aakhri upload: {0}'], not_yet: ['not yet', 'abhi nahi'],
+  up_now: ['Upload now', 'Abhi upload karein'], dl_new: ['Download latest data', 'Naya data layein'], prob_t: ['Not accepted by the server', 'Server ne nahi liya'], prob_h: ['Open these landholders again and correct them.', 'In kisanon ko dobara kholkar theek karein.'],
+  clear: ['Clear this list', 'List saaf karein'], still_wait: ['Some changes are still waiting. Check the signal.', 'Kuch entries abhi baaki hain. Network dekhein.'], all_reach: ['Everything has reached the office', 'Sab office pahunch gaya'], dl_msg: ['Downloading the latest data…', 'Naya data aa raha hai…'], dl_done: ['Latest data downloaded', 'Naya data aa gaya'],
+  ld_v: ['Downloading the landholders of this village. This takes a few seconds the first time.', 'Is gaon ke kisan download ho rahe hain. Pehli baar thoda samay lagta hai.'],
+  lang: ['Language', 'Bhasha'], call_da: ['Call {0} (Dealing Assistant)', '{0} ko call karein (Dealing Assistant)'],
+  welcome: ['Welcome, {0}', 'Swagat hai, {0}'], login_g: ['Type your first name, tap it, then type your PIN.', 'Apna pehla naam likhein, us par tap karein, phir PIN daalein.']
+};
+let LANG = 'en';
+function L(k) {
+  const o = (S.boot && S.boot.texts && S.boot.texts[k]) || null, d = TXT[k] || [k, k];
+  const s = LANG === 'hi' ? ((o && o.hi) || d[1] || d[0]) : ((o && o.en) || d[0]);
+  const args = Array.prototype.slice.call(arguments, 1);
+  return args.length ? s.replace(/\{(\d)\}/g, (m, i) => args[+i] === undefined ? '' : args[+i]) : s;
+}
+const isField = () => ['OPERATOR'].includes(role());
+async function initLang() {
+  const saved = await kget('lang');
+  LANG = saved || (isField() ? 'hi' : 'en');
+}
+const rLabel = r => !r ? '' : (LANG === 'hi' && r.label_hi ? r.label_hi : r.label);
+const rSub = r => !r ? '' : (LANG === 'hi' && r.label_hi ? r.label : '');
+const rExplain = r => !r ? '' : (LANG === 'hi' ? (r.explain_hi || r.explain || EXPLAIN[r.code] || '') : (r.explain || EXPLAIN[r.code] || ''));
+
 /* ======================= LOCAL STORAGE (IndexedDB) ======================= */
 let _db;
 function idb() {
@@ -349,7 +473,7 @@ async function kdel(k) { const d = await idb(); return new Promise(res => { cons
 async function kkeys() { const d = await idb(); return new Promise(res => { const q = d.transaction('kv').objectStore('kv').getAllKeys(); q.onsuccess = () => res(q.result || []); q.onerror = () => res([]); }); }
 
 /* ======================= STATE & API ======================= */
-const S = { session: null, boot: null, buckets: {}, fetchedAt: {}, queue: [], problems: [], syncing: false, lastSync: '', stats: {}, top: {}, dirty: false };
+const S = { session: null, boot: null, buckets: {}, reg: {}, fetchedAt: {}, queue: [], problems: [], syncing: false, lastSync: '', stats: {}, top: {}, dirty: false };
 const me = () => S.session && S.session.user;
 const role = () => (me() || {}).role;
 const isOffice = () => ['ADMIN', 'DA'].includes(role());
@@ -431,7 +555,7 @@ async function sync() {
     }
     S.lastSync = nowIST(); await kput('lastSync', S.lastSync);
     S.flash = Date.now(); setTimeout(updatePill, 3200);
-    if (startN && !SHEET && (!S.reachAt || Date.now() - S.reachAt > 15000)) { S.reachAt = Date.now(); toast(startN === 1 ? 'Reached the office' : `${startN} changes reached the office`); }
+    if (startN && !SHEET && (!S.reachAt || Date.now() - S.reachAt > 15000)) { S.reachAt = Date.now(); toast(startN === 1 ? L('reached') : L('n_reached', startN)); }
     refreshStats(true, true);
     if (conflicts) await refreshLoadedVillages();
   } catch (e) { /* offline again: keep queue */ }
@@ -468,16 +592,17 @@ function overlayPending(vid, arr) {
 
 async function loadVillage(vid, force) {
   if (!force && S.buckets[vid]) return S.buckets[vid];
-  if (!force) { const c = await kget('b:' + vid); if (c) { S.buckets[vid] = c; return c; } }
+  if (!force) { const c = await kget('b:' + vid); if (c) { S.buckets[vid] = c; S.reg[vid] = (await kget('r:' + vid)) || []; return c; } }
   try {
     const r = await api('getBuckets', { village_id: vid }, 90000);
     overlayPending(vid, r.buckets);
     S.buckets[vid] = r.buckets; S.fetchedAt[vid] = Date.now(); delete S.top[vid];
+    S.reg[vid] = r.reg || []; await kput('r:' + vid, S.reg[vid]);
     await kput('b:' + vid, r.buckets);
     return r.buckets;
   } catch (e) {
     if (S.buckets[vid]) return S.buckets[vid];
-    const c = await kget('b:' + vid); if (c) { S.buckets[vid] = c; return c; }
+    const c = await kget('b:' + vid); if (c) { S.buckets[vid] = c; S.reg[vid] = (await kget('r:' + vid)) || []; return c; }
     if (e instanceof NetError) throw new Error('This village is not saved on this phone yet. Connect to the internet once to download it.');
     throw e;
   }
@@ -516,12 +641,12 @@ async function refreshStats(rerender, force) {
 function updatePill() {
   const p = $('#pill'); if (!S.session) { p.hidden = true; return; }
   p.hidden = false; const n = S.queue.length; let t, c;
-  if (S.syncing) { t = 'Uploading'; c = 'busy'; }
-  else if (S.problems.length) { t = S.problems.length + (S.problems.length > 1 ? ' problems' : ' problem'); c = 'err'; }
-  else if (!navigator.onLine) { t = n ? `Offline, ${n} saved` : 'Offline'; c = 'off'; }
-  else if (n) { t = `${n} to upload`; c = 'wait'; }
-  else if (S.flash && Date.now() - S.flash < 3000) { t = '\u2713 Uploaded'; c = 'ok-flash'; }
-  else { t = 'All uploaded'; c = ''; }
+  if (S.syncing) { t = L('p_busy'); c = 'busy'; }
+  else if (S.problems.length) { t = L('p_prob', S.problems.length); c = 'err'; }
+  else if (!navigator.onLine) { t = n ? L('p_offn', n) : L('p_off'); c = 'off'; }
+  else if (n) { t = L('p_wait', n); c = 'wait'; }
+  else if (S.flash && Date.now() - S.flash < 3000) { t = L('p_flash'); c = 'ok-flash'; }
+  else { t = L('p_all'); c = ''; }
   p.textContent = t; p.className = 'pill ' + c;
 }
 
@@ -551,39 +676,51 @@ window.addEventListener('popstate', () => {
 $('#back').addEventListener('click', () => history.back());
 $('#pill').addEventListener('click', openSyncSheet);
 $('#hlp').addEventListener('click', () => {
-  const h = HELP[current().name]; if (!h) return;
+  const h = helpFor(current().name); if (!h) return;
   openSheet(() => ({
-    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">${esc(h[0])}</h2>
+    html: `<div class="snav"><button id="x">${L('close')}</button><span></span><span></span></div><h2 class="nm">${esc(h[0])}</h2>
       ${h.slice(1).map((x, i) => `<div class="guide" style="margin:10px 0">${esc((i + 1) + '. ' + x)}</div>`).join('')}
-      ${helplineHtml()}<button class="btn btn-primary" id="ok">Got it</button>`,
+      ${helplineHtml()}<button class="btn btn-primary" id="ok">${LANG === 'hi' ? 'Samajh gaya' : 'Got it'}</button>`,
     mount: r => { $('#x', r).onclick = () => closeSheet(); $('#ok', r).onclick = () => closeSheet(); }
   }));
 });
 function helplineHtml() {
   const u = me(); if (!u || !S.boot) return '';
-  const h = (S.boot.helpline || []).filter(x => !u.tehsil_id || x.tehsil_id === u.tehsil_id);
-  return h.map(x => `<a class="btn" href="tel:${esc(x.mobile)}">${ic('phone', 22)} Call ${esc(x.name)} (Dealing Assistant)</a>`).join('');
+  const mine = u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id];
+  const h = (S.boot.helpline || []).filter(x => u.role === 'ADMIN' || mine.includes(x.tehsil_id));
+  return h.map(x => `<a class="btn" href="tel:${esc(x.mobile)}">${ic('phone', 22)} ${esc(L('call_da', x.name))}</a>`).join('');
 }
 const HELP = {
-  login: ['How to log in', 'Type the first few letters of your first name.', 'Tap your name in the list.', 'Type your PIN (123456 unless you were told otherwise) and tap Log in.', 'You stay logged in on this phone for 30 days.'],
-  home: ['This screen', 'The green panel shows how many records are claimed, how many days are left and today\'s progress.', 'Tap "Start today\'s work" and the app guides you step by step.', 'Or tap a village card to work on it directly.', 'The button at the top right shows whether your work has reached the office. "All uploaded" means it has.'],
-  today: ['Today\'s work', 'Do the steps from top to bottom. The green step is the one to do now.', 'Tap the big button in that step. When you come back, finished steps show a tick.', 'You can stop any time. Your work is saved.'],
-  village: ['Working on a village', 'Start with the yellow boxes at the top, if any. They confirm government land and other entries in one tap.', 'Families: tap a family to mark several members at once, for example all heirs of a dead owner.', 'One by one: tap a landholder, then tap the reason. The next landholder opens by itself.', 'If the Farmer ID was made, tap the green "Farmer ID made" button and type the mobile number.', 'Use the buttons To do, Stuck and so on to see each group. The search box finds a name or khasra.'],
-  dups: ['Same farmer check', 'A farmer can get only one Farmer ID, even if the portal shows him in several entries.', 'If the entries shown are the same person, tick the entry where the ID will be made and tap "Yes, same farmer".', 'If one of them is a different person, tap "Not the same person" under that name.'],
-  camp: ['Recording a camp', 'Fill this after every Farmer ID camp.', 'Choose the village, check the date, then type the place, officials, number of people who came and Farmer IDs made.', 'Tap Save camp. It saves even without internet.'],
-  upload: ['Uploading portal files', 'Two kinds of portal files can be uploaded here: "Buckets UnClaimed Report Details" and "Registered farmer records". The app recognises which is which.', 'Tap "Files" and choose one or more Excel or CSV files. Any date range is fine; overlapping files are handled.', 'Check the summary shown for each file, then tap Apply.', 'Nothing entered by staff is erased. After a registered-farmer file, open "Match registrations" to link farmers to their entries.'],
-  regmatch: ['Match registrations', 'Each card is a farmer registered on the portal whose land entry is not known yet.', 'Tick the entry with the right father\'s name and khasras, then tap Link.', 'If the list does not show it, search the village by name.', 'If the farmer has no entry in this village, tap "None of these".'],
-  users: ['Staff and logins', 'Tap "Add a person" to create a login. The first name is the login name and the PIN is 123456.', 'Tap a person to change details, reset the PIN, switch the login off, or delete it.', 'After adding field staff, give them villages in "Villages and staff".'],
-  villages: ['Villages and staff', 'Tap a village to tick the staff who work there and choose the Patwari shown in reports.', 'Type the latest total and claimed figures from the portal summary whenever a new one comes.', 'Leave the daily target empty so the app works it out from the deadline.', 'Practice villages are at the bottom. Reset them after training.'],
-  settings: ['Deadlines and reasons', 'Change the deadlines and the upload reminder time here. Daily targets adjust by themselves.', 'Tap a reason to change its wording or switch it off. Use "Add a reason" for a new one.'],
-  report: ['Daily report for DC', 'Type today\'s dispatch number.', 'Check the letter and the table. The "Check" row must say OK in every column.', 'Tap Create PDF, then Download or Share it to the DC office.', 'Bucket-wise lists at the bottom answer questions about particular landholders.'],
-  supervise: ['Supervision', 'The numbers at the top show whether the tehsil is on pace for the deadline.', 'People: red means no work today or work still sitting on the phone. Tap the green phone button to call.', 'Problems shows which reasons hold most records and which villages are behind.'],
-  quality: ['Data check', 'Each box lists entries that need a second look.', 'Tap an entry to open and correct it.', 'When a box is empty, it disappears.'],
+  login: { en: ['How to log in', 'Type the first few letters of your first name.', 'Tap your name in the list.', 'Type your PIN (123456 unless you were told otherwise) and tap Log in.', 'You stay logged in on this phone for 30 days.'],
+           hi: ['Login kaise karein', 'Apne pehle naam ke 2-3 akshar likhein.', 'List mein apne naam par tap karein.', 'PIN daalein (jab tak kuch aur na bataya jaye, 123456) aur Log in dabayein.', 'Is phone par 30 din tak login rahega.'] },
+  home: { en: ['This screen', 'The green panel shows how many records got the Farmer ID, how many days are left and today\'s progress.', 'Tap "Start today\'s work" and the app guides you step by step.', 'Make Farmer IDs on the portal as usual. They arrive here by themselves with the evening portal file.', 'The button at the top right shows whether your work has reached the office.'],
+          hi: ['Yeh screen', 'Hara hissa batata hai kitni entries ki Farmer ID bani, kitne din baaki hain aur aaj kitna kaam hua.', '"Aaj ka kaam shuru karein" dabayein, app kadam-kadam batayega.', 'Farmer ID portal par pehle ki tarah banayein. Shaam ki portal file se yahan apne aap aa jayegi.', 'Upar daayein button batata hai ki aapka kaam office pahunch gaya ya nahi.'] },
+  today: { en: ["Today's work", 'Do the steps from top to bottom. The green step is the one to do now.', 'Tap the big button in that step. When you come back, finished steps show a tick.', 'You can stop any time. Your work is saved.'],
+           hi: ['Aaj ka kaam', 'Upar se neeche kadam karein. Hara wala kadam abhi karna hai.', 'Us kadam ka bada button dabayein. Wapas aane par pure kadam par tick lag jayega.', 'Kabhi bhi ruk sakte hain. Kaam save rehta hai.'] },
+  village: { en: ['Working on a village', 'Start with the yellow and green boxes at the top, if any.', 'Families: tap a family to mark several members at once, for example all heirs of a dead owner.', 'One by one: tap a landholder, then tap the reason. The next landholder opens by itself.', 'Use the buttons Not checked, Stuck and so on to see each group. The search box finds a name or khasra.'],
+             hi: ['Gaon mein kaam', 'Upar peele aur hare box ho to pehle unse shuru karein.', 'Parivaar: parivaar par tap karke kai logon ko ek saath bharein, jaise mare hue maalik ke sab waris.', 'Ek-ek karke: kisan par tap karein, phir wajah chunein. Agla kisan apne aap khulega.', '"Check nahi", "Atka hai" jaise button se har group dekhein. Search se naam ya khasra dhoondhein.'] },
+  link: { en: ['Link registered farmers', 'These farmers already got the Farmer ID on the portal.', 'Tick the entry with the right father\'s name and khasras, then tap Link.', 'If the list does not show it, search the village by name.', 'If the farmer has no land in this village, tap "Not in this village".'],
+          hi: ['Registered kisan jodein', 'In kisanon ki Farmer ID portal par ban chuki hai.', 'Sahi pita ka naam aur khasra wali entry tick karke "Jodein" dabayein.', 'List mein na ho to gaon mein naam se dhoondhein.', 'Is gaon mein zameen na ho to "Is gaon mein nahi" dabayein.'] },
+  camplist: { en: ['Camp call list', 'These landholders can get the Farmer ID now.', 'Tap the phone to call, or WhatsApp to send an invite to the camp.'], hi: ['Camp call list', 'Inki Farmer ID abhi ban sakti hai.', 'Phone dabakar call karein, ya WhatsApp se camp ka bulawa bhejein.'] },
+  dups: { en: ['Same farmer check', 'A farmer can get only one Farmer ID, even if the portal shows him in several entries.', 'If the entries are the same person, tick the entry where the ID will be made and tap "Yes, same farmer".', 'If one of them is a different person, tap "Not the same person" under that name.'],
+          hi: ['Ek hi kisan', 'Portal ek kisan ko kai entries mein dikhaye tab bhi ID sirf ek banti hai.', 'Agar entries ek hi vyakti ki hain, ID wali entry tick karke "Haan, ek hi kisan" dabayein.', 'Koi alag vyakti ho to uske naam ke neeche "Yeh alag vyakti hai" dabayein.'] },
+  camp: { en: ['Recording a camp', 'Fill this after every Farmer ID camp.', 'Choose the village, check the date, then type the place, officials, people who came and Farmer IDs made.', 'Tap Save camp. It saves even without internet.'],
+          hi: ['Camp darj karna', 'Har Farmer ID camp ke baad yeh bharein.', 'Gaon chunein, tareekh dekhein, phir jagah, adhikari, kitne log aaye aur kitni ID bani likhein.', '"Camp save karein" dabayein. Bina internet bhi save hota hai.'] },
+  upload: ['Uploading portal files', 'Two kinds of portal files can be uploaded here: "Buckets UnClaimed Report Details" (from the DC office, village-wise) and "Registered farmer records" (from your portal login, tehsil-wide). The app recognises which is which.', 'For a registered-farmer file, check the period (From / To) you chose on the portal. The portal allows 1 month at a time.', 'Check the summary shown for each file, then tap Apply.', 'Nothing entered by staff is erased.'],
+  register: ['Villages and portal data', 'Every bucketed village with its stage, bucket list, portal figures and registered farmers.', 'Red means missing, amber means old. Tap a village to upload its newer bucket list, enter figures, or mark it fully or partially bucketed.', 'Read the portal summary PDF to update all villages at once. New bucketed villages appear by themselves.'],
+  users: ['Staff and logins', 'Tap "Add a person" to create a login. The first name is the login name and the PIN is 123456.', 'Tap a person to change details, reset the PIN, switch the login off, or delete it.', 'A login can cover more than one tehsil (for example the Naib Tehsildar).'],
+  villages: ['Staff for villages', 'Tap a village to tick the staff who work there and choose the Patwari shown in reports.', 'Leave the daily target empty so the app works it out from the deadline.'],
+  settings: ['Settings', 'Deadlines, upload reminder time, start date of registrations and list freshness.', 'Reasons: wording in English and Hinglish, and the one-line explanation.', 'Texts: every instruction field staff see, in English and Hinglish.'],
+  texts: ['Texts', 'Tap a text to change its English or Hinglish wording. Leave a box empty to use the original.'],
+  report: ['Daily report for DC', 'Type today\'s dispatch number.', 'Check the letter and the table. The "Check" row must say OK in every column.', 'Tap Create PDF, then Download or Share it to the DC office.'],
+  supervise: ['Supervision', 'The numbers at the top show whether the tehsil is on pace for the deadline.', 'People: red means no work today or work still sitting on the phone. Tap the green phone button to call.', 'Pending approval on the portal: approving these needs no field work.'],
+  quality: ['Data check', 'Each box lists entries that need a second look. Tap an entry to open it.'],
   activity: ['Who did what', 'Choose a date to see how much each person did and the latest changes.'],
   paper: ['Paper checklist', 'Choose the village and tap Print checklist. Give the printout to the Lumberdar or Chowkidar.', 'They tick one box for each landholder.', 'When the sheet comes back, tap Quick entry and type the ticked box numbers.'],
-  grid: ['Quick entry', 'Match the S.No on paper with the S.No on screen.', 'Type the number of the ticked box. The cursor jumps to the next row.', 'For box 1 (ID made), type the mobile number and press Enter.', 'If the "Other reason" column is filled, type it in the Other reason box.', 'A green row means saved.'],
-  help: ['Help', 'Read this page once. The ? button on every screen explains that screen.']
+  grid: ['Quick entry', 'Match the S.No on paper with the S.No on screen.', 'Type the number of the ticked box. The cursor jumps to the next row.', 'A green row means saved.'],
+  help: { en: ['Help', 'Read this page once. The ? button on every screen explains that screen.'], hi: ['Madad', 'Yeh page ek baar padh lein. Har screen par ? button us screen ko samjhata hai.'] }
 };
+const helpFor = k => { const h = HELP[k]; return !h ? null : Array.isArray(h) ? h : (LANG === 'hi' ? h.hi : h.en); };
 
 
 /* ======================= SHARED UI PIECES ======================= */
@@ -603,12 +740,12 @@ function stripHtml(c) {
 }
 function legendHtml(c) {
   const it = (n, col, l) => `<span><i style="background:${col}"></i>${l} <b>${n}</b></span>`;
-  return `<div class="legend">${it(c.made, 'var(--made)', 'ID made')}${it(c.C, 'var(--tc)', 'Can be done')}${it(c.B, 'var(--tb)', 'Stuck')}${it(c.A, 'var(--ta)', "Can't be claimed")}${it(c.ns, 'var(--ns)', 'Not checked')}${c.unl > 0 ? it(c.unl, 'var(--unl)', 'List awaited') : ''}</div>`;
+  return `<div class="legend">${it(c.made, 'var(--made)', L('lg_made'))}${it(c.C, 'var(--tc)', L('lg_C'))}${it(c.B, 'var(--tb)', L('lg_B'))}${it(c.A, 'var(--ta)', L('lg_A'))}${it(c.ns, 'var(--ns)', L('lg_ns'))}${c.unl > 0 ? it(c.unl, 'var(--unl)', L('lg_unl')) : ''}</div>`;
 }
 function statusOf(b) {
-  if (b.status === 'CLAIMED') return { cls: 'made', text: 'ID made' };
-  if (b.status === 'NOT_SURVEYED') return { cls: 'ns', text: 'To do' };
-  const r = reason(b.reason_code); return { cls: tierOf(b.reason_code), text: r ? r.label : b.reason_code };
+  if (b.status === 'CLAIMED') return { cls: 'made', text: b.reg_status || b.claimed_source === 'REG' ? L('st_reg') : L('st_made') };
+  if (b.status === 'NOT_SURVEYED') return { cls: 'ns', text: L('st_ns') };
+  const r = reason(b.reason_code); return { cls: tierOf(b.reason_code), text: r ? rLabel(r) : b.reason_code };
 }
 function rowHtml(b) {
   const s = statusOf(b);
@@ -624,22 +761,20 @@ function topReasons(vid) {
 }
 function reasonGrid(vid, curCode) {
   const top = topReasons(vid), topCodes = top.map(r => r.code);
-  const btn = r => `<button class="rbtn t${r.tier}${r.code === curCode ? ' cur' : ''}" data-code="${r.code}"><b>${esc(r.label)}</b>${EXPLAIN[r.code] ? `<small>${esc(EXPLAIN[r.code])}</small>` : ''}</button>`;
+  const btn = r => `<button class="rbtn t${r.tier}${r.code === curCode ? ' cur' : ''}" data-code="${r.code}"><b>${esc(rLabel(r))}</b>${rSub(r) ? `<small>(${esc(rSub(r))})</small>` : ''}${rExplain(r) ? `<small>${esc(rExplain(r))}</small>` : ''}</button>`;
   const rest = activeReasons().filter(r => !topCodes.includes(r.code));
-  const grp = t => { const l = rest.filter(r => r.tier === t); return l.length ? `<p class="grp g${t}">${TIER[t]}</p>${l.map(btn).join('')}` : ''; };
-  return `<div class="rgrid">${top.map(btn).join('')}</div><details class="morer"><summary>More reasons</summary>${grp('A')}${grp('B')}${grp('C')}</details>`;
+  const grp = t => { const l = rest.filter(r => r.tier === t); return l.length ? `<p class="grp g${t}">${L('lg_' + t)}</p>${l.map(btn).join('')}` : ''; };
+  return `<div class="rgrid">${top.map(btn).join('')}</div><details class="morer"><summary>${L('more_r')}</summary>${grp('A')}${grp('B')}${grp('C')}</details>`;
 }
 
 /* ======================= SAVING ======================= */
 function validate(b, f) {
   const m = Object.assign({}, b, f);
-  if (f.aadhaar && !validAadhaar(f.aadhaar)) return 'Aadhaar number is not valid. Check all 12 digits.';
-  if (f.mobile && !validMobile(f.mobile)) return 'Mobile must be 10 digits starting with 6, 7, 8 or 9.';
-  if (b.status === 'CLAIMED' && b.claimed_source === 'PORTAL' && m.status !== 'CLAIMED') return 'Portal shows this bucket as claimed. It cannot be changed.';
-  if (b.status === 'CLAIMED' && b.claimed_source === 'REG' && m.status !== 'CLAIMED') return 'The portal list of registered farmers shows a Farmer ID here. Ask the Dealing Assistant to unlink it if it is wrong.';
-  if (m.status === 'CLAIMED' && b.status !== 'CLAIMED' && !m.mobile) return 'Enter the farmer\'s mobile number.';
-  if (m.status === 'REASON' && !reason(m.reason_code)) return 'Choose a reason.';
-  if (m.status === 'REASON' && m.reason_code === 'B10' && !m.remarks) return 'Write the reason in remarks.';
+  if (f.aadhaar && !validAadhaar(f.aadhaar)) return L('v_aad');
+  if (f.mobile && !validMobile(f.mobile)) return L('v_mob');
+  if (b.status === 'CLAIMED' && (b.claimed_source === 'PORTAL' || b.claimed_source === 'REG') && m.status !== 'CLAIMED') return L('v_lock');
+  if (m.status === 'REASON' && !reason(m.reason_code)) return L('v_reason');
+  if (m.status === 'REASON' && m.reason_code === 'B10' && !m.remarks) return L('v_rem');
   return '';
 }
 async function saveMany(vid, items) {
@@ -664,7 +799,7 @@ VIEWS.login = async function (a) {
   let list = (await kget('loginList')) || [];
   main.innerHTML = `<section class="pad">
     <h1 class="big">Log in</h1>
-    <p class="guide">Type your first name, tap it, then type your PIN.</p>
+    <p class="guide">${TXT.login_g[0]}<br><i>${TXT.login_g[1]}</i></p>
     <div id="step1"><input id="q" class="input" placeholder="Your first name" autocomplete="off" autocapitalize="words"><div id="names" class="names"></div></div>
     <div id="step2" hidden>
       <div class="box"><b id="who"></b><br><button class="link" id="change">Choose a different name</button></div>
@@ -690,9 +825,9 @@ VIEWS.login = async function (a) {
       const r = await api('login', { user_id: chosen.user_id, pin });
       S.session = { token: r.token, user: r.user }; await kput('session', S.session);
       S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || [];
-      const boot = await api('bootstrap'); S.boot = boot; await kput('boot', boot);
+      const boot = await api('bootstrap'); S.boot = boot; await kput('boot', boot); await initLang();
       NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render();
-      toast('Welcome, ' + r.user.name);
+      toast(L('welcome', r.user.name));
       refreshBoot(); scheduleSync(500);
       if (!(await kget('tour:' + r.user.user_id))) setTimeout(showTour, 400);
     } catch (e) { fail(e.message); delete $('#go').dataset.busy; $('#go').disabled = false; $('#go').textContent = 'Log in'; }
@@ -713,38 +848,41 @@ function villageCard(v) {
   if (st) {
     if (!c) c = { total: st.total, made: st.claimed, A: st.tier_a, B: st.tier_b, C: st.tier_c, ns: st.not_surveyed, unl: Math.max(0, st.unlisted) };
     else { c = Object.assign({}, c); c.unl = Math.max(0, st.unlisted); c.made = st.claimed; c.total = st.total; }
-    head = `${st.claimed} of ${st.total} claimed`; pct = st.total ? Math.round(st.claimed * 100 / st.total) : 0;
+    head = L('claimed_of', st.claimed, st.total); pct = st.total ? Math.round(st.claimed * 100 / st.total) : 0;
     target = st.daily_target; if (today === null) today = st.claimed_today; if (survey === null) survey = Math.round(st.survey_pct);
-  } else if (c) { head = `${c.made} of ${c.total} claimed`; pct = c.total ? Math.round(c.made * 100 / c.total) : 0; }
+  } else if (c) { head = L('claimed_of', c.made, c.total); pct = c.total ? Math.round(c.made * 100 / c.total) : 0; }
   const listMissing = !prac && (st ? !st.list_received : !arr);
   const staff = !prac && v.patwari_user_id && S.boot.users ? ((S.boot.users.find(u => u.user_id === v.patwari_user_id) || {}).name || '') : '';
+  const toLink = (S.reg[v.village_id] || []).filter(f => f.candidates && f.candidates.length).length;
   return `<button class="vcard${prac ? ' prac' : ''}" data-v="${esc(v.village_id)}">
-    ${pct !== null && !prac ? `<div class="vpct">${pct}%<small>claimed</small></div>` : ''}
-    <div class="vtop"><b>${esc(v.name)}</b><span>${prac ? 'Learn here. Nothing is counted or reported.' : staff ? 'Patwari ' + esc(staff) : 'LGD ' + esc(v.village_id)}</span></div>
+    ${pct !== null && !prac ? `<div class="vpct">${pct}%<small>${L('claimed_w')}</small></div>` : ''}
+    <div class="vtop"><b>${esc(v.name)}${st && st.partial ? '*' : ''}</b><span>${prac ? L('prac_sub') : staff ? L('patwari', esc(staff)) : 'LGD ' + esc(v.village_id)}</span></div>
     ${head && !prac ? `<div class="vhead">${head}</div>` : ''}
     ${c ? stripHtml(c) : ''}
     <div class="vline">
-      ${listMissing ? '<span class="tag">Bucket list not uploaded yet</span>' : ''}
-      ${today !== null && !prac ? `<span>Today <b>${today}</b>${target ? ' of ' + target : ''}</span>` : ''}
-      ${survey !== null && !listMissing ? `<span>Checked <b>${survey}%</b></span>` : ''}
-      ${st && st.reg_total ? `<span>Approved <b>${st.reg_approved}</b>, pending approval <b>${st.reg_pending}</b></span>` : ''}
+      ${listMissing ? `<span class="tag">${L('list_missing')}</span>` : ''}
+      ${toLink ? `<span class="tag">${L('ck_link', toLink)}</span>` : ''}
+      ${today !== null && !prac ? `<span>${L('today_of', `<b>${today}</b>`, target || '-')}</span>` : ''}
+      ${survey !== null && !listMissing ? `<span>${L('checked_pct', `<b>${survey}</b>`)}</span>` : ''}
+      ${st && st.reg_total ? `<span>${L('appr_pend', `<b>${st.reg_approved}</b>`, `<b>${st.reg_pending}</b>`)}</span>` : ''}
     </div></button>`;
 }
 function heroHtml() {
   const u = me(), s = S.boot.settings || {}, t = todayIST();
   const left = s.final_deadline ? Math.max(0, daysBetween(t, s.final_deadline) + 1) : null;
   const h = Number(nowIST().slice(11, 13));
-  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const greet = h < 12 ? L('greet_m') : h < 17 ? L('greet_a') : L('greet_e');
   let list = [];
   Object.values(S.stats).forEach(st => list = list.concat(st.villages));
   if (u.role === 'OPERATOR') { const mine = (S.boot.myVillages || []); list = list.filter(v => mine.includes(v.village_id)); }
   const T = list.length ? aggStats(list) : null;
+  const tn = (u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id]).filter(Boolean).map(tehsilName).join(', ');
   return `<div class="hero"><div class="hero-in">
-    <p class="hi">${greet}, ${esc(u.name)}</p><p class="role">${esc(u.designation)}${u.tehsil_id ? ', Tehsil ' + esc(tehsilName(u.tehsil_id)) : ''}</p>
-    ${T ? `<div class="hnum"><b>${T.claimed}</b><span>of ${T.total} records claimed${u.role === 'OPERATOR' ? ' in your villages' : ''}</span></div>
+    <p class="hi">${greet}, ${esc(u.name)}</p><p class="role">${esc(u.designation)}${tn ? ', Tehsil ' + esc(tn) : ''}</p>
+    ${T ? `<div class="hnum"><b>${T.claimed}</b><span>${L('hero_of', T.total)}${u.role === 'OPERATOR' ? L('hero_mine') : ''}</span></div>
       ${stripHtml({ total: T.total, made: T.claimed, A: T.tier_a, B: T.tier_b, C: T.tier_c, ns: T.not_surveyed })}
-      <div class="hrow">${left !== null ? `<span><b>${left}</b> day${left === 1 ? '' : 's'} left to ${fmtDate(s.final_deadline)}</span>` : ''}<span>Today <b>${T.claimed_today}</b> of ${T.daily_target}</span></div>`
-      : '<p class="role">Figures appear here when the internet is available.</p>'}
+      <div class="hrow">${left !== null ? `<span>${L('days_left', `<b>${left}</b>`, fmtDate(s.final_deadline))}</span>` : ''}<span>${L('today_of', `<b>${T.claimed_today}</b>`, T.daily_target)}</span></div>`
+      : `<p class="role">${L('no_figs')}</p>`}
   </div></div>`;
 }
 function reminderDue() {
@@ -755,15 +893,39 @@ function reminderDue() {
 function paceBoardHtml() {
   const st = S.stats[me().tehsil_id] || Object.values(S.stats)[0]; if (!st || !st.operators.length) return '';
   const per = {};
-  st.operators.forEach(o => { const p = per[o.user_id] = per[o.user_id] || { name: o.name, designation: o.designation, claimed: 0, target: 0, surveyed: 0, villages: [] };
+  st.operators.forEach(o => { const p = per[o.user_id] = per[o.user_id] || { name: o.name, claimed: 0, target: 0, surveyed: 0, villages: [] };
     p.claimed += o.claimed_today; p.target += o.target_today; p.surveyed += o.surveyed_today; p.villages.push(o.village); });
-  const rows = Object.keys(per).map(k => Object.assign({ id: k }, per[k])).sort((a, b) => b.claimed - a.claimed || b.surveyed - a.surveyed);
+  const rows = Object.keys(per).map(k => Object.assign({ id: k }, per[k])).sort((a, b) => b.surveyed - a.surveyed || b.claimed - a.claimed);
   const medal = i => ['\u{1F947}', '\u{1F948}', '\u{1F949}'][i] || (i + 1);
-  return `<p class="sec">Today's pace</p><div class="board">${rows.map((p, i) => `<div class="brow${p.id === me().user_id ? ' me' : ''}">
+  return `<p class="sec">${L('pace')}</p><div class="board">${rows.map((p, i) => `<div class="brow${p.id === me().user_id ? ' me' : ''}">
     <span class="md">${p.claimed || p.surveyed ? medal(i) : i + 1}</span>
-    <span class="nm2"><b>${esc(p.name)}${p.id === me().user_id ? ' (you)' : ''}</b><small>${esc(p.villages.join(', '))}</small>
+    <span class="nm2"><b>${esc(p.name)}${p.id === me().user_id ? ' (' + L('you') + ')' : ''}</b><small>${esc(p.villages.join(', '))}</small>
       <span class="bar"><i style="width:${p.target ? Math.min(100, Math.round(p.claimed * 100 / p.target)) : 0}%"></i></span></span>
-    <span class="sc">${p.claimed}/${p.target}<small>${p.surveyed} checked</small></span></div>`).join('')}</div>`;
+    <span class="sc">${L('n_checked', p.surveyed)}<small>ID ${p.claimed}/${p.target}</small></span></div>`).join('')}</div>`;
+}
+function myWorkHtml() {
+  const mine = villages().filter(v => canEditV(v.village_id) && v.practice !== 'Y');
+  if (!mine.length) return '';
+  let link = 0, ns = 0;
+  mine.forEach(v => { link += (S.reg[v.village_id] || []).filter(f => f.candidates && f.candidates.length).length; const a = S.buckets[v.village_id]; if (a) ns += a.filter(b => b.status === 'NOT_SURVEYED').length; });
+  const row = (ok, t) => `<div class="mem"><span class="dot ${ok ? 'd-made' : 'd-A'}"></span><span class="rt">${t}</span></div>`;
+  return `<div class="box"><h3 style="margin-top:0">${L('my_work')}</h3>
+    ${row(!link, L('ck_link', link))}${row(!ns, L('ck_check', ns))}${row(!S.queue.length, S.queue.length ? L('ck_up_wait', S.queue.length) : L('ck_up_ok'))}</div>`;
+}
+function officeCheckHtml(d) {
+  if (!d) return `<div class="box" id="ck"><p class="loading"><span class="spin"></span>Checking today's tasks…</p></div>`;
+  const row = (ok, t, call) => `<div class="mem"><span class="dot ${ok ? 'd-made' : 'd-A'}"></span><span class="rt">${t}</span>${call || ''}</div>`;
+  const tel = p => p && p.mobile ? `<a class="callb" href="tel:${esc(p.mobile)}" aria-label="Call ${esc(p.name)}">${ic('phone', 20)}</a>` : '';
+  return `<div id="ck">${d.tehsils.map(t => { const da = t.da[0];
+    const red = t.lists.filter(l => l.state === 'red'), amb = t.lists.filter(l => l.state === 'amber');
+    return `<div class="box"><h3 style="margin-top:0">Today's checklist: ${esc(t.name)}</h3>
+      ${row(!!t.reg_today, t.reg_today ? `Registered-farmers file uploaded (${esc(t.reg_today.at.slice(11, 16))} by ${esc(t.reg_today.by)})` : 'Registered-farmers file not uploaded today', t.reg_today ? '' : tel(da))}
+      ${row(!red.length && !amb.length, red.length || amb.length ? `Bucket lists: ${red.length ? red.length + ' awaited (' + esc(red.map(l => l.name).join(', ')) + ')' : ''}${red.length && amb.length ? '; ' : ''}${amb.length ? amb.length + ' older than ' + (S.boot.settings.list_fresh_days || 2) + ' days' : ''}` : 'Bucket lists up to date')}
+      ${row(!t.dq_open, t.dq_open ? `Data check: ${t.dq_open} items open` : 'Data check clear')}
+      ${row(t.report && !t.report.late, t.report ? `Report created at ${esc(t.report.at.slice(11, 16))} by ${esc(t.report.by)}${t.report.late ? ' (after 4:30 PM)' : ''}` : 'Report not created yet (due 4:30 PM)', t.report ? '' : tel(da))}
+      ${['ADMIN', 'NT'].includes(role()) ? row(!t.pending_approvals, `Farmer IDs pending approval on the portal: ${t.pending_approvals}`) : ''}
+      ${['ADMIN', 'NT'].includes(role()) ? row(!t.red_people.length, t.red_people.length ? `Field staff needing a call: ${esc(t.red_people.map(p => p.name).join(', '))}` : 'Field staff all active') : ''}
+    </div>`; }).join('')}</div>`;
 }
 VIEWS.home = async function () {
   setHeader('Farmer ID');
@@ -774,63 +936,66 @@ VIEWS.home = async function () {
   const byT = {}; real.forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
   const multi = Object.keys(byT).length > 1;
   const field = u.role !== 'NT' && villages().some(v => canEditV(v.village_id) && v.practice !== 'Y');
+  const office = ['ADMIN', 'DA', 'NT'].includes(u.role);
   const tile = (id, cls, icon, title, sub) => `<button class="tile ${cls}" id="${id}">${ic(icon)}<b>${title}</b><small>${sub}</small></button>`;
   $('#view').innerHTML = `${heroHtml()}<section class="pad">
-    ${reminderDue() ? `<div class="banner red"><p><b>Upload before 2:30 PM.</b> Get mobile signal now so your work reaches the office.</p><button id="upNow">Upload</button></div>` : ''}
-    ${field ? `<div class="tiles"><button class="tile c7 wide" id="today">${ic('play', 34)}<span><b>Start today's work</b><small>The app guides you step by step</small></span></button></div>` : ''}
-    <p class="sec">${u.role === 'OPERATOR' ? 'Your villages' : 'Villages'}</p>
-    ${Object.keys(byT).map(t => (multi ? `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p>` : '') + byT[t].map(villageCard).join('')).join('') || '<p class="guide">No village is assigned to you yet. Ask the Dealing Assistant.</p>'}
+    ${u.role === 'ADMIN' && S.boot.settings.sheet_shared === 'Y' ? '<div class="banner red"><p><b>The database Google Sheet is shared with others.</b> It holds full Aadhaar numbers. In Google Drive, set its sharing to "Restricted".</p></div>' : ''}
+    ${reminderDue() ? `<div class="banner red"><p>${L('reminder')}</p><button id="upNow">${L('upload')}</button></div>` : ''}
+    ${office ? officeCheckHtml(S.checklist) : ''}
+    ${field ? `<div class="tiles"><button class="tile c7 wide" id="today">${ic('play', 34)}<span><b>${L('start_t')}</b><small>${L('start_s')}</small></span></button></div>` : ''}
+    ${u.role === 'OPERATOR' ? myWorkHtml() : ''}
+    <p class="sec">${u.role === 'OPERATOR' ? L('your_v') : L('villages')}</p>
+    ${Object.keys(byT).map(t => (multi ? `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p>` : '') + byT[t].map(villageCard).join('')).join('') || `<p class="guide">${L('no_village')}</p>`}
     ${paceBoardHtml()}
     <div class="tiles">
-      ${u.role !== 'NT' ? tile('camp', 'c1', 'camp', 'Record a camp', 'After every Farmer ID camp') + tile('paper', 'c2', 'paper', 'Paper checklist', 'Print, tick, type back') : ''}
-      ${['ADMIN', 'DA', 'NT'].includes(u.role) ? tile('rep', 'c3', 'report', 'Daily report', 'Letter and tables for the DC') + tile('sup', 'c4', 'eye', 'Supervision', 'Pace, people, problems') : ''}
-      ${tile('help', 'c6', 'help', 'Help', 'How to use, call for help')}
+      ${u.role !== 'NT' ? tile('camp', 'c1', 'camp', L('camp_t'), L('camp_s')) + tile('paper', 'c2', 'paper', L('paper_t'), L('paper_s')) : ''}
+      ${u.role === 'OPERATOR' ? tile('share', 'c7', 'upload', L('share_t'), L('share_s')) : ''}
+      ${tile('help', 'c6', 'help', L('help_t'), L('help_s'))}
     </div>
-    ${isOffice() ? `<p class="sec">Office work</p><div class="tiles">
-      ${tile('up', 'c5', 'upload', 'Upload portal files', 'Bucket lists and registered farmers')}
-      ${tile('rm', 'c3', 'check', 'Match registrations', (() => { const n = Object.values(S.stats).reduce((t, st) => t + ((st.totals || {}).reg_to_confirm || 0), 0); return n ? n + ' farmers to link to their entry' : 'Link registered farmers to entries'; })())}
+    ${office ? `<p class="sec">Office work</p><div class="tiles">
+      ${['ADMIN', 'DA'].includes(u.role) ? tile('rep', 'c3', 'report', 'Daily report', 'Letter and tables for the DC') : ''}
+      ${tile('sup', 'c4', 'eye', 'Supervision', 'Pace, people, problems')}
+      ${tile('reg', 'c5', 'map', 'Villages and portal data', (() => { const n = Object.values(S.stats).reduce((t, st) => t + st.villages.filter(v => v.list_state !== 'green').length, 0); return n ? n + ' bucket list(s) awaited or old' : 'Bucketed villages, portal files'; })())}
       ${tile('dq', 'c8', 'check', 'Data check', 'Entries that need a second look')}
       ${tile('act', 'c6', 'list', 'Who did what', 'Work done by each person')}
-      ${tile('staff', 'c1', 'staff', 'Staff and logins', 'Add, change or delete')}
-      ${tile('vil', 'c2', 'map', 'Villages and staff', 'Assign staff, portal figures')}
-      ${tile('set', 'c6', 'settings', 'Settings', 'Deadlines, reminder, reasons')}
-      ${tile('xl', 'c7', 'table', 'Download all data', 'Excel file, office use only')}
+      ${['ADMIN', 'DA'].includes(u.role) ? tile('up', 'c2', 'upload', 'Upload portal files', 'Bucket lists, registered farmers') + tile('staff', 'c1', 'staff', 'Staff and logins', 'Add, change or delete') +
+        tile('vil', 'c2', 'map', 'Staff for villages', 'Assign staff, targets') + tile('set', 'c6', 'settings', 'Settings', 'Deadlines, reasons, texts') + tile('xl', 'c7', 'table', 'Download all data', 'Excel file, office use only') : ''}
     </div>` : ''}
-    ${prac.length ? `<p class="sec">Practice</p>${prac.map(villageCard).join('')}` : ''}
-    <button class="link" id="out">Log out</button></section>`;
+    ${prac.length ? `<p class="sec">${L('practice')}</p>${prac.map(villageCard).join('')}` : ''}
+    <button class="link" id="out">${L('logout')}</button></section>`;
   on($('#view'), '.vcard', 'click', el => go('village', { vid: el.dataset.v, filter: 'todo', mode: 'fam', q: '', n: 120 }));
   const b = (id, fn) => { const e = $('#' + id); if (e) e.addEventListener('click', fn); };
   b('today', () => go('today')); b('camp', () => go('camp')); b('paper', () => go('paper')); b('rep', () => go('report')); b('sup', () => go('supervise'));
-  b('help', () => go('help')); b('up', () => go('upload')); b('dq', () => go('quality')); b('act', () => go('activity')); b('rm', () => go('regmatch')); b('staff', () => go('users'));
-  b('vil', () => go('villages')); b('set', () => go('settings')); b('out', logout);
+  b('help', () => go('help')); b('up', () => go('upload')); b('dq', () => go('quality')); b('act', () => go('activity')); b('staff', () => go('users'));
+  b('vil', () => go('villages')); b('set', () => go('settings')); b('out', logout); b('reg', () => go('register')); b('share', shareMyDay);
   b('xl', () => busy($('#xl'), 'Preparing Excel…', exportExcel));
-  b('upNow', () => busy($('#upNow'), 'Uploading', async () => { await sync(); render(); }));
+  b('upNow', () => busy($('#upNow'), L('p_busy'), async () => { await sync(); render(); }));
   refreshStats(true);
+  if (office && navigator.onLine && (!S.checklistAt || Date.now() - S.checklistAt > 120000)) {
+    S.checklistAt = Date.now();
+    api('checklist', {}, 90000).then(d => { S.checklist = d; const el = $('#ck'); if (el && current().name === 'home') el.outerHTML = officeCheckHtml(d); }).catch(() => {});
+  }
 };
 
 /* ---------- First-login tour ---------- */
 const TOUR = [
-  ['village', 'Welcome', 'This app records, for every landholder, whether the Farmer ID is made and, if not, why. Your entries make the daily report to the DC by themselves.'],
-  ['check', 'Marking a landholder', 'Open your village and tap a landholder or a family. If the ID was made, tap the green button and type the mobile number. If not, tap the reason. The next one opens by itself.'],
-  ['list', 'What the colours mean', ''],
-  ['wifi', 'No signal? No problem', 'Everything is saved on your phone first. The button at the top right shows what is waiting, and it uploads by itself when there is signal. Get signal once before 2:30 PM.'],
-  ['play', 'Learn safely', 'Use the Practice village to try everything. Nothing there is counted. Tap ? on any screen for help, or call the Dealing Assistant from Help.']
+  ['village', ['Welcome', 'Swagat hai'], ['This app records, for every landholder, whether the Farmer ID is made and, if not, why. The daily report to the DC is made from it.', 'Yeh app har kisan ke liye darj karta hai ki Farmer ID bani ya nahi, aur nahi bani to kyun. DC sahab ki roz ki report isi se banti hai.']],
+  ['check', ['IDs come from the portal by themselves', 'ID portal se apne aap aati hai'], ['Make the Farmer ID on the portal as usual. You do not enter it again here: the evening portal file marks it "ID bani" by itself.', 'Farmer ID portal par pehle ki tarah banayein. Yahan dobara bharne ki zaroorat nahi: shaam ki portal file se "ID bani" apne aap ho jayega.']],
+  ['list', ['Your job: give the reason', 'Aapka kaam: wajah batana'], ['For landholders whose ID cannot be made, open the village and tap the reason. Mark families together. Sometimes, tap once to link a registered farmer to the right entry.', 'Jinki ID nahi ban rahi, gaon kholkar wajah chunein. Parivaar ek saath bharein. Kabhi-kabhi registered kisan ko sahi entry se ek tap mein jodein.']],
+  ['wifi', ['No signal? No problem', 'Network nahi? Koi baat nahi'], ['Everything is saved on your phone first and uploads by itself when there is signal. Get signal once before 2:30 PM.', 'Sab kuch pehle phone mein save hota hai aur network aate hi upload ho jata hai. 2:30 baje se pehle ek baar network mein aayein.']],
+  ['play', ['Learn safely', 'Aaram se seekhein'], ['Use the Practice village to try everything. Nothing there is counted. Tap ? on any screen for help, or call the Dealing Assistant from Help.', 'Practice gaon mein sab try karein, wahan kuch gina nahi jata. Har screen par ? dabakar madad lein, ya Madad se Dealing Assistant ko call karein.']]
 ];
 function showTour() {
-  let i = 0;
+  let i = 0; const k = LANG === 'hi' ? 1 : 0;
   openSheet(function build() {
     const t = TOUR[i], last = i === TOUR.length - 1;
-    const body = t[2] ? `<p>${esc(t[2])}</p>` : `<div class="mock">
-        <div class="rbtn" style="--t:var(--made)"><b>ID made</b><small>Farmer ID generated</small></div>
-        <div class="rbtn tC"><b>Can be done</b><small>Field work will get the ID</small></div>
-        <div class="rbtn tB"><b>Stuck</b><small>Needs the person or Aadhaar-mobile linking</small></div>
-        <div class="rbtn tA"><b>Can't be claimed</b><small>Will never get an ID</small></div></div><p class="muted">Grey means not checked yet.</p>`;
-    return { html: `<div class="snav"><button id="x">Skip</button><span>${i + 1} of ${TOUR.length}</span><span></span></div>
-      <div class="tcard"><div class="big">${ic(t[0], 40)}</div><h2>${esc(t[1])}</h2>${body}</div>
-      <div class="tdots">${TOUR.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
-      ${last ? `${villages().some(v => v.practice === 'Y') ? '<button class="btn" id="prac">Open the Practice village</button>' : ''}<button class="btn btn-primary" id="done">Start working</button>`
-             : `<button class="btn btn-primary" id="nx">Next</button>`}
-      ${i ? '<button class="btn" id="pv">Back</button>' : ''}`,
+    const colours = i === 2 ? `<div class="mock"><div class="rbtn" style="--t:var(--made)"><b>${L('lg_made')}</b></div><div class="rbtn tC"><b>${L('lg_C')}</b></div><div class="rbtn tB"><b>${L('lg_B')}</b></div><div class="rbtn tA"><b>${L('lg_A')}</b></div></div>` : '';
+    return { html: `<div class="snav"><button id="x">${L('skip')}</button><span>${i + 1} / ${TOUR.length}</span><span></span></div>
+      <div class="tcard"><div class="big">${ic(t[0], 40)}</div><h2>${esc(t[1][k])}</h2><p>${esc(t[2][k])}</p>${colours}</div>
+      <div class="tdots">${TOUR.map((_, n) => `<i class="${n === i ? 'on' : ''}"></i>`).join('')}</div>
+      ${last ? `${villages().some(v => v.practice === 'Y') ? `<button class="btn" id="prac">${k ? 'Practice gaon kholein' : 'Open the Practice village'}</button>` : ''}<button class="btn btn-primary" id="done">${k ? 'Kaam shuru karein' : 'Start working'}</button>`
+             : `<button class="btn btn-primary" id="nx">${k ? 'Aage' : 'Next'}</button>`}
+      ${i ? `<button class="btn" id="pv">${k ? 'Peeche' : 'Back'}</button>` : ''}`,
       mount: r => {
         const fin = () => kput('tour:' + me().user_id, 1);
         $('#x', r).onclick = () => { fin(); closeSheet(); };
@@ -844,59 +1009,56 @@ function showTour() {
 
 /* ---------- Guided "Start today's work" ---------- */
 VIEWS.today = async function (a) {
-  setHeader("Today's work");
+  setHeader(L('start_t'));
   const main = $('#view');
   const vs = villages().filter(v => canEditV(v.village_id)).sort((x, y) => (x.practice === 'Y') - (y.practice === 'Y') || x.name.localeCompare(y.name));
   if (!a.vid && vs.filter(v => v.practice !== 'Y').length === 1) a.vid = vs.find(v => v.practice !== 'Y').village_id;
   if (!a.vid) {
-    main.innerHTML = `<section class="pad"><p class="guide">Choose the village you are working on today.</p>${vs.map(villageCard).join('')}</section>`;
+    main.innerHTML = `<section class="pad"><p class="guide">${L('t_choose')}</p>${vs.map(villageCard).join('')}</section>`;
     on(main, '.vcard', 'click', el => { a.vid = el.dataset.v; render(); });
     return;
   }
-  if (!S.buckets[a.vid]) main.innerHTML = loadingHtml('Downloading the landholders of this village…');
+  if (!S.buckets[a.vid]) main.innerHTML = loadingHtml(L('ld_v'));
   const arr = await loadVillage(a.vid), vid = a.vid, v = villageById(vid);
   const todo = arr.filter(b => b.status === 'NOT_SURVEYED');
   const fams = {}; todo.forEach(b => { const k = normName(b.parentage) || '-'; fams[k] = (fams[k] || 0) + 1; });
   const famN = Object.values(fams).filter(n => n >= 2).length;
   const ordered = x => x.slice().sort((p, q) => khKey(p) - khKey(q) || p.name.localeCompare(q.name)).map(b => b.bucket_id);
   const workable = arr.filter(b => b.status === 'REASON' && tierOf(b.reason_code) === 'C');
+  const regN = (S.reg[vid] || []).filter(f => f.candidates && f.candidates.length).length;
   const steps = [
-    { t: 'Confirm government and common land', d: 'State land, Shamlat deh, public use land and joint entries the app has spotted. One tap confirms a whole group.',
-      n: todo.filter(b => b.suggested_code).length, btn: 'Check them', run: () => openSuggestions(vid) },
-    { t: 'Check same-farmer matches', d: 'The same person in more than one entry can get only one Farmer ID.',
-      n: arr.filter(b => b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED').length, btn: 'Check matches', run: () => go('dups', { vid }) },
-    { t: 'Mark whole families', d: 'Mark several members at once, for example all heirs of a dead owner, or a family living outside.',
-      n: famN, unit: 'families', btn: 'Open families', run: () => go('village', { vid, filter: 'todo', mode: 'fam', q: '', n: 120 }) },
-    { t: 'Mark the rest one by one', d: 'Tap the reason for each landholder. The next one opens by itself.',
-      n: todo.length, btn: 'Start marking', run: () => { const ids = ordered(todo); if (ids.length) openBucket(vid, ids, 0); } },
-    { t: 'Get Farmer IDs made', d: 'These landholders can get the ID now. Call them to the camp, then tap "Farmer ID made".',
-      n: workable.length, btn: 'Open the list', run: () => { const ids = ordered(workable); if (ids.length) openBucket(vid, ids, 0); } }
+    { t: L('s1_t'), d: L('s1_d'), n: todo.filter(b => b.suggested_code).length, btn: L('s1_b'), run: () => openSuggestions(vid) },
+    { t: L('s2_t'), d: L('s2_d'), n: regN, btn: L('s2_b'), run: () => go('link', { vid }) },
+    { t: L('s3_t'), d: L('s3_d'), n: arr.filter(b => b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED').length, btn: L('s3_b'), run: () => go('dups', { vid }) },
+    { t: L('s4_t'), d: L('s4_d'), n: famN, unit: L('fam_u'), btn: L('s4_b'), run: () => go('village', { vid, filter: 'todo', mode: 'fam', q: '', n: 120 }) },
+    { t: L('s5_t'), d: L('s5_d'), n: todo.length, btn: L('s5_b'), run: () => { const ids = ordered(todo); if (ids.length) openBucket(vid, ids, 0); } },
+    { t: L('s6_t'), d: L('s6_d'), n: workable.length, btn: L('s6_b'), run: () => go('camplist', { vid }) }
   ];
   const cur = steps.findIndex(s => s.n > 0);
   const c = countsLocal(arr);
   main.innerHTML = `<section class="pad">
-    <p class="guide">Do the steps from top to bottom. The step with the green border is the one to do now. Finished steps get a tick.</p>
+    <p class="guide">${L('t_g')}</p>
     <h2 style="margin-top:4px">${esc(v.name)}</h2>${stripHtml(c)}${legendHtml(c)}
     ${steps.map((s, i) => { const done = s.n === 0, now = i === cur;
       return `<div class="step${done ? ' done' : now ? ' cur' : ''}"><span class="num">${done ? '&#10003;' : i + 1}</span><div class="sb">
         <h3>${esc(s.t)}</h3><p>${esc(s.d)}</p>
-        ${done ? '<b style="color:var(--made)">Done</b>' : `<button class="btn ${now ? 'btn-primary' : ''}" data-i="${i}">${esc(s.btn)} (${s.n}${s.unit ? ' ' + s.unit : ''})</button>`}
+        ${done ? `<b style="color:var(--made)">${L('done')}</b>` : `<button class="btn ${now ? 'btn-primary' : ''}" data-i="${i}">${esc(s.btn)} (${s.n}${s.unit ? ' ' + s.unit : ''})</button>`}
       </div></div>`; }).join('')}
-    ${cur < 0 ? '<div class="banner ok"><p><b>All steps done for this village.</b> Well done.</p></div>' : ''}
-    ${vs.length > 1 ? '<button class="btn" id="chg">Change village</button>' : ''}</section>`;
+    ${cur < 0 ? `<div class="banner ok"><p>${L('all_done')}</p></div>` : ''}
+    ${vs.length > 1 ? `<button class="btn" id="chg">${L('chg_v')}</button>` : ''}</section>`;
   on(main, '.step .btn', 'click', el => steps[+el.dataset.i].run());
   const ch = $('#chg'); if (ch) ch.onclick = () => { a.vid = ''; render(); };
 };
 
 /* ---------- Village ---------- */
 const FILTERS = [
-  ['todo', 'Not checked', b => b.status === 'NOT_SURVEYED'],
-  ['dup', 'Same farmer?', b => b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED'],
-  ['C', 'Can be done', b => b.status === 'REASON' && tierOf(b.reason_code) === 'C'],
-  ['B', 'Stuck', b => b.status === 'REASON' && tierOf(b.reason_code) === 'B'],
-  ['A', "Can't be claimed", b => b.status === 'REASON' && tierOf(b.reason_code) === 'A'],
-  ['made', 'ID made', b => b.status === 'CLAIMED'],
-  ['all', 'All', () => true]
+  ['todo', 'f_todo', b => b.status === 'NOT_SURVEYED'],
+  ['dup', 'f_dup', b => b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED'],
+  ['C', 'lg_C', b => b.status === 'REASON' && tierOf(b.reason_code) === 'C'],
+  ['B', 'lg_B', b => b.status === 'REASON' && tierOf(b.reason_code) === 'B'],
+  ['A', 'lg_A', b => b.status === 'REASON' && tierOf(b.reason_code) === 'A'],
+  ['made', 'lg_made', b => b.status === 'CLAIMED'],
+  ['all', 'f_all', () => true]
 ];
 const EXTRA_FILTERS = { noentry: b => b.status === 'CLAIMED' && b.flag === 'NO_FIELD_ENTRY', reopen: b => b.flag === 'REOPENED' };
 function filtered(a, arr) {
@@ -908,7 +1070,7 @@ function filtered(a, arr) {
 VIEWS.village = async function (a) {
   const v = villageById(a.vid); setHeader(v.name);
   const main = $('#view');
-  if (!S.buckets[a.vid]) main.innerHTML = loadingHtml('Downloading the landholders of this village. This takes a few seconds the first time.');
+  if (!S.buckets[a.vid]) main.innerHTML = loadingHtml(L('ld_v'));
   const arr = await loadVillage(a.vid);
   drawVillage(a, arr);
   if (navigator.onLine && (!S.fetchedAt[a.vid] || Date.now() - S.fetchedAt[a.vid] > 120000) && !a._bg) {
@@ -920,20 +1082,20 @@ function drawVillage(a, arr) {
   const ro = !canEditV(a.vid); const c = countsLocal(arr);
   const sug = arr.filter(b => b.status === 'NOT_SURVEYED' && b.suggested_code).length;
   const dup = arr.filter(FILTERS[1][2]).length;
-  const noentry = arr.filter(EXTRA_FILTERS.noentry).length, reopen = arr.filter(EXTRA_FILTERS.reopen).length;
+  const regN = (S.reg[a.vid] || []).length, reopen = arr.filter(EXTRA_FILTERS.reopen).length;
   const banner = (cls, text, btn, id) => `<div class="banner ${cls}"><p>${text}</p>${btn && !ro ? `<button id="${id}">${btn}</button>` : ''}</div>`;
   const stv = statsFor(a.vid);
   $('#view').innerHTML = `<section class="pad">
     ${stripHtml(c)}${legendHtml(c)}
-    ${stv && stv.reg_total ? `<p class="hint" style="margin:4px 0 0">Registered on the portal: <b>${stv.reg_total}</b> (approved ${stv.reg_approved}, pending approval ${stv.reg_pending})</p>` : ''}
-    ${!arr.length ? '<p class="err">The bucket list for this village has not been uploaded yet.</p>' : ''}
-    ${sug ? banner('', `<b>Step 1:</b> ${sug} entries look like State land, Shamlat deh, public use land, department land or joint entries.`, 'Confirm', 'bSug') : ''}
-    ${dup ? banner('info', `<b>Step 2:</b> ${dup} entries may be a farmer who has another entry.`, 'Check', 'bDup') : ''}
-    ${noentry ? banner('ok', `${noentry} Farmer IDs were made on the portal. Add the farmer's mobile number.`, 'Show', 'bNo') : ''}
-    ${reopen ? banner('', `${reopen} entries are unclaimed on the portal again. Update them.`, 'Show', 'bRe') : ''}
-    <input id="q" class="input search" type="search" placeholder="Search name, father's name or khasra" value="${esc(a.q)}">
-    <div class="chips">${FILTERS.map(f => `<button class="chipf ${a.filter === f[0] ? 'on' : ''}" data-f="${f[0]}">${f[1]} <b>${arr.filter(f[2]).length}</b></button>`).join('')}</div>
-    <div class="seg"><button data-m="fam" class="${a.mode === 'fam' ? 'on' : ''}">Families</button><button data-m="one" class="${a.mode === 'one' ? 'on' : ''}">One by one</button></div>
+    ${stv && stv.reg_total ? `<p class="hint" style="margin:4px 0 0">${L('reg_line', stv.reg_total, stv.reg_approved, stv.reg_pending)}</p>` : ''}
+    ${!arr.length ? `<p class="err">${L('no_list')}</p>` : ''}
+    ${sug ? banner('', L('b_sug', sug), L('b_confirm'), 'bSug') : ''}
+    ${regN ? banner('ok', L('b_reg', regN), L('b_link'), 'bReg') : ''}
+    ${dup ? banner('info', L('b_dup', dup), L('b_check'), 'bDup') : ''}
+    ${reopen ? banner('', L('b_reopen', reopen), L('b_show'), 'bRe') : ''}
+    <input id="q" class="input search" type="search" placeholder="${esc(L('search_ph'))}" value="${esc(a.q)}">
+    <div class="chips">${FILTERS.map(f => `<button class="chipf ${a.filter === f[0] ? 'on' : ''}" data-f="${f[0]}">${L(f[1])} <b>${arr.filter(f[2]).length}</b></button>`).join('')}</div>
+    <div class="seg"><button data-m="fam" class="${a.mode === 'fam' ? 'on' : ''}">${L('m_fam')}</button><button data-m="one" class="${a.mode === 'one' ? 'on' : ''}">${L('m_one')}</button></div>
     <p class="guide" id="ins"></p><div id="list" class="list"></div></section>`;
   const v = $('#view');
   on(v, '.chipf', 'click', el => { a.filter = el.dataset.f; a.n = 120; drawVillage(a, arr); });
@@ -941,28 +1103,29 @@ function drawVillage(a, arr) {
   $('#q').addEventListener('input', e => { a.q = e.target.value; a.n = 120; drawList(a, arr); });
   const b = (id, fn) => { const e = $('#' + id); if (e) e.addEventListener('click', fn); };
   b('bSug', () => openSuggestions(a.vid));
+  b('bReg', () => go('link', { vid: a.vid }));
   b('bDup', () => go('dups', { vid: a.vid }));
-  b('bNo', () => { a.filter = 'noentry'; a.mode = 'one'; drawVillage(a, arr); });
   b('bRe', () => { a.filter = 'reopen'; a.mode = 'one'; drawVillage(a, arr); });
   drawList(a, arr);
 }
 function drawList(a, arr) {
   const items = filtered(a, arr); const ro = !canEditV(a.vid);
   const box = $('#list'); const ins = $('#ins');
-  if (!items.length) { ins.textContent = '';
-    box.innerHTML = `<p class="guide">${a.filter === 'todo' && arr.length ? 'Everyone in this village has been checked. Use the other buttons above to see each group.' : 'Nobody in this group.'}</p>`; return; }
+  if (!items.length) { ins.hidden = true;
+    box.innerHTML = `<p class="guide">${a.filter === 'todo' && arr.length ? L('all_checked') : L('nobody')}</p>`; return; }
+  ins.hidden = false;
   if (a.mode === 'fam') {
-    ins.textContent = ro ? 'Families are grouped by father or husband name.' : 'Tap a family to mark several members at once. Switch to "One by one" for single landholders.';
+    ins.textContent = ro ? L('ins_ro') : L('ins_fam');
     const fams = {}; items.forEach(b => { const k = normName(b.parentage) || '-'; (fams[k] = fams[k] || []).push(b); });
     const keys = Object.keys(fams).sort((x, y) => fams[y].length - fams[x].length || x.localeCompare(y));
     box.innerHTML = keys.slice(0, a.n).map(k => {
       const m = fams[k];
-      return `<button class="fam" data-k="${esc(k)}"><b>Family of ${esc(m[0].parentage || 'unknown')}</b><small>${m.length} landholder${m.length > 1 ? 's' : ''} in this list</small><span class="dots">${m.map(b => `<span class="dot d-${statusOf(b).cls}"></span>`).join('')}</span></button>`;
-    }).join('') + (keys.length > a.n ? `<button class="btn" id="more">Show more (${keys.length - a.n} more families)</button>` : '');
+      return `<button class="fam" data-k="${esc(k)}"><b>${esc(L('fam_of', m[0].parentage || '?'))}</b><small>${esc(L('in_list', m.length))}</small><span class="dots">${m.map(b => `<span class="dot d-${statusOf(b).cls}"></span>`).join('')}</span></button>`;
+    }).join('') + (keys.length > a.n ? `<button class="btn" id="more">${L('more_n', keys.length - a.n)}</button>` : '');
     on(box, '.fam', 'click', el => openFamily(a.vid, el.dataset.k));
   } else {
-    ins.textContent = ro ? 'Tap a landholder to see details.' : 'Tap a landholder, then tap "Farmer ID made" or the reason. The next one opens by itself.';
-    box.innerHTML = items.slice(0, a.n).map(rowHtml).join('') + (items.length > a.n ? `<button class="btn" id="more">Show more (${items.length - a.n} more)</button>` : '');
+    ins.textContent = ro ? L('ins_ro') : L('ins_one');
+    box.innerHTML = items.slice(0, a.n).map(rowHtml).join('') + (items.length > a.n ? `<button class="btn" id="more">${L('more_n', items.length - a.n)}</button>` : '');
     const ids = items.map(b => b.bucket_id);
     on(box, '.row', 'click', el => openBucket(a.vid, ids, ids.indexOf(el.dataset.id)));
   }
@@ -973,74 +1136,79 @@ function drawList(a, arr) {
 function openBucket(vid, ids, i) { openSheet(() => bucketSheet(vid, ids, i)); }
 function advance(vid, ids, i) {
   if (i + 1 < ids.length) { SHEET.build = () => bucketSheet(vid, ids, i + 1); drawSheet(); }
-  else closeSheet(() => toast('End of this list. Well done'));
+  else closeSheet(() => toast(L('end_list')));
+}
+function regFor(vid, bucketId) { return (S.reg[vid] || []).filter(f => (f.candidates || []).includes(bucketId)); }
+async function linkLocal(vid, f, b) {
+  const effects = [{ bucket_id: b.bucket_id, fields: { status: 'CLAIMED', reason_code: '', claimed_source: 'REG', farmer_id: f.farmer_id, reg_status: f.status, mobile: b.mobile || f.mobile || '' } }];
+  Object.assign(b, effects[0].fields); b._pending = true; b.surveyed_date = b.surveyed_date || todayIST();
+  S.reg[vid] = (S.reg[vid] || []).filter(x => x.farmer_id !== f.farmer_id).map(x => Object.assign({}, x, { candidates: (x.candidates || []).filter(c => c !== b.bucket_id) }));
+  await kput('b:' + vid, S.buckets[vid]); await kput('r:' + vid, S.reg[vid]); S.dirty = true;
+  await enqueue('regConfirm', { farmer_id: f.farmer_id, bucket_id: b.bucket_id }, effects);
 }
 function bucketSheet(vid, ids, i) {
   const b = (S.buckets[vid] || []).find(x => x.bucket_id === ids[i]);
-  if (!b) return { html: '<p class="err">Not found.</p><button class="btn" id="x">Close</button>', mount: r => $('#x', r).onclick = () => closeSheet() };
-  const ro = !canEditV(vid); const s = statusOf(b); const portalClaimed = b.status === 'CLAIMED' && (b.claimed_source === 'PORTAL' || b.claimed_source === 'REG');
+  if (!b) return { html: `<p class="err">Not found.</p><button class="btn" id="x">${L('close')}</button>`, mount: r => $('#x', r).onclick = () => closeSheet() };
+  const ro = !canEditV(vid); const s = statusOf(b);
+  const locked = b.status === 'CLAIMED' && (b.claimed_source === 'PORTAL' || b.claimed_source === 'REG' || b.reg_status);
+  const fieldMade = b.status === 'CLAIMED' && !locked;
   const sugR = b.status === 'NOT_SURVEYED' && b.suggested_code ? reason(b.suggested_code) : null;
+  const regs = b.status !== 'CLAIMED' ? regFor(vid, b.bucket_id) : [];
   const banners = [];
-  if (sugR && !ro) banners.push(`<div class="banner"><p>This looks like: <b>${esc(sugR.label)}</b></p><button id="sugYes">Yes, confirm</button></div>`);
-  if (b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED') banners.push(`<div class="banner info"><p>This may be the same farmer as another bucket.</p><button id="dupChk">Check</button></div>`);
-  if (b.dup_confirmed === 'Y') banners.push(`<div class="banner ok"><p>${b.dup_role === 'PRIMARY' ? 'Same farmer has other buckets. The Farmer ID is made through this bucket.' : 'Same farmer as another bucket. The Farmer ID is made through the other bucket.'}</p><button id="dupChk">See</button></div>`);
-  if (b.flag === 'NO_FIELD_ENTRY') banners.push(`<div class="banner ok"><p>The portal shows the Farmer ID as made. Enter the farmer's mobile number.</p></div>`);
-  if (b.flag === 'PENDING_CONFIRMATION') banners.push(`<div class="banner"><p>Marked as ID made, but the portal still shows it unclaimed. Check on the portal.</p></div>`);
-  if (b.flag === 'REOPENED') banners.push(`<div class="banner"><p>The portal shows this bucket as unclaimed again. Update it.</p></div>`);
-  const showMade = b.flag === 'NO_FIELD_ENTRY';
+  if (regs.length && !ro) banners.push(`<div class="banner ok"><p>${L('reg_hint', esc(regs[0].name) + (regs[0].mobile ? ', \u2026' + esc(String(regs[0].mobile).slice(-4)) : ''))}</p><button id="regYes">${L('b_link')}</button></div>`);
+  if (sugR && !ro) banners.push(`<div class="banner"><p>${L('looks', esc(rLabel(sugR)))}</p><button id="sugYes">${L('yes_c')}</button></div>`);
+  if (b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED') banners.push(`<div class="banner info"><p>${L('dup_maybe')}</p><button id="dupChk">${L('b_check')}</button></div>`);
+  if (b.dup_confirmed === 'Y') banners.push(`<div class="banner ok"><p>${b.dup_role === 'PRIMARY' ? L('dup_main') : L('dup_other')}</p><button id="dupChk">${L('b_check')}</button></div>`);
+  if (b.flag === 'REOPENED') banners.push(`<div class="banner"><p>${L('reopened')}</p></div>`);
   const html = `
-    <div class="snav"><button id="x">Close</button><span>${i + 1} of ${ids.length}</span><button id="skip">${i + 1 < ids.length ? 'Skip' : 'Done'}</button></div>
+    <div class="snav"><button id="x">${L('close')}</button><span>${L('pos', i + 1, ids.length)}</span><button id="skip">${i + 1 < ids.length ? L('skip') : L('done')}</button></div>
     <h2 class="nm">${esc(b.name)}</h2>
-    <dl class="facts"><dt>Father / husband</dt><dd>${esc(b.parentage || '-')}</dd><dt>Khasra</dt><dd>${esc(b.khasras || '-')}</dd>
-      <dt>Village</dt><dd>${esc(villageById(vid).name)}</dd><dt>Portal ref</dt><dd>…${esc(String(b.bucket_id).slice(-8))}</dd>${b.farmer_id ? `<dt>Farmer ID</dt><dd>${esc(b.farmer_id)}${b.reg_status ? (b.reg_status === 'APPROVED' ? ' (approved)' : ' (pending approval)') : ''}</dd>` : ''}</dl>
-    <p class="now">Now: <span class="st st-${s.cls}">${esc(s.text)}</span>${b._pending ? ' <span class="muted">(waiting to upload)</span>' : ''}${b.updated_by_name ? `<br><small class="muted">Last updated by ${esc(b.updated_by_name)}, ${esc(b.updated_at)}</small>` : ''}</p>
+    <dl class="facts"><dt>${L('father')}</dt><dd>${esc(b.parentage || '-')}</dd><dt>${L('khasra')}</dt><dd>${esc(b.khasras || '-')}</dd>
+      <dt>${L('village')}</dt><dd>${esc(villageById(vid).name)}</dd><dt>${L('portal_ref')}</dt><dd>\u2026${esc(String(b.bucket_id).slice(-8))}</dd>
+      ${b.farmer_id ? `<dt>Farmer ID</dt><dd>${esc(b.farmer_id)}${b.reg_status ? ' (' + (b.reg_status === 'APPROVED' ? L('appr') : L('pend')) + ')' : ''}</dd>` : ''}</dl>
+    <p class="now">${L('now')} <span class="st st-${s.cls}">${esc(s.text)}</span>${b._pending ? ' <span class="muted">' + L('waiting') + '</span>' : ''}${b.updated_by_name ? `<br><small class="muted">${esc(L('last_by', b.updated_by_name, b.updated_at))}</small>` : ''}</p>
     ${banners.join('')}
-    ${ro ? '' : `<p class="guide">${portalClaimed ? 'The portal shows the Farmer ID as made. You can add the mobile number and other details below.' : 'Was the Farmer ID made? Tap the green button. If not, tap the reason. The next landholder opens by itself.'}</p>
-      ${b.status !== 'NOT_SURVEYED' && !portalClaimed ? '<button class="btn btn-danger" id="reset">Undo: mark as not checked</button>' : ''}
-      ${portalClaimed && !showMade ? '' : `<button class="btn btn-made" id="made">${ic('check', 24)} Farmer ID made</button>`}
-      <div class="box" id="madeBox" ${showMade ? '' : 'hidden'}>
-        <div class="field"><label for="mob">Farmer's mobile number</label><input id="mob" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(b.mobile)}" placeholder="10 digits"></div>
-        <div class="field"><label for="aad">Aadhaar number (optional)</label><input id="aad" class="input" inputmode="numeric" maxlength="14" value="${esc(b.aadhaar)}" placeholder="12 digits"></div>
-        <div class="field"><label for="fid">Farmer ID (optional)</label><input id="fid" class="input" inputmode="numeric" value="${esc(b.farmer_id)}" placeholder="Paste if you have it"></div>
-        <button class="btn btn-made" id="madeSave">Save: ID made</button>
-      </div>
-      ${portalClaimed ? '' : `<h3>Not made? Tap the reason</h3><p class="hint">Not sure? Tap "More reasons" to see all of them with an explanation.</p>${reasonGrid(vid, b.reason_code)}
-      <div class="box" id="otherBox" hidden><div class="field"><label for="rem2">Write the reason</label><textarea id="rem2" class="input">${esc(b.remarks)}</textarea></div><button class="btn btn-primary" id="otherSave">Save</button></div>`}
-      <details class="more"><summary>More details</summary>
-        <div class="field"><label>Male or female</label><div class="toggle" id="gen">
-          ${['M', 'F'].map(g => `<button data-g="${g}" class="${b.gender === g ? 'on' : ''}">${g === 'M' ? 'Male' : 'Female'}</button>`).join('')}</div>
-          ${b.gender_source === 'AUTO' ? '<small>Guessed from the name. Correct it if wrong.</small>' : ''}</div>
-        <div class="field"><label for="res">Where does the landholder live?</label><select id="res" class="input"><option value="">Not known</option>
+    ${ro ? '' : locked ? `<p class="guide">${L('g_portal')}</p>${b.farmer_id ? `<button class="btn btn-danger" id="unl">${L('unlink')}</button>` : ''}` : `
+      ${fieldMade ? `<p class="guide">${L('g_field')}</p>` : `<p class="guide">${L('g_main')}</p>`}
+      ${b.status !== 'NOT_SURVEYED' ? `<button class="btn btn-danger" id="reset">${L('undo')}</button>` : ''}
+      ${fieldMade ? '' : `<h3>${L('why')}</h3><p class="hint">${L('more_hint')}</p>${reasonGrid(vid, b.reason_code)}
+      <div class="box" id="otherBox" hidden><div class="field"><label for="rem2">${L('write_r')}</label><textarea id="rem2" class="input">${esc(b.remarks)}</textarea></div><button class="btn btn-primary" id="otherSave">${L('save')}</button></div>`}
+      <details class="more"><summary>${L('details')}</summary>
+        <div class="field"><label>${L('gender_q')}</label><div class="toggle" id="gen">
+          ${['M', 'F'].map(g => `<button data-g="${g}" class="${b.gender === g ? 'on' : ''}">${g === 'M' ? L('male') : L('female')}</button>`).join('')}</div>
+          ${b.gender_source === 'AUTO' ? `<small>${L('guessed')}</small>` : ''}</div>
+        <div class="field"><label for="res">${L('lives_q')}</label><select id="res" class="input"><option value="">${L('not_known')}</option>
           ${S.boot.residence.map(r => `<option ${b.residence === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
-        <div class="field"><label for="loc">Present place (if outside)</label><input id="loc" class="input" value="${esc(b.current_location)}" placeholder="District or state"></div>
-        <div class="field"><label for="aad2">Aadhaar number</label><input id="aad2" class="input" inputmode="numeric" maxlength="14" value="${esc(b.aadhaar)}"></div>
-        <div class="field"><label for="mob2">Mobile number</label><input id="mob2" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(b.mobile)}"></div>
-        <div class="field"><label for="rem">Remarks</label><textarea id="rem" class="input">${esc(b.remarks)}</textarea></div>
-        <button class="btn btn-primary" id="detSave">Save details</button>
-      </details>`}
-    ${b.reg_status && isOffice() ? '<button class="btn btn-danger" id="unl">Wrong person? Unlink the registered farmer</button>' : ''}
-    ${navigator.onLine ? '<button class="link" id="hist">See change history</button><div id="histBox"></div>' : ''}`;
+        <div class="field"><label for="loc">${L('place_now')}</label><input id="loc" class="input" value="${esc(b.current_location)}" placeholder="${esc(L('place_ph'))}"></div>
+        <div class="field"><label for="aad2">${L('aadhaar')}</label><input id="aad2" class="input" inputmode="numeric" maxlength="14" value="${esc(b.aadhaar)}"></div>
+        <div class="field"><label for="mob2">${L('mobile')}</label><input id="mob2" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(b.mobile)}"></div>
+        <div class="field"><label for="rem">${L('remarks')}</label><textarea id="rem" class="input">${esc(b.remarks)}</textarea></div>
+        <button class="btn btn-primary" id="detSave">${L('save_det')}</button>
+      </details>
+      ${b.status === 'CLAIMED' ? '' : `<div class="box" id="madeBox"><button class="link" id="made" style="padding:0">${L('made_link')}</button>
+        <div id="madeIn" hidden><p class="hint">${L('made_g')}</p>
+          ${(() => { const near = (S.reg[vid] || []).filter(f => { const n1 = normName(f.name), n2 = normName(b.name); return n1 === n2 || n1.split(' ')[0] === n2.split(' ')[0]; }).slice(0, 5);
+            return near.length ? `<p><b>${L('made_pick')}</b></p>${near.map(f => `<button class="btn" data-pick="${esc(f.farmer_id)}">${esc(f.name)}${f.mobile ? ', \u2026' + esc(String(f.mobile).slice(-4)) : ''} (${f.status === 'APPROVED' ? L('appr') : L('pend')})</button>`).join('')}` : ''; })()}
+          <button class="btn btn-made" id="madeYes">${ic('check', 22)} ${L('made_yes')}</button></div></div>`}`}
+    ${navigator.onLine ? `<button class="link" id="hist">${L('history')}</button><div id="histBox"></div>` : ''}`;
   const mount = r => {
     const q = id => $('#' + id, r);
     let running = false;
-    const run = async (fn, okMsg, next) => { if (running) return; running = true; try { await fn(); toast(okMsg + '. Saved on this phone'); if (next) advance(vid, ids, i); else drawSheet(); } catch (e) { fail(e.message); running = false; } };
+    const run = async (fn, okMsg, next) => { if (running) return; running = true; try { await fn(); toast(okMsg + '. ' + L('saved_phone')); if (next) advance(vid, ids, i); else drawSheet(); } catch (e) { fail(e.message); running = false; } };
     q('x').onclick = () => closeSheet();
     q('skip').onclick = () => advance(vid, ids, i);
-    if (q('sugYes')) q('sugYes').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: b.suggested_code }), 'Saved: ' + sugR.label, true);
+    if (q('regYes')) q('regYes').onclick = () => run(() => linkLocal(vid, regs[0], b), L('linked', regs[0].name), true);
+    if (q('sugYes')) q('sugYes').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: b.suggested_code }), rLabel(sugR), true);
     if (q('dupChk')) q('dupChk').onclick = () => closeSheet(() => go('dups', { vid, focus: b.dup_group }));
-    if (q('made')) q('made').onclick = () => { q('madeBox').hidden = false; q('mob').focus(); };
-    if (q('madeSave')) q('madeSave').onclick = () => {
-      const f = { status: 'CLAIMED', mobile: q('mob').value.replace(/\s/g, '') };
-      const ad = q('aad').value.replace(/\s/g, ''); if (ad) f.aadhaar = ad;
-      const fid = q('fid').value.trim(); if (fid) f.farmer_id = fid;
-      run(() => saveOne(vid, b, f), 'Saved: Farmer ID made', true);
-    };
+    if (q('made')) q('made').onclick = () => { q('madeIn').hidden = false; };
+    if (q('madeYes')) q('madeYes').onclick = () => run(() => saveOne(vid, b, { status: 'CLAIMED' }), L('st_made'), true);
+    $$('[data-pick]', r).forEach(el => el.onclick = () => { const f = (S.reg[vid] || []).find(x => x.farmer_id === el.dataset.pick); run(() => linkLocal(vid, f, b), L('linked', f.name), true); });
     $$('.rbtn', r).forEach(el => el.onclick = () => {
       const code = el.dataset.code;
       if (code === 'B10') { q('otherBox').hidden = false; q('rem2').focus(); return; }
-      run(() => saveOne(vid, b, { status: 'REASON', reason_code: code }), 'Saved: ' + reason(code).label, true);
+      run(() => saveOne(vid, b, { status: 'REASON', reason_code: code }), rLabel(reason(code)), true);
     });
-    if (q('otherSave')) q('otherSave').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: 'B10', remarks: q('rem2').value.trim() }), 'Saved', true);
+    if (q('otherSave')) q('otherSave').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: 'B10', remarks: q('rem2').value.trim() }), rLabel(reason('B10')), true);
     let gender = b.gender;
     $$('#gen button', r).forEach(el => el.onclick = () => { gender = el.dataset.g; $$('#gen button', r).forEach(x => x.classList.toggle('on', x === el)); });
     if (q('detSave')) q('detSave').onclick = () => {
@@ -1048,15 +1216,15 @@ function bucketSheet(vid, ids, i) {
       if (gender !== b.gender) f.gender = gender;
       const ad = q('aad2').value.replace(/\s/g, ''), mo = q('mob2').value.replace(/\s/g, '');
       if (ad !== b.aadhaar) f.aadhaar = ad; if (mo !== b.mobile) f.mobile = mo;
-      run(() => saveOne(vid, b, f), 'Details saved', false);
+      run(() => saveOne(vid, b, f), L('det_saved'), false);
     };
-    if (q('reset')) q('reset').onclick = () => run(() => saveOne(vid, b, { status: 'NOT_SURVEYED', reason_code: '' }), 'Undone', false);
-    if (q('unl')) q('unl').onclick = () => { if (!confirm('Unlink this registered farmer from this entry? The entry goes back to "not checked".')) return;
-      busy(q('unl'), 'Unlinking…', async () => { await api('regUnlink', { bucket_id: b.bucket_id }); await loadVillage(vid, true); toast('Unlinked'); closeSheet(); }); };
+    if (q('reset')) q('reset').onclick = () => run(() => saveOne(vid, b, { status: 'NOT_SURVEYED', reason_code: '' }), L('undone'), false);
+    if (q('unl')) q('unl').onclick = () => { if (!confirm(L('unlink_q'))) return;
+      busy(q('unl'), '…', async () => { await api('regUnlink', { bucket_id: b.bucket_id }); await loadVillage(vid, true); toast(L('unlinked')); closeSheet(); }); };
     if (q('hist')) q('hist').onclick = async () => {
-      q('histBox').innerHTML = '<p class="hint">Loading…</p>';
+      q('histBox').innerHTML = `<p class="loading"><span class="spin"></span></p>`;
       try { const res = await api('getBucketLog', { bucket_id: b.bucket_id });
-        q('histBox').innerHTML = res.log.length ? res.log.reverse().map(l => `<div class="hist"><b>${esc(l.ts)}</b> ${esc(l.by)}: ${esc(l.field)} ${l.old_value ? esc(l.old_value) + ' to ' : 'set to '}${esc(l.new_value || 'blank')}</div>`).join('') : '<p class="hint">No changes recorded yet.</p>';
+        q('histBox').innerHTML = res.log.length ? res.log.reverse().map(l => `<div class="hist"><b>${esc(l.ts)}</b> ${esc(l.by)}: ${esc(l.field)} ${l.old_value ? esc(l.old_value) + ' \u2192 ' : ''}${esc(l.new_value || '-')}</div>`).join('') : '<p class="hint">-</p>';
       } catch (e) { q('histBox').innerHTML = `<p class="err">${esc(e.message)}</p>`; }
     };
   };
@@ -1070,33 +1238,36 @@ function familySheet(vid, key, sel) {
   const members = (S.buckets[vid] || []).filter(b => (normName(b.parentage) || '-') === key).sort((x, y) => x.name.localeCompare(y.name));
   const locked = b => b.status === 'CLAIMED';
   const html = `
-    <div class="snav"><button id="x">Close</button><span>${members.length} landholders</span><span></span></div>
-    <h2 class="nm">Family of ${esc(members[0] ? members[0].parentage : '')}</h2>
-    <p class="guide">${ro ? 'Status of each landholder in this family.' : 'Tick the landholders this applies to, then tap the reason. Tap a name to open that landholder alone.'}</p>
-    ${ro ? '' : '<div class="row2"><button class="btn" id="all">Tick all not done</button><button class="btn" id="none">Untick all</button></div>'}
+    <div class="snav"><button id="x">${L('close')}</button><span>${L('n_lh', members.length)}</span><span></span></div>
+    <h2 class="nm">${esc(L('fam_of', members[0] ? members[0].parentage : ''))}</h2>
+    <p class="guide">${ro ? L('ins_ro') : L('fam_g')}</p>
+    ${ro ? '' : `<div class="row2"><button class="btn" id="all">${L('tick_all')}</button><button class="btn" id="none">${L('untick')}</button></div>`}
     <div class="box">${members.map(b => { const s = statusOf(b); return `<div class="mem">
       ${ro ? `<span class="dot d-${s.cls}"></span>` : `<input type="checkbox" data-id="${esc(b.bucket_id)}" ${sel.has(b.bucket_id) ? 'checked' : ''} ${locked(b) ? 'disabled' : ''} aria-label="${esc(b.name)}">`}
-      <span class="rt"><button class="link one" data-id="${esc(b.bucket_id)}" style="padding:0;text-align:left">${esc(b.name)}</button><small>Khasra ${esc(shortKh(b.khasras))}</small></span>
+      <span class="rt"><button class="link one" data-id="${esc(b.bucket_id)}" style="padding:0;text-align:left">${esc(b.name)}</button><small>${L('khasra')} ${esc(shortKh(b.khasras))}</small></span>
       <span class="st st-${s.cls}">${esc(s.text)}</span></div>`; }).join('')}</div>
-    ${ro ? '' : `<h3>Reason for the ticked landholders</h3>${reasonGrid(vid, '')}
-      <div class="box" id="otherBox" hidden><div class="field"><label for="rem2">Write the reason</label><textarea id="rem2" class="input"></textarea></div><button class="btn btn-primary" id="otherSave">Save</button></div>`}`;
+    ${ro ? '' : `<h3>${L('reason_ticked')}</h3>${reasonGrid(vid, '')}
+      <div class="box" id="otherBox" hidden><div class="field"><label for="rem2">${L('write_r')}</label><textarea id="rem2" class="input"></textarea></div><button class="btn btn-primary" id="otherSave">${L('save')}</button></div>`}`;
   const mount = r => {
     $('#x', r).onclick = () => closeSheet();
     $$('input[type=checkbox]', r).forEach(c => c.onchange = () => { if (c.checked) sel.add(c.dataset.id); else sel.delete(c.dataset.id); });
     if ($('#all', r)) $('#all', r).onclick = () => { members.forEach(b => { if (!locked(b) && b.status === 'NOT_SURVEYED') sel.add(b.bucket_id); }); drawSheet(); };
     if ($('#none', r)) $('#none', r).onclick = () => { sel.clear(); drawSheet(); };
     $$('.one', r).forEach(el => el.onclick = () => { const ids = members.map(b => b.bucket_id); SHEET.build = () => bucketSheet(vid, ids, ids.indexOf(el.dataset.id)); drawSheet(); });
+    let running = false;
     const apply = async (f, label) => {
+      if (running) return;
       const items = members.filter(b => sel.has(b.bucket_id) && !locked(b)).map(b => ({ b, f: Object.assign({}, f) }));
-      if (!items.length) { fail('Tick at least one landholder first.'); return; }
-      try { await saveMany(vid, items); toast(`Saved for ${items.length}: ${label}`); sel.clear(); drawSheet(); } catch (e) { fail(e.message); }
+      if (!items.length) { fail(L('tick_first')); return; }
+      running = true;
+      try { await saveMany(vid, items); toast(L('saved_for', items.length, label)); sel.clear(); drawSheet(); } catch (e) { fail(e.message); running = false; }
     };
     $$('.rbtn', r).forEach(el => el.onclick = () => {
       const code = el.dataset.code;
       if (code === 'B10') { $('#otherBox', r).hidden = false; return; }
-      apply({ status: 'REASON', reason_code: code }, reason(code).label);
+      apply({ status: 'REASON', reason_code: code }, rLabel(reason(code)));
     });
-    if ($('#otherSave', r)) $('#otherSave', r).onclick = () => { const t = $('#rem2', r).value.trim(); if (!t) { fail('Write the reason.'); return; } apply({ status: 'REASON', reason_code: 'B10', remarks: t }, 'Other'); };
+    if ($('#otherSave', r)) $('#otherSave', r).onclick = () => { const t = $('#rem2', r).value.trim(); if (!t) { fail(L('v_rem')); return; } apply({ status: 'REASON', reason_code: 'B10', remarks: t }, rLabel(reason('B10'))); };
   };
   return { html, mount };
 }
@@ -1106,22 +1277,22 @@ function openSuggestions(vid) {
   openSheet(() => {
     const list = (S.buckets[vid] || []).filter(b => b.status === 'NOT_SURVEYED' && b.suggested_code);
     const codes = [...new Set(list.map(b => b.suggested_code))];
-    const html = `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
-      <h2 class="nm">Check these buckets</h2>
-      <p class="guide">The names suggest these are not individual farmers. Confirm a group in one tap, or tap a name to mark it differently.</p>
-      ${codes.length ? codes.map(c => { const l = list.filter(b => b.suggested_code === c); return `<div class="box"><h3 style="margin-top:0">${esc(reason(c).label)}: ${l.length}</h3>
-        ${l.map(b => `<div class="mem"><span class="rt"><button class="link one" data-id="${esc(b.bucket_id)}" style="padding:0;text-align:left">${esc(b.name)}</button><small>${esc(b.parentage)}, khasra ${esc(shortKh(b.khasras))}</small></span></div>`).join('')}
-        <button class="btn btn-primary conf" data-c="${c}">Confirm all ${l.length} as ${esc(reason(c).label)}</button></div>`; }).join('') : '<p class="hint">Nothing left to check.</p>'}`;
+    const html = `<div class="snav"><button id="x">${L('close')}</button><span></span><span></span></div>
+      <h2 class="nm">${L('sug_t')}</h2>
+      <p class="guide">${L('sug_g')}</p>
+      ${codes.length ? codes.map(c => { const l = list.filter(b => b.suggested_code === c); return `<div class="box"><h3 style="margin-top:0">${esc(rLabel(reason(c)))}: ${l.length}</h3>
+        ${l.map(b => `<div class="mem"><span class="rt"><button class="link one" data-id="${esc(b.bucket_id)}" style="padding:0;text-align:left">${esc(b.name)}</button><small>${esc(b.parentage)}, ${L('khasra')} ${esc(shortKh(b.khasras))}</small></span></div>`).join('')}
+        <button class="btn btn-primary conf" data-c="${c}">${esc(L('conf_all', l.length, rLabel(reason(c))))}</button></div>`; }).join('') : `<p class="guide">${L('nothing')}</p>`}`;
     const mount = r => {
       $('#x', r).onclick = () => closeSheet();
-      $$('.conf', r).forEach(el => el.onclick = async () => {
+      $$('.conf', r).forEach(el => el.onclick = () => busy(el, '…', async () => {
         const c = el.dataset.c; const l = list.filter(b => b.suggested_code === c);
         const local = l.map(b => ({ bucket_id: b.bucket_id, fields: { status: 'REASON', reason_code: c } }));
         l.forEach(b => applyLocal(b, { status: 'REASON', reason_code: c }));
         await kput('b:' + vid, S.buckets[vid]); S.dirty = true;
         await enqueue('confirmSuggestions', { village_id: vid, codes: [c] }, local);
-        toast(`Confirmed ${l.length}`); drawSheet();
-      });
+        toast(L('conf_n', l.length)); drawSheet();
+      }));
       $$('.one', r).forEach(el => el.onclick = () => { const ids = list.map(b => b.bucket_id); SHEET.build = () => bucketSheet(vid, ids, ids.indexOf(el.dataset.id)); drawSheet(); });
     };
     return { html, mount };
@@ -1152,7 +1323,7 @@ function applyEffects(effects) {
   return Promise.all([...touched].map(vid => kput('b:' + vid, S.buckets[vid])));
 }
 VIEWS.dups = async function (a) {
-  setHeader('Same farmer check'); const main = $('#view');
+  setHeader(L('f_dup')); const main = $('#view');
   main.innerHTML = loadingHtml('Loading…');
   await loadVillage(a.vid);
   let groups = null, offline = false;
@@ -1163,20 +1334,20 @@ VIEWS.dups = async function (a) {
   const draw = () => {
     const live = groups.filter(g => g.members.length >= 2);
     main.innerHTML = `<section class="pad">
-      <p class="guide">A farmer can get only one Farmer ID. If these entries are the same person, tick the entry where the ID will be made and tap "Yes, same farmer". The other entries are then marked "Same farmer in multiple buckets". If someone is a different person, tap "Not the same person" under that name.</p>
-      ${offline ? '<div class="banner"><p>You are offline. Matches in other villages are not shown.</p></div>' : ''}
+      <p class="guide">${L('d_g')}</p>
+      ${offline ? `<div class="banner"><p>${L('d_off')}</p></div>` : ''}
       ${live.length ? live.map(g => {
         const primary = (g.members.find(m => m.status === 'CLAIMED') || g.members.find(m => m.dup_role === 'PRIMARY') ||
           g.members.slice().sort((x, y) => Number(y.khasra_count) - Number(x.khasra_count))[0]).bucket_id;
         const canAct = g.members.some(m => m.editable);
         return `<div class="dcard" data-g="${esc(g.group)}">
-          <p class="dconf ${g.conf}">${g.conf === 'HIGH' ? 'Strong match' : g.conf === 'MEDIUM' ? 'Possible match' : 'Confirmed: same farmer'}</p>
+          <p class="dconf ${g.conf}">${g.conf === 'HIGH' ? L('d_strong') : g.conf === 'MEDIUM' ? L('d_possible') : L('d_conf')}</p>
           ${g.members.map(m => `<label class="dm"><input type="radio" name="p-${esc(g.group)}" value="${esc(m.bucket_id)}" ${m.bucket_id === primary ? 'checked' : ''} ${canAct ? '' : 'disabled'}>
-            <span class="rt"><b>${esc(m.name)}</b><small>Father / husband: ${esc(m.parentage)}</small><small>${esc(m.village)}, khasra ${esc(shortKh(m.khasras))}</small>
-            <small>${esc(statusOf(m).text)}</small>${canAct ? `<button type="button" class="link nb" data-b="${esc(m.bucket_id)}">Not the same person</button>` : ''}</span></label>`).join('')}
-          ${canAct ? `<p class="hint" style="margin:10px 0 0">The ticked entry is where the Farmer ID is made.</p><button class="btn btn-primary yes">${g.confirmed ? 'Save main entry' : 'Yes, same farmer'}</button>`
-                   : '<p class="hint">Only staff of these villages can confirm.</p>'}</div>`;
-      }).join('') : '<p class="hint">No possible matches in this village.</p>'}</section>`;
+            <span class="rt"><b>${esc(m.name)}</b><small>${L('father')}: ${esc(m.parentage)}</small><small>${esc(m.village)}, ${L('khasra')} ${esc(shortKh(m.khasras))}</small>
+            <small>${esc(statusOf(m).text)}</small>${canAct ? `<button type="button" class="link nb" data-b="${esc(m.bucket_id)}">${L('d_not')}</button>` : ''}</span></label>`).join('')}
+          ${canAct ? `<p class="hint" style="margin:10px 0 0">${L('d_tick')}</p><button class="btn btn-primary yes">${g.confirmed ? L('d_main') : L('d_yes')}</button>`
+                   : `<p class="hint">${L('d_staff')}</p>`}</div>`;
+      }).join('') : `<p class="guide">${L('d_none')}</p>`}</section>`;
     on(main, '.yes', 'click', async el => {
       const card = el.closest('.dcard'); const g = groups.find(x => x.group === card.dataset.g);
       const primaryId = $('input[type=radio]:checked', card).value;
@@ -1184,7 +1355,7 @@ VIEWS.dups = async function (a) {
       await applyEffects(effects); S.dirty = true;
       await enqueue('dupConfirm', { member_ids: g.members.map(m => m.bucket_id), primary_id: primaryId }, effects);
       g.members.forEach(m => { Object.assign(m, effects.find(e => e.bucket_id === m.bucket_id).fields); });
-      g.confirmed = true; g.conf = 'CONFIRMED'; toast('Saved: same farmer'); draw();
+      g.confirmed = true; g.conf = 'CONFIRMED'; toast(L('d_saved')); draw();
     });
     on(main, '.nb', 'click', async (el, ev) => {
       ev.preventDefault();
@@ -1196,7 +1367,7 @@ VIEWS.dups = async function (a) {
       if (g.members.length === 1) { const x = g.members[0]; effects.push({ bucket_id: x.bucket_id, fields: Object.assign({ dup_confirmed: '', dup_group: '', dup_role: '', dup_conf: '' }, revert(x)) }); g.members = []; }
       await applyEffects(effects); S.dirty = true;
       await enqueue('dupBreak', { bucket_id: id }, effects);
-      toast('Saved: not the same person'); draw();
+      toast(L('d_nsaved')); draw();
     });
   };
   draw();
@@ -1204,64 +1375,63 @@ VIEWS.dups = async function (a) {
 
 /* ---------- Camp ---------- */
 VIEWS.camp = async function () {
-  setHeader('Record a camp');
-  const vs = villages().filter(v => canEditV(v.village_id)).sort((a, b) => a.name.localeCompare(b.name));
-  $('#view').innerHTML = `<section class="pad"><p class="guide">Fill this after each Farmer ID camp. It saves even without internet.</p>
-    <div class="field"><label for="v">Village</label><select id="v" class="input">${vs.map(v => `<option value="${esc(v.village_id)}">${esc(v.name)}</option>`).join('')}</select></div>
-    <div class="field"><label for="d">Date</label><input id="d" type="date" class="input" value="${todayIST()}"></div>
-    <div class="field"><label for="p">Place</label><input id="p" class="input" placeholder="e.g. Panchayat Ghar"></div>
-    <div class="field"><label for="o">Officials present</label><input id="o" class="input" placeholder="Names"></div>
-    <div class="row2"><div class="field"><label for="n">People who came</label><input id="n" class="input" inputmode="numeric"></div>
-      <div class="field"><label for="i">Farmer IDs made</label><input id="i" class="input" inputmode="numeric"></div></div>
-    <button class="btn btn-primary" id="save">Save camp</button></section>`;
-  $('#save').onclick = () => busy($('#save'), 'Saving…', async () => {
-    if (!vs.length) throw new Error('No village is assigned to you.');
-    if (!$('#p').value.trim()) throw new Error('Type the place of the camp.');
+  setHeader(L('camp_t'));
+  const vs = villages().filter(v => canEditV(v.village_id) && v.practice !== 'Y').sort((a, b) => a.name.localeCompare(b.name));
+  $('#view').innerHTML = `<section class="pad"><p class="guide">${L('c_g')}</p>
+    <div class="field"><label for="v">${L('village')}</label><select id="v" class="input">${vs.map(v => `<option value="${esc(v.village_id)}">${esc(v.name)}</option>`).join('')}</select></div>
+    <div class="field"><label for="d">${L('c_date')}</label><input id="d" type="date" class="input" value="${todayIST()}"></div>
+    <div class="field"><label for="p">${L('c_place')}</label><input id="p" class="input" placeholder="${esc(L('c_place_ph'))}"></div>
+    <div class="field"><label for="o">${L('c_off')}</label><input id="o" class="input" placeholder="${esc(L('c_off_ph'))}"></div>
+    <div class="row2"><div class="field"><label for="n">${L('c_people')}</label><input id="n" class="input" inputmode="numeric"></div>
+      <div class="field"><label for="i">${L('c_ids')}</label><input id="i" class="input" inputmode="numeric"></div></div>
+    <button class="btn btn-primary" id="save">${L('c_save')}</button></section>`;
+  $('#save').onclick = () => busy($('#save'), '…', async () => {
+    if (!vs.length) throw new Error(L('c_novill'));
+    if (!$('#p').value.trim()) throw new Error(L('c_place_need'));
     await enqueue('saveCamp', { village_id: $('#v').value, date: $('#d').value, venue: $('#p').value.trim(), officials: $('#o').value.trim(),
       attended: $('#n').value.trim(), ids_generated: $('#i').value.trim() });
-    toast('Camp saved on this phone'); history.back();
+    toast(L('c_saved')); history.back();
   });
 };
 
 /* ---------- Help ---------- */
 VIEWS.help = async function () {
-  setHeader('Help');
-  const z = Number(S.zoom || 1);
+  setHeader(L('help_t'));
+  const z = Number(S.zoom || 1), hi = LANG === 'hi';
   $('#view').innerHTML = `<section class="pad">
-    ${helplineHtml() ? `<h2>Need help now?</h2>${helplineHtml()}` : ''}
-    <h2>Learn the app</h2>
-    <button class="btn btn-primary" id="tour">Show the welcome tour again</button>
-    ${villages().some(v => v.practice === 'Y') ? '<button class="btn" id="prac">Open the Practice village (nothing is counted)</button>' : ''}
-    <h2>Text size</h2>
-    <div class="tsize">${[[1, 'A'], [1.12, 'A+'], [1.25, 'A++']].map(x => `<button data-z="${x[0]}" class="${z === x[0] ? 'on' : ''}">${x[1]}</button>`).join('')}</div>
-    <h2>Put the app on your phone</h2>
-    <p><b>Android:</b> open this page in Chrome, tap the &#8942; menu, then <b>Add to Home screen</b> or <b>Install app</b>.</p>
-    <p><b>iPhone:</b> open this page in Safari, tap the Share button, then <b>Add to Home Screen</b>.</p>
-    <h2>Daily work in 5 steps</h2>
-    <div class="guide">1. Open the app once where there is signal. Your villages download to the phone.</div>
-    <div class="guide">2. Tap "Start today's work". The app shows what to do first.</div>
-    <div class="guide">3. Mark families together, then the rest one by one. Tap the reason; the next landholder opens by itself.</div>
-    <div class="guide">4. When a Farmer ID is made, tap "Farmer ID made" and type the mobile number.</div>
-    <div class="guide">5. Get signal once before 2:30 PM so the office receives your work.</div>
-    <h2>Colours</h2>
-    <div class="legend"><span><i style="background:var(--made)"></i>ID made</span><span><i style="background:var(--tc)"></i>Can be done</span><span><i style="background:var(--tb)"></i>Stuck</span><span><i style="background:var(--ta)"></i>Can't be claimed</span><span><i style="background:var(--ns)"></i>Not checked yet</span></div>
-    <h2>Words used</h2>
-    <dl class="gl">
-      <dt>Entry / record (bucket)</dt><dd>One landholder's record on the Farmer ID portal, with all the khasras the portal put together for that person.</dd>
-      <dt>Farmer ID made (claimed)</dt><dd>The Farmer ID has been generated for that entry.</dd>
-      <dt>Same farmer</dt><dd>The portal sometimes shows one person in two entries because of a spelling difference. Only one entry can get the ID.</dd>
-      <dt>Can't be claimed</dt><dd>Will never get a Farmer ID, for example State land or a dead owner whose mutation is not done.</dd>
-      <dt>Stuck</dt><dd>Can get the ID only when the person comes back or links Aadhaar with a mobile number.</dd>
-      <dt>Can be done</dt><dd>Will get the ID with normal field work.</dd>
-      <dt>Uploaded</dt><dd>Your work has reached the office. Until then it is safe on your phone.</dd>
-    </dl>
-    <h2>Mistakes</h2>
-    <p>Open the landholder again and tap the correct reason, or tap the red Undo button. You can correct any entry any time.</p>
-    <button class="btn btn-danger" id="out">Log out</button>
+    <h2>${L('lang')}</h2>
+    <div class="tsize" id="lg"><button data-l="hi" class="${hi ? 'on' : ''}">Hinglish</button><button data-l="en" class="${hi ? '' : 'on'}">English</button></div>
+    ${helplineHtml() ? `<h2>${hi ? 'Abhi madad chahiye?' : 'Need help now?'}</h2>${helplineHtml()}` : ''}
+    <h2>${hi ? 'App seekhein' : 'Learn the app'}</h2>
+    <button class="btn btn-primary" id="tour">${hi ? 'Swagat tour dobara dekhein' : 'Show the welcome tour again'}</button>
+    ${villages().some(v => v.practice === 'Y') ? `<button class="btn" id="prac">${hi ? 'Practice gaon kholein (kuch gina nahi jata)' : 'Open the Practice village (nothing is counted)'}</button>` : ''}
+    <h2>${hi ? 'Akshar ka size' : 'Text size'}</h2>
+    <div class="tsize" id="ts">${[[1, 'A'], [1.12, 'A+'], [1.25, 'A++']].map(x => `<button data-z="${x[0]}" class="${z === x[0] ? 'on' : ''}">${x[1]}</button>`).join('')}</div>
+    <h2>${hi ? 'App phone par lagayein' : 'Put the app on your phone'}</h2>
+    <p><b>Android:</b> ${hi ? 'Chrome mein yeh page kholein, &#8942; menu dabayein, phir <b>Add to Home screen</b> ya <b>Install app</b>.' : 'open this page in Chrome, tap the &#8942; menu, then <b>Add to Home screen</b> or <b>Install app</b>.'}</p>
+    <p><b>iPhone:</b> ${hi ? 'Safari mein yeh page kholein, Share button dabayein, phir <b>Add to Home Screen</b>.' : 'open this page in Safari, tap the Share button, then <b>Add to Home Screen</b>.'}</p>
+    <h2>${hi ? 'Roz ka kaam' : 'Daily work'}</h2>
+    ${(hi ? ['Subah network mein app ek baar kholein. Aapke gaon phone mein aa jayenge.', '"Aaj ka kaam shuru karein" dabayein. App batayega pehle kya karna hai.',
+      'Farmer ID portal par banayein. App mein dobara bharne ki zaroorat nahi, shaam ki portal file se apne aap aa jayegi.', 'Jinki ID nahi ban rahi, unki wajah chunein. Parivaar ek saath bhar sakte hain.',
+      'Registered kisan jodein: sahi entry par ek tap.', '2:30 baje se pehle ek baar network mein aayein taaki kaam office pahunch jaye.']
+     : ['Open the app once where there is signal. Your villages download to the phone.', 'Tap "Start today\'s work". The app shows what to do first.',
+      'Make Farmer IDs on the portal. No need to enter them again here: they arrive automatically with the evening portal file.', 'For landholders whose ID cannot be made, tap the reason. Families can be marked together.',
+      'Link registered farmers: one tap on the right entry.', 'Get signal once before 2:30 PM so your work reaches the office.']).map((x, k) => `<div class="guide">${k + 1}. ${x}</div>`).join('')}
+    <h2>${hi ? 'Rang' : 'Colours'}</h2>${legendHtml({ made: '', C: '', B: '', A: '', ns: '', unl: 0 }).replace(/<b><\/b>/g, '')}
+    <h2>${hi ? 'Shabd' : 'Words used'}</h2>
+    <dl class="gl">${(hi ? [['Entry (bucket)', 'Portal par ek kisan ka record, uske saare khasron ke saath.'], ['ID bani', 'Us entry ki Farmer ID ban chuki hai.'], ['Ek hi kisan', 'Spelling farak se portal ek vyakti ko do entries mein dikha deta hai. ID sirf ek entry se banti hai.'],
+      ['Nahi ho sakta', 'Kabhi Farmer ID nahi banegi, jaise sarkari zameen ya intkal na hua ho.'], ['Atka hai', 'Vyakti aaye ya Aadhaar-mobile link ho tabhi ID banegi.'], ['Ho sakta hai', 'Aam field kaam se ID ban jayegi.'], ['Upload', 'Aapka kaam office pahunch gaya. Tab tak phone mein surakshit hai.']]
+     : [['Entry (bucket)', "One landholder's record on the portal, with all the khasras the portal grouped for that person."], ['ID made', 'The Farmer ID has been generated for that entry.'], ['Same farmer', 'Because of a spelling difference the portal may show one person in two entries. Only one can get the ID.'],
+      ["Can't be claimed", 'Will never get a Farmer ID, for example State land, or a dead owner whose mutation is not done.'], ['Stuck', 'Gets the ID only when the person comes back or links Aadhaar with a mobile.'], ['Can be done', 'Gets the ID with normal field work.'], ['Uploaded', 'Your work has reached the office. Until then it is safe on your phone.']])
+      .map(x => `<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('')}</dl>
+    <h2>${hi ? 'Galti' : 'Mistakes'}</h2>
+    <p>${hi ? 'Kisan ko dobara kholein aur sahi wajah chunein, ya laal "Galti hui?" button dabayein. Koi bhi entry kabhi bhi theek kar sakte hain.' : 'Open the landholder again and tap the correct reason, or tap the red "Wrong entry?" button. You can correct any entry any time.'}</p>
+    <button class="btn btn-danger" id="out">${L('logout')}</button>
     <p class="hint">Version ${APP_V}</p></section>`;
   $('#tour').onclick = showTour;
   const p = $('#prac'); if (p) p.onclick = () => go('village', { vid: villages().find(v => v.practice === 'Y').village_id, filter: 'todo', mode: 'fam', q: '', n: 120 });
-  on($('#view'), '.tsize button', 'click', async el => { S.zoom = Number(el.dataset.z); document.documentElement.style.setProperty('--z', S.zoom); await kput('zoom', S.zoom); render(); });
+  on($('#view'), '#ts button', 'click', async el => { S.zoom = Number(el.dataset.z); document.documentElement.style.setProperty('--z', S.zoom); await kput('zoom', S.zoom); render(); });
+  on($('#view'), '#lg button', 'click', async el => { LANG = el.dataset.l; await kput('lang', LANG); S.top = {}; render(); });
   $('#out').onclick = logout;
 };
 
@@ -1269,18 +1439,18 @@ VIEWS.help = async function () {
 function openSyncSheet() {
   openSheet(() => {
     const names = {}; Object.values(S.buckets).forEach(arr => arr.forEach(b => names[b.bucket_id] = b.name));
-    const html = `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
-      <h2 class="nm">Uploads</h2>
-      <p>${S.queue.length ? `${S.queue.length} change${S.queue.length > 1 ? 's are' : ' is'} saved on this phone and waiting to upload.` : 'Everything you entered has been uploaded.'}</p>
-      <p class="hint">${navigator.onLine ? 'Internet: connected.' : 'Internet: not connected. Changes will upload when signal returns.'} Last upload: ${esc(S.lastSync || 'not yet')}</p>
-      ${S.problems.length ? `<h3>Not accepted by the server</h3>${S.problems.map(p => `<div class="prob">${p.bucket_id ? '<b>' + esc(names[p.bucket_id] || p.bucket_id.slice(-8)) + '</b>: ' : ''}${esc(p.error)}</div>`).join('')}
-        <p class="hint">Open these landholders again and correct them.</p><button class="btn" id="clr">Clear this list</button>` : ''}
-      <button class="btn btn-primary" id="up">Upload now</button>
-      <button class="btn" id="rf">Download latest data</button>`;
+    const html = `<div class="snav"><button id="x">${L('close')}</button><span></span><span></span></div>
+      <h2 class="nm">${L('up_t')}</h2>
+      <p>${S.queue.length ? L('up_wait', S.queue.length) : L('up_all')}</p>
+      <p class="hint">${navigator.onLine ? L('net_y') : L('net_n')} ${L('last_up', esc(S.lastSync || L('not_yet')))}</p>
+      ${S.problems.length ? `<h3>${L('prob_t')}</h3>${S.problems.map(p => `<div class="prob">${p.bucket_id ? '<b>' + esc(names[p.bucket_id] || String(p.bucket_id).slice(-8)) + '</b>: ' : ''}${esc(p.error)}</div>`).join('')}
+        <p class="hint">${L('prob_h')}</p><button class="btn" id="clr">${L('clear')}</button>` : ''}
+      <button class="btn btn-primary" id="up">${L('up_now')}</button>
+      <button class="btn" id="rf">${L('dl_new')}</button>`;
     const mount = r => {
       $('#x', r).onclick = () => closeSheet();
-      $('#up', r).onclick = async () => { if (!navigator.onLine) { fail('No internet connection.'); return; } await sync(); drawSheet(); if (S.queue.length) fail('Some changes are still waiting. Check the signal.'); else toast('Everything has reached the office'); };
-      $('#rf', r).onclick = async () => { if (!navigator.onLine) { fail('No internet connection.'); return; } info('Downloading the latest data…'); await sync(); await refreshBoot(); await refreshLoadedVillages(); refreshStats(true, true); toast('Latest data downloaded'); drawSheet(); };
+      $('#up', r).onclick = () => busy($('#up', r), L('p_busy'), async () => { if (!navigator.onLine) throw new Error(L('net_n')); await sync(); drawSheet(); if (S.queue.length) fail(L('still_wait')); else toast(L('all_reach')); });
+      $('#rf', r).onclick = () => busy($('#rf', r), L('dl_msg'), async () => { if (!navigator.onLine) throw new Error(L('net_n')); await sync(); await refreshBoot(); await refreshLoadedVillages(); refreshStats(true, true); toast(L('dl_done')); drawSheet(); });
       if ($('#clr', r)) $('#clr', r).onclick = async () => { S.problems = []; await persistQueue(); updatePill(); drawSheet(); };
     };
     return { html, mount };
@@ -1290,8 +1460,8 @@ function openSyncSheet() {
 async function logout() {
   if (S.queue.length && !confirm(`${S.queue.length} changes are not uploaded yet. They will stay on this phone and upload after you log in again.\n\nLog out anyway?`)) return;
   try { if (navigator.onLine) await api('logout'); } catch (e) {}
-  for (const k of await kkeys()) if (String(k).startsWith('b:') || String(k).startsWith('stats:')) await kdel(k);
-  S.session = null; S.buckets = {}; S.stats = {}; S.top = {}; await kdel('session'); await kdel('boot');
+  for (const k of await kkeys()) if (String(k).startsWith('b:') || String(k).startsWith('r:') || String(k).startsWith('stats:')) await kdel(k);
+  S.session = null; S.buckets = {}; S.reg = {}; S.stats = {}; S.top = {}; S.checklist = null; await kdel('session'); await kdel('boot');
   NAV.stack = [{ name: 'login', args: {} }]; history.replaceState({}, ''); render();
 }
 
@@ -1317,7 +1487,8 @@ async function parsePortalFile(f) {
       if (!get(0)) continue;
       out.push([get(0), get(1), get(2), get(3), get(4), get(5), get(6), get(7), get(8), b64digits(get(9)), get(10), get(11), get(12)]);
     }
-    return { type: 'reg', name: f.name, rows: out };
+    const m = f.name.match(/(\d{13})/);
+    return { type: 'reg', name: f.name, rows: out, file_ts: m ? m[1] : '' };
   }
   const hi = rows.findIndex(r => r.some(c => /^\s*bucket\s*id\s*$/i.test(String(c))));
   if (hi < 0) throw new Error(f.name + ': not a portal file this app knows (no "Bucket ID" or "centralId" column).');
@@ -1347,18 +1518,29 @@ VIEWS.upload = async function () {
     for (const f of files) {
       try {
         const p = await parsePortalFile(f);
-        const pv = p.type === 'reg' ? await api('regPreview', { rows: p.rows }, 120000)
+        if (p.type === 'reg') {
+          const dl = p.file_ts ? new Date(Number(p.file_ts) + 19800000).toISOString().slice(0, 10) : todayIST();
+          const start = S.boot.settings.reg_start_date || '2026-08-02';
+          const back = new Date(dl + 'T00:00:00Z'); back.setUTCMonth(back.getUTCMonth() - 1);
+          p.cov_to = dl; p.cov_from = back.toISOString().slice(0, 10) < start ? start : back.toISOString().slice(0, 10);
+        }
+        const pv = p.type === 'reg' ? await api('regPreview', { rows: p.rows, file_ts: p.file_ts, cov_from: p.cov_from, cov_to: p.cov_to }, 120000)
           : await api('uploadPreview', { rows: p.rows, file_ts: p.file_ts, tehsil_id: admin ? $('#t').value : '' }, 120000);
-        jobs.push({ p, pv, state: 'ready' });
+        jobs.push({ p, pv, state: 'ready', file: f });
       } catch (err) { jobs.push({ p: { name: f.name }, error: err.message, state: 'error' }); }
     }
     jobs.sort((x, y) => (x.p.type === 'reg') - (y.p.type === 'reg'));
-    const regSummary = j => { const m = j.pv.match || {};
+    const regSummary = (j, k) => { const m = j.pv.match || {};
       return `<p class="tag" style="display:inline-block;margin:0 0 6px">Registered farmers file</p>
+        <p>Downloaded from the portal: <b>${esc(j.pv.downloaded_at || '-')}</b> (read from the file name)</p>
+        ${j.state === 'ready' ? `<div class="row2"><div class="field"><label>Period chosen on the portal: from</label><input type="date" class="input cf" data-k="${k}" value="${esc(j.p.cov_from)}"></div>
+          <div class="field"><label>to</label><input type="date" class="input ct" data-k="${k}" value="${esc(j.p.cov_to)}"></div></div>
+          <div class="field"><label>Note (optional)</label><input class="input cn" data-k="${k}" placeholder="e.g. 2 Sep to 2 Oct"></div>` : ''}
+        ${j.pv.missing ? `<p class="w">${j.pv.missing} farmer(s) from an earlier file of the same period are missing from this file: they will be listed as "No longer on the portal".</p>` : ''}
         ${j.pv.villages.map(v => `<p><b>${esc(v.name)}</b>: ${v.in_file} farmers (approved ${v.approved}, pending approval ${v.pending}). ${v.new ? `<b>${v.new} new</b>.` : 'None new.'} ${v.newly_approved ? `${v.newly_approved} newly approved.` : ''}${v.list ? '' : ' <span class="w">Bucket list of this village not uploaded yet, so farmers cannot be linked to entries yet.</span>'}</p>`).join('')}
         ${Object.keys(j.pv.unknown || {}).length ? `<p class="w">Villages not in the app (LGD ${esc(Object.keys(j.pv.unknown).join(', '))}) are skipped.</p>` : ''}
         <ul><li>${m.auto || 0} will be linked to their entry automatically (same Aadhaar or mobile)</li>
-          <li>${m.suggested || 0} have possible entries by name: the Dealing Assistant confirms them in "Match registrations"</li>
+          <li>${m.suggested || 0} have possible entries by name: field staff link them with one tap in "Start today's work"</li>
           <li>${m.nomatch || 0} have no matching entry yet${m.nolist ? `; ${m.nolist} wait for their village's bucket list` : ''}</li></ul>`; };
     const bucketSummary = j => j.pv.villages.map(v => { const c = v.counts; return `<p class="tag" style="display:inline-block;margin:0 0 6px">Bucket list</p><p><b>${esc(v.name)}</b> (LGD ${esc(v.lgd)})${v.is_new_village ? ', new village' : ''}</p>
       <ul><li>${c.buckets} buckets in the file</li>
@@ -1370,20 +1552,23 @@ VIEWS.upload = async function () {
       ${v.warnings.map(w => `<p class="w">${esc(w)}</p>`).join('')}`; }).join('');
     const drawJobs = () => {
       out.innerHTML = jobs.map((j, k) => `<div class="prev"><h3>${esc(j.p.name)}</h3>
-        ${j.error ? `<p class="err">${esc(j.error)}</p>` : j.p.type === 'reg' ? regSummary(j) : bucketSummary(j)}
+        ${j.error ? `<p class="err">${esc(j.error)}</p>` : j.p.type === 'reg' ? regSummary(j, k) : bucketSummary(j)}
         ${j.state === 'ready' ? `<button class="btn btn-primary ap" data-k="${k}">Apply this file</button>` : ''}
         ${j.state === 'done' ? `<div class="banner ok"><p><b>Applied.</b>${j.done || ''}</p></div>` : ''}</div>`).join('') +
         (jobs.filter(j => j.state === 'ready').length > 1 ? '<button class="btn btn-primary" id="apAll">Apply all files</button>' : '') +
-        (jobs.some(j => j.state === 'done' && j.p.type === 'reg') ? '<button class="btn" id="goMatch">Open "Match registrations"</button>' : '');
+        (jobs.some(j => j.state === 'done') ? '<button class="btn" id="goMatch">Open "Villages and portal data"</button>' : '');
       const applyJob = async j => {
         try {
           if (j.p.type === 'reg') {
-            const r = await api('regApply', { rows: j.p.rows }, 180000);
+            const k = jobs.indexOf(j), g = c => ($(`.${c}[data-k="${k}"]`) || {}).value || '';
+            const r = await api('regApply', { rows: j.p.rows, file_ts: j.p.file_ts, file_name: j.p.name, cov_from: g('cf') || j.p.cov_from, cov_to: g('ct') || j.p.cov_to, note: g('cn') }, 180000);
+            archiveUpload(j.file, 'reg', (r.villages[0] || {}).tehsil_id || me().tehsil_id);
             j.done = ` ${r.match.auto} linked automatically, ${r.match.suggested} to confirm by name.`;
             r.villages.forEach(v => { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); });
             toast('Registered farmers updated');
           } else {
             const r = await api('uploadApply', { rows: j.p.rows, file_ts: j.p.file_ts, tehsil_id: admin ? $('#t').value : '' }, 180000);
+            archiveUpload(j.file, 'buckets', (villages().find(v => v.village_id === (r.villages[0] || {}).lgd) || {}).tehsil_id || (admin ? $('#t').value : me().tehsil_id));
             r.villages.forEach(v => { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); });
             toast('Applied: ' + r.villages.map(v => v.name).join(', '));
           }
@@ -1392,7 +1577,7 @@ VIEWS.upload = async function () {
       };
       on(out, '.ap', 'click', el => busy(el, 'Applying…', async () => { await applyJob(jobs[+el.dataset.k]); drawJobs(); await refreshBoot(); refreshStats(true, true); }));
       const all = $('#apAll'); if (all) all.onclick = () => busy(all, 'Applying all…', async () => { for (const j of jobs) if (j.state === 'ready') await applyJob(j); drawJobs(); await refreshBoot(); refreshStats(true, true); });
-      const gm = $('#goMatch'); if (gm) gm.onclick = () => go('regmatch');
+      const gm = $('#goMatch'); if (gm) gm.onclick = () => go('register');
     };
     drawJobs();
   };
@@ -1404,9 +1589,9 @@ VIEWS.users = async function (a) {
   const main = $('#view');
   const draw = () => {
     const users = (S.boot.users || []).slice().sort((x, y) => (x.active === y.active ? 0 : x.active === 'Y' ? -1 : 1) || x.name.localeCompare(y.name));
-    main.innerHTML = `<section class="pad"><p class="guide">Everyone logs in with their first name and the PIN 123456. Tap a person to change, reset PIN, switch off or delete.</p>
+    main.innerHTML = `<section class="pad"><p class="guide">Everyone logs in with their first name and the PIN 123456. Tap a person to change, reset PIN, switch off or delete. Add the Dealing Assistants' mobile numbers: they appear on everyone's "Call" button.</p>
       <button class="btn btn-primary" id="add">Add a person</button>
-      <div class="list" style="margin-top:12px">${users.map(u => `<button class="row" data-id="${esc(u.user_id)}" ${u.active === 'Y' ? '' : 'style="opacity:.55"'}><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}${u.tehsil_id ? ', ' + esc(tehsilName(u.tehsil_id)) : ''}${u.mobile ? ', ' + esc(u.mobile) : ''}${u.active === 'Y' ? '' : ', switched off'}</small></span><span class="st st-ns">${esc(ROLE_LABEL[u.role] || u.role)}</span></button>`).join('')}</div></section>`;
+      <div class="list" style="margin-top:12px">${users.map(u => `<button class="row" data-id="${esc(u.user_id)}" ${u.active === 'Y' ? '' : 'style="opacity:.55"'}><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}${(u.tehsils || []).length ? ', ' + esc((u.tehsils || []).map(tehsilName).join(' + ')) : u.tehsil_id ? ', ' + esc(tehsilName(u.tehsil_id)) : ''}${u.mobile ? ', ' + esc(u.mobile) : ''}${u.active === 'Y' ? '' : ', switched off'}</small></span><span class="st st-ns">${esc(ROLE_LABEL[u.role] || u.role)}</span></button>`).join('')}</div></section>`;
     $('#add').onclick = () => openUser(null, draw);
     on(main, '.row', 'click', el => openUser(users.find(u => u.user_id === el.dataset.id), draw));
   };
@@ -1425,7 +1610,8 @@ function openUser(u, redraw) {
       <div class="field"><label for="d">Designation</label><select id="d" class="input">${S.boot.designations.map(d => `<option ${u && u.designation === d ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select></div>
       <div class="field"><label for="m">Mobile number</label><input id="m" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(u ? u.mobile : '')}"><small>The Dealing Assistant's number appears on everyone's "Call for help" button.</small></div>
       <div class="field"><label for="r">What can this person do?</label><select id="r" class="input">${roles.map(r => `<option value="${r}" ${u && u.role === r ? 'selected' : ''}>${ROLE_LABEL[r]}</option>`).join('')}</select></div>
-      ${admin ? `<div class="field"><label for="t">Tehsil</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}" ${u && u.tehsil_id === t.tehsil_id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></div>` : ''}
+      ${admin ? `<div class="field"><label for="t">Main tehsil</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}" ${u && u.tehsil_id === t.tehsil_id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></div>
+        <div class="field"><label>Also covers (for officers holding more than one charge)</label>${S.boot.tehsils.map(t => `<label class="chk"><input type="checkbox" class="xt" value="${t.tehsil_id}" ${u && (u.tehsils || []).includes(t.tehsil_id) && u.tehsil_id !== t.tehsil_id ? 'checked' : ''}> ${esc(t.name)}</label>`).join('')}</div>` : ''}
       ${u ? `<div class="field"><label for="a">Login</label><select id="a" class="input"><option value="Y" ${u.active === 'Y' ? 'selected' : ''}>Active</option><option value="N" ${u.active !== 'Y' ? 'selected' : ''}>Switched off (can be switched on again)</option></select></div>` : ''}
       <button class="btn btn-primary" id="s">Save</button>
       ${u ? '<button class="btn" id="pin">Reset PIN to 123456</button>' : ''}
@@ -1438,7 +1624,8 @@ function openUser(u, redraw) {
         const name = $('#n', r).value.trim(); if (!name) throw new Error('Type the first name.');
         const m = $('#m', r).value.trim(); if (m && !validMobile(m)) throw new Error('Mobile must be 10 digits starting with 6, 7, 8 or 9.');
         const res = await api('saveUser', { user_id: u ? u.user_id : '', name, designation: $('#d', r).value, mobile: m,
-          role: $('#r', r).value, tehsil_id: admin ? $('#t', r).value : me().tehsil_id, active: u ? $('#a', r).value : 'Y' });
+          role: $('#r', r).value, tehsil_id: admin ? $('#t', r).value : me().tehsil_id, active: u ? $('#a', r).value : 'Y',
+          tehsils: admin ? [$('#t', r).value].concat($$('.xt', r).filter(c => c.checked).map(c => c.value)).filter((x, i, a2) => a2.indexOf(x) === i).join(',') : undefined });
         const list = S.boot.users || (S.boot.users = []); const i = list.findIndex(x => x.user_id === res.user.user_id);
         if (i >= 0) list[i] = res.user; else list.push(res.user);
         await kput('boot', S.boot);
@@ -1461,14 +1648,14 @@ function openUser(u, redraw) {
 
 /* ======================= OFFICE: VILLAGES ======================= */
 VIEWS.villages = async function (a) {
-  setHeader('Villages and staff');
+  setHeader('Staff for villages');
   const main = $('#view');
   const draw = () => {
     const asg = S.boot.assignments || [], users = S.boot.users || [];
     const staffOf = vid => asg.filter(x => x.village_id === vid).map(x => (users.find(u => u.user_id === x.user_id) || {}).name).filter(Boolean);
     const real = villages().filter(v => v.practice !== 'Y'), prac = villages().filter(v => v.practice === 'Y');
     const byT = {}; real.forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
-    main.innerHTML = `<section class="pad"><p class="guide">Tap a village to tick its staff, choose the Patwari shown in reports, and type the latest portal figures.</p>
+    main.innerHTML = `<section class="pad"><p class="guide">Tap a village to tick its staff, choose the Patwari shown in reports and set targets. Portal figures and files are in "Villages and portal data".</p>
       <button class="btn btn-primary" id="add">Add a village</button>
       ${Object.keys(byT).map(t => `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p><div class="list">${byT[t].sort((x, y) => x.name.localeCompare(y.name)).map(v => {
         const st = staffOf(v.village_id); const pw = (users.find(u => u.user_id === v.patwari_user_id) || {}).name;
@@ -1501,10 +1688,7 @@ function openVillage(v, redraw) {
         <div class="field"><label for="lgd">LGD code</label><input id="lgd" class="input" inputmode="numeric"></div>
         ${admin ? `<div class="field"><label for="t">Tehsil</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}">${esc(t.name)}</option>`).join('')}</select></div>` : ''}`}
       <div class="field"><label for="nm">Village name</label><input id="nm" class="input" value="${esc(v ? v.name : '')}"></div>
-      <h3>Portal figures</h3><p class="guide">Copy from the portal's village summary whenever a new one comes.</p>
-      <div class="row2"><div class="field"><label for="pt">Total buckets</label><input id="pt" class="input" inputmode="numeric" value="${esc(v ? v.portal_total : '')}"></div>
-        <div class="field"><label for="pc">Claimed buckets</label><input id="pc" class="input" inputmode="numeric" value="${esc(v ? v.portal_claimed : '')}"></div></div>
-      <div class="field"><label for="pa">Figures as on</label><input id="pa" type="date" class="input" value="${esc(v ? v.portal_as_on : todayIST())}"></div>
+      <p class="hint">Portal figures are entered in "Villages and portal data".</p>
       ${v ? `<h3>Staff for this village</h3><p class="guide">Tick everyone who works in this village. Leave "share" empty to split the target equally.</p>
       <div class="box">${field.length ? field.map(u => { const a = asg.find(x => x.user_id === u.user_id); return `<div class="mem"><input type="checkbox" class="sf" data-id="${esc(u.user_id)}" ${a ? 'checked' : ''} aria-label="${esc(u.name)}"><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}</small></span><input class="input sh" data-id="${esc(u.user_id)}" style="width:96px;min-height:44px" inputmode="decimal" placeholder="share" value="${esc(a ? a.share : '')}"></div>`; }).join('') : '<p class="hint">No field staff in this tehsil yet. Add them in "Staff and logins".</p>'}</div>
       <div class="field"><label for="pw">Patwari shown in reports</label><select id="pw" class="input"><option value="">Not set</option>${field.map(u => `<option value="${esc(u.user_id)}" ${v.patwari_user_id === u.user_id ? 'selected' : ''}>${esc(u.name)}, ${esc(u.designation)}</option>`).join('')}</select><small>Reports group villages under this Patwari.</small></div>
@@ -1515,7 +1699,7 @@ function openVillage(v, redraw) {
     mount: r => {
       $('#x', r).onclick = () => closeSheet();
       $('#s', r).onclick = () => busy($('#s', r), 'Saving…', async () => {
-        const p = { name: $('#nm', r).value.trim(), portal_total: $('#pt', r).value.trim(), portal_claimed: $('#pc', r).value.trim(), portal_as_on: $('#pa', r).value };
+        const p = { name: $('#nm', r).value.trim() };
         let items;
         if (v) {
           p.village_id = v.village_id; p.patwari_user_id = $('#pw', r).value; p.manual_daily_target = $('#dt', r).value.trim(); p.survey_deadline = $('#sd', r).value;
@@ -1547,16 +1731,20 @@ VIEWS.settings = async function (a) {
       <div class="field"><label for="sd">Every landholder checked by</label><input id="sd" type="date" class="input" value="${esc(s.survey_deadline)}"></div>
       <div class="field"><label for="ld">Days allowed to check a village uploaded later</label><input id="ld" class="input" inputmode="numeric" value="${esc(s.late_survey_days)}"></div>
       <div class="field"><label for="cg">Flag a village with no camp for this many days</label><input id="cg" class="input" inputmode="numeric" value="${esc(s.camp_gap_days)}"></div>
+      <div class="field"><label for="rs">Registrations started on (start of coverage)</label><input id="rs" type="date" class="input" value="${esc(s.reg_start_date || '2026-08-02')}"></div>
+      <div class="field"><label for="lf">A bucket list turns amber after this many days</label><input id="lf" class="input" inputmode="numeric" value="${esc(s.list_fresh_days || 2)}"></div>
       <div class="field"><label for="rt">Upload reminder on field phones from</label><input id="rt" type="time" class="input" value="${esc(s.reminder_time || '14:00')}"><small>A red reminder appears until 2:30 PM if work is still on the phone.</small></div>
       <button class="btn btn-primary" id="sv">Save deadlines and reminder</button>
       <h2>Reasons</h2><p class="guide">Tap a reason to change its wording or switch it off. The letter and tables to the DC use the "report" wording.</p>
+      <button class="btn" id="txt">Texts field staff see (English and Hinglish)</button>
       <button class="btn" id="addR">Add a reason</button>
-      <div class="list">${reasons().slice().sort((x, y) => Number(x.sort) - Number(y.sort)).map(r => `<button class="row" data-c="${r.code}" ${r.active === 'Y' ? '' : 'style="opacity:.5"'}><span class="dot d-${r.tier}"></span><span class="rt"><b>${esc(r.label)}</b><small>${TIER[r.tier]}. In report: ${esc(r.report_label)}</small></span></button>`).join('')}</div></section>`;
+      <div class="list">${reasons().slice().sort((x, y) => Number(x.sort) - Number(y.sort)).map(r => `<button class="row" data-c="${r.code}" ${r.active === 'Y' ? '' : 'style="opacity:.5"'}><span class="dot d-${r.tier}"></span><span class="rt"><b>${esc(r.label)}</b><small>${esc(r.label_hi || '')}</small><small>${TIER[r.tier]}. In report: ${esc(r.report_label)}</small></span></button>`).join('')}</div></section>`;
     $('#sv').onclick = () => busy($('#sv'), 'Saving…', async () => {
-      const res = await api('saveSettings', { values: { final_deadline: $('#fd').value, survey_deadline: $('#sd').value, late_survey_days: $('#ld').value, camp_gap_days: $('#cg').value, reminder_time: $('#rt').value } });
+      const res = await api('saveSettings', { values: { final_deadline: $('#fd').value, survey_deadline: $('#sd').value, late_survey_days: $('#ld').value, camp_gap_days: $('#cg').value, reminder_time: $('#rt').value, reg_start_date: $('#rs').value, list_fresh_days: $('#lf').value } });
       Object.assign(S.boot.settings, res.settings); await kput('boot', S.boot); toast('Saved. Targets updated.'); refreshStats(false, true);
     });
     $('#addR').onclick = () => openReason(null, draw);
+    $('#txt').onclick = () => go('texts');
     on(main, '.row', 'click', el => openReason(reason(el.dataset.c), draw));
   };
   draw();
@@ -1569,6 +1757,9 @@ function openReason(rr, redraw) {
       <p class="guide">The phone wording is what staff tap. The report wording appears in the letter and tables to the DC.</p>
       ${rr ? `<p class="hint">Group: ${TIER[rr.tier]}</p>` : `<div class="field"><label for="tr">Group</label><select id="tr" class="input"><option value="A">${TIER.A}</option><option value="B" selected>${TIER.B}</option><option value="C">${TIER.C}</option></select></div>`}
       <div class="field"><label for="l">Wording on the phone</label><input id="l" class="input" value="${esc(rr ? rr.label : '')}"></div>
+      <div class="field"><label for="lh">Wording on the phone (Hinglish)</label><input id="lh" class="input" value="${esc(rr ? rr.label_hi || '' : '')}"></div>
+      <div class="field"><label for="ex">One-line explanation (English)</label><input id="ex" class="input" value="${esc(rr ? rr.explain || '' : '')}"></div>
+      <div class="field"><label for="exh">One-line explanation (Hinglish)</label><input id="exh" class="input" value="${esc(rr ? rr.explain_hi || '' : '')}"></div>
       <div class="field"><label for="rl">Wording in the DC report</label><input id="rl" class="input" value="${esc(rr ? rr.report_label : '')}"></div>
       <div class="field"><label for="cc">Box on the paper checklist (2 to 9, or empty)</label><input id="cc" class="input" inputmode="numeric" value="${esc(rr ? rr.checklist_col : '')}"></div>
       ${rr ? `<div class="field"><label for="ac">Use this reason</label><select id="ac" class="input"><option value="Y" ${rr.active === 'Y' ? 'selected' : ''}>Yes</option><option value="N" ${rr.active !== 'Y' ? 'selected' : ''}>No, switch it off</option></select></div>` : ''}
@@ -1577,7 +1768,7 @@ function openReason(rr, redraw) {
       $('#x', r).onclick = () => closeSheet();
       $('#s', r).onclick = () => busy($('#s', r), 'Saving…', async () => {
         if (!$('#l', r).value.trim()) throw new Error('Type the wording.');
-        const res = await api('saveReason', { code: rr ? rr.code : '', tier: rr ? rr.tier : $('#tr', r).value, label: $('#l', r).value.trim(), report_label: $('#rl', r).value.trim(),
+        const res = await api('saveReason', { code: rr ? rr.code : '', tier: rr ? rr.tier : $('#tr', r).value, label: $('#l', r).value.trim(), report_label: $('#rl', r).value.trim(), label_hi: $('#lh', r).value.trim(), explain: $('#ex', r).value.trim(), explain_hi: $('#exh', r).value.trim(),
           checklist_col: $('#cc', r).value.trim(), active: rr ? $('#ac', r).value : 'Y' });
         const i = S.boot.reasons.findIndex(x => x.code === res.reason.code); if (i >= 0) S.boot.reasons[i] = res.reason; else S.boot.reasons.push(res.reason);
         S.top = {}; await kput('boot', S.boot);
@@ -1611,7 +1802,7 @@ function deliverPDF(doc, name) {
 }
 
 /* ======================= DAILY REPORT ======================= */
-const DEFAULT_FOOT = 'Buckets claimed = Farmer IDs created (one Farmer ID per bucket). Rows 1 to 7, 13: buckets that can never yield a Farmer ID. Rows 8 to 12, 14: claimable only if the landholder becomes available or links Aadhaar with a mobile number. Row 15: claimable with field effort. Total buckets are from the portal village summary. Farmer IDs created are from the latest portal list of registered farmers, plus IDs reported in the field after that list (portal village summary where no list is available yet). Row 17: portal bucket list awaited, or the portal village summary and the portal unclaimed-bucket list differ.';
+const DEFAULT_FOOT = 'Buckets claimed = Farmer IDs created (one Farmer ID per bucket). Rows 1 to 7, 13: buckets that can never yield a Farmer ID. Rows 8 to 12, 14: claimable only if the landholder becomes available or links Aadhaar with a mobile number. Row 15: claimable with field effort. Row 17: portal bucket list awaited, or the portal village summary and the portal unclaimed-bucket list differ.';
 function groupVillages(st) {
   const g = {};
   st.villages.forEach(v => { const k = v.patwari_user_id || '~'; (g[k] = g[k] || { name: v.patwari_name || 'Patwari not set', villages: [] }).villages.push(v); });
@@ -1632,7 +1823,7 @@ function reportColumns(st) {
   const cols = [], head1 = [];
   groupVillages(st).forEach(g => {
     const start = cols.length;
-    g.villages.forEach(v => cols.push({ label: v.name, d: aggStats([v]) }));
+    g.villages.forEach(v => cols.push({ label: v.name + (v.partial ? '*' : ''), d: aggStats([v]) }));
     if (g.villages.length > 1) cols.push({ label: 'Sub-total', d: aggStats(g.villages), sub: true });
     head1.push({ label: g.name, span: cols.length - start });
   });
@@ -1722,6 +1913,12 @@ function positionBlocks(d, R) {
   B.push({ t: `4. Possibility of more Farmer IDs: ${possible ? 'YES - up to ' + possible + ' more possible' : 'NO'}${d.tier_a ? '; ' + d.tier_a + ' cannot yield ID' : ''}${d.awaited ? ' (bucket list awaited)' : ''}`, ind: 4 });
   return B;
 }
+function autoNote(data) {
+  const st = data.stats, r = st.reg || {};
+  return `Total buckets as per the portal village summary as on ${fmtDate(st.summary_as_on) || '-'}. ` +
+    (r.use ? `Farmer IDs created as per the portal list of registered farmers downloaded on ${fmtDate(r.as_on.slice(0, 10))} at ${r.as_on.slice(11, 16)}, plus IDs reported in the field after that.` : 'Farmer IDs created as per the portal village summary.') +
+    (st.villages.some(v => v.partial) ? ' * Partially bucketed village: total buckets may still increase.' : '');
+}
 function letterBlocks(data, o) {
   const st = data.stats, R = {}; data.reasons.forEach(r => R[r.code] = r);
   const B = [];
@@ -1738,12 +1935,13 @@ function letterBlocks(data, o) {
   groupVillages(st).forEach(g => g.villages.forEach(v => {
     n++;
     const pb = positionBlocks(aggStats([v]), R);
-    B.push({ t: `(${n}) Village: ${v.name}${g.name && g.name !== 'Patwari not set' ? ' (Patwari: ' + g.name + ')' : ''}`, b: 1, gap: 4, keep: pb.length + 2 });
+    B.push({ t: `(${n}) Village: ${v.name}${v.partial ? '*' : ''}${g.name && g.name !== 'Patwari not set' ? ' (Patwari: ' + g.name + ')' : ''}`, b: 1, gap: 4, keep: pb.length + 2 });
     pb.forEach(x => B.push(x));
   }));
   const tb = positionBlocks(aggStats(st.villages), R);
   B.push({ t: 'TEHSIL TOTAL', b: 1, gap: 5, keep: tb.length + 2 });
   tb.forEach(x => B.push(x));
+  B.push({ t: 'Note: ' + autoNote(data), size: 10, gap: 4 });
   B.push({ t: o.closing, gap: 5 });
   B.push({ t: 'Yours faithfully,', align: 'right', gap: 6 });
   pdfText(o.signature).split('\n').forEach((l, i) => B.push({ t: l, b: 1, align: 'right', gap: i ? 0 : 14 }));
@@ -1811,7 +2009,7 @@ async function buildReportPDF(data, o) {
   renderLetter(doc, letterBlocks(data, o));
   const sub = `Tehsil ${data.tehsil.name}, as on ${o.date}${o.time ? ', ' + o.time : ''}`;
   const foot = y => { const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
-    const lines = doc.setFont('helvetica', 'normal').setFontSize(7).splitTextToSize(pdfText(o.footnote || DEFAULT_FOOT), W - 14);
+    const lines = doc.setFont('helvetica', 'normal').setFontSize(7).splitTextToSize(pdfText((o.footnote || DEFAULT_FOOT) + ' ' + autoNote(data)), W - 14);
     if (y + lines.length * 3 + 6 > H) { doc.addPage('a4', 'landscape'); y = 14; } doc.text(lines, 7, y + 4); return y + 4 + lines.length * 3; };
   doc.addPage('a4', 'landscape');
   let y = matrixPage(doc, 'Annexure A: Summary of Farmer ID Generation in respect of Tehsil ' + data.tehsil.name, sub, annexRows(), data);
@@ -1854,7 +2052,7 @@ VIEWS.report = async function (a) {
   setHeader('Daily report for DC');
   const main = $('#view'), admin = role() === 'ADMIN';
   if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">The report needs internet to collect the latest figures.</p></div>'; return; }
-  a.tid = a.tid || (admin ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
+  a.tid = a.tid || S.boot.tehsils[0].tehsil_id;
   if (!a.data) {
     main.innerHTML = loadingHtml('Collecting the latest figures. This takes about 5 seconds.');
     try { if (S.queue.length) await sync(); a.data = await api('reportData', { tehsil_id: a.tid }, 90000); }
@@ -1870,6 +2068,8 @@ VIEWS.report = async function (a) {
   const field = (k, label, ta, hint) => `<div class="field"><label for="f_${k}">${label}</label>${ta ? `<textarea id="f_${k}" class="input">${esc(o[k])}</textarea>` : `<input id="f_${k}" class="input" value="${esc(o[k])}">`}${hint ? `<small>${hint}</small>` : ''}</div>`;
   main.innerHTML = `<section class="pad">${tehsilPicker(a)}
     <p class="guide">Type today's dispatch number, check the letter and Annexure A below, then tap Create PDF. The figures are taken again at the moment you tap it.</p>
+    ${a.data.stats.reg && a.data.stats.reg.files && !a.data.stats.reg.use ? `<div class="banner red"><p><b>The registered-farmer files have a gap</b> (${a.data.stats.reg.gaps.map(g => esc(fmtDate(g[0]) + ' to ' + fmtDate(g[1]))).join(', ')}). Farmer IDs are taken from the portal summary until the gap is uploaded.</p></div>` : ''}
+    ${a.data.stats.reg && a.data.stats.reg.use && a.data.stats.reg.as_on.slice(0, 10) !== todayIST() ? `<div class="banner"><p>The latest registered-farmer file was downloaded on ${esc(fmtDate(a.data.stats.reg.as_on.slice(0, 10)))}. Upload today's file first for today's figures.</p></div>` : ''}
     ${field('ref', 'Dispatch number', false, t.last_ref ? 'Last used: ' + esc(t.last_ref) : 'For example TA/OQ/2026-27/515')}
     ${field('date', 'Date on the letter')}
     <details class="more"><summary>Letter wording (change only if needed)</summary>
@@ -2055,7 +2255,7 @@ VIEWS.grid = async function (a) {
 
 /* ======================= SUPERVISION & DASHBOARD ======================= */
 function tehsilPicker(a) {
-  if (role() !== 'ADMIN' || S.boot.tehsils.length < 2) return '';
+  if (S.boot.tehsils.length < 2) return '';
   return `<div class="field"><label for="tt">Tehsil</label><select id="tt" class="input">${S.boot.tehsils.map(x => `<option value="${x.tehsil_id}" ${x.tehsil_id === a.tid ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>`;
 }
 function bindTehsilPicker(a) { const t = $('#tt'); if (t) t.onchange = () => { a.tid = t.value; a.data = null; render(); }; }
@@ -2111,7 +2311,7 @@ VIEWS.supervise = async function (a) {
   setHeader('Supervision');
   const main = $('#view');
   if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">Supervision needs internet.</p></div>'; return; }
-  a.tid = a.tid || (role() === 'ADMIN' ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
+  a.tid = a.tid || S.boot.tehsils[0].tehsil_id;
   if (!a.data) { main.innerHTML = loadingHtml('Collecting today\'s figures…'); try { a.data = await api('supervision', { tehsil_id: a.tid }, 90000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
   const d = a.data, st = d.stats, t = st.totals, now = nowIST().slice(11, 16), gap = Number(d.settings.camp_gap_days || 3);
   const pace = t.pace_needed, behind = t.claimed_today < Math.min(pace, t.daily_target || pace);
@@ -2167,7 +2367,7 @@ VIEWS.quality = async function (a) {
   setHeader('Data check');
   const main = $('#view');
   if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">The data check needs internet.</p></div>'; return; }
-  a.tid = a.tid || (role() === 'ADMIN' ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
+  a.tid = a.tid || S.boot.tehsils[0].tehsil_id;
   main.innerHTML = loadingHtml('Checking all entries…');
   let d; try { d = await api('dataQuality', { tehsil_id: a.tid }, 90000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; }
   a.open = a.open || {};
@@ -2179,7 +2379,7 @@ VIEWS.quality = async function (a) {
       : '<div class="banner ok"><p><b>No problems found.</b></p></div>'}</section>`;
   bindTehsilPicker(a);
   on(main, '[data-more]', 'click', el => { a.open[el.dataset.more] = 1; render(); });
-  on(main, '.row', 'click', el => { if (el.dataset.f) { go('regmatch', { focus: el.dataset.f, tid: a.tid }); return; }
+  on(main, '.row', 'click', el => { if (el.dataset.f) { if (role() === 'ADMIN') go('link', { vid: el.dataset.v, focus: el.dataset.f }); else info('Field staff link these from their village (Start today\'s work).'); return; }
     busy(el, 'Opening…', async () => { await loadVillage(el.dataset.v); S.dirty = true; openBucket(el.dataset.v, [el.dataset.id], 0); }); });
 };
 
@@ -2188,7 +2388,7 @@ VIEWS.activity = async function (a) {
   setHeader('Who did what');
   const main = $('#view');
   if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">This needs internet.</p></div>'; return; }
-  a.tid = a.tid || (role() === 'ADMIN' ? S.boot.tehsils[0].tehsil_id : me().tehsil_id); a.date = a.date || todayIST();
+  a.tid = a.tid || S.boot.tehsils[0].tehsil_id; a.date = a.date || todayIST();
   main.innerHTML = loadingHtml('Collecting the day\'s work…');
   let d; try { d = await api('activity', { tehsil_id: a.tid, date: a.date }, 90000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; }
   const lbl = { status: 'status', reason_code: 'reason', mobile: 'mobile', aadhaar: 'Aadhaar', gender: 'gender', residence: 'lives', remarks: 'remarks', current_location: 'present place', farmer_id: 'Farmer ID' };
@@ -2251,57 +2451,281 @@ async function exportExcel() {
 }
 
 /* ======================= REGISTERED FARMERS: MATCHING ======================= */
-VIEWS.regmatch = async function (a) {
-  setHeader('Match registrations');
+/* ---------- Patwari: link registered farmers (works offline) ---------- */
+VIEWS.link = async function (a) {
+  setHeader(L('lk_t'));
   const main = $('#view');
-  if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">Matching needs internet.</p></div>'; return; }
-  a.tid = a.tid || (role() === 'ADMIN' ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
-  if (!a.list) {
-    main.innerHTML = loadingHtml('Collecting registered farmers to match…');
-    try { a.list = (await api('regMatches', { tehsil_id: a.tid }, 90000)).farmers; } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; }
-    a.i = a.focus ? Math.max(0, a.list.findIndex(f => f.farmer_id === a.focus)) : 0;
-  }
-  const list = a.list;
-  if (!list.length || a.i >= list.length) {
-    main.innerHTML = `<section class="pad">${tehsilPicker(a)}<div class="banner ok"><p><b>Nothing left to match.</b> Every registered farmer is linked to an entry, or marked "none of these".</p></div><button class="btn" id="bk">Back to home</button></section>`;
-    bindTehsilPicker(a); $('#bk').onclick = () => history.back(); return;
-  }
-  const f = list[a.i];
-  const withC = list.filter(x => x.candidates.length).length;
-  main.innerHTML = `<section class="pad">${tehsilPicker(a)}
-    <p class="guide">This farmer is registered on the portal. Tick the land entry that belongs to them and tap "Link". If none fits, search the village by name, or tap "None of these".</p>
-    <p class="hint">${a.i + 1} of ${list.length}. ${withC} have possible entries.</p>
+  if (!S.buckets[a.vid]) main.innerHTML = loadingHtml(L('ld_v'));
+  const arr = await loadVillage(a.vid), vid = a.vid;
+  const list = (S.reg[vid] || []).slice().sort((x, y) => (y.candidates.length > 0) - (x.candidates.length > 0) || x.name.localeCompare(y.name));
+  a.skip = a.skip || {};
+  const left = list.filter(f => !a.skip[f.farmer_id]);
+  if (a.focus) { const k = left.findIndex(f => f.farmer_id === a.focus); if (k > 0) left.unshift(left.splice(k, 1)[0]); a.focus = ''; }
+  if (!left.length) { main.innerHTML = `<section class="pad"><div class="banner ok"><p><b>${L('lk_done')}</b></p></div><button class="btn" id="bk">${L('close')}</button></section>`; $('#bk').onclick = () => history.back(); return; }
+  const f = left[0], ro = !canEditV(vid);
+  const cands = f.candidates.map(id => arr.find(b => b.bucket_id === id)).filter(Boolean);
+  main.innerHTML = `<section class="pad">
+    <p class="guide">${L('lk_g')}</p>
+    <p class="hint">${L('lk_hint_count', 1, left.length, left.filter(x => x.candidates.length).length)}</p>
     <div class="box"><h2 style="margin:0">${esc(f.name)}</h2>
-      <dl class="facts"><dt>Village</dt><dd>${esc(f.village)}</dd><dt>Gender, age</dt><dd>${esc(f.gender)}${f.age ? ', ' + esc(f.age) : ''}</dd>
-        <dt>Mobile</dt><dd>${esc(f.mobile || '-')}</dd><dt>Farmer ID</dt><dd>${esc(f.farmer_id)}</dd>
-        <dt>Portal status</dt><dd>${f.status === 'APPROVED' ? 'Approved' : 'Pending approval'}${f.name_score ? ', name match ' + esc(Math.round(Number(f.name_score))) + '%' : ''}</dd></dl></div>
-    <h3>${f.candidates.length ? (f.link_conf === 'SUGGESTED_STRONG' ? 'Entries with the same name' : 'Entries with a similar name') : 'No entry with this name was found'}</h3>
-    <div id="cands">${f.candidates.map((c, k) => `<label class="dm"><input type="radio" name="cb" value="${esc(c.bucket_id)}" ${k === 0 ? 'checked' : ''}>
-      <span class="rt"><b>${esc(c.name)}</b><small>Father / husband: ${esc(c.parentage)}</small><small>Khasra ${esc(shortKh(c.khasras))}</small><small>Now: ${esc(c.status_text)}</small></span></label>`).join('')}</div>
-    <div class="field" style="margin-top:12px"><label for="sq">Search this village by name or khasra</label><input id="sq" class="input" placeholder="Type at least 3 letters"><div id="sr" class="list" style="margin-top:8px"></div></div>
-    <button class="btn btn-primary" id="ln" ${f.candidates.length ? '' : 'disabled'}>${ic('check', 22)} Link to the ticked entry</button>
-    <div class="row2"><button class="btn" id="nn">None of these</button><button class="btn" id="sk">Skip for now</button></div></section>`;
-  bindTehsilPicker(a);
-  const next = () => { a.i++; window.scrollTo(0, 0); render(); };
-  $('#sk').onclick = next;
-  $('#nn').onclick = () => busy($('#nn'), 'Saving…', async () => { await api('regNone', { farmer_id: f.farmer_id }); toast('Marked: none of these'); list.splice(a.i, 1); a.i--; next(); });
-  $('#ln').onclick = () => busy($('#ln'), 'Linking…', async () => {
-    const r = $('input[name=cb]:checked'); if (!r) throw new Error('Tick an entry first.');
-    await api('regConfirm', { farmer_id: f.farmer_id, bucket_id: r.value });
-    delete S.buckets[f.village_id]; delete S.fetchedAt[f.village_id]; await kdel('b:' + f.village_id);
-    list.forEach(x => { x.candidates = x.candidates.filter(c => c.bucket_id !== r.value); });
-    toast(`Linked: ${f.name}`); list.splice(a.i, 1); a.i--; next();
-  });
-  let vb = null;
-  $('#sq').addEventListener('input', async e => {
-    const q = e.target.value.trim().toLowerCase(); const out = $('#sr');
+      <dl class="facts"><dt>${L('village')}</dt><dd>${esc(villageById(vid).name)}</dd><dt>${L('gender_q')}</dt><dd>${esc(f.gender || '-')}${f.age ? ', ' + esc(f.age) : ''}</dd>
+        <dt>${L('mobile')}</dt><dd>${f.mobile ? `<a href="tel:${esc(f.mobile)}">${esc(f.mobile)}</a>` : '-'}</dd><dt>Farmer ID</dt><dd>${esc(f.farmer_id)}</dd>
+        <dt>${L('lk_status')}</dt><dd>${f.status === 'APPROVED' ? L('appr') : L('pend')}</dd></dl></div>
+    <h3>${cands.length ? (f.link_conf === 'SUGGESTED_STRONG' ? L('lk_same') : L('lk_similar')) : L('lk_noname')}</h3>
+    <div id="cands">${cands.map((c, k) => `<label class="dm"><input type="radio" name="cb" value="${esc(c.bucket_id)}" ${k === 0 ? 'checked' : ''}>
+      <span class="rt"><b>${esc(c.name)}</b><small>${L('father')}: ${esc(c.parentage)}</small><small>${L('khasra')} ${esc(shortKh(c.khasras))}</small><small>${L('now')} ${esc(statusOf(c).text)}</small></span></label>`).join('')}</div>
+    <div class="field" style="margin-top:12px"><label for="sq">${L('lk_search')}</label><input id="sq" class="input" placeholder="${esc(L('lk_search_ph'))}"><div id="sr" class="list" style="margin-top:8px"></div></div>
+    ${ro ? '' : `<button class="btn btn-primary" id="ln" ${cands.length ? '' : 'disabled'}>${ic('check', 22)} ${L('lk_link_btn')}</button>
+    <div class="row2"><button class="btn" id="nn">${L('lk_none')}</button><button class="btn" id="sk">${L('lk_skip')}</button></div>`}</section>`;
+  const next = () => { window.scrollTo(0, 0); render(); };
+  if (ro) return;
+  $('#sk').onclick = () => { a.skip[f.farmer_id] = 1; next(); };
+  let running = false;
+  $('#nn').onclick = async () => { if (running) return; running = true;
+    S.reg[vid] = S.reg[vid].filter(x => x.farmer_id !== f.farmer_id); await kput('r:' + vid, S.reg[vid]);
+    await enqueue('regNone', { farmer_id: f.farmer_id }, []); toast(L('lk_marked_none')); next(); };
+  $('#ln').onclick = async () => { if (running) return;
+    const r = $('input[name=cb]:checked'); if (!r) { fail(L('lk_tick')); return; }
+    running = true; const b = arr.find(x => x.bucket_id === r.value);
+    try { await linkLocal(vid, f, b); toast(L('linked', f.name)); next(); } catch (e) { fail(e.message); running = false; } };
+  $('#sq').addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase(), out = $('#sr');
     if (q.length < 3) { out.innerHTML = ''; return; }
-    if (!vb) { out.innerHTML = '<p class="loading"><span class="spin"></span>Loading the village…</p>'; try { vb = await loadVillage(f.village_id, true); } catch (err) { out.innerHTML = `<p class="err">${esc(err.message)}</p>`; return; } }
-    const hits = vb.filter(b => (b.name + ' ' + b.parentage + ' ' + b.khasras).toLowerCase().includes(q) && !b.reg_status).slice(0, 15);
-    out.innerHTML = hits.length ? hits.map(b => `<label class="dm"><input type="radio" name="cb" value="${esc(b.bucket_id)}"><span class="rt"><b>${esc(b.name)}</b><small>Father / husband: ${esc(b.parentage)}</small><small>Khasra ${esc(shortKh(b.khasras))}, now: ${esc(statusOf(b).text)}</small></span></label>`).join('') : '<p class="hint">No entry found.</p>';
+    const hits = arr.filter(b => b.status !== 'CLAIMED' && (b.name + ' ' + b.parentage + ' ' + b.khasras).toLowerCase().includes(q)).slice(0, 15);
+    out.innerHTML = hits.length ? hits.map(b => `<label class="dm"><input type="radio" name="cb" value="${esc(b.bucket_id)}"><span class="rt"><b>${esc(b.name)}</b><small>${L('father')}: ${esc(b.parentage)}</small><small>${L('khasra')} ${esc(shortKh(b.khasras))}</small></span></label>`).join('') : `<p class="hint">${L('lk_found')}</p>`;
     $$('input[name=cb]', out).forEach(x => x.onchange = () => { $('#ln').disabled = false; });
   });
 };
+
+/* ---------- Camp call list ---------- */
+VIEWS.camplist = async function (a) {
+  setHeader(L('cl_t'));
+  const arr = await loadVillage(a.vid), v = villageById(a.vid);
+  const list = arr.filter(b => b.status === 'REASON' && tierOf(b.reason_code) === 'C').sort((x, y) => x.name.localeCompare(y.name));
+  const msg = b => encodeURIComponent(L('wa_inv', b.name, me().name));
+  $('#view').innerHTML = `<section class="pad"><p class="guide">${L('cl_g')}</p><h2 style="margin-top:4px">${esc(v.name)}: ${list.length}</h2>
+    ${list.length ? list.map(b => `<div class="person"><span class="rt"><b>${esc(b.name)}</b><small>${L('father')}: ${esc(b.parentage)}</small><small>${L('khasra')} ${esc(shortKh(b.khasras))}</small>
+      ${b.mobile ? '' : `<small>${L('cl_nonum')}</small>`}</span>
+      ${b.mobile ? `<a class="callb" href="tel:${esc(b.mobile)}" aria-label="Call">${ic('phone', 20)}</a><a class="callb" style="background:#25D366" href="https://wa.me/91${esc(b.mobile)}?text=${msg(b)}" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>` : ''}</div>`).join('')
+      : `<p class="guide">${L('cl_empty')}</p>`}</section>`;
+};
+
+/* ---------- Share my day (WhatsApp; the Patwari picks the chat) ---------- */
+function shareMyDay() {
+  const t = todayIST(), lines = [L('share_head', me().name, fmtDate(t))];
+  villages().filter(v => canEditV(v.village_id) && v.practice !== 'Y').forEach(v => {
+    const arr = S.buckets[v.village_id] || [];
+    const checked = arr.filter(b => b.surveyed_date === t).length, ids = arr.filter(b => b.status === 'CLAIMED' && b.claimed_date === t).length;
+    lines.push(L('share_line', v.name, checked, ids, arr.filter(b => b.status === 'NOT_SURVEYED').length));
+  });
+  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+}
+
+/* ======================= VILLAGES AND PORTAL DATA ======================= */
+const STAGE = { 1: ['Not bucketed', '#98A29D'], 2: ['Bucketed, list awaited', '#B42318'], 3: ['Survey in progress', '#B45309'], 4: ['Survey complete', '#1F57C3'], 5: ['Target achieved', '#16794A'] };
+const LIST_STATE = { green: ['Up to date', '#16794A'], amber: ['Older than {0} days', '#B45309'], red: ['Awaited', '#B42318'] };
+const badge = (t, col) => `<span style="display:inline-block;font-size:12.5px;font-weight:700;padding:3px 8px;border-radius:6px;color:#fff;background:${col}">${esc(t)}</span>`;
+function skel(s) {
+  let t = normName(s).replace(/\s/g, '').replace(/ph/g, 'f').replace(/ee/g, 'i').replace(/oo/g, 'u').replace(/w/g, 'v').replace(/z/g, 'j').replace(/q/g, 'k').replace(/h/g, '').replace(/(.)\1+/g, '$1');
+  return t ? t[0] + t.slice(1).replace(/[aeiouy]/g, '') : '';
+}
+const PDFJS = ['https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js', 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js'];
+async function loadPDFJS() { if (!window.pdfjsLib) await loadScript(PDFJS[0]); window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS[1]; }
+/* Reads the J&K-wide "bucketed villages" PDF and picks out the rows that belong to this tehsil (the Dealing Assistant checks the ticks). */
+async function readSummaryPdf(data, tid, lib) {
+  const pdf = await (lib || window.pdfjsLib).getDocument({ data }).promise;
+  let asOn = '';
+  try { const md = await pdf.getMetadata(); const m = String((md.info || {}).CreationDate || '').match(/D:(\d{4})(\d{2})(\d{2})/); if (m) asOn = `${m[1]}-${m[2]}-${m[3]}`; } catch (e) {}
+  const lines = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const tc = await (await pdf.getPage(p)).getTextContent(), rows = {};
+    tc.items.forEach(it => { const s = String(it.str || '').trim(); if (!s) return; const y = Math.round(it.transform[5]);
+      const k = Object.keys(rows).find(z => Math.abs(z - y) <= 2) || y; (rows[k] = rows[k] || []).push({ x: it.transform[4], s }); });
+    Object.keys(rows).map(Number).sort((a, b) => b - a).forEach(y => lines.push({ p, y, text: rows[y].sort((a, b) => a.x - b.x).map(i => i.s).join(' ').replace(/\s+/g, ' ') }));
+  }
+  const tsk = skel(tehsilName(tid)).slice(0, 4);
+  const known = new Set(villages().filter(v => v.tehsil_id === tid && v.practice !== 'Y').map(v => v.village_id));
+  const other = new Set(villages().filter(v => v.tehsil_id !== tid).map(v => v.village_id));
+  const out = [];
+  lines.forEach(ln => {
+    const m = ln.text.match(/^(.*?)\s(\d{3,6})\s+(\d+)\s+(\d+)\s+([\d.]+)\s+(\d+)$/); if (!m) return;
+    const words = m[1].trim().split(' '); if (!/^DODA$/i.test(words[0])) return; words.shift();
+    const inLine = words.length > 1 && skel(words[0]).indexOf(tsk) === 0;
+    const near = lines.some(l => l.p === ln.p && l !== ln && l.y > ln.y && l.y - ln.y <= 14 && !/\d{3,6}\s+\d+\s+\d+/.test(l.text) && skel(l.text.split(' ')[0]).indexOf(tsk) === 0);
+    const lgd = m[2];
+    out.push({ lgd, name: (inLine ? words.slice(1) : words).join(' '), total: +m[3], claimed: +m[4], pending: +m[6],
+      tick: !other.has(lgd) && (known.has(lgd) || inLine || near), known: known.has(lgd) });
+  });
+  return { as_on: asOn, rows: out };
+}
+function fileB64(file) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = () => rej(r.error); r.readAsDataURL(file); }); }
+async function archiveUpload(file, kind, tid) { try { if (!file || file.size > 9e6) return; await api('archiveFile', { tehsil_id: tid, kind, name: file.name, mime: file.type, data: await fileB64(file) }, 120000); } catch (e) {} }
+
+VIEWS.register = async function (a) {
+  setHeader('Villages and portal data');
+  const main = $('#view');
+  if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">This screen needs internet.</p></div>'; return; }
+  a.tid = a.tid || S.boot.tehsils[0].tehsil_id;
+  if (!a.d) { main.innerHTML = loadingHtml('Collecting village and portal data…'); try { a.d = await api('register', { tehsil_id: a.tid }, 90000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  const d = a.d, st = d.stats, rg = st.reg, F = d.farmers, edit = d.can_edit, fresh = S.boot.settings.list_fresh_days || 2;
+  const vs = st.villages.slice().sort((x, y) => x.name.localeCompare(y.name));
+  main.innerHTML = `<section class="pad">${tehsilPicker(a)}
+    <p class="guide">Everything that comes from the portal, village by village. Green is up to date, amber is old, red is missing. Tap a village for its details and uploads.</p>
+    <div class="box"><h3 style="margin-top:0">Registered farmers (tehsil-wide)</h3>
+      ${rg.files ? `<p>Data as on <b>${esc(fmtDate(rg.as_on.slice(0, 10)))} ${esc(rg.as_on.slice(11, 16))}</b> (download time of the latest file)</p>
+        <p>Covered: ${esc(fmtDate(S.boot.settings.reg_start_date))} to ${esc(fmtDate(rg.covered_to))}</p>
+        ${rg.gaps.length ? `<div class="banner red"><p><b>Gap in coverage:</b> ${rg.gaps.map(g => esc(fmtDate(g[0]) + ' to ' + fmtDate(g[1]))).join(', ')}. Download these periods from the portal (1 month at a time) and upload them. Until then, reports use the portal summary figures.</p></div>` : '<div class="banner ok"><p>No gaps since the start date.</p></div>'}
+        <p>${F.total} farmers: approved ${F.approved}, pending approval ${F.pending}. Linked to entries ${F.linked}; waiting for field staff to link ${F.to_link}; marked "not in village" ${F.none}; village list awaited ${F.no_list}${F.missing ? `; <b style="color:var(--ta)">no longer on portal ${F.missing}</b>` : ''}.</p>
+        <details class="more"><summary>Files uploaded (${d.files.length})</summary>${d.files.map(f => `<div class="hist"><b>${esc(fmtDate(f.cov_from))} to ${esc(fmtDate(f.cov_to))}</b>, downloaded ${esc(f.downloaded_at.slice(0, 16))}, uploaded by ${esc(f.uploaded_by_name || '-')} on ${esc(f.uploaded_at.slice(0, 16))}: ${f.farmers} farmers, ${f.new} new${Number(f.missing) ? ', ' + f.missing + ' no longer on portal' : ''}${f.note ? '. Note: ' + esc(f.note) : ''}</div>`).join('')}</details>`
+        : '<p class="guide">No registered-farmer file uploaded yet. Download from the portal (1 month at a time, starting ' + esc(fmtDate(S.boot.settings.reg_start_date)) + ') and upload.</p>'}
+      ${edit ? '<button class="btn btn-primary" id="upReg">Upload registered-farmer file</button>' : ''}</div>
+    <div class="box"><h3 style="margin-top:0">Portal village summary</h3>
+      <p>Latest figures as on <b>${esc(fmtDate(st.summary_as_on) || '-')}</b>. New bucketed villages appear here when a summary lists them.</p>
+      ${edit ? `<div class="field"><label for="pdf">Read the "bucketed villages" PDF</label><input id="pdf" type="file" class="input" accept=".pdf"></div><div id="pdfOut"></div>
+      <button class="btn" id="typ">Type the figures instead</button>` : ''}</div>
+    <h2>Bucketed villages: ${vs.length}</h2>
+    <div class="list">${vs.map(v => `<button class="row" data-v="${esc(v.village_id)}" style="align-items:flex-start"><span class="rt">
+      <b>${esc(v.name)}${v.partial ? '*' : ''}</b>
+      <span style="display:flex;flex-wrap:wrap;gap:6px;margin:4px 0">${badge(STAGE[v.stage][0], STAGE[v.stage][1])} ${badge('List: ' + LIST_STATE[v.list_state][0].replace('{0}', fresh), LIST_STATE[v.list_state][1])}
+        ${v.bucketing === 'PARTIAL' ? badge('Partially bucketed', '#7C3AED') : v.bucketing === 'FULL' ? badge('Fully bucketed', '#475569') : v.growing ? badge('Total still growing', '#7C3AED') : ''}</span>
+      <small>Portal: ${v.total} buckets, ${v.claimed} claimed${v.portal_as_on ? ', as on ' + esc(fmtDate(v.portal_as_on)) : ''}</small>
+      <small>Bucket list: ${v.list_received ? (v.list_downloaded_at ? 'downloaded ' + esc(v.list_downloaded_at.slice(0, 16)) : 'uploaded ' + esc((v.list_uploaded_at || '').slice(0, 16))) + ', ' + v.in_list + ' unclaimed in it' : 'not uploaded yet'}</small>
+      <small>Registered ${v.reg_total} (approved ${v.reg_approved}, pending ${v.reg_pending}), checked ${v.list_received ? Math.round(v.survey_pct) + '%' : '-'}, claimed ${v.total ? Math.round(v.claimed * 100 / v.total) : 0}%${v.patwari_name ? ', Patwari ' + esc(v.patwari_name) : ''}</small></span></button>`).join('')}</div>
+    <p class="hint">* Partially bucketed: marked by the Dealing Assistant, or the portal total grew in the latest summary.</p>
+    <h2>Upload history</h2>
+    ${d.uploads.slice(0, 30).map(x => `<div class="hist"><b>${esc(x.ts.slice(0, 16))}</b> ${esc(x.by)}: ${esc(x.kind)}, ${esc(x.village)}, ${x.rows} rows${x.kind === 'Bucket list' ? `, ${x.new} new, ${x.gone} claimed since last` : `, ${x.new} new farmers`}</div>`).join('') || '<p class="hint">No uploads yet.</p>'}
+    <button class="btn" id="rf">Refresh</button></section>`;
+  bindTehsilPicker(a);
+  $('#rf').onclick = () => { a.d = null; render(); };
+  if ($('#upReg')) $('#upReg').onclick = () => go('upload');
+  on(main, '.row', 'click', el => openRegisterVillage(a, vs.find(v => v.village_id === el.dataset.v)));
+  if ($('#typ')) $('#typ').onclick = () => openTypeSummary(a);
+  if ($('#pdf')) $('#pdf').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return; const out = $('#pdfOut');
+    out.innerHTML = loadingHtml('Reading the PDF…');
+    let r; try { await loadPDFJS(); r = await readSummaryPdf(new Uint8Array(await f.arrayBuffer()), a.tid); } catch (err) { out.innerHTML = `<p class="err">${esc(err.message)}</p>`; return; }
+    out.innerHTML = `<div class="prev"><p class="guide">Rows ticked below will be saved for Tehsil ${esc(tehsilName(a.tid))}. Untick anything that is not yours; tick a row the app missed.</p>
+      <div class="field"><label for="ao">Figures as on</label><input id="ao" type="date" class="input" value="${esc(r.as_on || todayIST())}"></div>
+      ${r.rows.filter(x => x.tick).length ? '' : '<p class="w">No rows of this tehsil were recognised. Tick them below.</p>'}
+      <div class="list" style="max-height:380px;overflow:auto">${r.rows.sort((x, y) => (y.tick - x.tick) || x.name.localeCompare(y.name)).map((x, k) => `<label class="dm"><input type="checkbox" data-k="${k}" ${x.tick ? 'checked' : ''}>
+        <span class="rt"><b>${esc(x.name)}</b> <small>LGD ${esc(x.lgd)}: ${x.total} buckets, ${x.claimed} claimed${x.known ? '' : x.tick ? ' (new village)' : ''}</small></span></label>`).join('')}</div>
+      <button class="btn btn-primary" id="svPdf">Save ticked figures</button></div>`;
+    const rows = r.rows;
+    $('#svPdf').onclick = () => busy($('#svPdf'), 'Saving…', async () => {
+      const pick = $$('input[data-k]', out).filter(c => c.checked).map(c => rows[+c.dataset.k]);
+      if (!pick.length) throw new Error('Tick at least one row.');
+      const res = await api('saveSummary', { tehsil_id: a.tid, as_on: $('#ao').value, source: 'PDF', rows: pick });
+      archiveUpload(f, 'summary', a.tid);
+      toast(`Saved ${pick.length} villages${res.created.length ? '; new bucketed: ' + res.created.join(', ') : ''}`);
+      await refreshBoot(); a.d = null; render();
+    });
+  };
+};
+function openTypeSummary(a) {
+  const vs = (a.d.stats.villages || []).slice().sort((x, y) => x.name.localeCompare(y.name));
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">Type portal summary figures</h2>
+      <p class="guide">Copy total and claimed buckets for each village from the portal summary. To add a newly bucketed village, fill the last row.</p>
+      <div class="field"><label for="ao">Figures as on</label><input id="ao" type="date" class="input" value="${todayIST()}"></div>
+      ${vs.map(v => `<div class="mem"><span class="rt"><b>${esc(v.name)}</b><small>LGD ${esc(v.village_id)}</small></span>
+        <input class="input tt" data-l="${esc(v.village_id)}" style="width:88px" inputmode="numeric" value="${v.total}" aria-label="Total ${esc(v.name)}">
+        <input class="input tc" data-l="${esc(v.village_id)}" style="width:80px" inputmode="numeric" value="${v.portal_claimed !== undefined ? v.portal_claimed : ''}" placeholder="claimed" aria-label="Claimed ${esc(v.name)}"></div>`).join('')}
+      <h3>New bucketed village</h3><div class="row2"><input id="nl" class="input" placeholder="LGD code" inputmode="numeric"><input id="nn" class="input" placeholder="Village name"></div>
+      <div class="row2" style="margin-top:8px"><input id="nt" class="input" placeholder="Total" inputmode="numeric"><input id="nc" class="input" placeholder="Claimed" inputmode="numeric"></div>
+      <button class="btn btn-primary" id="sv">Save figures</button>`,
+    mount: r => {
+      $('#x', r).onclick = () => closeSheet();
+      $('#sv', r).onclick = () => busy($('#sv', r), 'Saving…', async () => {
+        const rows = $$('.tt', r).map(t => ({ lgd: t.dataset.l, total: t.value.trim(), claimed: ($$('.tc', r).find(c => c.dataset.l === t.dataset.l) || {}).value || '0' })).filter(x => x.total !== '');
+        if ($('#nl', r).value.trim()) rows.push({ lgd: $('#nl', r).value.trim(), name: $('#nn', r).value.trim(), total: $('#nt', r).value.trim() || '0', claimed: $('#nc', r).value.trim() || '0' });
+        const res = await api('saveSummary', { tehsil_id: a.tid, as_on: $('#ao', r).value, source: 'MANUAL', rows });
+        await refreshBoot(); a.d = null; closeSheet(() => { toast(`Saved${res.created.length ? '; new: ' + res.created.join(', ') : ''}`); render(); });
+      });
+    }
+  }));
+}
+function openRegisterVillage(a, v) {
+  const hist = (a.d.history[v.village_id] || []).slice().sort((x, y) => x.date < y.date ? 1 : -1);
+  const edit = a.d.can_edit;
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
+      <h2 class="nm">${esc(v.name)}${v.partial ? '*' : ''}</h2><p class="hint">LGD ${esc(v.village_id)}, Tehsil ${esc(tehsilName(a.tid))}</p>
+      <p>${badge(STAGE[v.stage][0], STAGE[v.stage][1])}</p>
+      <h3>Bucketing</h3>
+      ${edit ? `<div class="toggle" id="bk">${[['FULL', 'Fully bucketed'], ['PARTIAL', 'Partially bucketed'], ['', 'Not sure']].map(x => `<button data-b="${x[0]}" class="${(v.bucketing || '') === x[0] ? 'on' : ''}">${x[1]}</button>`).join('')}</div>
+        <div class="field" style="margin-top:8px"><label for="bn">Note</label><input id="bn" class="input" value="${esc(v.bucketing_note || '')}" placeholder="e.g. DC office says ward 3 still to be bucketed"></div>
+        <button class="btn" id="svb">Save bucketing</button>` : `<p>${v.bucketing === 'PARTIAL' ? 'Partially bucketed' : v.bucketing === 'FULL' ? 'Fully bucketed' : 'Not marked'}${v.bucketing_note ? ': ' + esc(v.bucketing_note) : ''}</p>`}
+      ${v.growing ? '<p class="w">The portal total grew in the latest summary, so bucketing may still be going on.</p>' : ''}
+      <h3>Portal summary figures</h3>
+      ${hist.map(h => `<div class="hist"><b>${esc(fmtDate(h.date))}</b>: ${h.total} buckets, ${h.claimed} claimed (${esc(h.source === 'PDF' ? 'from PDF' : h.source === 'SETUP' ? 'first figures' : 'typed')})</div>`).join('') || '<p class="hint">None yet.</p>'}
+      ${edit ? `<div class="row2"><div class="field"><label for="tt">Total</label><input id="tt" class="input" inputmode="numeric" value="${v.total}"></div><div class="field"><label for="tc">Claimed</label><input id="tc" class="input" inputmode="numeric"></div></div>
+        <div class="field"><label for="ta">As on</label><input id="ta" type="date" class="input" value="${todayIST()}"></div><button class="btn" id="svs">Save figures</button>` : ''}
+      <h3>Bucket list</h3>
+      <p>${v.list_received ? `Downloaded ${esc((v.list_downloaded_at || v.list_uploaded_at || '').slice(0, 16))}, ${v.in_list} unclaimed entries in it.` : 'Not uploaded yet.'} ${badge('List: ' + LIST_STATE[v.list_state][0].replace('{0}', S.boot.settings.list_fresh_days || 2), LIST_STATE[v.list_state][1])}</p>
+      ${edit ? `<div class="field"><label for="bf">Upload a newer "Buckets UnClaimed Report Details" for ${esc(v.name)}</label><input id="bf" type="file" class="input" accept=".xlsx,.xls,.csv"></div><div id="bo"></div>` : ''}
+      ${edit ? '<button class="btn" id="stf">Staff, Patwari and targets for this village</button>' : ''}`,
+    mount: r => {
+      $('#x', r).onclick = () => closeSheet();
+      let bsel = v.bucketing || '';
+      $$('#bk button', r).forEach(el => el.onclick = () => { bsel = el.dataset.b; $$('#bk button', r).forEach(x => x.classList.toggle('on', x === el)); });
+      if ($('#svb', r)) $('#svb', r).onclick = () => busy($('#svb', r), 'Saving…', async () => { await api('saveBucketing', { village_id: v.village_id, bucketing: bsel, note: $('#bn', r).value.trim() }); toast('Saved'); a.d = null; closeSheet(() => render()); });
+      if ($('#svs', r)) $('#svs', r).onclick = () => busy($('#svs', r), 'Saving…', async () => {
+        if ($('#tt', r).value.trim() === '') throw new Error('Type the total.');
+        await api('saveSummary', { tehsil_id: a.tid, as_on: $('#ta', r).value, source: 'MANUAL', rows: [{ lgd: v.village_id, total: $('#tt', r).value.trim(), claimed: $('#tc', r).value.trim() || '0' }] });
+        toast('Figures saved'); await refreshBoot(); a.d = null; closeSheet(() => render()); });
+      if ($('#stf', r)) $('#stf', r).onclick = () => closeSheet(() => openVillage(villageById(v.village_id), () => render()));
+      if ($('#bf', r)) $('#bf', r).onchange = async e => {
+        const f = e.target.files[0]; if (!f) return; const out = $('#bo', r); out.innerHTML = loadingHtml('Reading the file…');
+        try {
+          await loadXLSX(); const p = await parsePortalFile(f);
+          if (p.type !== 'buckets') throw new Error('This is not a bucket list.');
+          if (p.rows.some(x => x[1] !== v.village_id)) throw new Error(`This file is for another village (LGD ${p.rows.find(x => x[1] !== v.village_id)[1]}), not ${v.name}.`);
+          const pv = await api('uploadPreview', { rows: p.rows, file_ts: p.file_ts }, 120000); const c = pv.villages[0].counts;
+          out.innerHTML = `<div class="prev"><ul><li>${c.buckets} buckets in the file</li><li>${c.new} new, ${c.gone} claimed since last list, ${c.changed} changed</li></ul>${pv.villages[0].warnings.map(w => `<p class="w">${esc(w)}</p>`).join('')}
+            ${pv.villages[0].blocked ? '' : '<button class="btn btn-primary" id="ap">Apply</button>'}</div>`;
+          const ap = $('#ap', r); if (ap) ap.onclick = () => busy(ap, 'Applying…', async () => {
+            await api('uploadApply', { rows: p.rows, file_ts: p.file_ts }, 180000); archiveUpload(f, 'buckets', a.tid);
+            delete S.buckets[v.village_id]; delete S.fetchedAt[v.village_id]; await kdel('b:' + v.village_id);
+            toast('Bucket list applied: ' + v.name); a.d = null; closeSheet(() => render()); });
+        } catch (err) { out.innerHTML = `<p class="err">${esc(err.message)}</p>`; }
+      };
+    }
+  }));
+}
+
+/* ======================= TEXTS (English / Hinglish) ======================= */
+VIEWS.texts = async function (a) {
+  setHeader('Texts');
+  const main = $('#view'); a.q = a.q || '';
+  const draw = () => {
+    const ov = S.boot.texts || {};
+    const keys = Object.keys(TXT).filter(k => { const q = a.q.toLowerCase(); return !q || (TXT[k][0] + ' ' + TXT[k][1] + ' ' + ((ov[k] || {}).en || '') + ' ' + ((ov[k] || {}).hi || '')).toLowerCase().includes(q); });
+    main.innerHTML = `<section class="pad"><p class="guide">Every text field staff see, in English and Hinglish. Tap one to change it; leave a box empty to use the original. Changes reach phones at their next download.</p>
+      <input id="q" class="input search" type="search" placeholder="Search a word" value="${esc(a.q)}">
+      <p class="hint">Reason buttons are changed under Settings → Reasons.</p>
+      <div class="list">${keys.map(k => { const o = ov[k] || {}; return `<button class="row" data-k="${k}"><span class="rt"><small>${esc(k)}${o.en || o.hi ? ' (changed)' : ''}</small>
+        <b style="font-weight:600;white-space:normal">${esc(o.hi || TXT[k][1])}</b><small style="white-space:normal">${esc(o.en || TXT[k][0])}</small></span></button>`; }).join('')}</div></section>`;
+    $('#q').oninput = e => { a.q = e.target.value; draw(); $('#q').focus(); };
+    on(main, '.row', 'click', el => openText(el.dataset.k, draw));
+  };
+  draw();
+};
+function openText(k, redraw) {
+  const o = (S.boot.texts || {})[k] || {};
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">${esc(k)}</h2>
+      <p class="guide">Keep {0}, {1} and words inside &lt;b&gt; as they are: the app fills them in.</p>
+      <div class="field"><label for="hi">Hinglish</label><textarea id="hi" class="input" placeholder="${esc(TXT[k][1])}">${esc(o.hi || '')}</textarea><small>Original: ${esc(TXT[k][1])}</small></div>
+      <div class="field"><label for="en">English</label><textarea id="en" class="input" placeholder="${esc(TXT[k][0])}">${esc(o.en || '')}</textarea><small>Original: ${esc(TXT[k][0])}</small></div>
+      <button class="btn btn-primary" id="sv">Save</button><button class="btn" id="rs">Back to original</button>`,
+    mount: r => {
+      $('#x', r).onclick = () => closeSheet();
+      const save = (en, hi) => busy($('#sv', r), 'Saving…', async () => { await api('saveText', { key: k, en, hi }); S.boot.texts = S.boot.texts || {}; S.boot.texts[k] = { en, hi }; await kput('boot', S.boot); closeSheet(() => { toast('Text saved'); redraw(); }); });
+      $('#sv', r).onclick = () => save($('#en', r).value.trim(), $('#hi', r).value.trim());
+      $('#rs', r).onclick = () => save('', '');
+    }
+  }));
+}
 
 /* ======================= START ======================= */
 async function start() {
@@ -2317,7 +2741,7 @@ async function start() {
   try { S.session = await kget('session'); } catch (e) { $('#view').innerHTML = '<div class="pad"><p class="err">This browser cannot save data. Do not use private or incognito mode.</p></div>'; return; }
   window.addEventListener('online', () => { updatePill(); sync(); refreshBoot(); });
   window.addEventListener('offline', updatePill);
-  setInterval(() => { sync(); if (reminderDue() && S.reminded !== todayIST()) { S.reminded = todayIST(); fail('Get signal now: your work must reach the office before 2:30 PM.'); if (current() && current().name === 'home' && !SHEET) render(); } }, 60000);
+  setInterval(() => { sync(); if (reminderDue() && S.reminded !== todayIST()) { S.reminded = todayIST(); fail(L('remind_toast')); if (current() && current().name === 'home' && !SHEET) render(); } }, 60000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { sync(); refreshStats(); } });
   if (!S.session) { NAV.stack = [{ name: 'login', args: {} }]; render(); return; }
   S.boot = await kget('boot'); S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || []; S.lastSync = (await kget('lastSync')) || '';
@@ -2326,6 +2750,7 @@ async function start() {
     try { S.boot = await api('bootstrap'); await kput('boot', S.boot); }
     catch (e) { NAV.stack = [{ name: 'login', args: {} }]; render(); return; }
   }
+  await initLang();
   NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render();
   refreshBoot(); scheduleSync(800);
   if (!(await kget('tour:' + me().user_id))) setTimeout(showTour, 500);
