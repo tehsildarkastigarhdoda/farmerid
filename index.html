@@ -13,54 +13,88 @@
 <title>Farmer ID Tracker</title>
 <style>
 :root{
-  --pine:#1F4D3A; --pine2:#2C6B52; --ink:#17201C; --mute:#56625C; --line:#D5DDD8; --bg:#F1F4F2; --card:#FFFFFF;
+  --pine:#1F4D3A; --pine2:#2C6B52; --pine3:#163828; --leaf:#E4EFE8; --saffron:#F2A900; --ink:#17201C; --mute:#56625C; --line:#D5DDD8; --bg:#F4F6F3; --card:#FFFFFF;
   --made:#16794A; --ta:#B42318; --tb:#B45309; --tc:#1F57C3; --ns:#98A29D; --unl:#D9DEDB;
-  --warnbg:#FFF5E6; --errbg:#FDECEC; --okbg:#E8F4EC;
+  --warnbg:#FFF5E6; --errbg:#FDECEC; --okbg:#E8F4EC; --z:1;
   color-scheme: light;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;-webkit-text-size-adjust:100%}
 body.noscroll{overflow:hidden}
+#view,.sheet-in{zoom:var(--z)}
 button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
-:focus-visible{outline:3px solid #F2B705;outline-offset:2px}
-header#bar{position:sticky;top:0;z-index:20;background:var(--pine);color:#fff;display:flex;align-items:center;gap:8px;
-  padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;min-height:56px}
-#back{background:none;border:0;color:#fff;font-size:28px;line-height:1;padding:4px 10px 6px 2px}
+button{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .08s ease,background-color .12s ease}
+button:active:not(:disabled),a.btn:active{transform:scale(.97)}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+header#bar{position:sticky;top:0;z-index:20;background:var(--pine);color:#fff;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;min-height:56px}
+#back{background:none;border:0;color:#fff;font-size:30px;line-height:1;padding:2px 10px 6px 2px}
 #title{flex:1;font-size:19px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pill{border:0;border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;background:rgba(255,255,255,.16);color:#fff;white-space:nowrap}
-.pill.wait{background:#F2B705;color:#2B2200}.pill.off{background:#56625C}.pill.err{background:#E5484D}.pill.busy{background:#2C6B52}
+.pill{border:0;border-radius:999px;padding:7px 12px;font-size:14px;font-weight:700;background:rgba(255,255,255,.16);color:#fff;white-space:nowrap}
+.pill.wait{background:#F2B705;color:#2B2200}.pill.off{background:#56625C}.pill.err{background:#E5484D}.pill.busy{background:#2C6B52}.pill.ok-flash{background:var(--made)}
+#hlp{background:#fff;border:0;color:var(--pine);width:34px;height:34px;border-radius:50%;font-weight:800;font-size:18px;flex:none}
+#netbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:90;background:linear-gradient(90deg,transparent,var(--saffron),transparent);background-size:40% 100%;background-repeat:no-repeat;animation:nb 1s linear infinite;display:none}
+#netbar.on{display:block}
+@keyframes nb{from{background-position:-40% 0}to{background-position:140% 0}}
+#upd{position:sticky;top:56px;z-index:19;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--saffron);color:#2B2200;padding:10px 14px;font-weight:700}
+#upd[hidden]{display:none}#upd button{border:0;background:var(--ink);color:#fff;border-radius:10px;padding:9px 14px;font-weight:700}
 main{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 40px)}
-.pad{padding:16px;max-width:720px;margin:0 auto}
+.pad{padding:16px;max-width:760px;margin:0 auto}
 h1.big{font-size:28px;margin:8px 0 4px;letter-spacing:-.01em}
 h2{font-size:21px;margin:22px 0 8px}
-h3{font-size:18px;margin:20px 0 8px}
+h3{font-size:18px;margin:18px 0 8px}
 .hint{color:var(--mute);margin:4px 0 14px}
-.who{margin:0 0 2px;font-size:20px}.who small{display:block;color:var(--mute);font-size:15px}
+.guide{display:flex;gap:10px;align-items:flex-start;background:#FFF8E1;border:1.5px solid #F3DE9C;border-radius:12px;padding:10px 12px;margin:6px 0 14px;font-size:15.5px;color:#3D3205}
+.guide::before{content:"i";flex:none;width:22px;height:22px;border-radius:50%;background:var(--saffron);color:#2B2200;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;margin-top:1px}
 .err{background:var(--errbg);color:#8A1C14;padding:12px 14px;border-radius:10px}
 .input,select.input,textarea.input{width:100%;min-height:52px;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
 textarea.input{min-height:90px}
-.field{margin:0 0 14px}.field label{display:block;font-weight:600;margin-bottom:6px}.field small{display:block;color:var(--mute);margin-top:4px;font-size:14px}
-.btn{display:block;width:100%;min-height:52px;padding:12px 16px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:650;margin:8px 0;text-align:center}
+.field{margin:0 0 14px}.field label{display:block;font-weight:650;margin-bottom:6px}.field small{display:block;color:var(--mute);margin-top:4px;font-size:14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;padding:12px 16px;border-radius:12px;border:1.5px solid #C9DACF;background:var(--leaf);color:var(--pine3);font-weight:700;margin:8px 0;text-align:center;text-decoration:none}
 .btn-primary{background:var(--pine);border-color:var(--pine);color:#fff}
-.btn-made{background:var(--made);border-color:var(--made);color:#fff;font-size:19px;min-height:60px}
-.btn:disabled{opacity:.45}
-.link{background:none;border:0;color:var(--pine2);font-weight:600;padding:10px 0;text-decoration:underline}
+.btn-made{background:var(--made);border-color:var(--made);color:#fff;font-size:19px;min-height:62px}
+.btn-danger{background:#fff;border-color:#E9B3AE;color:var(--ta)}
+.btn:disabled{opacity:.55}
+.link{background:none;border:0;color:var(--pine2);font-weight:650;padding:10px 0;text-decoration:underline}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.spin{width:18px;height:18px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;display:inline-block;animation:sp .7s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading{display:flex;gap:10px;align-items:center;color:var(--mute)}
 /* login */
 .names{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.names button{min-height:54px;text-align:left;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.names button{min-height:56px;text-align:left;padding:10px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff}
 .names button small{display:block;color:var(--mute);font-size:14px}
-/* village cards */
-.vcard{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 14px 12px;margin:0 0 12px}
-.vtop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+/* home */
+.hero{color:#fff;padding:16px 18px 20px;border-radius:0 0 24px 24px;
+  background:repeating-linear-gradient(168deg,rgba(255,255,255,.045) 0 9px,transparent 9px 21px),linear-gradient(180deg,var(--pine) 0%,var(--pine3) 100%)}
+.hero-in{max-width:760px;margin:0 auto}
+.hero .hi{font-size:22px;font-weight:750;margin:0}.hero .role{margin:2px 0 14px;color:#C7DCCF;font-size:15px}
+.hnum{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 10px}.hnum b{font-size:46px;line-height:1;letter-spacing:-.02em}.hnum span{color:#D6E6DC}
+.hero .strip{height:14px;background:rgba(255,255,255,.2)}
+.hrow{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:15px;color:#D6E6DC}.hrow b{color:#fff;font-size:19px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:100px;padding:14px;border-radius:16px;border:0;text-align:left;color:#fff;font-weight:750;font-size:16px;box-shadow:0 2px 0 rgba(0,0,0,.14)}
+.tile small{font-weight:500;font-size:13px;opacity:.92;line-height:1.3}
+.tile.c1{background:#2C6B52}.tile.c2{background:#1F57C3}.tile.c3{background:#7C3AED}.tile.c4{background:#B45309}.tile.c5{background:#0E7490}.tile.c6{background:#475569}.tile.c7{background:#16794A}.tile.c8{background:#9F1239}
+.tile.wide{grid-column:1 / -1;min-height:74px;flex-direction:row;align-items:center;gap:14px;font-size:18px}
+.tile.wide span{display:flex;flex-direction:column}
+.sec{font-size:15px;font-weight:800;color:var(--mute);margin:22px 2px 6px}
+.vcard{position:relative;display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-left:7px solid var(--pine2);border-radius:14px;padding:14px 14px 12px;margin:0 0 12px}
+.vcard.prac{border-style:dashed;border-left-style:solid;border-left-color:var(--saffron);background:#FFFDF5}
+.vtop{display:flex;flex-direction:column;padding-right:78px}
 .vtop b{font-size:20px}.vtop span{color:var(--mute);font-size:14px}
-.vhead{font-size:15px;margin:6px 0 8px;color:var(--mute)}.vhead strong{color:var(--ink);font-size:24px;margin-right:4px}
+.vpct{position:absolute;right:14px;top:12px;text-align:right;font-size:26px;font-weight:800;color:var(--pine);line-height:1}.vpct small{display:block;font-size:12px;font-weight:600;color:var(--mute)}
+.vhead{font-size:15px;margin:8px 0 8px;color:var(--mute)}
 .vline{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--mute);margin-top:8px}
 .vline b{color:var(--ink)}
 .tag{display:inline-block;font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--warnbg);color:#7A4A00}
-.tehsil{font-size:15px;font-weight:700;color:var(--mute);margin:18px 0 8px}
-/* the strip: one visual language for every status */
+.tehsil{font-size:15px;font-weight:800;color:var(--mute);margin:18px 0 8px}
+.board{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:6px 12px;margin:10px 0}
+.brow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #E6EBE8}.brow:last-child{border:0}
+.brow .md{width:28px;text-align:center;font-size:20px}.brow .nm2{flex:1;min-width:0}.brow .nm2 small{display:block;color:var(--mute);font-size:13px}
+.brow .sc{text-align:right;font-weight:800}.brow .sc small{display:block;font-weight:500;color:var(--mute);font-size:12px}
+.brow.me{background:#F2F8F4;margin:0 -12px;padding:9px 12px}
+.bar{height:8px;border-radius:4px;background:#E6EBE8;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--made)}
+/* strip */
 .strip{display:flex;height:16px;border-radius:8px;overflow:hidden;background:var(--unl)}
 .strip i{display:block;height:100%}
 .s-made{background:var(--made)}.s-C{background:var(--tc)}.s-B{background:var(--tb)}.s-A{background:var(--ta)}.s-ns{background:var(--ns)}
@@ -68,18 +102,18 @@ textarea.input{min-height:90px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
 /* banners */
-.banner{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--warnbg);border-radius:10px;padding:10px 12px;margin:10px 0}
-.banner p{margin:0;font-size:15px}.banner button{flex:none;border:0;background:var(--pine);color:#fff;border-radius:8px;padding:9px 12px;font-weight:650}
-.banner.info{background:#EAF1FB}.banner.ok{background:var(--okbg)}
+.banner{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--warnbg);border:1.5px solid #F1D3A2;border-radius:12px;padding:10px 12px;margin:10px 0}
+.banner p{margin:0;font-size:15px}.banner button{flex:none;border:0;background:var(--pine);color:#fff;border-radius:10px;padding:10px 14px;font-weight:700}
+.banner.info{background:#EAF1FB;border-color:#C9D9F3}.banner.ok{background:var(--okbg);border-color:#BFE0CB}.banner.red{background:var(--errbg);border-color:#F1C0BB}
 /* filters */
 .search{margin:12px 0 10px}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chipf{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font-size:15px;font-weight:600;white-space:nowrap}
-.chipf b{color:var(--mute);font-weight:700;margin-left:2px}
+.chipf{flex:none;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font-size:15px;font-weight:650;white-space:nowrap}
+.chipf b{color:var(--mute);font-weight:800;margin-left:2px}
 .chipf.on{background:var(--ink);border-color:var(--ink);color:#fff}.chipf.on b{color:#C9D3CE}
-.seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;margin:6px 0 4px}
-.seg button{border:0;background:#fff;min-height:44px;font-weight:650}.seg button.on{background:var(--pine);color:#fff}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;margin:6px 0 4px}
+.seg button{border:0;background:#fff;min-height:46px;font-weight:700}.seg button.on{background:var(--pine);color:#fff}
 /* rows */
 .list{display:flex;flex-direction:column;gap:8px}
 .row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;min-height:62px}
@@ -96,53 +130,104 @@ textarea.input{min-height:90px}
 /* sheet */
 .sheet{position:fixed;inset:0;z-index:40;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
 .sheet.hidden{display:none}
-.sheet-in{max-width:720px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px calc(env(safe-area-inset-bottom,0px) + 40px)}
+.sheet-in{max-width:760px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px calc(env(safe-area-inset-bottom,0px) + 40px)}
 .snav{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg);padding:8px 0}
-.snav button{border:1.5px solid var(--line);background:#fff;border-radius:10px;min-height:44px;padding:8px 14px;font-weight:650}
+.snav button{border:1.5px solid var(--line);background:#fff;border-radius:12px;min-height:46px;padding:8px 16px;font-weight:700}
 .snav span{color:var(--mute);font-size:15px}
 .nm{font-size:26px;margin:8px 0 2px;letter-spacing:-.01em}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:10px 0 12px;font-size:16px}
-.facts dt{color:var(--mute)}.facts dd{margin:0;font-weight:600;word-break:break-word}
-.now{margin:4px 0 14px}
+.facts dt{color:var(--mute)}.facts dd{margin:0;font-weight:650;word-break:break-word}
+.now{margin:4px 0 12px}
 .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.rbtn{display:flex;align-items:center;min-height:64px;padding:10px 12px;border:1.5px solid var(--line);border-left:9px solid var(--t,#999);
-  border-radius:10px;background:#fff;text-align:left;font-weight:650;font-size:16px;line-height:1.25}
+.rbtn{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:3px;min-height:68px;padding:10px 12px;border:1.5px solid var(--line);border-left:9px solid var(--t,#999);
+  border-radius:12px;background:#fff;text-align:left;font-size:16px;line-height:1.25}
+.rbtn b{font-weight:750}.rbtn small{color:var(--mute);font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.morer .rbtn small{-webkit-line-clamp:4}
 .rbtn.tA{--t:var(--ta)}.rbtn.tB{--t:var(--tb)}.rbtn.tC{--t:var(--tc)}
 .rbtn.cur{background:#FFFBE8;border-color:#E3C454}
-details.more,details.morer{margin:14px 0;border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:0 12px}
-details summary{min-height:52px;display:flex;align-items:center;font-weight:650;cursor:pointer}
+details.more,details.morer{margin:14px 0;border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:0 12px}
+details summary{min-height:54px;display:flex;align-items:center;font-weight:700;cursor:pointer}
 details[open]{padding-bottom:12px}
 .morer .rbtn{width:100%;margin:6px 0}
-.grp{font-weight:700;font-size:15px;margin:14px 0 4px}.grp.gA{color:var(--ta)}.grp.gB{color:var(--tb)}.grp.gC{color:var(--tc)}
-.toggle{display:flex;gap:8px}.toggle button{flex:1;min-height:48px;border:1.5px solid var(--line);background:#fff;border-radius:10px;font-weight:650}
+.grp{font-weight:800;font-size:15px;margin:14px 0 4px}.grp.gA{color:var(--ta)}.grp.gB{color:var(--tb)}.grp.gC{color:var(--tc)}
+.toggle{display:flex;gap:8px}.toggle button{flex:1;min-height:48px;border:1.5px solid var(--line);background:#fff;border-radius:10px;font-weight:700}
 .toggle button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.box{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.box{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
 .mem{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #E6EBE8}
 .mem:last-child{border-bottom:0}
-.mem input{width:24px;height:24px;flex:none}
+.mem input[type=checkbox]{width:26px;height:26px;flex:none}
 .mem .rt{flex:1;min-width:0}.mem small{display:block;color:var(--mute);font-size:14px}
 .dcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px}
-.dconf{font-weight:700;margin:0 0 6px}.dconf.HIGH{color:var(--ta)}.dconf.MEDIUM{color:var(--tb)}.dconf.CONFIRMED{color:var(--made)}
+.dconf{font-weight:800;margin:0 0 6px}.dconf.HIGH{color:var(--ta)}.dconf.MEDIUM{color:var(--tb)}.dconf.CONFIRMED{color:var(--made)}
 .dm{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #E6EBE8}
-.dm input{width:22px;height:22px;margin-top:3px;flex:none}
+.dm input{width:24px;height:24px;margin-top:3px;flex:none}
 .dm .rt{flex:1}.dm small{display:block;color:var(--mute);font-size:14px}
 .dm .link{padding:4px 0;font-size:15px}
-.ulist .row b{font-size:16px}
 .muted{color:var(--mute)}
 .prob{background:var(--errbg);border-radius:10px;padding:10px 12px;margin:6px 0;font-size:15px}
 .prev{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
 .prev h3{margin:0 0 6px}.prev ul{margin:6px 0;padding-left:18px}.prev .w{color:#8A4100}
 .hist{font-size:14px;border-top:1px solid #E6EBE8;padding:8px 0}
-#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translate(-50%,30px);opacity:0;z-index:60;
-  background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;max-width:92vw;text-align:center;pointer-events:none;transition:.2s}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translate(-50%,-16px);opacity:0;z-index:80;display:flex;gap:10px;align-items:center;
+  background:var(--made);color:#fff;padding:13px 18px;border-radius:14px;font-weight:700;font-size:16px;width:max-content;max-width:92vw;pointer-events:none;transition:.18s;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+#toast.err{background:var(--ta)}#toast.info{background:var(--ink)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
-.office{margin-top:26px;padding-top:6px;border-top:1.5px solid var(--line)}
-@media (prefers-reduced-motion:reduce){#toast{transition:none}}
-@media (max-width:360px){.rgrid{grid-template-columns:1fr}}
+#toast i{font-style:normal;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;flex:none}
+/* tour & guided steps */
+.tcard{background:#fff;border-radius:18px;border:1.5px solid var(--line);padding:22px 18px;margin:12px 0;text-align:center}
+.tcard .big{width:76px;height:76px;border-radius:22px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#fff;background:var(--pine)}
+.tcard h2{margin:6px 0 8px}.tcard p{font-size:17px;margin:8px 0}
+.tdots{display:flex;justify-content:center;gap:8px;margin:12px 0}.tdots i{width:9px;height:9px;border-radius:50%;background:#C9D3CE}.tdots i.on{background:var(--pine);width:22px;border-radius:5px}
+.mock{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;text-align:left}
+.step{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.step .num{flex:none;width:34px;height:34px;border-radius:50%;background:#E6EBE8;color:var(--mute);display:flex;align-items:center;justify-content:center;font-weight:800}
+.step.done{background:#F2F8F4;border-color:#BFE0CB}.step.done .num{background:var(--made);color:#fff}
+.step.cur{border:2.5px solid var(--pine);box-shadow:0 4px 14px rgba(31,77,58,.15)}.step.cur .num{background:var(--pine);color:#fff}
+.step .sb{flex:1}.step h3{margin:2px 0 4px}.step p{margin:0 0 6px;color:var(--mute);font-size:15px}
+/* office tables, charts */
+.rwrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:12px;background:#fff;margin:10px 0}
+table.rt{border-collapse:collapse;font-size:13px;min-width:100%}
+table.rt th,table.rt td{border:1px solid #DDE3E0;padding:5px 7px;text-align:center;white-space:nowrap}
+table.rt th{background:var(--pine);color:#fff;font-weight:650}
+table.rt td:first-child,table.rt th:first-child{text-align:left;position:sticky;left:0;background:#fff;white-space:normal;min-width:190px;max-width:280px}
+table.rt th:first-child{background:var(--pine)}
+table.rt tr.b td{font-weight:700}table.rt tr.s td:first-child{padding-left:18px;color:var(--mute)}
+table.rt td.sub{background:#F3F7F4}table.rt td.tot{background:#EAF2ED;font-weight:700}
+table.rt tr.ck td{color:var(--made);font-weight:700}table.rt tr.ck td.bad{color:var(--ta)}
+.paper{background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:20px 18px;font-family:"Times New Roman",Times,serif;font-size:15px;line-height:1.4;max-height:520px;overflow:auto;white-space:pre-wrap}
+.chk{display:flex;gap:10px;align-items:center;min-height:46px}.chk input{width:24px;height:24px}
+table.grid{width:100%;border-collapse:collapse;background:#fff}
+table.grid td,table.grid th{border-bottom:1px solid #E3E8E5;padding:6px;vertical-align:middle;text-align:left}
+table.grid th{font-size:13px;color:var(--mute)}
+table.grid td.sn{font-weight:800;width:44px}
+table.grid small{display:block;color:var(--mute);font-size:13px}
+table.grid input{width:100%;min-height:42px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;font-size:16px}
+table.grid input.gc{width:54px;text-align:center;font-weight:800;font-size:20px}
+table.grid tr.saved{background:#F0F8F3}table.grid tr.bad{background:var(--errbg)}
+table.grid td.gs{font-size:13px;font-weight:650;max-width:150px}
+.keys{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}.keys span{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:4px 8px;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:10px 0}
+.kpi{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px}.kpi b{display:block;font-size:28px;line-height:1.1}.kpi span{color:var(--mute);font-size:14px}
+.kpi.red b{color:var(--ta)}.kpi.green b{color:var(--made)}
+.chart{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:10px;margin:10px 0}
+.chart svg{width:100%;height:auto;display:block}
+.hbar{display:grid;grid-template-columns:minmax(120px,40%) 1fr 44px;gap:8px;align-items:center;font-size:14px;padding:4px 0}
+.hbar .tr{height:14px;background:#EEF1EF;border-radius:7px;overflow:hidden}.hbar .tr i{display:block;height:100%}
+.heat{border-collapse:collapse;font-size:13px}.heat th,.heat td{padding:6px 7px;text-align:center;border:1px solid #fff;white-space:nowrap}
+.heat th{background:#fff;color:var(--mute);font-weight:650;vertical-align:bottom}.heat td:first-child,.heat th:first-child{text-align:left;font-weight:700;background:#fff;position:sticky;left:0}
+.person{display:flex;gap:10px;align-items:center;background:#fff;border:1.5px solid var(--line);border-left:7px solid var(--made);border-radius:12px;padding:10px 12px;margin:8px 0}
+.person.amber{border-left-color:var(--saffron)}.person.red{border-left-color:var(--ta)}
+.person .rt{flex:1;min-width:0}.person small{display:block;color:var(--mute);font-size:13.5px}
+.callb{flex:none;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;background:var(--made);color:#fff;text-decoration:none}
+.tsize{display:flex;gap:8px}.tsize button{flex:1;min-height:50px;border:1.5px solid var(--line);background:#fff;border-radius:10px;font-weight:800}.tsize button.on{background:var(--ink);color:#fff}
+.gl dt{font-weight:800;margin-top:10px}.gl dd{margin:2px 0 0;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){#toast,button{transition:none}#netbar{animation:none}}
+@media (max-width:360px){.rgrid{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header id="bar"><button id="back" aria-label="Back" hidden>‹</button><div id="title">Farmer ID</div><button id="pill" class="pill" hidden></button></header>
+<div id="netbar"></div><header id="bar"><button id="back" aria-label="Back" hidden>‹</button><div id="title">Farmer ID</div><button id="pill" class="pill" hidden></button><button id="hlp" aria-label="Help for this screen" hidden>?</button></header>
+<div id="upd" hidden><span>A new version of the app is ready.</span><button id="updBtn">Update now</button></div>
 <main id="view"></main>
 <div id="sheet" class="sheet hidden" role="dialog" aria-modal="true"></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -150,9 +235,9 @@ details[open]{padding-bottom:12px}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '1.0.0';
+const APP_V = '2.0.0';
 const XLSX_URL = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-const TIER = { A: 'Cannot be claimed', B: 'Stuck', C: 'Workable' };
+const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
 const IMPLIES = { A02: 'Deceased', A03: 'Deceased', A08: 'Untraceable', B01: 'Not present in village', B02: 'Resident',
   B03: 'Residing outside village', B04: 'Out of station / migrated', B05: 'Abroad', B11: 'Resident', C01: 'Resident' };
@@ -165,7 +250,75 @@ const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const on = (root, sel, ev, fn) => $$(sel, root).forEach(e => e.addEventListener(ev, x => fn(e, x)));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-function toast(msg, ms) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), ms || 2600); }
+function toast(msg, kind, ms) {
+  kind = kind || 'ok'; const t = $('#toast');
+  t.className = kind; t.innerHTML = `<i>${kind === 'ok' ? '&#10003;' : kind === 'err' ? '!' : 'i'}</i><span>${esc(msg)}</span>`;
+  void t.offsetWidth; t.classList.add('show');
+  if (kind === 'ok' && navigator.vibrate) { try { navigator.vibrate(20); } catch (e) {} }
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), ms || (kind === 'err' ? 4500 : 2600));
+}
+const fail = m => toast(m, 'err');
+const info = m => toast(m, 'info');
+/* Locks a button while its work runs: shows a spinner, ignores further taps. */
+async function busy(btn, label, fn) {
+  if (!btn || btn.dataset.busy) return;
+  const old = btn.innerHTML; btn.dataset.busy = '1'; btn.disabled = true; btn.innerHTML = `<span class="spin"></span>${esc(label)}`;
+  try { return await fn(); }
+  catch (e) { fail(e.message); }
+  finally { delete btn.dataset.busy; btn.disabled = false; if (btn.isConnected) btn.innerHTML = old; }
+}
+const NET = { n: 0 };
+function netOn(d) { NET.n = Math.max(0, NET.n + d); const b = document.getElementById('netbar'); if (b) b.classList.toggle('on', NET.n > 0); }
+const daysBetween = (a, b) => Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 86400000);
+const loadingHtml = t => `<div class="pad"><p class="loading"><span class="spin"></span>${esc(t)}</p></div>`;
+const ICON = {
+  village: '<path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>',
+  camp: '<path d="M3 20h18L12 4 3 20zM12 4v16M8.5 20l3.5-6 3.5 6"/>',
+  paper: '<path d="M9 4h6v2H9zM8 5H6v16h12V5h-2M9 12l2 2 4-4M9 17h6"/>',
+  report: '<path d="M14 3H6v18h12V7zM14 3v4h4M9 13h6M9 17h6M9 9h2"/>',
+  upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+  staff: '<path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M17 11a3 3 0 1 0 0-6M22 21v-1a5 5 0 0 0-4-4.9"/>',
+  map: '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>',
+  settings: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M14 4v4M8 10v4M16 16v4"/>',
+  help: '<path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>',
+  play: '<path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM10 8l6 4-6 4z"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>',
+  check: '<path d="M20 6L9 17l-5-5"/>',
+  list: '<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>',
+  table: '<path d="M3 4h18v16H3zM3 10h18M9 4v16M15 4v16"/>',
+  phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+  wifi: '<path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 9a15 15 0 0 1 20 0M12 20h.01"/>'
+};
+const ic = (n, s) => `<svg viewBox="0 0 24 24" width="${s || 26}" height="${s || 26}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n] || ''}</svg>`;
+/* One plain line under every reason, so nobody has to guess. */
+const EXPLAIN = {
+  A01: 'This person gets the Farmer ID through another entry.',
+  A02: 'Owner has died; land still in their name. Inheritance mutation not done.',
+  A03: 'Owner has died. Mutation entered but not yet attested.',
+  A04: 'Land sold, but mutation in the buyer\'s name not done.',
+  A05: 'Land recorded in the name of the State / Sarkar.',
+  A06: 'Village common land with no individual owner recorded.',
+  A07: 'Land of a department or institution (R&B, Forest, school, religious place).',
+  A08: 'Nobody in the village knows this person or where they are.',
+  A09: 'Entry like "Ram Lal etc" covering several people. One Aadhaar cannot claim it.',
+  A10: 'Land is under dispute or a court case.',
+  A11: 'Landholder is under 18 years.',
+  A12: 'Road, path, nallah, graveyard, abadi or other land for public use.',
+  B01: 'Aadhaar not linked to the mobile in use, and the person is not in the village now.',
+  B02: 'Aadhaar not linked to mobile, and face authentication fails (very old, sick, paralysed).',
+  B03: 'Aadhaar not linked to mobile; lives outside and will not come for biometric.',
+  B04: 'Lives or works outside the village for now.',
+  B05: 'Lives in another country.',
+  B06: 'Has no Aadhaar card.',
+  B07: 'Name on Aadhaar differs from the name in the land record.',
+  B08: 'Refused to give consent or to share the OTP.',
+  B09: 'The portal gives an error for this landholder.',
+  B10: 'None of the above. You will write the reason.',
+  B11: 'Lives in the village, but Aadhaar is not linked to the mobile in use.',
+  C01: 'Lives in the village and Aadhaar is linked. Can get the ID at the next camp.',
+  C02: 'The Farmer ID for this person will be made through this entry.'
+};
+
 function nowIST() {
   const p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(new Date()).forEach(x => p[x.type] = x.value);
@@ -218,15 +371,20 @@ function canEditV(vid) {
 }
 
 class NetError extends Error {}
+const WRITE_API = ['saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
+  'saveReason', 'saveSettings', 'saveTehsil', 'deleteUser', 'saveVillageAll', 'resetPractice'];
 async function api(action, payload, timeout) {
   const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), timeout || 45000);
-  let res;
+  const body = Object.assign({ action, token: S.session ? S.session.token : '' }, payload || {});
+  // Every save carries a one-time code, so a double tap or a retry is never done twice on the server.
+  if (WRITE_API.includes(action) && !body.req_id) body.req_id = uid() + uid();
+  if (S.session) body.hb = { pending: S.queue.length, v: APP_V, last_sync: S.lastSync || '' };
+  let res; netOn(1);
   try {
-    const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', signal: ctrl.signal,
-      body: JSON.stringify(Object.assign({ action, token: S.session ? S.session.token : '' }, payload || {})) });
+    const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', signal: ctrl.signal, body: JSON.stringify(body) });
     res = await r.json();
   } catch (e) { throw new NetError('No internet connection. Try again when you have signal.'); }
-  finally { clearTimeout(t); }
+  finally { clearTimeout(t); netOn(-1); }
   if (!res.ok) {
     if (res.error === 'SESSION_EXPIRED') { await expireSession(); throw new Error('Please log in again.'); }
     throw new Error(res.error || 'Something went wrong.');
@@ -237,7 +395,7 @@ async function api(action, payload, timeout) {
 async function expireSession() {
   S.session = null; await kdel('session');
   NAV.stack = [{ name: 'login', args: {} }]; closeAllSheets(); render();
-  toast('Please log in again. Your saved work is kept on this phone.');
+  info('Please log in again. Your saved work is kept on this phone.');
 }
 
 /* ======================= OFFLINE QUEUE & SYNC ======================= */
@@ -251,27 +409,29 @@ function scheduleSync(ms) { clearTimeout(scheduleSync._t); scheduleSync._t = set
 async function sync() {
   if (S.syncing || !S.session || !S.queue.length || !navigator.onLine) { updatePill(); return; }
   S.syncing = true; updatePill();
-  let conflicts = false;
+  let conflicts = false; const startN = S.queue.length;
   try {
     while (S.queue.length) {
       const first = S.queue[0];
       if (first.action === 'saveBuckets') {
         let n = 0; const batch = [];
         while (n < S.queue.length && S.queue[n].action === 'saveBuckets' && batch.length < 150) { batch.push(...S.queue[n].payload.updates); n++; }
-        const r = await api('saveBuckets', { updates: batch }, 90000);
+        const r = await api('saveBuckets', { updates: batch, req_id: 'b-' + S.queue[0].id + '-' + n }, 90000);
         r.results.forEach(x => {
           if (!x.ok) { S.problems.push({ bucket_id: x.bucket_id, error: x.error, ts: nowIST() }); if (x.conflict) conflicts = true; }
           else markUploaded(x);
         });
         S.queue.splice(0, n);
       } else {
-        try { await api(first.action, first.payload, 60000); }
+        try { await api(first.action, Object.assign({ req_id: first.id }, first.payload), 60000); }
         catch (e) { if (e instanceof NetError) throw e; S.problems.push({ error: e.message, ts: nowIST() }); conflicts = true; }
         S.queue.shift();
       }
       await persistQueue();
     }
     S.lastSync = nowIST(); await kput('lastSync', S.lastSync);
+    S.flash = Date.now(); setTimeout(updatePill, 3200);
+    if (startN && !SHEET && (!S.reachAt || Date.now() - S.reachAt > 15000)) { S.reachAt = Date.now(); toast(startN === 1 ? 'Reached the office' : `${startN} changes reached the office`); }
     refreshStats(true, true);
     if (conflicts) await refreshLoadedVillages();
   } catch (e) { /* offline again: keep queue */ }
@@ -360,6 +520,7 @@ function updatePill() {
   else if (S.problems.length) { t = S.problems.length + (S.problems.length > 1 ? ' problems' : ' problem'); c = 'err'; }
   else if (!navigator.onLine) { t = n ? `Offline, ${n} saved` : 'Offline'; c = 'off'; }
   else if (n) { t = `${n} to upload`; c = 'wait'; }
+  else if (S.flash && Date.now() - S.flash < 3000) { t = '\u2713 Uploaded'; c = 'ok-flash'; }
   else { t = 'All uploaded'; c = ''; }
   p.textContent = t; p.className = 'pill ' + c;
 }
@@ -368,7 +529,7 @@ function updatePill() {
 const NAV = { stack: [] };
 const current = () => NAV.stack[NAV.stack.length - 1];
 function go(name, args) { NAV.stack.push({ name, args: args || {} }); history.pushState({ v: NAV.stack.length }, ''); window.scrollTo(0, 0); render(); }
-function setHeader(title) { $('#title').textContent = title; $('#back').hidden = NAV.stack.length < 2; }
+function setHeader(title) { $('#title').textContent = title; $('#back').hidden = NAV.stack.length < 2; const c = current(); $('#hlp').hidden = !(c && HELP[c.name]); }
 async function render() {
   const c = current(); if (!c) return;
   try { await VIEWS[c.name](c.args); } catch (e) { $('#view').innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; }
@@ -389,6 +550,40 @@ window.addEventListener('popstate', () => {
 });
 $('#back').addEventListener('click', () => history.back());
 $('#pill').addEventListener('click', openSyncSheet);
+$('#hlp').addEventListener('click', () => {
+  const h = HELP[current().name]; if (!h) return;
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">${esc(h[0])}</h2>
+      ${h.slice(1).map((x, i) => `<div class="guide" style="margin:10px 0">${esc((i + 1) + '. ' + x)}</div>`).join('')}
+      ${helplineHtml()}<button class="btn btn-primary" id="ok">Got it</button>`,
+    mount: r => { $('#x', r).onclick = () => closeSheet(); $('#ok', r).onclick = () => closeSheet(); }
+  }));
+});
+function helplineHtml() {
+  const u = me(); if (!u || !S.boot) return '';
+  const h = (S.boot.helpline || []).filter(x => !u.tehsil_id || x.tehsil_id === u.tehsil_id);
+  return h.map(x => `<a class="btn" href="tel:${esc(x.mobile)}">${ic('phone', 22)} Call ${esc(x.name)} (Dealing Assistant)</a>`).join('');
+}
+const HELP = {
+  login: ['How to log in', 'Type the first few letters of your first name.', 'Tap your name in the list.', 'Type your PIN (123456 unless you were told otherwise) and tap Log in.', 'You stay logged in on this phone for 30 days.'],
+  home: ['This screen', 'The green panel shows how many records are claimed, how many days are left and today\'s progress.', 'Tap "Start today\'s work" and the app guides you step by step.', 'Or tap a village card to work on it directly.', 'The button at the top right shows whether your work has reached the office. "All uploaded" means it has.'],
+  today: ['Today\'s work', 'Do the steps from top to bottom. The green step is the one to do now.', 'Tap the big button in that step. When you come back, finished steps show a tick.', 'You can stop any time. Your work is saved.'],
+  village: ['Working on a village', 'Start with the yellow boxes at the top, if any. They confirm government land and other entries in one tap.', 'Families: tap a family to mark several members at once, for example all heirs of a dead owner.', 'One by one: tap a landholder, then tap the reason. The next landholder opens by itself.', 'If the Farmer ID was made, tap the green "Farmer ID made" button and type the mobile number.', 'Use the buttons To do, Stuck and so on to see each group. The search box finds a name or khasra.'],
+  dups: ['Same farmer check', 'A farmer can get only one Farmer ID, even if the portal shows him in several entries.', 'If the entries shown are the same person, tick the entry where the ID will be made and tap "Yes, same farmer".', 'If one of them is a different person, tap "Not the same person" under that name.'],
+  camp: ['Recording a camp', 'Fill this after every Farmer ID camp.', 'Choose the village, check the date, then type the place, officials, number of people who came and Farmer IDs made.', 'Tap Save camp. It saves even without internet.'],
+  upload: ['Uploading a bucket list', 'Download the "Buckets UnClaimed Report Details" Excel file of each village from the portal.', 'Tap "Excel files" and choose one or more files.', 'Check the summary shown for each village, then tap Apply.', 'Nothing entered by staff is erased. Records that disappeared from the list are treated as claimed on the portal.'],
+  users: ['Staff and logins', 'Tap "Add a person" to create a login. The first name is the login name and the PIN is 123456.', 'Tap a person to change details, reset the PIN, switch the login off, or delete it.', 'After adding field staff, give them villages in "Villages and staff".'],
+  villages: ['Villages and staff', 'Tap a village to tick the staff who work there and choose the Patwari shown in reports.', 'Type the latest total and claimed figures from the portal summary whenever a new one comes.', 'Leave the daily target empty so the app works it out from the deadline.', 'Practice villages are at the bottom. Reset them after training.'],
+  settings: ['Deadlines and reasons', 'Change the deadlines and the upload reminder time here. Daily targets adjust by themselves.', 'Tap a reason to change its wording or switch it off. Use "Add a reason" for a new one.'],
+  report: ['Daily report for DC', 'Type today\'s dispatch number.', 'Check the letter and the table. The "Check" row must say OK in every column.', 'Tap Create PDF, then Download or Share it to the DC office.', 'Bucket-wise lists at the bottom answer questions about particular landholders.'],
+  supervise: ['Supervision', 'The numbers at the top show whether the tehsil is on pace for the deadline.', 'People: red means no work today or work still sitting on the phone. Tap the green phone button to call.', 'Problems shows which reasons hold most records and which villages are behind.'],
+  quality: ['Data check', 'Each box lists entries that need a second look.', 'Tap an entry to open and correct it.', 'When a box is empty, it disappears.'],
+  activity: ['Who did what', 'Choose a date to see how much each person did and the latest changes.'],
+  paper: ['Paper checklist', 'Choose the village and tap Print checklist. Give the printout to the Lumberdar or Chowkidar.', 'They tick one box for each landholder.', 'When the sheet comes back, tap Quick entry and type the ticked box numbers.'],
+  grid: ['Quick entry', 'Match the S.No on paper with the S.No on screen.', 'Type the number of the ticked box. The cursor jumps to the next row.', 'For box 1 (ID made), type the mobile number and press Enter.', 'If the "Other reason" column is filled, type it in the Other reason box.', 'A green row means saved.'],
+  help: ['Help', 'Read this page once. The ? button on every screen explains that screen.']
+};
+
 
 /* ======================= SHARED UI PIECES ======================= */
 function countsLocal(arr) {
@@ -407,7 +602,7 @@ function stripHtml(c) {
 }
 function legendHtml(c) {
   const it = (n, col, l) => `<span><i style="background:${col}"></i>${l} <b>${n}</b></span>`;
-  return `<div class="legend">${it(c.made, 'var(--made)', 'ID made')}${it(c.C, 'var(--tc)', 'Workable')}${it(c.B, 'var(--tb)', 'Stuck')}${it(c.A, 'var(--ta)', 'Cannot')}${it(c.ns, 'var(--ns)', 'To do')}${c.unl > 0 ? it(c.unl, 'var(--unl)', 'Not in list') : ''}</div>`;
+  return `<div class="legend">${it(c.made, 'var(--made)', 'ID made')}${it(c.C, 'var(--tc)', 'Can be done')}${it(c.B, 'var(--tb)', 'Stuck')}${it(c.A, 'var(--ta)', "Can't be claimed")}${it(c.ns, 'var(--ns)', 'Not checked')}${c.unl > 0 ? it(c.unl, 'var(--unl)', 'List awaited') : ''}</div>`;
 }
 function statusOf(b) {
   if (b.status === 'CLAIMED') return { cls: 'made', text: 'ID made' };
@@ -428,7 +623,7 @@ function topReasons(vid) {
 }
 function reasonGrid(vid, curCode) {
   const top = topReasons(vid), topCodes = top.map(r => r.code);
-  const btn = r => `<button class="rbtn t${r.tier}${r.code === curCode ? ' cur' : ''}" data-code="${r.code}">${esc(r.label)}</button>`;
+  const btn = r => `<button class="rbtn t${r.tier}${r.code === curCode ? ' cur' : ''}" data-code="${r.code}"><b>${esc(r.label)}</b>${EXPLAIN[r.code] ? `<small>${esc(EXPLAIN[r.code])}</small>` : ''}</button>`;
   const rest = activeReasons().filter(r => !topCodes.includes(r.code));
   const grp = t => { const l = rest.filter(r => r.tier === t); return l.length ? `<p class="grp g${t}">${TIER[t]}</p>${l.map(btn).join('')}` : ''; };
   return `<div class="rgrid">${top.map(btn).join('')}</div><details class="morer"><summary>More reasons</summary>${grp('A')}${grp('B')}${grp('C')}</details>`;
@@ -467,7 +662,7 @@ VIEWS.login = async function (a) {
   let list = (await kget('loginList')) || [];
   main.innerHTML = `<section class="pad">
     <h1 class="big">Log in</h1>
-    <p class="hint">Type your first name, tap it, then enter your PIN.</p>
+    <p class="guide">Type your first name, tap it, then type your PIN.</p>
     <div id="step1"><input id="q" class="input" placeholder="Your first name" autocomplete="off" autocapitalize="words"><div id="names" class="names"></div></div>
     <div id="step2" hidden>
       <div class="box"><b id="who"></b><br><button class="link" id="change">Choose a different name</button></div>
@@ -486,16 +681,19 @@ VIEWS.login = async function (a) {
   $('#q').addEventListener('input', draw);
   $('#change').addEventListener('click', () => { $('#step1').hidden = false; $('#step2').hidden = true; $('#pin').value = ''; });
   const doLogin = async () => {
-    const pin = $('#pin').value.trim(); if (!pin) { toast('Enter your PIN.'); return; }
-    $('#go').disabled = true; $('#go').textContent = 'Logging in';
+    const pin = $('#pin').value.trim(); if (!pin) { fail('Type your PIN.'); return; }
+    if ($('#go').dataset.busy) return; $('#go').dataset.busy = 1;
+    $('#go').disabled = true; $('#go').innerHTML = '<span class="spin"></span>Logging in…';
     try {
       const r = await api('login', { user_id: chosen.user_id, pin });
       S.session = { token: r.token, user: r.user }; await kput('session', S.session);
       S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || [];
       const boot = await api('bootstrap'); S.boot = boot; await kput('boot', boot);
       NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render();
+      toast('Welcome, ' + r.user.name);
       refreshBoot(); scheduleSync(500);
-    } catch (e) { toast(e.message, 4000); $('#go').disabled = false; $('#go').textContent = 'Log in'; }
+      if (!(await kget('tour:' + r.user.user_id))) setTimeout(showTour, 400);
+    } catch (e) { fail(e.message); delete $('#go').dataset.busy; $('#go').disabled = false; $('#go').textContent = 'Log in'; }
   };
   $('#go').addEventListener('click', doLogin);
   $('#pin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -506,61 +704,193 @@ VIEWS.login = async function (a) {
 /* ---------- Home ---------- */
 function statsFor(vid) { const v = villageById(vid); const st = S.stats[v.tehsil_id]; return st ? st.villages.find(x => x.village_id === vid) : null; }
 function villageCard(v) {
-  const st = statsFor(v.village_id), arr = S.buckets[v.village_id];
-  let c, head, today = null, target = null, survey = null;
+  const prac = v.practice === 'Y';
+  const st = prac ? null : statsFor(v.village_id), arr = S.buckets[v.village_id];
+  let c = null, head = '', today = null, target = null, survey = null, pct = null;
   if (arr) { c = countsLocal(arr); survey = c.total ? Math.round((c.total - c.ns) * 100 / c.total) : 0; today = c.today; }
   if (st) {
     if (!c) c = { total: st.total, made: st.claimed, A: st.tier_a, B: st.tier_b, C: st.tier_c, ns: st.not_surveyed, unl: Math.max(0, st.unlisted) };
     else { c = Object.assign({}, c); c.unl = Math.max(0, st.unlisted); c.made = st.claimed; c.total = st.total; }
-    head = `<strong>${st.claimed}</strong> of ${st.total} buckets claimed`;
+    head = `${st.claimed} of ${st.total} claimed`; pct = st.total ? Math.round(st.claimed * 100 / st.total) : 0;
     target = st.daily_target; if (today === null) today = st.claimed_today; if (survey === null) survey = Math.round(st.survey_pct);
-  } else if (c) head = `<strong>${c.made}</strong> claimed in this list of ${c.total}`;
-  const listMissing = st ? !st.list_received : (!arr && !st);
-  const staff = v.patwari_user_id && S.boot.users ? ((S.boot.users.find(u => u.user_id === v.patwari_user_id) || {}).name || '') : '';
-  return `<button class="vcard" data-v="${esc(v.village_id)}">
-    <div class="vtop"><b>${esc(v.name)}</b><span>${staff ? 'Patwari ' + esc(staff) : 'LGD ' + esc(v.village_id)}</span></div>
-    ${head ? `<div class="vhead">${head}</div>` : ''}
+  } else if (c) { head = `${c.made} of ${c.total} claimed`; pct = c.total ? Math.round(c.made * 100 / c.total) : 0; }
+  const listMissing = !prac && (st ? !st.list_received : !arr);
+  const staff = !prac && v.patwari_user_id && S.boot.users ? ((S.boot.users.find(u => u.user_id === v.patwari_user_id) || {}).name || '') : '';
+  return `<button class="vcard${prac ? ' prac' : ''}" data-v="${esc(v.village_id)}">
+    ${pct !== null && !prac ? `<div class="vpct">${pct}%<small>claimed</small></div>` : ''}
+    <div class="vtop"><b>${esc(v.name)}</b><span>${prac ? 'Learn here. Nothing is counted or reported.' : staff ? 'Patwari ' + esc(staff) : 'LGD ' + esc(v.village_id)}</span></div>
+    ${head && !prac ? `<div class="vhead">${head}</div>` : ''}
     ${c ? stripHtml(c) : ''}
     <div class="vline">
       ${listMissing ? '<span class="tag">Bucket list not uploaded yet</span>' : ''}
-      ${today !== null ? `<span>Today <b>${today}</b>${target ? ' of ' + target : ''}</span>` : ''}
-      ${survey !== null && !listMissing ? `<span>Survey <b>${survey}%</b> done</span>` : ''}
+      ${today !== null && !prac ? `<span>Today <b>${today}</b>${target ? ' of ' + target : ''}</span>` : ''}
+      ${survey !== null && !listMissing ? `<span>Checked <b>${survey}%</b></span>` : ''}
     </div></button>`;
+}
+function heroHtml() {
+  const u = me(), s = S.boot.settings || {}, t = todayIST();
+  const left = s.final_deadline ? Math.max(0, daysBetween(t, s.final_deadline) + 1) : null;
+  const h = Number(nowIST().slice(11, 13));
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  let list = [];
+  Object.values(S.stats).forEach(st => list = list.concat(st.villages));
+  if (u.role === 'OPERATOR') { const mine = (S.boot.myVillages || []); list = list.filter(v => mine.includes(v.village_id)); }
+  const T = list.length ? aggStats(list) : null;
+  return `<div class="hero"><div class="hero-in">
+    <p class="hi">${greet}, ${esc(u.name)}</p><p class="role">${esc(u.designation)}${u.tehsil_id ? ', Tehsil ' + esc(tehsilName(u.tehsil_id)) : ''}</p>
+    ${T ? `<div class="hnum"><b>${T.claimed}</b><span>of ${T.total} records claimed${u.role === 'OPERATOR' ? ' in your villages' : ''}</span></div>
+      ${stripHtml({ total: T.total, made: T.claimed, A: T.tier_a, B: T.tier_b, C: T.tier_c, ns: T.not_surveyed })}
+      <div class="hrow">${left !== null ? `<span><b>${left}</b> day${left === 1 ? '' : 's'} left to ${fmtDate(s.final_deadline)}</span>` : ''}<span>Today <b>${T.claimed_today}</b> of ${T.daily_target}</span></div>`
+      : '<p class="role">Figures appear here when the internet is available.</p>'}
+  </div></div>`;
+}
+function reminderDue() {
+  const s = (S.boot && S.boot.settings) || {}, rt = s.reminder_time || '14:00', now = nowIST().slice(11, 16);
+  if (!['OPERATOR', 'DA', 'ADMIN'].includes(role()) || now < rt || now >= '14:30') return false;
+  return S.queue.length > 0 || !S.lastSync || S.lastSync.slice(0, 10) !== todayIST();
+}
+function paceBoardHtml() {
+  const st = S.stats[me().tehsil_id] || Object.values(S.stats)[0]; if (!st || !st.operators.length) return '';
+  const per = {};
+  st.operators.forEach(o => { const p = per[o.user_id] = per[o.user_id] || { name: o.name, designation: o.designation, claimed: 0, target: 0, surveyed: 0, villages: [] };
+    p.claimed += o.claimed_today; p.target += o.target_today; p.surveyed += o.surveyed_today; p.villages.push(o.village); });
+  const rows = Object.keys(per).map(k => Object.assign({ id: k }, per[k])).sort((a, b) => b.claimed - a.claimed || b.surveyed - a.surveyed);
+  const medal = i => ['\u{1F947}', '\u{1F948}', '\u{1F949}'][i] || (i + 1);
+  return `<p class="sec">Today's pace</p><div class="board">${rows.map((p, i) => `<div class="brow${p.id === me().user_id ? ' me' : ''}">
+    <span class="md">${p.claimed || p.surveyed ? medal(i) : i + 1}</span>
+    <span class="nm2"><b>${esc(p.name)}${p.id === me().user_id ? ' (you)' : ''}</b><small>${esc(p.villages.join(', '))}</small>
+      <span class="bar"><i style="width:${p.target ? Math.min(100, Math.round(p.claimed * 100 / p.target)) : 0}%"></i></span></span>
+    <span class="sc">${p.claimed}/${p.target}<small>${p.surveyed} checked</small></span></div>`).join('')}</div>`;
 }
 VIEWS.home = async function () {
   setHeader('Farmer ID');
-  const u = me(); const vs = villages().slice().sort((a, b) => a.name.localeCompare(b.name));
-  for (const t of Object.keys(S.stats).length ? [] : ((S.boot && S.boot.tehsils) || [])) { const c = await kget('stats:' + t.tehsil_id); if (c) S.stats[t.tehsil_id] = c; }
-  const ins = u.role === 'OPERATOR' ? 'Tap your village to update landholders.' : (u.role === 'NT' ? 'Tap a village to see its landholders.' : 'Tap a village to work on it. Office work is at the bottom.');
-  const byT = {}; vs.forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
+  const u = me();
+  if (!Object.keys(S.stats).length) for (const t of ((S.boot && S.boot.tehsils) || [])) { const c = await kget('stats:' + t.tehsil_id); if (c) S.stats[t.tehsil_id] = c; }
+  const vs = villages().slice().sort((a, b) => (a.practice === 'Y') - (b.practice === 'Y') || a.name.localeCompare(b.name));
+  const real = vs.filter(v => v.practice !== 'Y'), prac = vs.filter(v => v.practice === 'Y');
+  const byT = {}; real.forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
   const multi = Object.keys(byT).length > 1;
-  const cards = Object.keys(byT).map(t => (multi ? `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p>` : '') + byT[t].map(villageCard).join('')).join('');
-  $('#view').innerHTML = `<section class="pad">
-    <p class="who">${esc(u.name)}<small>${esc(u.designation)}${u.tehsil_id ? ', Tehsil ' + esc(tehsilName(u.tehsil_id)) : ''}</small></p>
-    <p class="hint">${ins}</p>
-    ${cards || '<p class="hint">No village is assigned to you yet. Ask the Dealing Assistant.</p>'}
-    ${u.role !== 'NT' ? '<button class="btn" id="camp">Record a camp</button>' : ''}
-    <button class="btn" id="help">Help</button>
-    ${isOffice() ? `<div class="office"><h2>Office work</h2>
-      <button class="btn" id="up">Upload bucket list</button>
-      <button class="btn" id="staff">Staff and logins</button>
-      <button class="btn" id="vil">Villages, staff assignment and portal figures</button>
-      <button class="btn" id="set">Deadlines, reasons and report text</button></div>` : ''}
+  const field = u.role !== 'NT' && villages().some(v => canEditV(v.village_id) && v.practice !== 'Y');
+  const tile = (id, cls, icon, title, sub) => `<button class="tile ${cls}" id="${id}">${ic(icon)}<b>${title}</b><small>${sub}</small></button>`;
+  $('#view').innerHTML = `${heroHtml()}<section class="pad">
+    ${reminderDue() ? `<div class="banner red"><p><b>Upload before 2:30 PM.</b> Get mobile signal now so your work reaches the office.</p><button id="upNow">Upload</button></div>` : ''}
+    ${field ? `<div class="tiles"><button class="tile c7 wide" id="today">${ic('play', 34)}<span><b>Start today's work</b><small>The app guides you step by step</small></span></button></div>` : ''}
+    <p class="sec">${u.role === 'OPERATOR' ? 'Your villages' : 'Villages'}</p>
+    ${Object.keys(byT).map(t => (multi ? `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p>` : '') + byT[t].map(villageCard).join('')).join('') || '<p class="guide">No village is assigned to you yet. Ask the Dealing Assistant.</p>'}
+    ${paceBoardHtml()}
+    <div class="tiles">
+      ${u.role !== 'NT' ? tile('camp', 'c1', 'camp', 'Record a camp', 'After every Farmer ID camp') + tile('paper', 'c2', 'paper', 'Paper checklist', 'Print, tick, type back') : ''}
+      ${['ADMIN', 'DA', 'NT'].includes(u.role) ? tile('rep', 'c3', 'report', 'Daily report', 'Letter and tables for the DC') + tile('sup', 'c4', 'eye', 'Supervision', 'Pace, people, problems') : ''}
+      ${tile('help', 'c6', 'help', 'Help', 'How to use, call for help')}
+    </div>
+    ${isOffice() ? `<p class="sec">Office work</p><div class="tiles">
+      ${tile('up', 'c5', 'upload', 'Upload bucket list', 'Excel files from the portal')}
+      ${tile('dq', 'c8', 'check', 'Data check', 'Entries that need a second look')}
+      ${tile('act', 'c6', 'list', 'Who did what', 'Work done by each person')}
+      ${tile('staff', 'c1', 'staff', 'Staff and logins', 'Add, change or delete')}
+      ${tile('vil', 'c2', 'map', 'Villages and staff', 'Assign staff, portal figures')}
+      ${tile('set', 'c6', 'settings', 'Settings', 'Deadlines, reminder, reasons')}
+      ${tile('xl', 'c7', 'table', 'Download all data', 'Excel file, office use only')}
+    </div>` : ''}
+    ${prac.length ? `<p class="sec">Practice</p>${prac.map(villageCard).join('')}` : ''}
     <button class="link" id="out">Log out</button></section>`;
   on($('#view'), '.vcard', 'click', el => go('village', { vid: el.dataset.v, filter: 'todo', mode: 'fam', q: '', n: 120 }));
   const b = (id, fn) => { const e = $('#' + id); if (e) e.addEventListener('click', fn); };
-  b('camp', () => go('camp')); b('help', () => go('help')); b('up', () => go('upload')); b('staff', () => go('users'));
+  b('today', () => go('today')); b('camp', () => go('camp')); b('paper', () => go('paper')); b('rep', () => go('report')); b('sup', () => go('supervise'));
+  b('help', () => go('help')); b('up', () => go('upload')); b('dq', () => go('quality')); b('act', () => go('activity')); b('staff', () => go('users'));
   b('vil', () => go('villages')); b('set', () => go('settings')); b('out', logout);
+  b('xl', () => busy($('#xl'), 'Preparing Excel…', exportExcel));
+  b('upNow', () => busy($('#upNow'), 'Uploading', async () => { await sync(); render(); }));
   refreshStats(true);
+};
+
+/* ---------- First-login tour ---------- */
+const TOUR = [
+  ['village', 'Welcome', 'This app records, for every landholder, whether the Farmer ID is made and, if not, why. Your entries make the daily report to the DC by themselves.'],
+  ['check', 'Marking a landholder', 'Open your village and tap a landholder or a family. If the ID was made, tap the green button and type the mobile number. If not, tap the reason. The next one opens by itself.'],
+  ['list', 'What the colours mean', ''],
+  ['wifi', 'No signal? No problem', 'Everything is saved on your phone first. The button at the top right shows what is waiting, and it uploads by itself when there is signal. Get signal once before 2:30 PM.'],
+  ['play', 'Learn safely', 'Use the Practice village to try everything. Nothing there is counted. Tap ? on any screen for help, or call the Dealing Assistant from Help.']
+];
+function showTour() {
+  let i = 0;
+  openSheet(function build() {
+    const t = TOUR[i], last = i === TOUR.length - 1;
+    const body = t[2] ? `<p>${esc(t[2])}</p>` : `<div class="mock">
+        <div class="rbtn" style="--t:var(--made)"><b>ID made</b><small>Farmer ID generated</small></div>
+        <div class="rbtn tC"><b>Can be done</b><small>Field work will get the ID</small></div>
+        <div class="rbtn tB"><b>Stuck</b><small>Needs the person or Aadhaar-mobile linking</small></div>
+        <div class="rbtn tA"><b>Can't be claimed</b><small>Will never get an ID</small></div></div><p class="muted">Grey means not checked yet.</p>`;
+    return { html: `<div class="snav"><button id="x">Skip</button><span>${i + 1} of ${TOUR.length}</span><span></span></div>
+      <div class="tcard"><div class="big">${ic(t[0], 40)}</div><h2>${esc(t[1])}</h2>${body}</div>
+      <div class="tdots">${TOUR.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
+      ${last ? `${villages().some(v => v.practice === 'Y') ? '<button class="btn" id="prac">Open the Practice village</button>' : ''}<button class="btn btn-primary" id="done">Start working</button>`
+             : `<button class="btn btn-primary" id="nx">Next</button>`}
+      ${i ? '<button class="btn" id="pv">Back</button>' : ''}`,
+      mount: r => {
+        const fin = () => kput('tour:' + me().user_id, 1);
+        $('#x', r).onclick = () => { fin(); closeSheet(); };
+        if ($('#nx', r)) $('#nx', r).onclick = () => { i++; SHEET.build = build; drawSheet(); };
+        if ($('#pv', r)) $('#pv', r).onclick = () => { i--; SHEET.build = build; drawSheet(); };
+        if ($('#done', r)) $('#done', r).onclick = () => { fin(); closeSheet(); };
+        if ($('#prac', r)) $('#prac', r).onclick = () => { fin(); const p = villages().find(v => v.practice === 'Y'); closeSheet(() => go('village', { vid: p.village_id, filter: 'todo', mode: 'fam', q: '', n: 120 })); };
+      } };
+  });
+}
+
+/* ---------- Guided "Start today's work" ---------- */
+VIEWS.today = async function (a) {
+  setHeader("Today's work");
+  const main = $('#view');
+  const vs = villages().filter(v => canEditV(v.village_id)).sort((x, y) => (x.practice === 'Y') - (y.practice === 'Y') || x.name.localeCompare(y.name));
+  if (!a.vid && vs.filter(v => v.practice !== 'Y').length === 1) a.vid = vs.find(v => v.practice !== 'Y').village_id;
+  if (!a.vid) {
+    main.innerHTML = `<section class="pad"><p class="guide">Choose the village you are working on today.</p>${vs.map(villageCard).join('')}</section>`;
+    on(main, '.vcard', 'click', el => { a.vid = el.dataset.v; render(); });
+    return;
+  }
+  if (!S.buckets[a.vid]) main.innerHTML = loadingHtml('Downloading the landholders of this village…');
+  const arr = await loadVillage(a.vid), vid = a.vid, v = villageById(vid);
+  const todo = arr.filter(b => b.status === 'NOT_SURVEYED');
+  const fams = {}; todo.forEach(b => { const k = normName(b.parentage) || '-'; fams[k] = (fams[k] || 0) + 1; });
+  const famN = Object.values(fams).filter(n => n >= 2).length;
+  const ordered = x => x.slice().sort((p, q) => khKey(p) - khKey(q) || p.name.localeCompare(q.name)).map(b => b.bucket_id);
+  const workable = arr.filter(b => b.status === 'REASON' && tierOf(b.reason_code) === 'C');
+  const steps = [
+    { t: 'Confirm government and common land', d: 'State land, Shamlat deh, public use land and joint entries the app has spotted. One tap confirms a whole group.',
+      n: todo.filter(b => b.suggested_code).length, btn: 'Check them', run: () => openSuggestions(vid) },
+    { t: 'Check same-farmer matches', d: 'The same person in more than one entry can get only one Farmer ID.',
+      n: arr.filter(b => b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED').length, btn: 'Check matches', run: () => go('dups', { vid }) },
+    { t: 'Mark whole families', d: 'Mark several members at once, for example all heirs of a dead owner, or a family living outside.',
+      n: famN, unit: 'families', btn: 'Open families', run: () => go('village', { vid, filter: 'todo', mode: 'fam', q: '', n: 120 }) },
+    { t: 'Mark the rest one by one', d: 'Tap the reason for each landholder. The next one opens by itself.',
+      n: todo.length, btn: 'Start marking', run: () => { const ids = ordered(todo); if (ids.length) openBucket(vid, ids, 0); } },
+    { t: 'Get Farmer IDs made', d: 'These landholders can get the ID now. Call them to the camp, then tap "Farmer ID made".',
+      n: workable.length, btn: 'Open the list', run: () => { const ids = ordered(workable); if (ids.length) openBucket(vid, ids, 0); } }
+  ];
+  const cur = steps.findIndex(s => s.n > 0);
+  const c = countsLocal(arr);
+  main.innerHTML = `<section class="pad">
+    <p class="guide">Do the steps from top to bottom. The step with the green border is the one to do now. Finished steps get a tick.</p>
+    <h2 style="margin-top:4px">${esc(v.name)}</h2>${stripHtml(c)}${legendHtml(c)}
+    ${steps.map((s, i) => { const done = s.n === 0, now = i === cur;
+      return `<div class="step${done ? ' done' : now ? ' cur' : ''}"><span class="num">${done ? '&#10003;' : i + 1}</span><div class="sb">
+        <h3>${esc(s.t)}</h3><p>${esc(s.d)}</p>
+        ${done ? '<b style="color:var(--made)">Done</b>' : `<button class="btn ${now ? 'btn-primary' : ''}" data-i="${i}">${esc(s.btn)} (${s.n}${s.unit ? ' ' + s.unit : ''})</button>`}
+      </div></div>`; }).join('')}
+    ${cur < 0 ? '<div class="banner ok"><p><b>All steps done for this village.</b> Well done.</p></div>' : ''}
+    ${vs.length > 1 ? '<button class="btn" id="chg">Change village</button>' : ''}</section>`;
+  on(main, '.step .btn', 'click', el => steps[+el.dataset.i].run());
+  const ch = $('#chg'); if (ch) ch.onclick = () => { a.vid = ''; render(); };
 };
 
 /* ---------- Village ---------- */
 const FILTERS = [
-  ['todo', 'To do', b => b.status === 'NOT_SURVEYED'],
+  ['todo', 'Not checked', b => b.status === 'NOT_SURVEYED'],
   ['dup', 'Same farmer?', b => b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED'],
-  ['C', 'Workable', b => b.status === 'REASON' && tierOf(b.reason_code) === 'C'],
+  ['C', 'Can be done', b => b.status === 'REASON' && tierOf(b.reason_code) === 'C'],
   ['B', 'Stuck', b => b.status === 'REASON' && tierOf(b.reason_code) === 'B'],
-  ['A', 'Cannot be claimed', b => b.status === 'REASON' && tierOf(b.reason_code) === 'A'],
+  ['A', "Can't be claimed", b => b.status === 'REASON' && tierOf(b.reason_code) === 'A'],
   ['made', 'ID made', b => b.status === 'CLAIMED'],
   ['all', 'All', () => true]
 ];
@@ -574,7 +904,7 @@ function filtered(a, arr) {
 VIEWS.village = async function (a) {
   const v = villageById(a.vid); setHeader(v.name);
   const main = $('#view');
-  if (!S.buckets[a.vid]) main.innerHTML = '<p class="pad hint">Loading landholders…</p>';
+  if (!S.buckets[a.vid]) main.innerHTML = loadingHtml('Downloading the landholders of this village. This takes a few seconds the first time.');
   const arr = await loadVillage(a.vid);
   drawVillage(a, arr);
   if (navigator.onLine && (!S.fetchedAt[a.vid] || Date.now() - S.fetchedAt[a.vid] > 120000) && !a._bg) {
@@ -591,14 +921,14 @@ function drawVillage(a, arr) {
   $('#view').innerHTML = `<section class="pad">
     ${stripHtml(c)}${legendHtml(c)}
     ${!arr.length ? '<p class="err">The bucket list for this village has not been uploaded yet.</p>' : ''}
-    ${sug ? banner('', `${sug} buckets look like State, Shamlat, department land or joint entries.`, 'Check', 'bSug') : ''}
-    ${dup ? banner('info', `${dup} buckets may belong to a farmer who has another bucket.`, 'Check', 'bDup') : ''}
-    ${noentry ? banner('ok', `${noentry} buckets were claimed on the portal. Add the farmer's mobile number.`, 'Show', 'bNo') : ''}
-    ${reopen ? banner('', `${reopen} buckets are unclaimed on the portal again.`, 'Show', 'bRe') : ''}
+    ${sug ? banner('', `<b>Step 1:</b> ${sug} entries look like State land, Shamlat deh, public use land, department land or joint entries.`, 'Confirm', 'bSug') : ''}
+    ${dup ? banner('info', `<b>Step 2:</b> ${dup} entries may be a farmer who has another entry.`, 'Check', 'bDup') : ''}
+    ${noentry ? banner('ok', `${noentry} Farmer IDs were made on the portal. Add the farmer's mobile number.`, 'Show', 'bNo') : ''}
+    ${reopen ? banner('', `${reopen} entries are unclaimed on the portal again. Update them.`, 'Show', 'bRe') : ''}
     <input id="q" class="input search" type="search" placeholder="Search name, father's name or khasra" value="${esc(a.q)}">
     <div class="chips">${FILTERS.map(f => `<button class="chipf ${a.filter === f[0] ? 'on' : ''}" data-f="${f[0]}">${f[1]} <b>${arr.filter(f[2]).length}</b></button>`).join('')}</div>
     <div class="seg"><button data-m="fam" class="${a.mode === 'fam' ? 'on' : ''}">Families</button><button data-m="one" class="${a.mode === 'one' ? 'on' : ''}">One by one</button></div>
-    <p class="hint" id="ins"></p><div id="list" class="list"></div></section>`;
+    <p class="guide" id="ins"></p><div id="list" class="list"></div></section>`;
   const v = $('#view');
   on(v, '.chipf', 'click', el => { a.filter = el.dataset.f; a.n = 120; drawVillage(a, arr); });
   on(v, '.seg button', 'click', el => { a.mode = el.dataset.m; a.n = 120; drawVillage(a, arr); });
@@ -613,9 +943,10 @@ function drawVillage(a, arr) {
 function drawList(a, arr) {
   const items = filtered(a, arr); const ro = !canEditV(a.vid);
   const box = $('#list'); const ins = $('#ins');
-  if (!items.length) { ins.textContent = ''; box.innerHTML = `<p class="hint">${a.filter === 'todo' && arr.length ? 'Nothing left to do in this list.' : 'No landholders here.'}</p>`; return; }
+  if (!items.length) { ins.textContent = '';
+    box.innerHTML = `<p class="guide">${a.filter === 'todo' && arr.length ? 'Everyone in this village has been checked. Use the other buttons above to see each group.' : 'Nobody in this group.'}</p>`; return; }
   if (a.mode === 'fam') {
-    ins.textContent = ro ? 'Families are grouped by father or husband name.' : 'Tap a family to mark several landholders at once.';
+    ins.textContent = ro ? 'Families are grouped by father or husband name.' : 'Tap a family to mark several members at once. Switch to "One by one" for single landholders.';
     const fams = {}; items.forEach(b => { const k = normName(b.parentage) || '-'; (fams[k] = fams[k] || []).push(b); });
     const keys = Object.keys(fams).sort((x, y) => fams[y].length - fams[x].length || x.localeCompare(y));
     box.innerHTML = keys.slice(0, a.n).map(k => {
@@ -624,7 +955,7 @@ function drawList(a, arr) {
     }).join('') + (keys.length > a.n ? `<button class="btn" id="more">Show more (${keys.length - a.n} more families)</button>` : '');
     on(box, '.fam', 'click', el => openFamily(a.vid, el.dataset.k));
   } else {
-    ins.textContent = ro ? 'Tap a landholder to see details.' : 'Tap a landholder to update. The next one opens after you save.';
+    ins.textContent = ro ? 'Tap a landholder to see details.' : 'Tap a landholder, then tap "Farmer ID made" or the reason. The next one opens by itself.';
     box.innerHTML = items.slice(0, a.n).map(rowHtml).join('') + (items.length > a.n ? `<button class="btn" id="more">Show more (${items.length - a.n} more)</button>` : '');
     const ids = items.map(b => b.bucket_id);
     on(box, '.row', 'click', el => openBucket(a.vid, ids, ids.indexOf(el.dataset.id)));
@@ -636,7 +967,7 @@ function drawList(a, arr) {
 function openBucket(vid, ids, i) { openSheet(() => bucketSheet(vid, ids, i)); }
 function advance(vid, ids, i) {
   if (i + 1 < ids.length) { SHEET.build = () => bucketSheet(vid, ids, i + 1); drawSheet(); }
-  else closeSheet(() => toast('End of this list.'));
+  else closeSheet(() => toast('End of this list. Well done'));
 }
 function bucketSheet(vid, ids, i) {
   const b = (S.buckets[vid] || []).find(x => x.bucket_id === ids[i]);
@@ -655,18 +986,19 @@ function bucketSheet(vid, ids, i) {
     <div class="snav"><button id="x">Close</button><span>${i + 1} of ${ids.length}</span><button id="skip">${i + 1 < ids.length ? 'Skip' : 'Done'}</button></div>
     <h2 class="nm">${esc(b.name)}</h2>
     <dl class="facts"><dt>Father / husband</dt><dd>${esc(b.parentage || '-')}</dd><dt>Khasra</dt><dd>${esc(b.khasras || '-')}</dd>
-      <dt>Village</dt><dd>${esc(villageById(vid).name)}</dd><dt>Bucket</dt><dd>…${esc(String(b.bucket_id).slice(-8))}</dd></dl>
+      <dt>Village</dt><dd>${esc(villageById(vid).name)}</dd><dt>Portal ref</dt><dd>…${esc(String(b.bucket_id).slice(-8))}</dd></dl>
     <p class="now">Now: <span class="st st-${s.cls}">${esc(s.text)}</span>${b._pending ? ' <span class="muted">(waiting to upload)</span>' : ''}${b.updated_by_name ? `<br><small class="muted">Last updated by ${esc(b.updated_by_name)}, ${esc(b.updated_at)}</small>` : ''}</p>
     ${banners.join('')}
-    ${ro ? '' : `
-      ${portalClaimed && !showMade ? '' : `<button class="btn btn-made" id="made">Farmer ID made</button>`}
+    ${ro ? '' : `<p class="guide">${portalClaimed ? 'The portal shows the Farmer ID as made. You can add the mobile number and other details below.' : 'Was the Farmer ID made? Tap the green button. If not, tap the reason. The next landholder opens by itself.'}</p>
+      ${b.status !== 'NOT_SURVEYED' && !portalClaimed ? '<button class="btn btn-danger" id="reset">Undo: mark as not checked</button>' : ''}
+      ${portalClaimed && !showMade ? '' : `<button class="btn btn-made" id="made">${ic('check', 24)} Farmer ID made</button>`}
       <div class="box" id="madeBox" ${showMade ? '' : 'hidden'}>
         <div class="field"><label for="mob">Farmer's mobile number</label><input id="mob" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(b.mobile)}" placeholder="10 digits"></div>
         <div class="field"><label for="aad">Aadhaar number (optional)</label><input id="aad" class="input" inputmode="numeric" maxlength="14" value="${esc(b.aadhaar)}" placeholder="12 digits"></div>
         <div class="field"><label for="fid">Farmer ID (optional)</label><input id="fid" class="input" inputmode="numeric" value="${esc(b.farmer_id)}" placeholder="Paste if you have it"></div>
         <button class="btn btn-made" id="madeSave">Save: ID made</button>
       </div>
-      ${portalClaimed ? '' : `<h3>Not made? Tap the reason</h3>${reasonGrid(vid, b.reason_code)}
+      ${portalClaimed ? '' : `<h3>Not made? Tap the reason</h3><p class="hint">Not sure? Tap "More reasons" to see all of them with an explanation.</p>${reasonGrid(vid, b.reason_code)}
       <div class="box" id="otherBox" hidden><div class="field"><label for="rem2">Write the reason</label><textarea id="rem2" class="input">${esc(b.remarks)}</textarea></div><button class="btn btn-primary" id="otherSave">Save</button></div>`}
       <details class="more"><summary>More details</summary>
         <div class="field"><label>Male or female</label><div class="toggle" id="gen">
@@ -679,12 +1011,12 @@ function bucketSheet(vid, ids, i) {
         <div class="field"><label for="mob2">Mobile number</label><input id="mob2" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(b.mobile)}"></div>
         <div class="field"><label for="rem">Remarks</label><textarea id="rem" class="input">${esc(b.remarks)}</textarea></div>
         <button class="btn btn-primary" id="detSave">Save details</button>
-        ${b.status !== 'NOT_SURVEYED' && !portalClaimed ? '<button class="btn" id="reset">Mark as not done yet</button>' : ''}
       </details>`}
     ${navigator.onLine ? '<button class="link" id="hist">See change history</button><div id="histBox"></div>' : ''}`;
   const mount = r => {
     const q = id => $('#' + id, r);
-    const run = async (fn, okMsg, next) => { try { await fn(); toast(okMsg); if (next) advance(vid, ids, i); else drawSheet(); } catch (e) { toast(e.message, 4000); } };
+    let running = false;
+    const run = async (fn, okMsg, next) => { if (running) return; running = true; try { await fn(); toast(okMsg + '. Saved on this phone'); if (next) advance(vid, ids, i); else drawSheet(); } catch (e) { fail(e.message); running = false; } };
     q('x').onclick = () => closeSheet();
     q('skip').onclick = () => advance(vid, ids, i);
     if (q('sugYes')) q('sugYes').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: b.suggested_code }), 'Saved: ' + sugR.label, true);
@@ -711,7 +1043,7 @@ function bucketSheet(vid, ids, i) {
       if (ad !== b.aadhaar) f.aadhaar = ad; if (mo !== b.mobile) f.mobile = mo;
       run(() => saveOne(vid, b, f), 'Details saved', false);
     };
-    if (q('reset')) q('reset').onclick = () => run(() => saveOne(vid, b, { status: 'NOT_SURVEYED', reason_code: '' }), 'Marked as not done yet', false);
+    if (q('reset')) q('reset').onclick = () => run(() => saveOne(vid, b, { status: 'NOT_SURVEYED', reason_code: '' }), 'Undone', false);
     if (q('hist')) q('hist').onclick = async () => {
       q('histBox').innerHTML = '<p class="hint">Loading…</p>';
       try { const res = await api('getBucketLog', { bucket_id: b.bucket_id });
@@ -731,7 +1063,7 @@ function familySheet(vid, key, sel) {
   const html = `
     <div class="snav"><button id="x">Close</button><span>${members.length} landholders</span><span></span></div>
     <h2 class="nm">Family of ${esc(members[0] ? members[0].parentage : '')}</h2>
-    <p class="hint">${ro ? 'Status of each landholder in this family.' : 'Tick the landholders this applies to, then tap the reason. Tap a name to open that landholder alone.'}</p>
+    <p class="guide">${ro ? 'Status of each landholder in this family.' : 'Tick the landholders this applies to, then tap the reason. Tap a name to open that landholder alone.'}</p>
     ${ro ? '' : '<div class="row2"><button class="btn" id="all">Tick all not done</button><button class="btn" id="none">Untick all</button></div>'}
     <div class="box">${members.map(b => { const s = statusOf(b); return `<div class="mem">
       ${ro ? `<span class="dot d-${s.cls}"></span>` : `<input type="checkbox" data-id="${esc(b.bucket_id)}" ${sel.has(b.bucket_id) ? 'checked' : ''} ${locked(b) ? 'disabled' : ''} aria-label="${esc(b.name)}">`}
@@ -747,15 +1079,15 @@ function familySheet(vid, key, sel) {
     $$('.one', r).forEach(el => el.onclick = () => { const ids = members.map(b => b.bucket_id); SHEET.build = () => bucketSheet(vid, ids, ids.indexOf(el.dataset.id)); drawSheet(); });
     const apply = async (f, label) => {
       const items = members.filter(b => sel.has(b.bucket_id) && !locked(b)).map(b => ({ b, f: Object.assign({}, f) }));
-      if (!items.length) { toast('Tick at least one landholder first.'); return; }
-      try { await saveMany(vid, items); toast(`Saved for ${items.length}: ${label}`); sel.clear(); drawSheet(); } catch (e) { toast(e.message, 4000); }
+      if (!items.length) { fail('Tick at least one landholder first.'); return; }
+      try { await saveMany(vid, items); toast(`Saved for ${items.length}: ${label}`); sel.clear(); drawSheet(); } catch (e) { fail(e.message); }
     };
     $$('.rbtn', r).forEach(el => el.onclick = () => {
       const code = el.dataset.code;
       if (code === 'B10') { $('#otherBox', r).hidden = false; return; }
       apply({ status: 'REASON', reason_code: code }, reason(code).label);
     });
-    if ($('#otherSave', r)) $('#otherSave', r).onclick = () => { const t = $('#rem2', r).value.trim(); if (!t) { toast('Write the reason.'); return; } apply({ status: 'REASON', reason_code: 'B10', remarks: t }, 'Other'); };
+    if ($('#otherSave', r)) $('#otherSave', r).onclick = () => { const t = $('#rem2', r).value.trim(); if (!t) { fail('Write the reason.'); return; } apply({ status: 'REASON', reason_code: 'B10', remarks: t }, 'Other'); };
   };
   return { html, mount };
 }
@@ -767,7 +1099,7 @@ function openSuggestions(vid) {
     const codes = [...new Set(list.map(b => b.suggested_code))];
     const html = `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
       <h2 class="nm">Check these buckets</h2>
-      <p class="hint">The names suggest these are not individual farmers. Confirm a group in one tap, or tap a name to mark it differently.</p>
+      <p class="guide">The names suggest these are not individual farmers. Confirm a group in one tap, or tap a name to mark it differently.</p>
       ${codes.length ? codes.map(c => { const l = list.filter(b => b.suggested_code === c); return `<div class="box"><h3 style="margin-top:0">${esc(reason(c).label)}: ${l.length}</h3>
         ${l.map(b => `<div class="mem"><span class="rt"><button class="link one" data-id="${esc(b.bucket_id)}" style="padding:0;text-align:left">${esc(b.name)}</button><small>${esc(b.parentage)}, khasra ${esc(shortKh(b.khasras))}</small></span></div>`).join('')}
         <button class="btn btn-primary conf" data-c="${c}">Confirm all ${l.length} as ${esc(reason(c).label)}</button></div>`; }).join('') : '<p class="hint">Nothing left to check.</p>'}`;
@@ -812,17 +1144,17 @@ function applyEffects(effects) {
 }
 VIEWS.dups = async function (a) {
   setHeader('Same farmer check'); const main = $('#view');
-  main.innerHTML = '<p class="pad hint">Loading…</p>';
+  main.innerHTML = loadingHtml('Loading…');
   await loadVillage(a.vid);
   let groups = null, offline = false;
-  if (navigator.onLine) { try { groups = (await api('getDupGroups', { village_id: a.vid })).groups; } catch (e) { toast(e.message); } }
+  if (navigator.onLine) { try { groups = (await api('getDupGroups', { village_id: a.vid })).groups; } catch (e) { fail(e.message); } }
   if (!groups) { groups = localGroups(a.vid); offline = true; }
   const order = { HIGH: 0, MEDIUM: 1, CONFIRMED: 2 };
   groups.sort((x, y) => (a.focus && x.group === a.focus ? -1 : 0) - (a.focus && y.group === a.focus ? -1 : 0) || order[x.conf] - order[y.conf]);
   const draw = () => {
     const live = groups.filter(g => g.members.length >= 2);
     main.innerHTML = `<section class="pad">
-      <p class="hint">A farmer can get only one Farmer ID. If the same person has more than one bucket, pick the bucket where the ID will be made. The other buckets will be marked "Same farmer in multiple buckets".</p>
+      <p class="guide">A farmer can get only one Farmer ID. If these entries are the same person, tick the entry where the ID will be made and tap "Yes, same farmer". The other entries are then marked "Same farmer in multiple buckets". If someone is a different person, tap "Not the same person" under that name.</p>
       ${offline ? '<div class="banner"><p>You are offline. Matches in other villages are not shown.</p></div>' : ''}
       ${live.length ? live.map(g => {
         const primary = (g.members.find(m => m.status === 'CLAIMED') || g.members.find(m => m.dup_role === 'PRIMARY') ||
@@ -833,7 +1165,7 @@ VIEWS.dups = async function (a) {
           ${g.members.map(m => `<label class="dm"><input type="radio" name="p-${esc(g.group)}" value="${esc(m.bucket_id)}" ${m.bucket_id === primary ? 'checked' : ''} ${canAct ? '' : 'disabled'}>
             <span class="rt"><b>${esc(m.name)}</b><small>Father / husband: ${esc(m.parentage)}</small><small>${esc(m.village)}, khasra ${esc(shortKh(m.khasras))}</small>
             <small>${esc(statusOf(m).text)}</small>${canAct ? `<button type="button" class="link nb" data-b="${esc(m.bucket_id)}">Not the same person</button>` : ''}</span></label>`).join('')}
-          ${canAct ? `<p class="hint" style="margin:10px 0 0">The ticked bucket is where the Farmer ID is made.</p><button class="btn btn-primary yes">${g.confirmed ? 'Save main bucket' : 'Yes, same farmer'}</button>`
+          ${canAct ? `<p class="hint" style="margin:10px 0 0">The ticked entry is where the Farmer ID is made.</p><button class="btn btn-primary yes">${g.confirmed ? 'Save main entry' : 'Yes, same farmer'}</button>`
                    : '<p class="hint">Only staff of these villages can confirm.</p>'}</div>`;
       }).join('') : '<p class="hint">No possible matches in this village.</p>'}</section>`;
     on(main, '.yes', 'click', async el => {
@@ -865,7 +1197,7 @@ VIEWS.dups = async function (a) {
 VIEWS.camp = async function () {
   setHeader('Record a camp');
   const vs = villages().filter(v => canEditV(v.village_id)).sort((a, b) => a.name.localeCompare(b.name));
-  $('#view').innerHTML = `<section class="pad"><p class="hint">Fill this after each Farmer ID camp. It saves even without internet.</p>
+  $('#view').innerHTML = `<section class="pad"><p class="guide">Fill this after each Farmer ID camp. It saves even without internet.</p>
     <div class="field"><label for="v">Village</label><select id="v" class="input">${vs.map(v => `<option value="${esc(v.village_id)}">${esc(v.name)}</option>`).join('')}</select></div>
     <div class="field"><label for="d">Date</label><input id="d" type="date" class="input" value="${todayIST()}"></div>
     <div class="field"><label for="p">Place</label><input id="p" class="input" placeholder="e.g. Panchayat Ghar"></div>
@@ -873,34 +1205,54 @@ VIEWS.camp = async function () {
     <div class="row2"><div class="field"><label for="n">People who came</label><input id="n" class="input" inputmode="numeric"></div>
       <div class="field"><label for="i">Farmer IDs made</label><input id="i" class="input" inputmode="numeric"></div></div>
     <button class="btn btn-primary" id="save">Save camp</button></section>`;
-  $('#save').onclick = async () => {
-    if (!vs.length) { toast('No village assigned to you.'); return; }
+  $('#save').onclick = () => busy($('#save'), 'Saving…', async () => {
+    if (!vs.length) throw new Error('No village is assigned to you.');
+    if (!$('#p').value.trim()) throw new Error('Type the place of the camp.');
     await enqueue('saveCamp', { village_id: $('#v').value, date: $('#d').value, venue: $('#p').value.trim(), officials: $('#o').value.trim(),
       attended: $('#n').value.trim(), ids_generated: $('#i').value.trim() });
-    toast('Camp saved'); history.back();
-  };
+    toast('Camp saved on this phone'); history.back();
+  });
 };
 
 /* ---------- Help ---------- */
 VIEWS.help = async function () {
   setHeader('Help');
+  const z = Number(S.zoom || 1);
   $('#view').innerHTML = `<section class="pad">
+    ${helplineHtml() ? `<h2>Need help now?</h2>${helplineHtml()}` : ''}
+    <h2>Learn the app</h2>
+    <button class="btn btn-primary" id="tour">Show the welcome tour again</button>
+    ${villages().some(v => v.practice === 'Y') ? '<button class="btn" id="prac">Open the Practice village (nothing is counted)</button>' : ''}
+    <h2>Text size</h2>
+    <div class="tsize">${[[1, 'A'], [1.12, 'A+'], [1.25, 'A++']].map(x => `<button data-z="${x[0]}" class="${z === x[0] ? 'on' : ''}">${x[1]}</button>`).join('')}</div>
     <h2>Put the app on your phone</h2>
-    <p><b>Android:</b> open this page in Chrome, tap the ⋮ menu, then <b>Add to Home screen</b> or <b>Install app</b>.</p>
+    <p><b>Android:</b> open this page in Chrome, tap the &#8942; menu, then <b>Add to Home screen</b> or <b>Install app</b>.</p>
     <p><b>iPhone:</b> open this page in Safari, tap the Share button, then <b>Add to Home Screen</b>.</p>
-    <h2>Daily work</h2>
-    <p>1. Open the app once where there is signal. Your villages download to the phone.</p>
-    <p>2. Tap your village. Start with the yellow box at the top if there is one: confirm State land, Shamlat and similar buckets in one tap.</p>
-    <p>3. Use <b>Families</b> to mark a whole family at once, for example all heirs of a dead owner, or all members living outside.</p>
-    <p>4. Use <b>One by one</b> for the rest. Tap the reason; the next landholder opens by itself.</p>
-    <p>5. When a Farmer ID is made, tap <b>Farmer ID made</b> and enter the mobile number.</p>
-    <p>6. Work saves on the phone even without signal. The button at the top right shows how many changes are waiting. They upload by themselves when there is signal. Please get signal once before 2:30 PM.</p>
+    <h2>Daily work in 5 steps</h2>
+    <div class="guide">1. Open the app once where there is signal. Your villages download to the phone.</div>
+    <div class="guide">2. Tap "Start today's work". The app shows what to do first.</div>
+    <div class="guide">3. Mark families together, then the rest one by one. Tap the reason; the next landholder opens by itself.</div>
+    <div class="guide">4. When a Farmer ID is made, tap "Farmer ID made" and type the mobile number.</div>
+    <div class="guide">5. Get signal once before 2:30 PM so the office receives your work.</div>
     <h2>Colours</h2>
-    ${legendHtml({ made: '', C: '', B: '', A: '', ns: '', unl: 0 }).replace(/<b><\/b>/g, '')}
-    <p class="hint">Green: ID made. Blue: can be done with field work. Orange: stuck until the person or their Aadhaar is available. Red: can never be claimed. Grey: not checked yet.</p>
+    <div class="legend"><span><i style="background:var(--made)"></i>ID made</span><span><i style="background:var(--tc)"></i>Can be done</span><span><i style="background:var(--tb)"></i>Stuck</span><span><i style="background:var(--ta)"></i>Can't be claimed</span><span><i style="background:var(--ns)"></i>Not checked yet</span></div>
+    <h2>Words used</h2>
+    <dl class="gl">
+      <dt>Entry / record (bucket)</dt><dd>One landholder's record on the Farmer ID portal, with all the khasras the portal put together for that person.</dd>
+      <dt>Farmer ID made (claimed)</dt><dd>The Farmer ID has been generated for that entry.</dd>
+      <dt>Same farmer</dt><dd>The portal sometimes shows one person in two entries because of a spelling difference. Only one entry can get the ID.</dd>
+      <dt>Can't be claimed</dt><dd>Will never get a Farmer ID, for example State land or a dead owner whose mutation is not done.</dd>
+      <dt>Stuck</dt><dd>Can get the ID only when the person comes back or links Aadhaar with a mobile number.</dd>
+      <dt>Can be done</dt><dd>Will get the ID with normal field work.</dd>
+      <dt>Uploaded</dt><dd>Your work has reached the office. Until then it is safe on your phone.</dd>
+    </dl>
     <h2>Mistakes</h2>
-    <p>Open the landholder again and tap the correct reason. You can correct any entry at any time.</p>
-    <button class="btn" id="out">Log out</button></section>`;
+    <p>Open the landholder again and tap the correct reason, or tap the red Undo button. You can correct any entry any time.</p>
+    <button class="btn btn-danger" id="out">Log out</button>
+    <p class="hint">Version ${APP_V}</p></section>`;
+  $('#tour').onclick = showTour;
+  const p = $('#prac'); if (p) p.onclick = () => go('village', { vid: villages().find(v => v.practice === 'Y').village_id, filter: 'todo', mode: 'fam', q: '', n: 120 });
+  on($('#view'), '.tsize button', 'click', async el => { S.zoom = Number(el.dataset.z); document.documentElement.style.setProperty('--z', S.zoom); await kput('zoom', S.zoom); render(); });
   $('#out').onclick = logout;
 };
 
@@ -918,8 +1270,8 @@ function openSyncSheet() {
       <button class="btn" id="rf">Download latest data</button>`;
     const mount = r => {
       $('#x', r).onclick = () => closeSheet();
-      $('#up', r).onclick = async () => { if (!navigator.onLine) { toast('No internet connection.'); return; } await sync(); drawSheet(); toast(S.queue.length ? 'Some changes are still waiting.' : 'All uploaded'); };
-      $('#rf', r).onclick = async () => { if (!navigator.onLine) { toast('No internet connection.'); return; } toast('Downloading…'); await sync(); await refreshBoot(); await refreshLoadedVillages(); refreshStats(true, true); toast('Latest data downloaded'); drawSheet(); };
+      $('#up', r).onclick = async () => { if (!navigator.onLine) { fail('No internet connection.'); return; } await sync(); drawSheet(); if (S.queue.length) fail('Some changes are still waiting. Check the signal.'); else toast('Everything has reached the office'); };
+      $('#rf', r).onclick = async () => { if (!navigator.onLine) { fail('No internet connection.'); return; } info('Downloading the latest data…'); await sync(); await refreshBoot(); await refreshLoadedVillages(); refreshStats(true, true); toast('Latest data downloaded'); drawSheet(); };
       if ($('#clr', r)) $('#clr', r).onclick = async () => { S.problems = []; await persistQueue(); updatePill(); drawSheet(); };
     };
     return { html, mount };
@@ -957,14 +1309,14 @@ VIEWS.upload = async function () {
   setHeader('Upload bucket list');
   const admin = role() === 'ADMIN';
   $('#view').innerHTML = `<section class="pad">
-    <p class="hint">Choose one or more "Buckets UnClaimed Report Details" Excel files from the portal. You will see what changes before anything is saved. Work already entered by staff is never erased.</p>
+    <p class="guide">Choose one or more "Buckets UnClaimed Report Details" Excel files from the portal. You will see what changes before anything is saved. Work already entered by staff is never erased.</p>
     ${admin ? `<div class="field"><label for="t">Tehsil for villages not yet in the app</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}">${esc(t.name)}</option>`).join('')}</select></div>` : ''}
     <div class="field"><label for="f">Excel files</label><input id="f" type="file" class="input" accept=".xlsx,.xls" multiple></div>
     <div id="out"></div></section>`;
   const out = $('#out');
   $('#f').onchange = async e => {
     const files = Array.from(e.target.files || []); if (!files.length) return;
-    if (!navigator.onLine) { toast('Uploading needs internet.'); return; }
+    if (!navigator.onLine) { fail('Uploading needs internet.'); return; }
     out.innerHTML = '<p class="hint">Reading files…</p>';
     try { await loadXLSX(); } catch (err) { out.innerHTML = `<p class="err">${esc(err.message)}</p>`; return; }
     const jobs = [];
@@ -987,7 +1339,7 @@ VIEWS.upload = async function () {
         (jobs.filter(j => j.state === 'ready').length > 1 ? '<button class="btn btn-primary" id="apAll">Apply all files</button>' : '');
       const applyJob = async j => {
         try { const r = await api('uploadApply', { rows: j.p.rows, file_ts: j.p.file_ts, tehsil_id: admin ? $('#t').value : '' }, 180000);
-          j.state = 'done'; r.villages.forEach(v => { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); }); }
+          j.state = 'done'; r.villages.forEach(v => { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); }); toast('Applied: ' + r.villages.map(v => v.name).join(', ')); }
         catch (err) { j.error = err.message; j.state = 'error'; }
       };
       on(out, '.ap', 'click', async el => { el.disabled = true; el.textContent = 'Applying…'; await applyJob(jobs[+el.dataset.k]); drawJobs(); await refreshBoot(); refreshStats(true, true); });
@@ -998,63 +1350,97 @@ VIEWS.upload = async function () {
 };
 
 /* ======================= OFFICE: STAFF ======================= */
-VIEWS.users = async function () {
+VIEWS.users = async function (a) {
   setHeader('Staff and logins');
   const main = $('#view');
-  if (navigator.onLine) { try { const r = await api('listUsers'); S.boot.users = r.users; } catch (e) {} }
-  const users = (S.boot.users || []).slice().sort((a, b) => (a.active === b.active ? 0 : a.active === 'Y' ? -1 : 1) || a.name.localeCompare(b.name));
-  main.innerHTML = `<section class="pad"><p class="hint">Everyone logs in with their first name. The PIN is ${'123456'} unless changed by the Admin.</p>
-    <button class="btn btn-primary" id="add">Add a person</button>
-    <div class="list ulist" style="margin-top:12px">${users.map(u => `<button class="row" data-id="${esc(u.user_id)}" ${u.active === 'Y' ? '' : 'style="opacity:.5"'}><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}${u.tehsil_id ? ', ' + esc(tehsilName(u.tehsil_id)) : ''}</small></span><span class="st st-ns">${esc(ROLE_LABEL[u.role] || u.role)}</span></button>`).join('')}</div></section>`;
-  $('#add').onclick = () => openUser(null);
-  on(main, '.row', 'click', el => openUser(users.find(u => u.user_id === el.dataset.id)));
+  const draw = () => {
+    const users = (S.boot.users || []).slice().sort((x, y) => (x.active === y.active ? 0 : x.active === 'Y' ? -1 : 1) || x.name.localeCompare(y.name));
+    main.innerHTML = `<section class="pad"><p class="guide">Everyone logs in with their first name and the PIN 123456. Tap a person to change, reset PIN, switch off or delete.</p>
+      <button class="btn btn-primary" id="add">Add a person</button>
+      <div class="list" style="margin-top:12px">${users.map(u => `<button class="row" data-id="${esc(u.user_id)}" ${u.active === 'Y' ? '' : 'style="opacity:.55"'}><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}${u.tehsil_id ? ', ' + esc(tehsilName(u.tehsil_id)) : ''}${u.mobile ? ', ' + esc(u.mobile) : ''}${u.active === 'Y' ? '' : ', switched off'}</small></span><span class="st st-ns">${esc(ROLE_LABEL[u.role] || u.role)}</span></button>`).join('')}</div></section>`;
+    $('#add').onclick = () => openUser(null, draw);
+    on(main, '.row', 'click', el => openUser(users.find(u => u.user_id === el.dataset.id), draw));
+  };
+  draw();
+  if (navigator.onLine && !a._bg) { a._bg = true; try { const r = await api('listUsers'); S.boot.users = r.users; await kput('boot', S.boot); if (current().args === a && !SHEET) draw(); } catch (e) {} }
 };
-function openUser(u) {
+function openUser(u, redraw) {
   const admin = role() === 'ADMIN';
   const roles = admin ? ['OPERATOR', 'NT', 'DA', 'ADMIN'] : ['OPERATOR', 'NT'];
+  const canDel = u && u.user_id !== me().user_id && (admin || !['ADMIN', 'DA'].includes(u.role));
   openSheet(() => ({
     html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
       <h2 class="nm">${u ? esc(u.name) : 'Add a person'}</h2>
-      <div class="field"><label for="n">First name (used to log in)</label><input id="n" class="input" value="${esc(u ? u.name : '')}"></div>
+      <p class="guide">${u ? 'Change the details and tap Save. The login name is the first name.' : 'Type the first name and choose the designation. The person logs in with this first name and PIN 123456.'}</p>
+      <div class="field"><label for="n">First name (used to log in)</label><input id="n" class="input" value="${esc(u ? u.name : '')}" autocapitalize="words"></div>
       <div class="field"><label for="d">Designation</label><select id="d" class="input">${S.boot.designations.map(d => `<option ${u && u.designation === d ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select></div>
-      <div class="field"><label for="m">Mobile number</label><input id="m" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(u ? u.mobile : '')}"></div>
+      <div class="field"><label for="m">Mobile number</label><input id="m" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(u ? u.mobile : '')}"><small>The Dealing Assistant's number appears on everyone's "Call for help" button.</small></div>
       <div class="field"><label for="r">What can this person do?</label><select id="r" class="input">${roles.map(r => `<option value="${r}" ${u && u.role === r ? 'selected' : ''}>${ROLE_LABEL[r]}</option>`).join('')}</select></div>
       ${admin ? `<div class="field"><label for="t">Tehsil</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}" ${u && u.tehsil_id === t.tehsil_id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></div>` : ''}
-      ${u ? `<div class="field"><label for="a">Login</label><select id="a" class="input"><option value="Y" ${u.active === 'Y' ? 'selected' : ''}>Active</option><option value="N" ${u.active !== 'Y' ? 'selected' : ''}>Switched off</option></select></div>` : ''}
+      ${u ? `<div class="field"><label for="a">Login</label><select id="a" class="input"><option value="Y" ${u.active === 'Y' ? 'selected' : ''}>Active</option><option value="N" ${u.active !== 'Y' ? 'selected' : ''}>Switched off (can be switched on again)</option></select></div>` : ''}
       <button class="btn btn-primary" id="s">Save</button>
       ${u ? '<button class="btn" id="pin">Reset PIN to 123456</button>' : ''}
-      <p class="hint">After adding a field person, assign villages in "Villages, staff assignment and portal figures".</p>`,
+      ${canDel ? '<button class="btn btn-danger" id="del">Delete this login</button>' : ''}`,
     mount: r => {
       $('#x', r).onclick = () => closeSheet();
       $('#d', r).onchange = () => { const def = DESIG_ROLE[$('#d', r).value] || 'OPERATOR'; if (roles.includes(def)) $('#r', r).value = def; };
       if (!u) $('#d', r).dispatchEvent(new Event('change'));
-      $('#s', r).onclick = async () => {
-        try {
-          await api('saveUser', { user_id: u ? u.user_id : '', name: $('#n', r).value.trim(), designation: $('#d', r).value, mobile: $('#m', r).value.trim(),
-            role: $('#r', r).value, tehsil_id: admin ? $('#t', r).value : me().tehsil_id, active: u ? $('#a', r).value : 'Y' });
-          toast('Saved'); S.dirty = true; closeSheet(); refreshBoot();
-        } catch (e) { toast(e.message, 4000); }
+      $('#s', r).onclick = () => busy($('#s', r), 'Saving…', async () => {
+        const name = $('#n', r).value.trim(); if (!name) throw new Error('Type the first name.');
+        const m = $('#m', r).value.trim(); if (m && !validMobile(m)) throw new Error('Mobile must be 10 digits starting with 6, 7, 8 or 9.');
+        const res = await api('saveUser', { user_id: u ? u.user_id : '', name, designation: $('#d', r).value, mobile: m,
+          role: $('#r', r).value, tehsil_id: admin ? $('#t', r).value : me().tehsil_id, active: u ? $('#a', r).value : 'Y' });
+        const list = S.boot.users || (S.boot.users = []); const i = list.findIndex(x => x.user_id === res.user.user_id);
+        if (i >= 0) list[i] = res.user; else list.push(res.user);
+        await kput('boot', S.boot);
+        closeSheet(() => { toast(`Saved: ${res.user.name}, ${res.user.designation}`); redraw(); });
+      });
+      if ($('#pin', r)) $('#pin', r).onclick = () => busy($('#pin', r), 'Resetting…', async () => { await api('resetPin', { user_id: u.user_id }); toast(`PIN of ${u.name} is now 123456`); });
+      if ($('#del', r)) $('#del', r).onclick = () => {
+        if (!confirm(`Delete the login of ${u.name} (${u.designation})?\n\nThey will not be able to log in. Their past entries stay in the record.`)) return;
+        busy($('#del', r), 'Deleting…', async () => {
+          await api('deleteUser', { user_id: u.user_id });
+          S.boot.users = (S.boot.users || []).filter(x => x.user_id !== u.user_id);
+          S.boot.assignments = (S.boot.assignments || []).filter(x => x.user_id !== u.user_id);
+          await kput('boot', S.boot);
+          closeSheet(() => { toast(`Deleted: ${u.name}`); redraw(); });
+        });
       };
-      if ($('#pin', r)) $('#pin', r).onclick = async () => { try { await api('resetPin', { user_id: u.user_id }); toast('PIN reset to 123456'); } catch (e) { toast(e.message, 4000); } };
     }
   }));
 }
 
 /* ======================= OFFICE: VILLAGES ======================= */
-VIEWS.villages = async function () {
+VIEWS.villages = async function (a) {
   setHeader('Villages and staff');
   const main = $('#view');
-  if (navigator.onLine) { await refreshBoot(); }
-  const asg = S.boot.assignments || []; const users = S.boot.users || [];
-  const staffOf = vid => asg.filter(a => a.village_id === vid).map(a => (users.find(u => u.user_id === a.user_id) || {}).name).filter(Boolean);
-  const byT = {}; villages().forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
-  main.innerHTML = `<section class="pad"><p class="hint">Tap a village to assign staff, enter the latest portal figures or set targets.</p>
-    <button class="btn btn-primary" id="add">Add a village</button>
-    ${Object.keys(byT).map(t => `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p><div class="list">${byT[t].sort((a, b) => a.name.localeCompare(b.name)).map(v => `<button class="row" data-id="${esc(v.village_id)}"><span class="rt"><b>${esc(v.name)}</b><small>${staffOf(v.village_id).length ? 'Staff: ' + esc(staffOf(v.village_id).join(', ')) : 'No staff assigned'}</small><small>Portal: ${esc(v.portal_claimed || 0)} of ${esc(v.portal_total || 0)} claimed${v.portal_as_on ? ', as on ' + fmtDate(v.portal_as_on) : ''}</small></span></button>`).join('')}</div>`).join('')}</section>`;
-  $('#add').onclick = () => openVillage(null);
-  on(main, '.row', 'click', el => openVillage(villageById(el.dataset.id)));
+  const draw = () => {
+    const asg = S.boot.assignments || [], users = S.boot.users || [];
+    const staffOf = vid => asg.filter(x => x.village_id === vid).map(x => (users.find(u => u.user_id === x.user_id) || {}).name).filter(Boolean);
+    const real = villages().filter(v => v.practice !== 'Y'), prac = villages().filter(v => v.practice === 'Y');
+    const byT = {}; real.forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
+    main.innerHTML = `<section class="pad"><p class="guide">Tap a village to tick its staff, choose the Patwari shown in reports, and type the latest portal figures.</p>
+      <button class="btn btn-primary" id="add">Add a village</button>
+      ${Object.keys(byT).map(t => `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p><div class="list">${byT[t].sort((x, y) => x.name.localeCompare(y.name)).map(v => {
+        const st = staffOf(v.village_id); const pw = (users.find(u => u.user_id === v.patwari_user_id) || {}).name;
+        return `<button class="row" data-id="${esc(v.village_id)}"><span class="rt"><b>${esc(v.name)}</b>
+          <small>${pw ? 'Patwari in reports: ' + esc(pw) : '<span style="color:var(--ta)">Patwari for reports not set</span>'}</small>
+          <small>${st.length ? 'Staff: ' + esc(st.join(', ')) : 'No staff assigned'}</small>
+          <small>Portal: ${esc(v.portal_claimed || 0)} of ${esc(v.portal_total || 0)} claimed${v.portal_as_on ? ', as on ' + fmtDate(v.portal_as_on) : ''}</small></span></button>`; }).join('')}</div>`).join('')}
+      ${prac.length ? `<h2>Practice villages</h2><p class="hint">For training. Never counted. Reset clears all practice entries.</p>${prac.map(v => `<button class="btn" data-reset="${esc(v.tehsil_id)}">Reset ${esc(v.name)}</button>`).join('')}` : ''}
+    </section>`;
+    $('#add').onclick = () => openVillage(null, draw);
+    on(main, '.row', 'click', el => openVillage(villageById(el.dataset.id), draw));
+    on(main, '[data-reset]', 'click', el => busy(el, 'Resetting…', async () => {
+      await api('resetPractice', { tehsil_id: el.dataset.reset });
+      const pv = 'P_' + el.dataset.reset; delete S.buckets[pv]; delete S.fetchedAt[pv]; await kdel('b:' + pv);
+      toast('Practice village reset');
+    }));
+  };
+  draw();
+  if (navigator.onLine && !a._bg) { a._bg = true; await refreshBoot(); if (current().args === a && !SHEET) draw(); }
 };
-function openVillage(v) {
+function openVillage(v, redraw) {
   const admin = role() === 'ADMIN';
   const tid = v ? v.tehsil_id : (admin ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
   const field = (S.boot.users || []).filter(u => u.active === 'Y' && u.role === 'OPERATOR' && u.tehsil_id === tid).sort((a, b) => a.name.localeCompare(b.name));
@@ -1062,107 +1448,760 @@ function openVillage(v) {
   openSheet(() => ({
     html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
       <h2 class="nm">${v ? esc(v.name) : 'Add a village'}</h2>
-      ${v ? `<p class="hint">LGD ${esc(v.village_id)}, Tehsil ${esc(tehsilName(v.tehsil_id))}</p>` : `
+      ${v ? `<p class="hint">LGD ${esc(v.village_id)}, Tehsil ${esc(tehsilName(v.tehsil_id))}</p>` : `<p class="guide">Villages are usually created by uploading their bucket list. Add one here only if needed.</p>
         <div class="field"><label for="lgd">LGD code</label><input id="lgd" class="input" inputmode="numeric"></div>
         ${admin ? `<div class="field"><label for="t">Tehsil</label><select id="t" class="input">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}">${esc(t.name)}</option>`).join('')}</select></div>` : ''}`}
       <div class="field"><label for="nm">Village name</label><input id="nm" class="input" value="${esc(v ? v.name : '')}"></div>
-      <h3>Portal figures</h3><p class="hint">Copy from the portal's village summary whenever a new one comes.</p>
+      <h3>Portal figures</h3><p class="guide">Copy from the portal's village summary whenever a new one comes.</p>
       <div class="row2"><div class="field"><label for="pt">Total buckets</label><input id="pt" class="input" inputmode="numeric" value="${esc(v ? v.portal_total : '')}"></div>
         <div class="field"><label for="pc">Claimed buckets</label><input id="pc" class="input" inputmode="numeric" value="${esc(v ? v.portal_claimed : '')}"></div></div>
       <div class="field"><label for="pa">Figures as on</label><input id="pa" type="date" class="input" value="${esc(v ? v.portal_as_on : todayIST())}"></div>
-      ${v ? `<h3>Staff for this village</h3><p class="hint">Tick everyone who works in this village. Leave "share" empty to split the target equally.</p>
-      <div class="box">${field.length ? field.map(u => { const a = asg.find(x => x.user_id === u.user_id); return `<div class="mem"><input type="checkbox" class="sf" data-id="${esc(u.user_id)}" ${a ? 'checked' : ''}><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}</small></span><input class="input sh" data-id="${esc(u.user_id)}" style="width:96px;min-height:44px" inputmode="decimal" placeholder="share" value="${esc(a ? a.share : '')}"></div>`; }).join('') : '<p class="hint">No field staff in this tehsil yet. Add them in "Staff and logins".</p>'}</div>
-      <div class="field"><label for="pw">Patwari shown in reports</label><select id="pw" class="input"><option value="">Not set</option>${field.map(u => `<option value="${esc(u.user_id)}" ${v.patwari_user_id === u.user_id ? 'selected' : ''}>${esc(u.name)}, ${esc(u.designation)}</option>`).join('')}</select></div>
+      ${v ? `<h3>Staff for this village</h3><p class="guide">Tick everyone who works in this village. Leave "share" empty to split the target equally.</p>
+      <div class="box">${field.length ? field.map(u => { const a = asg.find(x => x.user_id === u.user_id); return `<div class="mem"><input type="checkbox" class="sf" data-id="${esc(u.user_id)}" ${a ? 'checked' : ''} aria-label="${esc(u.name)}"><span class="rt"><b>${esc(u.name)}</b><small>${esc(u.designation)}</small></span><input class="input sh" data-id="${esc(u.user_id)}" style="width:96px;min-height:44px" inputmode="decimal" placeholder="share" value="${esc(a ? a.share : '')}"></div>`; }).join('') : '<p class="hint">No field staff in this tehsil yet. Add them in "Staff and logins".</p>'}</div>
+      <div class="field"><label for="pw">Patwari shown in reports</label><select id="pw" class="input"><option value="">Not set</option>${field.map(u => `<option value="${esc(u.user_id)}" ${v.patwari_user_id === u.user_id ? 'selected' : ''}>${esc(u.name)}, ${esc(u.designation)}</option>`).join('')}</select><small>Reports group villages under this Patwari.</small></div>
       <h3>Targets</h3>
-      <div class="field"><label for="dt">Daily target</label><input id="dt" class="input" inputmode="numeric" value="${esc(v.manual_daily_target)}" placeholder="Empty = worked out from the deadline"><small>Leave empty and the app divides the remaining work by the days left.</small></div>
+      <div class="field"><label for="dt">Daily target</label><input id="dt" class="input" inputmode="numeric" value="${esc(v.manual_daily_target)}" placeholder="Empty = worked out from the deadline"></div>
       <div class="field"><label for="sd">Survey to be finished by</label><input id="sd" type="date" class="input" value="${esc(v.survey_deadline)}"><small>Leave empty to use the general survey deadline.</small></div>` : ''}
       <button class="btn btn-primary" id="s">Save</button>`,
     mount: r => {
       $('#x', r).onclick = () => closeSheet();
-      $('#s', r).onclick = async () => {
-        try {
-          const p = { name: $('#nm', r).value.trim(), portal_total: $('#pt', r).value.trim(), portal_claimed: $('#pc', r).value.trim(), portal_as_on: $('#pa', r).value };
-          if (v) {
-            p.village_id = v.village_id; p.patwari_user_id = $('#pw', r).value; p.manual_daily_target = $('#dt', r).value.trim(); p.survey_deadline = $('#sd', r).value;
-            await api('saveVillage', p);
-            const items = $$('.sf', r).filter(c => c.checked).map(c => ({ user_id: c.dataset.id, share: ($$('.sh', r).find(x => x.dataset.id === c.dataset.id) || {}).value || '' }));
-            await api('saveAssignments', { village_id: v.village_id, items });
-          } else {
-            p.village_id = $('#lgd', r).value.trim(); p.tehsil_id = admin ? $('#t', r).value : me().tehsil_id;
-            await api('saveVillage', p);
-          }
-          toast('Saved'); S.dirty = true; await refreshBoot(); closeSheet();
-        } catch (e) { toast(e.message, 4000); }
-      };
+      $('#s', r).onclick = () => busy($('#s', r), 'Saving…', async () => {
+        const p = { name: $('#nm', r).value.trim(), portal_total: $('#pt', r).value.trim(), portal_claimed: $('#pc', r).value.trim(), portal_as_on: $('#pa', r).value };
+        let items;
+        if (v) {
+          p.village_id = v.village_id; p.patwari_user_id = $('#pw', r).value; p.manual_daily_target = $('#dt', r).value.trim(); p.survey_deadline = $('#sd', r).value;
+          items = $$('.sf', r).filter(c => c.checked).map(c => ({ user_id: c.dataset.id, share: ($$('.sh', r).find(x => x.dataset.id === c.dataset.id) || {}).value || '' }));
+        } else {
+          p.village_id = $('#lgd', r).value.trim(); p.tehsil_id = admin ? $('#t', r).value : me().tehsil_id;
+          if (!p.village_id || !p.name) throw new Error('Type the LGD code and the village name.');
+        }
+        const res = await api('saveVillageAll', { village: p, items });
+        const list = S.boot.villages, i = list.findIndex(x => x.village_id === res.village.village_id);
+        if (i >= 0) list[i] = res.village; else list.push(res.village);
+        S.boot.assignments = res.assignments; await kput('boot', S.boot);
+        closeSheet(() => { toast(`Saved: ${res.village.name}`); redraw(); refreshStats(true, true); });
+      });
     }
   }));
 }
 
 /* ======================= OFFICE: SETTINGS ======================= */
-VIEWS.settings = async function () {
-  setHeader('Deadlines and reasons');
-  if (navigator.onLine) await refreshBoot();
-  const s = S.boot.settings; const admin = role() === 'ADMIN';
-  const tehsils = S.boot.tehsils.filter(t => admin || t.tehsil_id === me().tehsil_id);
-  $('#view').innerHTML = `<section class="pad">
-    <h2>Deadlines</h2>
-    <div class="field"><label for="fd">Final deadline for Farmer IDs</label><input id="fd" type="date" class="input" value="${esc(s.final_deadline)}"></div>
-    <div class="field"><label for="sd">Every bucket surveyed by</label><input id="sd" type="date" class="input" value="${esc(s.survey_deadline)}"></div>
-    <div class="field"><label for="ld">Days allowed to survey a village uploaded later</label><input id="ld" class="input" inputmode="numeric" value="${esc(s.late_survey_days)}"></div>
-    <div class="field"><label for="cg">Flag a village with no camp for this many days</label><input id="cg" class="input" inputmode="numeric" value="${esc(s.camp_gap_days)}"></div>
-    <button class="btn btn-primary" id="sv">Save deadlines</button>
-    <h2>Report text</h2>
-    ${tehsils.map(t => `<div class="box"><h3 style="margin-top:0">Tehsil ${esc(t.name)}</h3>
-      <div class="field"><label>Report title</label><input class="input rt-t" data-t="${t.tehsil_id}" value="${esc(t.report_title)}"></div>
-      <div class="field"><label>Signature block</label><textarea class="input rt-s" data-t="${t.tehsil_id}">${esc(t.signature)}</textarea></div>
-      <div class="field"><label>Footnote</label><textarea class="input rt-f" data-t="${t.tehsil_id}">${esc(t.footnote)}</textarea></div>
-      <button class="btn btn-primary svt" data-t="${t.tehsil_id}">Save report text</button></div>`).join('')}
-    <h2>Reasons</h2><p class="hint">Tap a reason to change its wording or switch it off. New reasons appear on every phone after the next download.</p>
-    <button class="btn" id="addR">Add a reason</button>
-    <div class="list">${activeReasonsAll().map(r => `<button class="row" data-c="${r.code}" ${r.active === 'Y' ? '' : 'style="opacity:.5"'}><span class="dot d-${r.tier}"></span><span class="rt"><b>${esc(r.label)}</b><small>${TIER[r.tier]}. In report: ${esc(r.report_label)}</small></span></button>`).join('')}</div></section>`;
-  $('#sv').onclick = async () => {
-    try { await api('saveSettings', { values: { final_deadline: $('#fd').value, survey_deadline: $('#sd').value, late_survey_days: $('#ld').value, camp_gap_days: $('#cg').value } }); toast('Saved'); refreshBoot(); }
-    catch (e) { toast(e.message, 4000); }
+VIEWS.settings = async function (a) {
+  setHeader('Settings');
+  const main = $('#view');
+  const draw = () => {
+    const s = S.boot.settings;
+    main.innerHTML = `<section class="pad">
+      <p class="guide">Change a value and tap the Save button under it. Changes reach every phone at its next download.</p>
+      <h2>Deadlines and reminder</h2>
+      <div class="field"><label for="fd">Final deadline for Farmer IDs</label><input id="fd" type="date" class="input" value="${esc(s.final_deadline)}"></div>
+      <div class="field"><label for="sd">Every landholder checked by</label><input id="sd" type="date" class="input" value="${esc(s.survey_deadline)}"></div>
+      <div class="field"><label for="ld">Days allowed to check a village uploaded later</label><input id="ld" class="input" inputmode="numeric" value="${esc(s.late_survey_days)}"></div>
+      <div class="field"><label for="cg">Flag a village with no camp for this many days</label><input id="cg" class="input" inputmode="numeric" value="${esc(s.camp_gap_days)}"></div>
+      <div class="field"><label for="rt">Upload reminder on field phones from</label><input id="rt" type="time" class="input" value="${esc(s.reminder_time || '14:00')}"><small>A red reminder appears until 2:30 PM if work is still on the phone.</small></div>
+      <button class="btn btn-primary" id="sv">Save deadlines and reminder</button>
+      <h2>Reasons</h2><p class="guide">Tap a reason to change its wording or switch it off. The letter and tables to the DC use the "report" wording.</p>
+      <button class="btn" id="addR">Add a reason</button>
+      <div class="list">${reasons().slice().sort((x, y) => Number(x.sort) - Number(y.sort)).map(r => `<button class="row" data-c="${r.code}" ${r.active === 'Y' ? '' : 'style="opacity:.5"'}><span class="dot d-${r.tier}"></span><span class="rt"><b>${esc(r.label)}</b><small>${TIER[r.tier]}. In report: ${esc(r.report_label)}</small></span></button>`).join('')}</div></section>`;
+    $('#sv').onclick = () => busy($('#sv'), 'Saving…', async () => {
+      const res = await api('saveSettings', { values: { final_deadline: $('#fd').value, survey_deadline: $('#sd').value, late_survey_days: $('#ld').value, camp_gap_days: $('#cg').value, reminder_time: $('#rt').value } });
+      Object.assign(S.boot.settings, res.settings); await kput('boot', S.boot); toast('Saved. Targets updated.'); refreshStats(false, true);
+    });
+    $('#addR').onclick = () => openReason(null, draw);
+    on(main, '.row', 'click', el => openReason(reason(el.dataset.c), draw));
   };
-  on($('#view'), '.svt', 'click', async el => {
-    const t = el.dataset.t; const g = c => $(`.${c}[data-t="${t}"]`).value;
-    try { await api('saveTehsil', { tehsil_id: t, report_title: g('rt-t'), signature: g('rt-s'), footnote: g('rt-f') }); toast('Saved'); refreshBoot(); }
-    catch (e) { toast(e.message, 4000); }
-  });
-  $('#addR').onclick = () => openReason(null);
-  on($('#view'), '.row', 'click', el => openReason(reason(el.dataset.c)));
+  draw();
+  if (navigator.onLine && !a._bg) { a._bg = true; await refreshBoot(); if (current().args === a && !SHEET) draw(); }
 };
-const activeReasonsAll = () => reasons().slice().sort((a, b) => Number(a.sort) - Number(b.sort));
-function openReason(rr) {
+function openReason(rr, redraw) {
   openSheet(() => ({
     html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div>
       <h2 class="nm">${rr ? 'Change reason' : 'Add a reason'}</h2>
+      <p class="guide">The phone wording is what staff tap. The report wording appears in the letter and tables to the DC.</p>
       ${rr ? `<p class="hint">Group: ${TIER[rr.tier]}</p>` : `<div class="field"><label for="tr">Group</label><select id="tr" class="input"><option value="A">${TIER.A}</option><option value="B" selected>${TIER.B}</option><option value="C">${TIER.C}</option></select></div>`}
       <div class="field"><label for="l">Wording on the phone</label><input id="l" class="input" value="${esc(rr ? rr.label : '')}"></div>
       <div class="field"><label for="rl">Wording in the DC report</label><input id="rl" class="input" value="${esc(rr ? rr.report_label : '')}"></div>
-      <div class="field"><label for="cc">Column on the paper checklist (1 to 9, or empty)</label><input id="cc" class="input" inputmode="numeric" value="${esc(rr ? rr.checklist_col : '')}"></div>
+      <div class="field"><label for="cc">Box on the paper checklist (2 to 9, or empty)</label><input id="cc" class="input" inputmode="numeric" value="${esc(rr ? rr.checklist_col : '')}"></div>
       ${rr ? `<div class="field"><label for="ac">Use this reason</label><select id="ac" class="input"><option value="Y" ${rr.active === 'Y' ? 'selected' : ''}>Yes</option><option value="N" ${rr.active !== 'Y' ? 'selected' : ''}>No, switch it off</option></select></div>` : ''}
       <button class="btn btn-primary" id="s">Save</button>`,
     mount: r => {
       $('#x', r).onclick = () => closeSheet();
-      $('#s', r).onclick = async () => {
-        try {
-          await api('saveReason', { code: rr ? rr.code : '', tier: rr ? rr.tier : $('#tr', r).value, label: $('#l', r).value.trim(), report_label: $('#rl', r).value.trim(),
-            checklist_col: $('#cc', r).value.trim(), active: rr ? $('#ac', r).value : 'Y' });
-          toast('Saved'); S.top = {}; await refreshBoot(); S.dirty = true; closeSheet();
-        } catch (e) { toast(e.message, 4000); }
-      };
+      $('#s', r).onclick = () => busy($('#s', r), 'Saving…', async () => {
+        if (!$('#l', r).value.trim()) throw new Error('Type the wording.');
+        const res = await api('saveReason', { code: rr ? rr.code : '', tier: rr ? rr.tier : $('#tr', r).value, label: $('#l', r).value.trim(), report_label: $('#rl', r).value.trim(),
+          checklist_col: $('#cc', r).value.trim(), active: rr ? $('#ac', r).value : 'Y' });
+        const i = S.boot.reasons.findIndex(x => x.code === res.reason.code); if (i >= 0) S.boot.reasons[i] = res.reason; else S.boot.reasons.push(res.reason);
+        S.top = {}; await kput('boot', S.boot);
+        closeSheet(() => { toast('Reason saved'); redraw(); });
+      });
     }
   }));
 }
 
+/* ======================= PDF TOOLS ======================= */
+const PDF_LIBS = ['https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js', 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js'];
+function loadScript(src) { return new Promise((res, rej) => { const el = document.createElement('script'); el.src = src; el.onload = res; el.onerror = () => rej(new Error('Could not load the PDF maker. Check the internet.')); document.head.appendChild(el); }); }
+async function loadPDF() { if (!(window.jspdf && window.jspdf.jsPDF)) await loadScript(PDF_LIBS[0]); if (!window.jspdf.jsPDF.API.autoTable) await loadScript(PDF_LIBS[1]); }
+const pdfText = x => String(x == null ? '' : x).replace(/[\u2013\u2014]/g, '-').replace(/\u2026/g, '...').replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/[^\x20-\x7E\n]/g, '');
+const PINE = [31, 77, 58];
+function pageNumbers(doc) {
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) { doc.setPage(i); const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(); doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(110); doc.text(`Page ${i} of ${n}`, W - 8, H - 5, { align: 'right' }); doc.setTextColor(0); }
+}
+function deliverPDF(doc, name) {
+  const blob = doc.output('blob'); const url = URL.createObjectURL(blob);
+  let file = null; try { file = new File([blob], name, { type: 'application/pdf' }); } catch (e) {}
+  const canShare = file && navigator.canShare && navigator.canShare({ files: [file] });
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">PDF ready</h2><p class="hint">${esc(name)}</p>
+      <a class="btn btn-primary" href="${url}" download="${esc(name)}">Download PDF</a>
+      ${canShare ? '<button class="btn" id="sh">Share (WhatsApp, email)</button>' : ''}
+      <a class="btn" href="${url}" target="_blank" rel="noopener">Open PDF</a>`,
+    mount: r => { $('#x', r).onclick = () => closeSheet(); const sh = $('#sh', r); if (sh) sh.onclick = async () => { try { await navigator.share({ files: [file], title: name }); } catch (e) {} }; }
+  }));
+}
+
+/* ======================= DAILY REPORT ======================= */
+const DEFAULT_FOOT = 'Buckets claimed = Farmer IDs created (one Farmer ID per bucket). Rows 1 to 7, 13: buckets that can never yield a Farmer ID. Rows 8 to 12, 14: claimable only if the landholder becomes available or links Aadhaar with a mobile number. Row 15: claimable with field effort. Total and claimed figures are from the portal village summary, plus claims reported in the field after the summary date. Row 17: portal bucket list awaited, or the portal village summary and the portal unclaimed-bucket list differ.';
+function groupVillages(st) {
+  const g = {};
+  st.villages.forEach(v => { const k = v.patwari_user_id || '~'; (g[k] = g[k] || { name: v.patwari_name || 'Patwari not set', villages: [] }).villages.push(v); });
+  return Object.keys(g).sort((a, b) => (a === '~') - (b === '~') || g[a].name.localeCompare(g[b].name))
+    .map(k => { g[k].villages.sort((x, y) => x.name.localeCompare(y.name)); return g[k]; });
+}
+const NUMF = ['total', 'claimed', 'tier_a', 'tier_b', 'tier_c', 'not_surveyed', 'achievable', 'claimed_today', 'daily_target', 'remaining', 'in_list', 'surveyed'];
+function aggStats(list) {
+  const o = { by_code: {}, awaited: 0, diff: 0 }; NUMF.forEach(k => o[k] = 0);
+  list.forEach(v => {
+    NUMF.forEach(k => o[k] += Number(v[k]) || 0);
+    Object.keys(v.by_code || {}).forEach(c => o.by_code[c] = (o.by_code[c] || 0) + v.by_code[c]);
+    if (v.list_received) o.diff += Number(v.unlisted) || 0; else o.awaited += (Number(v.total) || 0) - (Number(v.claimed) || 0);
+  });
+  return o;
+}
+function reportColumns(st) {
+  const cols = [], head1 = [];
+  groupVillages(st).forEach(g => {
+    const start = cols.length;
+    g.villages.forEach(v => cols.push({ label: v.name, d: aggStats([v]) }));
+    if (g.villages.length > 1) cols.push({ label: 'Sub-total', d: aggStats(g.villages), sub: true });
+    head1.push({ label: g.name, span: cols.length - start });
+  });
+  cols.push({ label: 'Tehsil total', d: aggStats(st.villages), tot: true });
+  return { cols, head1 };
+}
+/* Annexure A: DC's categories first, in his wording; every bucket in exactly one row. */
+const ANNEX = [
+  ['Expired and mutation not attested', ['A02', 'A03']],
+  ['Farmer ID created but some khasras left due to name difference (same farmer in multiple buckets)', ['A01']],
+  ['Missing and untraceable', ['A08']],
+  ['State land', ['A05']],
+  ['Shamlat deh (no individual owner recorded)', ['A06']],
+  ['Public use land (road, path, nallah, graveyard, abadi)', ['A12']],
+  ['Departmental / institutional land', ['A07']],
+  ['Mobile number not linked, not present in village', ['B01']],
+  ['Mobile number not linked with Aadhaar, paralyzed face, very old, unable to get face ID authentication', ['B02']],
+  ['Mobile number not linked with Aadhaar, residing outside of village and not coming for biometric authentication', ['B03']],
+  ['Mobile number not linked with Aadhaar, present in village', ['B11']],
+  ['Out of station / migrated', ['B04']],
+  ['Other reasons: cannot be claimed (land sold, joint entry, dispute, minor and others)', 'A'],
+  ['Other reasons: stuck (abroad, no Aadhaar, name mismatch, refusal, portal issue and others)', 'B'],
+  ['Workable: yet to claim', 'C']
+];
+function annexRows() {
+  const explicit = new Set(); ANNEX.forEach(x => { if (Array.isArray(x[1])) x[1].forEach(c => explicit.add(c)); });
+  const R = ANNEX.map((x, i) => ({ label: (i + 1) + '. ' + x[0], pc: 1,
+    fn: d => Array.isArray(x[1]) ? x[1].reduce((t, c) => t + ((d.by_code || {})[c] || 0), 0)
+      : Object.keys(d.by_code || {}).filter(c => !explicit.has(c) && tierOf(c) === x[1]).reduce((t, c) => t + d.by_code[c], 0) }));
+  R.push({ label: '16. Not yet surveyed', fn: d => d.not_surveyed, pc: 1 });
+  R.push({ label: '17. Bucket list awaited / difference with portal summary', fn: d => d.awaited + d.diff, pc: 1 });
+  R.push({ label: 'Farmer IDs created (buckets claimed)', fn: d => d.claimed, b: 1, pc: 1 });
+  R.push({ label: 'Total buckets', fn: d => d.total, b: 1, pc: 1 });
+  const body = R.slice(0, 17);
+  R.push({ label: 'Check: rows 1 to 17 + Farmer IDs created = Total', ck: 1, fn: d => (body.reduce((t, r) => t + r.fn(d), 0) + d.claimed) === d.total ? 'OK' : 'Mismatch' });
+  return R;
+}
+/* Detailed tier table (optional page). */
+function reportRows(st, reasonList) {
+  const T = aggStats(st.villages), R = [];
+  const add = (label, fn, o) => R.push(Object.assign({ label, fn }, o || {}));
+  const pctOf = (d, n) => d ? (Math.round(n * 1000 / d) / 10) + '%' : '-';
+  add('1. Total buckets', d => d.total, { b: 1, pc: 1 });
+  add('2. Buckets claimed (Farmer IDs created)', d => d.claimed, { b: 1, pc: 1 });
+  add('3. Unclaimed buckets (1 minus 2)', d => d.total - d.claimed, { b: 1, pc: 1 });
+  const tier = (t, title) => {
+    add(title, d => d['tier_' + t.toLowerCase()], { b: 1, pc: 1 });
+    reasonList.filter(r => r.tier === t).sort((x, y) => Number(x.sort) - Number(y.sort))
+      .forEach(r => { if ((T.by_code[r.code] || 0) > 0) add(r.report_label, d => d.by_code[r.code] || 0, { s: 1, pc: 1 }); });
+  };
+  tier('A', '3A. Cannot be claimed'); tier('B', '3B. Stuck (claimable only if the landholder\'s situation changes)'); tier('C', '3C. Workable (with field effort)');
+  add('3D. Not yet surveyed', d => d.not_surveyed, { b: 1, pc: 1 });
+  if (T.awaited) add('3E. Bucket list awaited from portal', d => d.awaited, { b: 1, pc: 1 });
+  if (st.villages.some(v => v.list_received && Number(v.unlisted))) add('3F. Difference: portal summary vs portal bucket list', d => d.diff, { b: 1, pc: 1, sign: 1 });
+  add('Check: 2 + 3A to 3F = 1', d => (d.claimed + d.tier_a + d.tier_b + d.tier_c + d.not_surveyed + d.awaited + d.diff) === d.total ? 'OK' : 'Mismatch', { ck: 1 });
+  add('4. Achievable target (1 minus 3A)', d => d.achievable, { b: 1, pc: 1 });
+  add('5. Achievement % (2 out of 4)', d => pctOf(d.achievable, d.claimed));
+  add('6. Buckets claimed today', d => d.claimed_today);
+  add('7. Today\'s target', d => d.daily_target);
+  add('8. Survey done %', d => pctOf(d.in_list, d.surveyed));
+  return { R, T };
+}
+const fmtVal = (r, v) => r.sign && typeof v === 'number' && v > 0 ? '+' + v : String(v);
+const dmy = iso => iso ? iso.slice(8, 10) + '-' + iso.slice(5, 7) + '-' + iso.slice(0, 4) : '';
+const asOnNow = () => { const n = nowIST(); return fmtDate(n.slice(0, 10)) + ', ' + n.slice(11, 16); };
+
+/* ---- Covering letter: same layout as the office letter, with the complete village-wise position ---- */
+function reasonPhrase(d, tier, R) {
+  return Object.keys(d.by_code || {}).filter(c => d.by_code[c] > 0 && ((R[c] || {}).tier || 'B') === tier)
+    .sort((a, b) => d.by_code[b] - d.by_code[a]).map(c => `${(R[c] || {}).report_label || c} ${d.by_code[c]}`).join('; ');
+}
+function positionBlocks(d, R) {
+  const P = d.total - d.claimed, parts = [];
+  if (d.tier_a) parts.push(`Cannot be claimed: ${d.tier_a}. ${reasonPhrase(d, 'A', R)}`);
+  if (d.tier_b) parts.push(`Stuck (claimable only if the landholder's situation changes): ${d.tier_b}. ${reasonPhrase(d, 'B', R)}`);
+  if (d.tier_c) parts.push(`Workable with field effort: ${d.tier_c}. ${reasonPhrase(d, 'C', R)}`);
+  if (d.not_surveyed) parts.push(`Not yet surveyed: ${d.not_surveyed}`);
+  if (d.awaited) parts.push(`Bucket list awaited from portal: ${d.awaited}`);
+  if (d.diff) parts.push(`Difference between portal summary and portal bucket list: ${d.diff > 0 ? '+' : ''}${d.diff}`);
+  const possible = Math.max(0, P - d.tier_a);
+  const B = [
+    { t: `1. Total buckets: ${d.total}`, ind: 4 },
+    { t: `2. Buckets claimed (Farmer IDs created): ${d.claimed}`, ind: 4 },
+    { t: `3. Pending buckets: ${P}${parts.length ? ', made up of:' : ''}`, ind: 4 }
+  ];
+  parts.forEach((p, i) => B.push({ t: `(${'abcdef'[i]}) ${p}`, ind: 11 }));
+  B.push({ t: `4. Possibility of more Farmer IDs: ${possible ? 'YES - up to ' + possible + ' more possible' : 'NO'}${d.tier_a ? '; ' + d.tier_a + ' cannot yield ID' : ''}${d.awaited ? ' (bucket list awaited)' : ''}`, ind: 4 });
+  return B;
+}
+function letterBlocks(data, o) {
+  const st = data.stats, R = {}; data.reasons.forEach(r => R[r.code] = r);
+  const B = [];
+  pdfText(o.letterhead).split('\n').filter(Boolean).forEach((l, i) => B.push({ t: l, b: 1, align: 'center', size: i < 2 ? 13 : 11.5 }));
+  B.push({ rule: 1 });
+  pdfText(o.addressee).split('\n').forEach((l, i) => B.push({ t: l, gap: i ? 0 : 3 }));
+  B.push({ two: ['No:- ' + o.ref, 'Dated:- ' + o.date], gap: 3 });
+  B.push({ t: 'Subject:- ' + o.subject, b: 1, gap: 3 });
+  B.push({ t: 'Sir,', b: 1, gap: 4 });
+  B.push({ t: '          ' + o.opening, gap: 1 });
+  B.push({ t: `TEHSIL:- ${String(data.tehsil.name || '').toUpperCase()} || DATED:- ${o.date}`, gap: 4 });
+  B.push({ t: 'VILLAGE-WISE BUCKET POSITION', b: 1, gap: 3 });
+  let n = 0;
+  groupVillages(st).forEach(g => g.villages.forEach(v => {
+    n++;
+    const pb = positionBlocks(aggStats([v]), R);
+    B.push({ t: `(${n}) Village: ${v.name}${g.name && g.name !== 'Patwari not set' ? ' (Patwari: ' + g.name + ')' : ''}`, b: 1, gap: 4, keep: pb.length + 2 });
+    pb.forEach(x => B.push(x));
+  }));
+  const tb = positionBlocks(aggStats(st.villages), R);
+  B.push({ t: 'TEHSIL TOTAL', b: 1, gap: 5, keep: tb.length + 2 });
+  tb.forEach(x => B.push(x));
+  B.push({ t: o.closing, gap: 5 });
+  B.push({ t: 'Yours faithfully,', align: 'right', gap: 6 });
+  pdfText(o.signature).split('\n').forEach((l, i) => B.push({ t: l, b: 1, align: 'right', gap: i ? 0 : 14 }));
+  const encl = ['Annexure A: category-wise summary table'].concat(o.annexB ? ['Annexure B: village-wise status'] : [], o.detail ? ['detailed breakdown'] : [], o.camps ? ['camps held today'] : []);
+  B.push({ t: 'Encl: ' + encl.join('; ') + '.', size: 10, gap: 6 });
+  return B;
+}
+function letterPreviewHtml(blocks) {
+  return `<div class="paper">${blocks.map(b => b.rule ? '<hr>' : b.two ? `<div style="display:flex;justify-content:space-between;margin-top:${(b.gap || 0) * 3}px"><span>${esc(b.two[0])}</span><span>${esc(b.two[1])}</span></div>`
+    : `<div style="text-align:${b.align || 'left'};margin-left:${(b.ind || 0) * 3}px;margin-top:${(b.gap || 0) * 3}px;${b.b ? 'font-weight:700;' : ''}${b.size ? 'font-size:' + (b.size + 3) + 'px;' : ''}">${esc(b.t)}</div>`).join('')}</div>`;
+}
+function renderLetter(doc, blocks) {
+  const W = 210, H = 297, L = 20, Rm = 20; let y = 16;
+  const lh = s => s * 0.43;
+  blocks.forEach((b, idx) => {
+    const size = b.size || 11.5; doc.setFont('times', b.b ? 'bold' : 'normal'); doc.setFontSize(size);
+    y += b.gap || 0;
+    if (b.rule) { y += 1; doc.setLineWidth(0.5); doc.line(L, y, W - Rm, y); y += 3; return; }
+    if (b.two) { if (y + lh(size) > H - 18) { doc.addPage('a4', 'portrait'); y = 18; } doc.text(pdfText(b.two[0]), L, y); doc.text(pdfText(b.two[1]), W - Rm, y, { align: 'right' }); y += lh(size) + 1.2; return; }
+    const ind = b.ind || 0, lines = doc.splitTextToSize(pdfText(b.t), W - L - Rm - ind);
+    const need = lines.length * (lh(size) + 1.2) + (b.keep ? b.keep * (lh(size) + 1.2) : 0);
+    if (y + need > H - 18) { doc.addPage('a4', 'portrait'); y = 18; }
+    lines.forEach(l => {
+      if (b.align === 'center') doc.text(l, W / 2, y, { align: 'center' });
+      else if (b.align === 'right') doc.text(l, W - Rm, y, { align: 'right' });
+      else doc.text(l, L + ind, y);
+      y += lh(size) + 1.2;
+    });
+  });
+}
+function annexPreviewHtml(data) {
+  const { cols, head1 } = reportColumns(data.stats), R = annexRows(), T = aggStats(data.stats.villages);
+  return `<div class="rwrap"><table class="rt"><thead>
+    <tr><th rowspan="2">Category</th>${head1.map(h => `<th colspan="${h.span}">Patwari: ${esc(h.label)}</th>`).join('')}<th rowspan="2">Tehsil total</th><th rowspan="2">%</th></tr>
+    <tr>${cols.filter(c => !c.tot).map(c => `<th>${esc(c.label)}</th>`).join('')}</tr></thead><tbody>
+    ${R.map(r => `<tr class="${r.b ? 'b' : ''}${r.ck ? ' ck' : ''}"><td>${esc(r.label)}</td>${cols.map(c => { const v = r.fn(c.d); return `<td class="${c.sub ? 'sub' : ''}${c.tot ? ' tot' : ''}${v === 'Mismatch' ? ' bad' : ''}">${esc(fmtVal(r, v))}</td>`; }).join('')}<td>${r.pc && T.total ? (r.fn(T) * 100 / T.total).toFixed(2) : ''}</td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function matrixPage(doc, title, sub, R, data) {
+  const W = doc.internal.pageSize.getWidth();
+  const { cols, head1 } = reportColumns(data.stats), T = aggStats(data.stats.villages);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5); doc.text(pdfText(title), W / 2, 12, { align: 'center' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(pdfText(sub), W / 2, 17.5, { align: 'center' });
+  const subIdx = [], totIdx = cols.length; cols.forEach((c, i) => { if (c.sub) subIdx.push(i + 1); });
+  doc.autoTable({ startY: 21, margin: { left: 7, right: 7 }, theme: 'grid',
+    head: [[{ content: 'Category', rowSpan: 2, styles: { halign: 'left', valign: 'middle' } }, ...head1.map(h => ({ content: pdfText('Patwari: ' + h.label), colSpan: h.span })),
+      { content: 'Tehsil total', rowSpan: 2 }, { content: '% of total', rowSpan: 2 }], cols.filter(c => !c.tot).map(c => pdfText(c.label))],
+    body: R.map(r => [pdfText(r.label), ...cols.map(c => pdfText(fmtVal(r, r.fn(c.d)))), r.pc && T.total ? (r.fn(T) * 100 / T.total).toFixed(2) : '']),
+    styles: { fontSize: 7, cellPadding: 1.1, halign: 'center', valign: 'middle', lineColor: [160, 170, 165], lineWidth: 0.1, textColor: 20 },
+    headStyles: { fillColor: PINE, textColor: 255, fontStyle: 'bold', fontSize: 7, halign: 'center', valign: 'middle' },
+    columnStyles: { 0: { halign: 'left', cellWidth: 70 } },
+    didParseCell: d => {
+      if (d.section !== 'body') return; const r = R[d.row.index];
+      if (r.b) d.cell.styles.fontStyle = 'bold';
+      if (r.s && d.column.index === 0) { d.cell.styles.cellPadding = { left: 5, top: 1.1, bottom: 1.1, right: 1.1 }; d.cell.styles.textColor = 70; }
+      if (r.ck) { d.cell.styles.textColor = d.cell.raw === 'Mismatch' ? [180, 35, 24] : [22, 121, 74]; d.cell.styles.fontStyle = 'bold'; }
+      if (subIdx.includes(d.column.index)) d.cell.styles.fillColor = [240, 245, 242];
+      if (d.column.index === totIdx) { d.cell.styles.fillColor = [226, 238, 231]; d.cell.styles.fontStyle = 'bold'; }
+    } });
+  return doc.lastAutoTable.finalY;
+}
+async function buildReportPDF(data, o) {
+  await loadPDF();
+  const doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }), st = data.stats;
+  renderLetter(doc, letterBlocks(data, o));
+  const sub = `Tehsil ${data.tehsil.name}, as on ${o.date}${o.time ? ', ' + o.time : ''}`;
+  const foot = y => { const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+    const lines = doc.setFont('helvetica', 'normal').setFontSize(7).splitTextToSize(pdfText(o.footnote || DEFAULT_FOOT), W - 14);
+    if (y + lines.length * 3 + 6 > H) { doc.addPage('a4', 'landscape'); y = 14; } doc.text(lines, 7, y + 4); return y + 4 + lines.length * 3; };
+  doc.addPage('a4', 'landscape');
+  let y = matrixPage(doc, 'Annexure A: Summary of Farmer ID Generation in respect of Tehsil ' + data.tehsil.name, sub, annexRows(), data);
+  y = foot(y);
+  if (o.annexB) {
+    doc.addPage('a4', 'landscape'); const W = doc.internal.pageSize.getWidth();
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5); doc.text('Annexure B: Village-wise status', W / 2, 12, { align: 'center' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(pdfText(sub + '. Final deadline ' + fmtDate(st.final_deadline) + ', ' + st.days_left + ' day(s) left including today'), W / 2, 17.5, { align: 'center' });
+    const staff = {}; st.operators.forEach(op => (staff[op.village_id] = staff[op.village_id] || []).push(op.name));
+    const rows = []; groupVillages(st).forEach(g => g.villages.forEach(v => rows.push([v.name, g.name, (staff[v.village_id] || []).join(', '), v.total, v.claimed, v.achievable,
+      v.achievable ? (Math.round(v.claimed * 1000 / v.achievable) / 10) + '%' : '-', v.claimed_today, v.daily_target, Math.ceil(v.remaining / Math.max(1, st.days_left)),
+      v.list_received ? Math.round(v.survey_pct) + '%' : 'List awaited', fmtDate(v.survey_deadline) || '-', v.camp_today ? 'Yes' : 'No', fmtDate(v.last_camp) || '-', fmtDate(v.portal_as_on) || '-'].map(pdfText))));
+    const t = st.totals;
+    rows.push(['Tehsil total', '', '', t.total, t.claimed, t.achievable, t.achievement_pct + '%', t.claimed_today, t.daily_target, t.pace_needed, '', '', st.villages.filter(v => v.camp_today).length, '', ''].map(pdfText));
+    doc.autoTable({ startY: 21, margin: { left: 7, right: 7 }, theme: 'grid',
+      head: [['Village', 'Patwari', 'Staff working', 'Total buckets', 'Claimed', 'Achievable target', 'Achieved %', 'Claimed today', 'Target today', 'Needed per day to finish', 'Survey done', 'Survey due', 'Camp today', 'Last camp', 'Portal figures as on']],
+      body: rows, styles: { fontSize: 7.5, cellPadding: 1.3, halign: 'center', valign: 'middle', lineWidth: 0.1, lineColor: [160, 170, 165] },
+      headStyles: { fillColor: PINE, textColor: 255, fontSize: 7 }, columnStyles: { 0: { halign: 'left', fontStyle: 'bold' }, 1: { halign: 'left' }, 2: { halign: 'left', cellWidth: 34 } },
+      didParseCell: d => { if (d.section === 'body' && d.row.index === rows.length - 1) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = [226, 238, 231]; } } });
+    y = doc.lastAutoTable.finalY;
+  }
+  if (o.detail) { doc.addPage('a4', 'landscape'); y = matrixPage(doc, 'Detailed breakdown by group and reason', sub, reportRows(st, data.reasons).R, data); }
+  if (o.camps) {
+    doc.addPage('a4', 'landscape'); const W = doc.internal.pageSize.getWidth();
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5); doc.text('Farmer ID camps held today', W / 2, 12, { align: 'center' });
+    const vn = {}; st.villages.forEach(v => vn[v.village_id] = v.name);
+    const rows = data.camps.map((c, i) => [i + 1, vn[c.village_id] || c.village_id, c.venue, c.officials, c.attended, c.ids_generated].map(pdfText));
+    doc.autoTable({ startY: 20, margin: { left: 7, right: 7 }, theme: 'grid', head: [['S.No', 'Village', 'Place', 'Officials present', 'People who came', 'Farmer IDs made']],
+      body: rows.length ? rows : [[{ content: 'No camp recorded today.', colSpan: 6 }]], styles: { fontSize: 8.5, cellPadding: 1.6, lineWidth: 0.1, lineColor: [160, 170, 165] }, headStyles: { fillColor: PINE, textColor: 255 } });
+    y = doc.lastAutoTable.finalY;
+  }
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  const sl = pdfText(o.signature).split('\n'); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+  if (y + 8 + sl.length * 4.2 > H - 8) { doc.addPage('a4', 'landscape'); y = 14; }
+  const yy = Math.max(y + 10, H - 10 - sl.length * 4.2); sl.forEach((l, i) => doc.text(l, W - 12, yy + i * 4.2, { align: 'right' }));
+  pageNumbers(doc);
+  return doc;
+}
+VIEWS.report = async function (a) {
+  setHeader('Daily report for DC');
+  const main = $('#view'), admin = role() === 'ADMIN';
+  if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">The report needs internet to collect the latest figures.</p></div>'; return; }
+  a.tid = a.tid || (admin ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
+  if (!a.data) {
+    main.innerHTML = loadingHtml('Collecting the latest figures. This takes about 5 seconds.');
+    try { if (S.queue.length) await sync(); a.data = await api('reportData', { tehsil_id: a.tid }, 90000); }
+    catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; }
+  }
+  const t = a.data.tehsil;
+  if (!a.o || a.o.tid !== a.tid) a.o = { tid: a.tid, ref: '', date: dmy(todayIST()), time: nowIST().slice(11, 16), letterhead: t.letterhead || '', addressee: t.addressee || 'The Deputy Commissioner,\nDoda.',
+    subject: t.subject || 'Furnishing of information regarding Farmer ID Creation.', opening: t.opening || '', closing: t.closing || 'Hence submitted.',
+    signature: t.signature || 'Tehsildar', footnote: t.footnote || DEFAULT_FOOT, annexB: true, detail: false, camps: false };
+  const o = a.o;
+  const read = () => { ['ref', 'date', 'letterhead', 'addressee', 'subject', 'opening', 'closing', 'signature', 'footnote'].forEach(k => { const e = $('#f_' + k); if (e) o[k] = e.value.trim(); });
+    o.annexB = $('#c_b').checked; o.detail = $('#c_d').checked; o.camps = $('#c_c').checked; };
+  const field = (k, label, ta, hint) => `<div class="field"><label for="f_${k}">${label}</label>${ta ? `<textarea id="f_${k}" class="input">${esc(o[k])}</textarea>` : `<input id="f_${k}" class="input" value="${esc(o[k])}">`}${hint ? `<small>${hint}</small>` : ''}</div>`;
+  main.innerHTML = `<section class="pad">${tehsilPicker(a)}
+    <p class="guide">Type today's dispatch number, check the letter and Annexure A below, then tap Create PDF. The figures are taken again at the moment you tap it.</p>
+    ${field('ref', 'Dispatch number', false, t.last_ref ? 'Last used: ' + esc(t.last_ref) : 'For example TA/OQ/2026-27/515')}
+    ${field('date', 'Date on the letter')}
+    <details class="more"><summary>Letter wording (change only if needed)</summary>
+      ${field('letterhead', 'Letterhead', true)}${field('addressee', 'To', true)}${field('subject', 'Subject')}${field('opening', 'Opening paragraph', true)}
+      ${field('closing', 'Closing line')}${field('signature', 'Signature block', true)}${field('footnote', 'Note under Annexure A', true)}
+      <button class="btn" id="sv">Save this wording as default</button></details>
+    <label class="chk"><input type="checkbox" id="c_b" ${o.annexB ? 'checked' : ''}> Add Annexure B: village-wise status</label>
+    <label class="chk"><input type="checkbox" id="c_d" ${o.detail ? 'checked' : ''}> Add detailed breakdown by group and reason</label>
+    <label class="chk"><input type="checkbox" id="c_c" ${o.camps ? 'checked' : ''}> Add camps held today</label>
+    <button class="btn btn-primary" id="mk">${ic('report', 22)} Create PDF</button>
+    <h2>Letter preview</h2>${letterPreviewHtml(letterBlocks(a.data, o))}
+    <h2>Annexure A preview</h2><p class="hint">The Check row must say OK in every column.</p>${annexPreviewHtml(a.data)}
+    <button class="btn" id="rf">Refresh figures</button>
+    <h2>Bucket-wise lists</h2>
+    <p class="guide">For the DC's questions about particular landholders. Aadhaar numbers are never printed.</p>
+    <div class="field"><label for="lt">List</label><select id="lt" class="input">${LISTS.map(l => `<option value="${l[0]}">${esc(l[1])}</option>`).join('')}</select></div>
+    <div class="field"><label for="lv">Village</label><select id="lv" class="input"><option value="">All villages</option>${a.data.stats.villages.map(v => `<option value="${v.village_id}">${esc(v.name)}</option>`).join('')}</select></div>
+    <button class="btn" id="ml">Create list PDF</button></section>`;
+  bindTehsilPicker(a);
+  $('#rf').onclick = () => { read(); a.data = null; o.time = nowIST().slice(11, 16); render(); };
+  $('#sv').onclick = () => busy($('#sv'), 'Saving…', async () => { read();
+    await api('saveTehsil', { tehsil_id: a.tid, letterhead: o.letterhead, addressee: o.addressee, subject: o.subject, opening: o.opening, closing: o.closing, signature: o.signature, footnote: o.footnote });
+    toast('Wording saved as default'); });
+  $('#mk').onclick = () => busy($('#mk'), 'Creating PDF…', async () => {
+    read(); if (!o.ref) { $('#f_ref').focus(); throw new Error('Type today\'s dispatch number first.'); }
+    const fresh = await api('reportData', { tehsil_id: a.tid, freeze: true }, 90000); a.data = fresh; o.time = nowIST().slice(11, 16);
+    const doc = await buildReportPDF(fresh, o);
+    api('saveTehsil', { tehsil_id: a.tid, last_ref: o.ref }).then(() => { a.data.tehsil.last_ref = o.ref; }).catch(() => {});
+    deliverPDF(doc, `Farmer_ID_Report_${(fresh.tehsil.name || '').replace(/\s/g, '_')}_${fresh.stats.date}.pdf`);
+  });
+  $('#ml').onclick = () => busy($('#ml'), 'Creating…', async () => { read(); await buildListPDF(a.data, $('#lt').value, $('#lv').value); });
+};
+
+/* ======================= BUCKET-WISE LISTS ======================= */
+const AWAY = ['Not present in village', 'Out of station / migrated', 'Residing outside village', 'Married outside village', 'Abroad'];
+const LISTS = [
+  ['pending', 'All unclaimed buckets with reasons', b => b.status !== 'CLAIMED'],
+  ['A', 'Cannot be claimed', b => b.status === 'REASON' && tierOf(b.reason_code) === 'A'],
+  ['B', 'Stuck', b => b.status === 'REASON' && tierOf(b.reason_code) === 'B'],
+  ['C', 'Workable', b => b.status === 'REASON' && tierOf(b.reason_code) === 'C'],
+  ['ns', 'Not yet surveyed', b => b.status === 'NOT_SURVEYED'],
+  ['female_away', 'Female landholders not living in the village', b => b.status !== 'CLAIMED' && b.gender === 'F' && AWAY.includes(b.residence)],
+  ['female', 'All female landholders, unclaimed', b => b.status !== 'CLAIMED' && b.gender === 'F'],
+  ['away', 'Landholders out of station, migrated or living outside', b => b.status !== 'CLAIMED' && AWAY.includes(b.residence)],
+  ['aadhaar', 'Aadhaar not linked with mobile', b => b.status === 'REASON' && ['B01', 'B02', 'B03', 'B11'].includes(b.reason_code)],
+  ['deceased', 'Owner died (mutation not done or not attested)', b => b.status === 'REASON' && ['A02', 'A03'].includes(b.reason_code)],
+  ['dup', 'Same farmer in more than one bucket', b => b.status === 'REASON' && ['A01', 'C02'].includes(b.reason_code)],
+  ['made', 'Buckets claimed (Farmer ID made)', b => b.status === 'CLAIMED']
+];
+async function buildListPDF(data, type, vid) {
+  const def = LISTS.find(l => l[0] === type); const vs = data.stats.villages.filter(v => !vid || v.village_id === vid);
+  const rows = [];
+  for (const v of vs) { let arr = []; try { arr = await loadVillage(v.village_id, true); } catch (e) {}
+    arr.filter(def[2]).sort((x, y) => x.name.localeCompare(y.name)).forEach(b => rows.push({ v: v.name, b })); }
+  if (!rows.length) { fail('Nobody in this list.'); return; }
+  await loadPDF();
+  const doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' }); const W = doc.internal.pageSize.getWidth();
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.text(pdfText(`${def[1]}: Tehsil ${data.tehsil.name}${vid ? ', village ' + vs[0].name : ''}`), W / 2, 12, { align: 'center' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(pdfText(`As on ${asOnNow()}. ${rows.length} bucket(s).`), W / 2, 17.5, { align: 'center' });
+  const made = type === 'made';
+  const head = ['S.No', 'Village', 'Name', 'Father / husband', 'Khasra', 'Status / reason', 'M/F', made ? 'Mobile' : 'Lives', made ? 'Claimed on' : 'Present place', 'Remarks', 'Bucket ref'];
+  const body = rows.map((x, i) => { const b = x.b; return [i + 1, x.v, b.name, b.parentage, b.khasras, statusOf(b).text, b.gender || '', made ? b.mobile : b.residence, made ? fmtDate(b.claimed_date) : b.current_location, b.remarks, String(b.bucket_id).slice(-8)].map(pdfText); });
+  doc.autoTable({ startY: 21, margin: { left: 7, right: 7 }, theme: 'grid', head: [head], body,
+    styles: { fontSize: 7.5, cellPadding: 1.2, lineWidth: 0.1, lineColor: [160, 170, 165], valign: 'middle' }, headStyles: { fillColor: PINE, textColor: 255 },
+    columnStyles: { 0: { cellWidth: 9 }, 4: { cellWidth: 40 }, 5: { cellWidth: 44 } } });
+  pageNumbers(doc);
+  deliverPDF(doc, `List_${type}_${(vid ? vs[0].name : data.tehsil.name).replace(/\s/g, '_')}_${todayIST()}.pdf`);
+}
+
+/* ======================= PAPER CHECKLIST & QUICK ENTRY ======================= */
+const SHORT = { A02: 'Died, mutation not done', A03: 'Died, mutation not attested', A01: 'Same person, other bucket', A08: 'Not found', B04: 'Out of station / migrated',
+  B11: 'Aadhaar not linked to mobile', B02: 'Old / sick, face not matching', C01: 'Present, will come' };
+function checklistCols() {
+  const cols = [{ n: 1, code: 'CLAIMED', label: 'ID made' }];
+  for (let n = 2; n <= 9; n++) { const r = reasons().find(x => x.active === 'Y' && String(x.checklist_col) === String(n)); if (r) cols.push({ n, code: r.code, label: SHORT[r.code] || r.label }); }
+  return cols;
+}
+function checklistOrder(vid) {
+  const arr = (S.buckets[vid] || []).slice().sort((a, b) => (normName(a.parentage) || '~').localeCompare(normName(b.parentage) || '~') ||
+    normName(a.name).localeCompare(normName(b.name)) || String(a.bucket_id).localeCompare(String(b.bucket_id)));
+  const sn = {}; arr.forEach((b, i) => sn[b.bucket_id] = i + 1);
+  return { arr, sn };
+}
+const scopeFilter = sc => sc === 'ns' ? (b => b.status === 'NOT_SURVEYED') : (b => b.status !== 'CLAIMED');
+VIEWS.paper = async function (a) {
+  setHeader('Paper checklist');
+  const vs = villages().filter(v => canEditV(v.village_id)).sort((x, y) => x.name.localeCompare(y.name));
+  a.vid = a.vid || (vs[0] || {}).village_id; a.scope = a.scope || 'ns';
+  const cols = checklistCols();
+  $('#view').innerHTML = `<section class="pad">
+    <p class="guide">Print the checklist for the Lumberdar or Chowkidar. They tick one box per landholder. Then type the box numbers back in with Quick entry.</p>
+    <div class="field"><label for="v">Village</label><select id="v" class="input">${vs.map(v => `<option value="${esc(v.village_id)}" ${v.village_id === a.vid ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></div>
+    <label class="chk"><input type="radio" name="sc" value="ns" ${a.scope === 'ns' ? 'checked' : ''}> Only landholders not checked yet</label>
+    <label class="chk"><input type="radio" name="sc" value="all" ${a.scope === 'all' ? 'checked' : ''}> All landholders not yet claimed</label>
+    <p class="hint">Boxes on the sheet:</p><div class="keys">${cols.map(c => `<span><b>${c.n}</b> ${esc(c.label)}</span>`).join('')}</div>
+    <button class="btn btn-primary" id="pr">Print checklist (PDF)</button>
+    <button class="btn" id="qe">Quick entry from a filled checklist</button></section>`;
+  $('#v').onchange = () => { a.vid = $('#v').value; };
+  $$('input[name=sc]').forEach(r => r.onchange = () => { a.scope = r.value; });
+  $('#pr').onclick = async () => { const btn = $('#pr'); btn.disabled = true; btn.textContent = 'Creating…';
+    try { await loadVillage(a.vid, navigator.onLine); await buildChecklistPDF(a.vid, a.scope); } catch (e) { fail(e.message); }
+    btn.disabled = false; btn.textContent = 'Print checklist (PDF)'; };
+  $('#qe').onclick = () => { if (!a.vid) return; go('grid', { vid: a.vid, scope: a.scope }); };
+};
+async function buildChecklistPDF(vid, scope) {
+  const v = villageById(vid); const { arr, sn } = checklistOrder(vid); const cols = checklistCols();
+  const list = arr.filter(scopeFilter(scope));
+  if (!list.length) { fail('Nobody to print in this village.'); return; }
+  await loadPDF();
+  const doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' }); const W = doc.internal.pageSize.getWidth();
+  const st = statsFor(vid); const pat = st && st.patwari_name ? ', Patwari ' + st.patwari_name : '';
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.text(pdfText(`Farmer ID checklist: village ${v.name}`), 7, 11);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+  doc.text(pdfText(`Tehsil ${tehsilName(v.tehsil_id)}${pat}. Printed ${fmtDate(todayIST())}. ${list.length} landholders.`), 7, 16);
+  doc.text(pdfText('Tick ONE box for each landholder. If the Farmer ID is made, tick box 1 and write the mobile number. If no box fits, write the reason in the last column.'), 7, 20.5);
+  const meta = [], body = []; let fam = null;
+  const NC = 5 + cols.length + 2;
+  list.forEach(b => {
+    const k = normName(b.parentage) || '~';
+    if (k !== fam) { fam = k; meta.push('f'); body.push([{ content: pdfText('Family of ' + (b.parentage || 'unknown')), colSpan: NC }]); }
+    const sug = b.status === 'NOT_SURVEYED' && b.suggested_code ? 'Looks like: ' + (reason(b.suggested_code) || {}).label : (b.status === 'REASON' ? 'Now: ' + statusOf(b).text : '');
+    meta.push(sug && b.status === 'NOT_SURVEYED' ? 'p' : 'b');
+    body.push([sn[b.bucket_id], b.name, b.parentage, shortKh(b.khasras), String(b.bucket_id).slice(-6), ...cols.map(() => ''), '', sug].map(pdfText));
+  });
+  const tickW = 14;
+  const colStyles = { 0: { cellWidth: 9 }, 1: { cellWidth: 30 }, 2: { cellWidth: 26 }, 3: { cellWidth: 27 }, 4: { cellWidth: 11, fontSize: 6.5 } };
+  cols.forEach((c, i) => colStyles[5 + i] = { cellWidth: tickW });
+  colStyles[5 + cols.length] = { cellWidth: 24 }; colStyles[6 + cols.length] = { cellWidth: 'auto', fontSize: 6.5 };
+  doc.autoTable({ startY: 24, margin: { left: 7, right: 7, top: 10 }, theme: 'grid',
+    head: [['S.No', 'Name', 'Father / husband', 'Khasra', 'Ref', ...cols.map(c => pdfText(c.n + '\n' + c.label)), 'Mobile (if ID made)', 'Other reason']],
+    body, styles: { fontSize: 7.5, cellPadding: 1.2, lineWidth: 0.1, lineColor: [140, 150, 145], valign: 'middle', minCellHeight: 7 },
+    headStyles: { fillColor: PINE, textColor: 255, fontSize: 6.5, halign: 'center', valign: 'middle' }, columnStyles: colStyles,
+    didParseCell: d => { if (d.section !== 'body') return; const m = meta[d.row.index];
+      if (m === 'f') { d.cell.styles.fillColor = [232, 239, 235]; d.cell.styles.fontStyle = 'bold'; d.cell.styles.minCellHeight = 5; }
+      if (m === 'p') d.cell.styles.fillColor = [246, 246, 246]; },
+    didDrawCell: d => { if (d.section !== 'body' || meta[d.row.index] === 'f') return; const ci = d.column.index;
+      if (ci >= 5 && ci < 5 + cols.length) { const sz = 3.6; doc.setDrawColor(60); doc.setLineWidth(0.25); doc.rect(d.cell.x + (d.cell.width - sz) / 2, d.cell.y + (d.cell.height - sz) / 2, sz, sz); } }
+  });
+  pageNumbers(doc);
+  deliverPDF(doc, `Checklist_${v.name.replace(/\s/g, '_')}_${todayIST()}.pdf`);
+}
+VIEWS.grid = async function (a) {
+  const v = villageById(a.vid); setHeader('Quick entry: ' + v.name);
+  await loadVillage(a.vid);
+  const { arr, sn } = checklistOrder(a.vid); const cols = checklistCols(); const colBy = {}, byCode = {};
+  cols.forEach(c => { colBy[c.n] = c; byCode[c.code] = c.n; });
+  if (!a.ids) a.ids = arr.filter(scopeFilter(a.scope)).map(b => b.bucket_id);
+  const rows = a.ids.map(id => arr.find(b => b.bucket_id === id)).filter(Boolean);
+  const curN = b => b.status === 'CLAIMED' ? 1 : (b.status === 'REASON' && byCode[b.reason_code]) || '';
+  $('#view').innerHTML = `<section class="pad">
+    <p class="guide">Type the box number ticked on the paper. The cursor moves to the next landholder. For box 1, type the mobile number and press Enter. Entries save on this device and upload by themselves.</p>
+    <div class="keys">${cols.map(c => `<span><b>${c.n}</b> ${esc(c.label)}</span>`).join('')}</div>
+    <table class="grid"><thead><tr><th>S.No</th><th>Landholder</th><th>Box</th><th>Mobile or other reason</th><th>Saved as</th></tr></thead><tbody>
+    ${rows.map(b => `<tr data-id="${esc(b.bucket_id)}"><td class="sn">${sn[b.bucket_id]}</td><td><b>${esc(b.name)}</b><small>${esc(b.parentage)}, ref ${esc(String(b.bucket_id).slice(-6))}</small></td>
+      <td><input class="gc" inputmode="numeric" maxlength="1" value="${curN(b)}" aria-label="Box number for ${esc(b.name)}"></td>
+      <td><input class="gm" inputmode="numeric" maxlength="10" placeholder="Mobile, if box 1" value="${esc(b.mobile)}"><input class="go" placeholder="Other reason" value="${b.reason_code === 'B10' ? esc(b.remarks) : ''}" style="margin-top:4px"></td>
+      <td class="gs">${b.status === 'NOT_SURVEYED' ? '' : esc(statusOf(b).text)}</td></tr>`).join('')}
+    </tbody></table>${rows.length ? '' : '<p class="hint">Nobody in this list.</p>'}</section>`;
+  const trs = $$('table.grid tbody tr');
+  const nextCode = tr => { const i = trs.indexOf(tr); if (i + 1 < trs.length) { const n = $('.gc', trs[i + 1]); n.focus(); n.select(); } };
+  const commit = async (tr, f) => {
+    const b = (S.buckets[a.vid] || []).find(x => x.bucket_id === tr.dataset.id);
+    try { await saveOne(a.vid, b, f); tr.classList.remove('bad'); tr.classList.add('saved'); $('.gs', tr).textContent = statusOf(b).text; return true; }
+    catch (e) { tr.classList.add('bad'); fail(e.message); return false; }
+  };
+  trs.forEach(tr => {
+    const gc = $('.gc', tr), gm = $('.gm', tr), go_ = $('.go', tr);
+    gc.addEventListener('input', async () => {
+      const n = gc.value.trim(); if (!n) return;
+      const c = colBy[n]; if (!c) { fail('There is no box ' + n + '.'); gc.value = ''; return; }
+      if (c.n === 1) { if (validMobile(gm.value.trim())) { if (await commit(tr, { status: 'CLAIMED', mobile: gm.value.trim() })) nextCode(tr); } else { gm.focus(); } return; }
+      if (await commit(tr, { status: 'REASON', reason_code: c.code })) nextCode(tr);
+    });
+    gc.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nextCode(tr); } });
+    const mobileDone = async () => { if (gc.value.trim() !== '1') return; const m = gm.value.trim(); if (!m) return;
+      if (!validMobile(m)) { fail('Mobile must be 10 digits starting with 6, 7, 8 or 9.'); tr.classList.add('bad'); return; }
+      if (await commit(tr, { status: 'CLAIMED', mobile: m })) nextCode(tr); };
+    gm.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); mobileDone(); } });
+    gm.addEventListener('change', mobileDone);
+    go_.addEventListener('change', async () => { const t = go_.value.trim(); if (!t) return; gc.value = ''; await commit(tr, { status: 'REASON', reason_code: 'B10', remarks: t }); });
+  });
+};
+
+/* ======================= SUPERVISION & DASHBOARD ======================= */
+function tehsilPicker(a) {
+  if (role() !== 'ADMIN' || S.boot.tehsils.length < 2) return '';
+  return `<div class="field"><label for="tt">Tehsil</label><select id="tt" class="input">${S.boot.tehsils.map(x => `<option value="${x.tehsil_id}" ${x.tehsil_id === a.tid ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>`;
+}
+function bindTehsilPicker(a) { const t = $('#tt'); if (t) t.onchange = () => { a.tid = t.value; a.data = null; render(); }; }
+function raceChart(hist, st) {
+  const pts = hist.map(h => ({ d: h.date, y: Number(h.claimed) || 0 })).concat([{ d: st.date, y: st.totals.claimed }]);
+  const start = pts[0].d, end = st.final_deadline > start ? st.final_deadline : start;
+  const span = Math.max(1, daysBetween(start, end)), maxY = Math.max(st.totals.achievable, ...pts.map(p => p.y), 1);
+  const W = 340, H = 170, L = 34, R = 10, T = 12, B = 26;
+  const x = d => L + (W - L - R) * daysBetween(start, d) / span, y = v => T + (H - T - B) * (1 - v / maxY);
+  const actual = pts.map(p => `${x(p.d).toFixed(1)},${y(p.y).toFixed(1)}`).join(' ');
+  const req = `${x(start).toFixed(1)},${y(pts[0].y).toFixed(1)} ${x(end).toFixed(1)},${y(st.totals.achievable).toFixed(1)}`;
+  const last = pts[pts.length - 1];
+  return `<div class="chart"><b>Race to ${fmtDate(st.final_deadline)}</b>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Claimed records over time against the line needed to finish">
+      <line x1="${L}" y1="${y(0)}" x2="${W - R}" y2="${y(0)}" stroke="#C9D3CE"/><line x1="${L}" y1="${y(maxY)}" x2="${W - R}" y2="${y(maxY)}" stroke="#EEF1EF"/>
+      <text x="${L - 4}" y="${y(maxY) + 4}" font-size="10" text-anchor="end" fill="#56625C">${maxY}</text><text x="${L - 4}" y="${y(0) + 4}" font-size="10" text-anchor="end" fill="#56625C">0</text>
+      <polyline points="${req}" fill="none" stroke="#B45309" stroke-width="2" stroke-dasharray="6 5"/>
+      <polyline points="${actual}" fill="none" stroke="#16794A" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="${x(last.d)}" cy="${y(last.y)}" r="5" fill="#16794A"/>
+      <text x="${L}" y="${H - 8}" font-size="10" fill="#56625C">${fmtDate(start)}</text><text x="${W - R}" y="${H - 8}" font-size="10" text-anchor="end" fill="#56625C">${fmtDate(end)}</text>
+    </svg><div class="legend"><span><i style="background:#16794A"></i>Claimed so far</span><span><i style="background:#B45309"></i>Needed to finish (dashed)</span></div></div>`;
+}
+function dailyBars(hist, st) {
+  const series = hist.concat([{ date: st.date, claimed: st.totals.claimed }]);
+  const days = []; for (let i = 1; i < series.length; i++) days.push({ d: series[i].date, n: Math.max(0, (Number(series[i].claimed) || 0) - (Number(series[i - 1].claimed) || 0)) });
+  const recent = days.slice(-10); if (!recent.length) return '';
+  const mx = Math.max(st.totals.daily_target, ...recent.map(r => r.n), 1);
+  const W = 340, H = 150, bw = (W - 20) / recent.length;
+  const ty = 10 + (H - 40) * (1 - st.totals.daily_target / mx);
+  return `<div class="chart"><b>Records claimed per day</b><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Claims per day">
+    ${recent.map((r, i) => { const h = (H - 40) * r.n / mx; return `<rect x="${10 + i * bw + 3}" y="${H - 30 - h}" width="${bw - 6}" height="${h}" rx="3" fill="${r.n >= st.totals.daily_target ? '#16794A' : '#2C6B52'}" opacity="${r.n >= st.totals.daily_target ? 1 : .55}"/>
+      <text x="${10 + i * bw + bw / 2}" y="${H - 34 - h}" font-size="10" text-anchor="middle" fill="#17201C">${r.n}</text>
+      <text x="${10 + i * bw + bw / 2}" y="${H - 16}" font-size="9" text-anchor="middle" fill="#56625C">${r.d.slice(8, 10)}.${r.d.slice(5, 7)}</text>`; }).join('')}
+    <line x1="10" x2="${W - 10}" y1="${ty}" y2="${ty}" stroke="#B45309" stroke-dasharray="5 4"/></svg>
+    <div class="legend"><span><i style="background:#B45309"></i>Today's daily target (dashed)</span></div></div>`;
+}
+function reasonBars(st) {
+  const codes = Object.keys(st.totals.by_code).sort((a, b) => st.totals.by_code[b] - st.totals.by_code[a]).slice(0, 8);
+  if (!codes.length) return '<p class="hint">No reasons recorded yet.</p>';
+  const mx = st.totals.by_code[codes[0]];
+  return codes.map(c => { const r = reason(c) || { label: c, tier: 'B' }, n = st.totals.by_code[c];
+    return `<div class="hbar"><span>${esc(r.label)}</span><span class="tr"><i style="width:${n * 100 / mx}%;background:var(--t${r.tier.toLowerCase()})"></i></span><b>${n}</b></div>`; }).join('');
+}
+function heatGrid(st) {
+  const codes = Object.keys(st.totals.by_code).sort((a, b) => st.totals.by_code[b] - st.totals.by_code[a]).slice(0, 8);
+  const cols = codes.map(c => ({ k: c, l: (reason(c) || { label: c }).label, f: v => (v.by_code || {})[c] || 0 })).concat([{ k: 'ns', l: 'Not checked yet', f: v => v.not_surveyed }]);
+  const mx = {}; cols.forEach(c => mx[c.k] = Math.max(1, ...st.villages.map(c.f)));
+  const shade = (n, m) => n ? `rgba(180,35,24,${(0.12 + 0.75 * n / m).toFixed(2)})` : '#F4F6F3';
+  return `<div class="rwrap"><table class="heat"><tr><th>Village</th>${cols.map(c => `<th style="max-width:90px;white-space:normal;font-size:11px">${esc(c.l)}</th>`).join('')}</tr>
+    ${st.villages.map(v => `<tr><td>${esc(v.name)}</td>${cols.map(c => { const n = c.f(v); return `<td style="background:${shade(n, mx[c.k])};color:${n / mx[c.k] > .55 ? '#fff' : '#17201C'}">${n || ''}</td>`; }).join('')}</tr>`).join('')}</table></div>`;
+}
+VIEWS.supervise = async function (a) {
+  setHeader('Supervision');
+  const main = $('#view');
+  if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">Supervision needs internet.</p></div>'; return; }
+  a.tid = a.tid || (role() === 'ADMIN' ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
+  if (!a.data) { main.innerHTML = loadingHtml('Collecting today\'s figures…'); try { a.data = await api('supervision', { tehsil_id: a.tid }, 90000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  const d = a.data, st = d.stats, t = st.totals, now = nowIST().slice(11, 16), gap = Number(d.settings.camp_gap_days || 3);
+  const pace = t.pace_needed, behind = t.claimed_today < Math.min(pace, t.daily_target || pace);
+  const people = d.people.map(p => {
+    let lvl = 'green', why = [];
+    if (!p.edits_today && now >= '12:00') { lvl = 'red'; why.push('No work recorded today'); }
+    if (p.pending > 0 && now >= '14:30') { lvl = 'red'; why.push(p.pending + ' change(s) still on the phone'); }
+    if (lvl === 'green' && p.target_today && p.claimed_today < p.target_today) { lvl = 'amber'; why.push('Behind today\'s target'); }
+    return Object.assign({ lvl, why }, p);
+  }).sort((x, y) => ({ red: 0, amber: 1, green: 2 }[x.lvl] - { red: 0, amber: 1, green: 2 }[y.lvl]));
+  const lateCamp = st.villages.filter(v => !v.last_camp || daysBetween(v.last_camp, st.date) >= gap);
+  const slowV = st.villages.filter(v => v.daily_target && v.claimed_today < v.daily_target / 2);
+  const surveyLate = st.villages.filter(v => v.list_received && v.not_surveyed > 0 && v.survey_deadline && v.survey_deadline < st.date);
+  main.innerHTML = `<section class="pad">${tehsilPicker(a)}
+    <p class="guide">Red items need you. Tap the green phone button to call. Figures as on ${esc(st.generated_at.slice(11, 16))}.</p>
+    <div class="kpis">
+      <div class="kpi"><b>${t.claimed}</b><span>of ${t.total} claimed (${t.achievement_pct}% of achievable)</span></div>
+      <div class="kpi ${behind ? 'red' : 'green'}"><b>${t.claimed_today}</b><span>claimed today; ${pace} needed per day</span></div>
+      <div class="kpi"><b>${st.days_left}</b><span>day(s) left to ${fmtDate(st.final_deadline)}</span></div>
+      <div class="kpi ${t.not_surveyed ? 'red' : 'green'}"><b>${t.not_surveyed}</b><span>landholders not checked yet</span></div>
+    </div>
+    ${raceChart(d.history, st)}${dailyBars(d.history, st)}
+    <h2>People</h2>
+    ${people.length ? people.map(p => `<div class="person ${p.lvl}"><span class="rt"><b>${esc(p.name)}</b> <span class="muted">${esc(p.designation)}</span>
+      <small>${esc(p.villages.join(', ') || 'No village assigned')}</small>
+      <small>Today: <b>${p.claimed_today}</b> of ${p.target_today} claimed, ${p.surveyed_today} checked, ${p.edits_today} changes${p.last_activity ? ', last at ' + esc(p.last_activity.slice(11, 16)) : ''}</small>
+      <small>${p.pending === null ? 'Phone not seen today' : p.pending ? `<b style="color:var(--ta)">${p.pending} change(s) waiting on phone</b>` : 'Nothing waiting on phone'}${p.app_v ? ', app ' + esc(p.app_v) : ''}</small>
+      ${p.why.length ? `<small style="color:var(--ta);font-weight:700">${esc(p.why.join('. '))}</small>` : ''}</span>
+      ${p.mobile ? `<a class="callb" href="tel:${esc(p.mobile)}" aria-label="Call ${esc(p.name)}">${ic('phone', 22)}</a>` : ''}</div>`).join('') : '<p class="hint">No field staff yet.</p>'}
+    <h2>Problems</h2>
+    ${slowV.length ? `<div class="banner red"><p><b>Behind today:</b> ${esc(slowV.map(v => `${v.name} (${v.claimed_today}/${v.daily_target})`).join(', '))}</p></div>` : ''}
+    ${lateCamp.length ? `<div class="banner"><p><b>No camp for ${gap}+ days:</b> ${esc(lateCamp.map(v => v.name).join(', '))}</p></div>` : ''}
+    ${surveyLate.length ? `<div class="banner"><p><b>Check overdue:</b> ${esc(surveyLate.map(v => `${v.name} (${v.not_surveyed} left)`).join(', '))}</p></div>` : ''}
+    <h3>What holds records back</h3><div class="chart">${reasonBars(st)}</div>
+    <h3>Villages and reasons</h3><p class="hint">Darker cells hold more records.</p>${heatGrid(st)}
+    <h3>Women and people living outside</h3>
+    <div class="rwrap"><table class="rt"><tr><th>Village</th><th>Women, not claimed</th><th>Women living outside</th><th>All living outside</th></tr>
+      ${st.villages.map(v => `<tr><td>${esc(v.name)}</td><td>${v.women.unclaimed}</td><td>${v.women.out_of_station}</td><td>${v.migrants}</td></tr>`).join('')}</table></div>
+    <button class="btn" id="rf">Refresh</button></section>`;
+  bindTehsilPicker(a);
+  $('#rf').onclick = () => { a.data = null; render(); };
+};
+
+/* ======================= DATA CHECK ======================= */
+VIEWS.quality = async function (a) {
+  setHeader('Data check');
+  const main = $('#view');
+  if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">The data check needs internet.</p></div>'; return; }
+  a.tid = a.tid || (role() === 'ADMIN' ? S.boot.tehsils[0].tehsil_id : me().tehsil_id);
+  main.innerHTML = loadingHtml('Checking all entries…');
+  let d; try { d = await api('dataQuality', { tehsil_id: a.tid }, 90000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; }
+  a.open = a.open || {};
+  main.innerHTML = `<section class="pad">${tehsilPicker(a)}
+    <p class="guide">Each box lists entries that need a second look. Tap an entry to open and correct it.</p>
+    ${d.issues.length ? d.issues.map(is => `<div class="box"><h3 style="margin-top:0">${esc(is.title)}: ${is.count}</h3><p class="hint">${esc(is.help)}</p>
+      <div class="list">${is.items.slice(0, a.open[is.type] ? 300 : 15).map(it => `<button class="row" data-v="${esc(it.village_id)}" data-id="${esc(it.bucket_id)}"><span class="rt"><b>${esc(it.name)}</b><small>${esc(it.village)}, ${esc(it.parentage)}</small><small>${esc(it.detail)}</small></span></button>`).join('')}</div>
+      ${is.items.length > 15 && !a.open[is.type] ? `<button class="btn" data-more="${is.type}">Show all ${is.items.length}</button>` : ''}</div>`).join('')
+      : '<div class="banner ok"><p><b>No problems found.</b></p></div>'}</section>`;
+  bindTehsilPicker(a);
+  on(main, '[data-more]', 'click', el => { a.open[el.dataset.more] = 1; render(); });
+  on(main, '.row', 'click', el => busy(el, 'Opening…', async () => { await loadVillage(el.dataset.v); S.dirty = true; openBucket(el.dataset.v, [el.dataset.id], 0); }));
+};
+
+/* ======================= WHO DID WHAT ======================= */
+VIEWS.activity = async function (a) {
+  setHeader('Who did what');
+  const main = $('#view');
+  if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">This needs internet.</p></div>'; return; }
+  a.tid = a.tid || (role() === 'ADMIN' ? S.boot.tehsils[0].tehsil_id : me().tehsil_id); a.date = a.date || todayIST();
+  main.innerHTML = loadingHtml('Collecting the day\'s work…');
+  let d; try { d = await api('activity', { tehsil_id: a.tid, date: a.date }, 90000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; }
+  const lbl = { status: 'status', reason_code: 'reason', mobile: 'mobile', aadhaar: 'Aadhaar', gender: 'gender', residence: 'lives', remarks: 'remarks', current_location: 'present place', farmer_id: 'Farmer ID' };
+  const val = (f, v) => f === 'reason_code' ? ((reason(v) || {}).label || v) : f === 'status' ? ({ CLAIMED: 'ID made', REASON: 'reason given', NOT_SURVEYED: 'not checked' }[v] || v) : v;
+  main.innerHTML = `<section class="pad">${tehsilPicker(a)}
+    <div class="field"><label for="dd">Date</label><input id="dd" type="date" class="input" value="${esc(a.date)}"></div>
+    <div class="rwrap"><table class="rt"><tr><th>Person</th><th>Landholders worked on</th><th>IDs made</th><th>Changes</th><th>First</th><th>Last</th></tr>
+      ${d.people.length ? d.people.map(p => `<tr><td>${esc(p.name)}<br><small class="muted">${esc(p.designation)}</small></td><td>${p.landholders}</td><td>${p.ids_made}</td><td>${p.changes}</td><td>${esc(p.first.slice(11, 16))}</td><td>${esc(p.last.slice(11, 16))}</td></tr>`).join('') : '<tr><td colspan="6">No work recorded on this day.</td></tr>'}</table></div>
+    <h2>Latest changes</h2>
+    ${d.recent.map(r => `<div class="hist"><b>${esc(r.ts.slice(11, 16))} ${esc(r.by)}</b>: ${esc(r.name)} (${esc(r.village)}), ${esc(lbl[r.field] || r.action.toLowerCase())} ${r.old_value ? esc(val(r.field, r.old_value)) + ' to ' : 'set to '}${esc(val(r.field, r.new_value) || 'blank')}</div>`).join('') || '<p class="hint">Nothing yet.</p>'}</section>`;
+  bindTehsilPicker(a);
+  $('#dd').onchange = () => { a.date = $('#dd').value; render(); };
+};
+
+/* ======================= EXCEL EXPORT ======================= */
+function deliverBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  let file = null; try { file = new File([blob], name, { type: blob.type }); } catch (e) {}
+  const canShare = file && navigator.canShare && navigator.canShare({ files: [file] });
+  openSheet(() => ({
+    html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">File ready</h2><p class="hint">${esc(name)}</p>
+      <a class="btn btn-primary" href="${url}" download="${esc(name)}">${ic('upload', 22)} Download</a>
+      ${canShare ? `<button class="btn" id="sh">Share (WhatsApp, email)</button>` : ''}
+      <a class="btn" href="${url}" target="_blank" rel="noopener">Open</a>`,
+    mount: r => { $('#x', r).onclick = () => closeSheet(); const sh = $('#sh', r); if (sh) sh.onclick = async () => { try { await navigator.share({ files: [file], title: name }); } catch (e) {} }; }
+  }));
+}
+async function exportExcel() {
+  if (!navigator.onLine) throw new Error('Downloading all data needs internet.');
+  const tid = role() === 'ADMIN' ? (S.boot.tehsils.length > 1 ? (prompt('Which tehsil? Type 1 for ' + S.boot.tehsils.map((t, i) => `${i + 1} = ${t.name}`).join(', '), '1') || '1') : '1') : null;
+  const tehsil_id = tid ? (S.boot.tehsils[Number(tid) - 1] || S.boot.tehsils[0]).tehsil_id : me().tehsil_id;
+  const d = await api('exportData', { tehsil_id }, 120000);
+  await loadXLSX();
+  const vn = {}; d.villages.forEach(v => vn[v.village_id] = v.name);
+  const un = {}; d.users.forEach(x => un[x.user_id] = x.name);
+  const rl = {}; d.reasons.forEach(r => rl[r.code] = r);
+  const T = { A: 'Cannot be claimed', B: 'Stuck', C: 'Workable' };
+  const rows = d.buckets.filter(b => vn[b.village_id]).map(b => ({
+    Village: vn[b.village_id], 'Bucket ID': b.bucket_id, Name: b.name, 'Father / husband': b.parentage, Khasras: b.khasras,
+    Status: b.status === 'CLAIMED' ? 'Farmer ID made' : b.status === 'NOT_SURVEYED' ? 'Not yet surveyed' : (rl[b.reason_code] || {}).report_label || b.reason_code,
+    Group: b.status === 'REASON' ? T[(rl[b.reason_code] || {}).tier] || '' : '', Gender: b.gender, Lives: b.residence, 'Present place': b.current_location,
+    Mobile: b.mobile, Aadhaar: b.aadhaar, 'Farmer ID': b.farmer_id, Remarks: b.remarks, 'Same farmer group': b.dup_confirmed === 'Y' ? b.dup_group + ' (' + b.dup_role + ')' : '',
+    'Claimed on': b.claimed_date, 'Claimed by': un[b.claimed_by] || (b.claimed_source === 'PORTAL' ? 'Portal' : ''), 'Last updated by': un[b.updated_by] || '', 'Last updated at': b.updated_at
+  }));
+  const vs = d.stats.villages.map(v => ({ Village: v.name, Patwari: v.patwari_name, 'Total buckets': v.total, Claimed: v.claimed, 'Cannot be claimed': v.tier_a, Stuck: v.tier_b,
+    Workable: v.tier_c, 'Not yet surveyed': v.not_surveyed, 'Achievable target': v.achievable, 'Achieved %': v.achievement_pct, 'Claimed today': v.claimed_today, 'Daily target': v.daily_target }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'Landholders');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(vs), 'Villages');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.camps.map(c => ({ Village: vn[c.village_id] || c.village_id, Date: c.date, Place: c.venue, Officials: c.officials, 'People who came': c.attended, 'IDs made': c.ids_generated }))), 'Camps');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.users.map(x => ({ Name: x.name, Designation: x.designation, Mobile: x.mobile, Role: ROLE_LABEL[x.role] || x.role, Active: x.active === 'Y' ? 'Yes' : 'No' }))), 'Staff');
+  const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  deliverBlob(new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `FarmerID_all_data_${tehsilName(tehsil_id).replace(/\s/g, '_')}_${todayIST()}.xlsx`);
+}
+
 /* ======================= START ======================= */
 async function start() {
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(reg => {
+    const show = () => { $('#upd').hidden = false; };
+    if (reg.waiting && navigator.serviceWorker.controller) show();
+    reg.addEventListener('updatefound', () => { const nw = reg.installing; if (nw) nw.addEventListener('statechange', () => { if (nw.state === 'installed' && navigator.serviceWorker.controller) show(); }); });
+    setInterval(() => reg.update().catch(() => {}), 20 * 60000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(() => {});
+  $('#updBtn').onclick = () => location.reload();
+  try { S.zoom = Number(await kget('zoom')) || 1; document.documentElement.style.setProperty('--z', S.zoom); } catch (e) {}
   try { S.session = await kget('session'); } catch (e) { $('#view').innerHTML = '<div class="pad"><p class="err">This browser cannot save data. Do not use private or incognito mode.</p></div>'; return; }
   window.addEventListener('online', () => { updatePill(); sync(); refreshBoot(); });
   window.addEventListener('offline', updatePill);
-  setInterval(() => { sync(); }, 60000);
+  setInterval(() => { sync(); if (reminderDue() && S.reminded !== todayIST()) { S.reminded = todayIST(); fail('Get signal now: your work must reach the office before 2:30 PM.'); if (current() && current().name === 'home' && !SHEET) render(); } }, 60000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { sync(); refreshStats(); } });
   if (!S.session) { NAV.stack = [{ name: 'login', args: {} }]; render(); return; }
   S.boot = await kget('boot'); S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || []; S.lastSync = (await kget('lastSync')) || '';
@@ -1173,6 +2212,7 @@ async function start() {
   }
   NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render();
   refreshBoot(); scheduleSync(800);
+  if (!(await kget('tour:' + me().user_id))) setTimeout(showTour, 500);
 }
 start();
 </script>
