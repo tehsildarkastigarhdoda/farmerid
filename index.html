@@ -224,6 +224,51 @@ table.grid td.gs{font-size:13px;font-weight:650;max-width:150px}
 .famh{display:flex;align-items:center;gap:10px;margin:10px 0 2px;padding:8px 2px 4px;border-bottom:2px solid var(--line)}
 .famh .rt{flex:1}.famh small{display:block;color:var(--mute);font-size:13px}
 .fb{flex:none;border:0;background:var(--pine);color:#fff;border-radius:10px;padding:9px 12px;font-weight:700;font-size:14px;max-width:55%}
+/* ===== v3.2 refinements: calm, consistent, readable in sunlight ===== */
+html,body{font-size:18px}
+.hint,.muted,.row small,.fam small,.mem small,.facts dt,.vtop span,.vhead,.vline{color:#46524C}
+.hi{display:block;font-size:.82em;font-weight:500;color:#46524C;margin-top:2px;line-height:1.3}
+.btn{background:#fff;border:1.5px solid var(--pine);color:var(--pine);min-height:56px;border-radius:14px}
+.btn-primary{background:var(--pine);border-color:var(--pine);color:#fff}.btn-primary .hi{color:#D9E8DF}
+.btn-danger{background:#fff;border-color:#D97C74;color:var(--ta)}
+.btn-made{background:var(--made);border-color:var(--made);color:#fff}
+.btn .hi{font-size:.78em}
+.box,.row,.vcard,.fam,.dcard,.person,.prev,.step{border:1px solid #E1E7E3;box-shadow:0 1px 3px rgba(23,32,28,.07)}
+.box{border-radius:16px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 12px}
+.topline b{font-size:20px}.topline small{display:block;color:#46524C;font-size:15px}
+.logout{border:1.5px solid #D97C74;color:var(--ta);background:#fff;border-radius:12px;padding:9px 14px;font-weight:700;flex:none}
+.fv{display:block;width:100%;text-align:left;background:#fff;border:1px solid #E1E7E3;box-shadow:0 1px 3px rgba(23,32,28,.07);border-radius:16px;padding:16px;margin:0 0 12px}
+.fv .t{display:flex;justify-content:space-between;align-items:center;gap:10px}.fv .t b{font-size:21px}
+.fv .t span{background:var(--pine);color:#fff;border-radius:10px;padding:8px 14px;font-weight:700;font-size:15px}
+.gbar{height:12px;border-radius:6px;background:#E6EBE8;overflow:hidden;margin:10px 0 6px}.gbar i{display:block;height:100%;background:var(--made)}
+.fv .n{font-size:16px}.fv .n b{font-size:19px}
+.fv .tags{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}
+.btn3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.btn3 button{min-height:64px;border:1.5px solid var(--pine);background:#fff;color:var(--pine);border-radius:14px;font-weight:700;font-size:15px;padding:6px}
+.tasks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0 14px}
+.tasks button{min-height:74px;border:1.5px solid #CFDAD4;background:#fff;border-radius:14px;font-weight:700;font-size:15px;padding:8px 6px;color:var(--ink);line-height:1.2}
+.tasks button.on{background:var(--pine);border-color:var(--pine);color:#fff}.tasks button.on .hi{color:#D9E8DF}
+.tasks button.zero{opacity:.55}
+.vt{font-size:24px;margin:2px 0 4px}
+.prac-band{background:#FFF1C9;border:1.5px dashed #E0B341;color:#5A4300;border-radius:12px;padding:8px 12px;font-weight:700;font-size:15px;margin:0 0 10px;text-align:center}
+.pname{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin:6px 0 2px}.pname h2{font-size:26px;margin:0}
+.psub{font-size:16px;color:#46524C;margin:0 0 12px}
+.q{font-size:18px;font-weight:700;margin:14px 0 8px}
+.rgrid{grid-auto-rows:1fr}
+.rbtn{min-height:76px;border:1px solid #E1E7E3;box-shadow:0 1px 3px rgba(23,32,28,.07);border-left:8px solid var(--t,#999);border-radius:14px;font-size:17px}
+.rbtn b{font-weight:750}.rbtn .hi{font-size:14px}
+.otherr{display:flex;align-items:center;justify-content:center;flex-direction:column;border:1.5px dashed #9FB3A8;background:#F7FAF8;border-radius:14px;min-height:76px;font-weight:700;color:var(--pine)}
+.links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:16px 0 8px}.links .link{padding:6px 0;font-size:16px}
+.sbar{position:sticky;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:linear-gradient(transparent,var(--bg) 18%);padding:16px 0 calc(env(safe-area-inset-bottom,0px) + 8px);margin-top:14px}
+.sbar .btn{margin:0}
+.donebox{background:var(--okbg);border:1.5px solid #BFE0CB;border-radius:14px;padding:14px;font-weight:700;color:var(--made);margin:10px 0}
+.empty{text-align:center;padding:26px 10px;color:var(--made);font-weight:700;font-size:19px}.empty svg{display:block;margin:0 auto 8px}
+.skel{background:linear-gradient(90deg,#E9EEEB 25%,#F3F6F4 37%,#E9EEEB 63%);background-size:400% 100%;animation:sk 1.2s ease infinite;border-radius:12px;margin:10px 0}
+@keyframes sk{0%{background-position:100% 50%}100%{background-position:0 50%}}
+.lkcard{background:#fff;border:1px solid #E1E7E3;box-shadow:0 1px 3px rgba(23,32,28,.07);border-radius:16px;padding:14px;margin:6px 0 12px}
+.lkcard h2{margin:0 0 4px;font-size:23px}
+
 @media (prefers-reduced-motion:reduce){#toast,button{transition:none}#netbar{animation:none}}
 @media (max-width:360px){.rgrid{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
 </style>
@@ -238,7 +283,7 @@ table.grid td.gs{font-size:13px;font-weight:650;max-width:150px}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '3.1.0';
+const APP_V = '3.2.0';
 const XLSX_URL = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -273,7 +318,7 @@ async function busy(btn, label, fn) {
 const NET = { n: 0 };
 function netOn(d) { NET.n = Math.max(0, NET.n + d); const b = document.getElementById('netbar'); if (b) b.classList.toggle('on', NET.n > 0); }
 const daysBetween = (a, b) => Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 86400000);
-const loadingHtml = t => `<div class="pad"><p class="loading"><span class="spin"></span>${esc(t)}</p></div>`;
+const loadingHtml = t => `<div class="pad"><div class="skel" style="height:24px;width:55%"></div><div class="skel" style="height:96px"></div><div class="skel" style="height:96px"></div><p class="loading"><span class="spin"></span>${esc(t)}</p></div>`;
 const ICON = {
   village: '<path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>',
   camp: '<path d="M3 20h18L12 4 3 20zM12 4v16M8.5 20l3.5-6 3.5 6"/>',
@@ -446,6 +491,27 @@ const TXT = {
   ld_v: ['Downloading the landholders of this village. This takes a few seconds the first time.', 'Is gaon ke kisan download ho rahe hain. Pehli baar thoda samay lagta hai.'],
   lang: ['Language', 'Bhasha'], call_da: ['Call {0} (Dealing Assistant)', '{0} ko call karein (Dealing Assistant)'],
   welcome: ['Welcome, {0}', 'Swagat hai, {0}'],
+  r_A01: ['Same farmer, other entry', 'Ek kisan, doosri entry'], r_A02: ['Owner died, no mutation', 'Maut, intkal nahi hua'], r_A03: ['Owner died, mutation not attested', 'Intkal tasdeeq nahi'],
+  r_A04: ['Land sold, no mutation', 'Zameen biki, intkal nahi'], r_A05: ['State land', 'Sarkari zameen'], r_A06: ['Shamlat deh', 'Shamlat, maalik nahi'],
+  r_A07: ['Department land', 'Mehkame ki zameen'], r_A08: ['Not traceable', 'Pata nahi kahan hai'], r_A09: ['Joint entry (etc)', 'Sanjhi entry'],
+  r_A10: ['Dispute / court case', 'Jhagda / court case'], r_A11: ['Minor owner', 'Nabalig maalik'], r_A12: ['Public use land', 'Rasta, nallah, abadi'],
+  r_B01: ['Aadhaar not linked, away', 'Link nahi, gaon mein nahi'], r_B02: ['Old / sick, face fails', 'Budhapa, chehra match nahi'], r_B03: ["Lives outside, won't come", 'Bahar rehta, aayega nahi'],
+  r_B04: ['Out of station', 'Gaon se bahar hai'], r_B05: ['Abroad', 'Videsh mein'], r_B06: ['No Aadhaar', 'Aadhaar nahi hai'], r_B07: ['Name mismatch', 'Naam alag hai'],
+  r_B08: ['Refused consent / OTP', 'Mana kar diya'], r_B09: ['Portal problem', 'Portal mein dikkat'], r_B10: ['Other (write it)', 'Koi aur wajah'],
+  r_B11: ['Aadhaar not linked to mobile', 'Aadhaar-mobile link nahi'], r_C01: ['Present, Aadhaar linked', 'Gaon mein, link hai'], r_C02: ['Same farmer, ID here', 'ID isi entry se'],
+  v_open: ['Open', 'Kholein'], v_left_of: ['<b>{0}</b> left of {1}', '{1} mein se {0} baaki'], v_your: ['Your villages', 'Aapke gaon'], v_tolink: ['{0} registered to link', '{0} jodne baaki'],
+  t_link: ['Link registered ({0})', 'Registered jodein'], t_reason: ['Give reasons ({0})', 'Wajah batayein'], t_camp: ['Camp call ({0})', 'Camp bulawa'],
+  chk_first: ['Check first:', 'Pehle yeh dekhein:'], chk_land: ['{0} government land', 'sarkari zameen'], chk_dup: ['{0} same farmer', 'ek hi kisan'], chk_re: ['{0} unclaimed again', 'phir se unclaimed'],
+  fam_same: ['Same reason for all', 'Sab ki ek wajah'], c_left: ['Left ({0})', 'Baaki'], c_done: ['Done ({0})', 'Ho gaye'], c_all: ['All ({0})', 'Sab'],
+  q_why: ['Why is the Farmer ID not made?', 'ID kyun nahi bani? Wajah chunein.'], q_other: ['Other reasons', 'Aur wajah'], q_today: ['ID made on portal today? Tap here', 'Aaj portal par ID banayi?'],
+  b_undo: ['Undo', 'Wapas'], b_skip: ['Skip', 'Chhodein'], b_next: ['Next', 'Agla'], b_det: ['More details', 'Aur jaankari'],
+  p_done_portal: ['ID made on the portal \u2713', 'Portal par ID ban chuki hai'], p_done_field: ['You marked: ID made today \u2713', 'Aapne darj kiya: aaj ID bani'],
+  lk_q: ['Which land entry is theirs?', 'Iski zameen kaun si hai?'], lk_link: ['Link', 'Jodein'], lk_not: ['Not in this village', 'Is gaon mein nahi'],
+  done_here: ['All done here. Shabash!', 'Sab ho gaya. Shabash!'], h_help: ['Help', 'Madad'], h_camp: ['Camp', 'Camp'], h_prac: ['Practice village', 'Practice gaon'],
+  prac_band: ['PRACTICE: nothing here is counted', 'PRACTICE: yahan kuch gina nahi jata'], father_s: ['Father', 'Pita'], maybe_reg: ['Maybe registered: {0}', 'Shayad registered hai'],
+  made_ok: ['Yes, ID made today', 'Haan, aaj ID bani'], fam_title: ['Family of {0}', '{0} ka parivaar'], fam_tick: ['Tick who this applies to, then tap the reason.', 'Jin par lagu hai unhe tick karein, phir wajah chunein.'],
+  camp_q: ['They can get the ID now. Call or WhatsApp them.', 'Inki ID abhi ban sakti hai. Call ya WhatsApp karein.'], search_s: ['Search name or khasra', 'Naam ya khasra dhoondhein'],
+
   f_left: ['Not checked', 'Baaki'], f_done: ['Done', 'Ho gaye'], fam_one: ['One reason for the whole family', 'Poore parivaar ki ek wajah'], more_t: ['More', 'Aur'],
   s2b_t: ['Give the reason', 'Wajah batayein'], s2b_b: ['Open the list', 'List kholein'],
   s2b_d: ['Open the list and tap the reason for each landholder, or one reason for a whole family. Government land and same-farmer boxes show at the top.', 'List kholein aur har kisan ki wajah chunein, ya poore parivaar ki ek wajah. Sarkari zameen aur ek-hi-kisan wale box upar dikhenge.'], login_g: ['Type your first name, tap it, then type your PIN.', 'Apna pehla naam likhein, us par tap karein, phir PIN daalein.']
@@ -458,11 +524,15 @@ function L(k) {
   return args.length ? s.replace(/\{(\d)\}/g, (m, i) => args[+i] === undefined ? '' : args[+i]) : s;
 }
 const isField = () => ['OPERATOR'].includes(role());
-async function initLang() {
-  const saved = await kget('lang');
-  LANG = saved || (isField() ? 'hi' : 'en');
+async function initLang() { LANG = 'en'; }
+function H(k) {
+  const o = (S.boot && S.boot.texts && S.boot.texts[k]) || null, d = TXT[k] || ['', ''];
+  const s2 = (o && o.hi) || d[1] || ''; const args = Array.prototype.slice.call(arguments, 1);
+  return args.length ? s2.replace(/\{(\d)\}/g, (m, i) => args[+i] === undefined ? '' : args[+i]) : s2;
 }
-const rLabel = r => !r ? '' : (LANG === 'hi' && r.label_hi ? r.label_hi : r.label);
+function bi() { const en = L.apply(null, arguments), hi = H.apply(null, arguments); return hi ? `${en}<span class="hi">${hi}</span>` : en; }
+function rTxt(r) { if (!r) return ['', '']; const k = 'r_' + r.code; if (TXT[k] || (S.boot && S.boot.texts && S.boot.texts[k])) return [L(k), H(k)]; return [r.label, r.label_hi || '']; }
+const rLabel = r => rTxt(r)[0];
 const rSub = r => !r ? '' : (LANG === 'hi' && r.label_hi ? r.label : '');
 const rExplain = r => !r ? '' : (LANG === 'hi' ? (r.explain_hi || r.explain || EXPLAIN[r.code] || '') : (r.explain || EXPLAIN[r.code] || ''));
 
@@ -682,14 +752,17 @@ window.addEventListener('popstate', () => {
 $('#back').addEventListener('click', () => history.back());
 $('#pill').addEventListener('click', openSyncSheet);
 $('#hlp').addEventListener('click', () => {
-  const h = helpFor(current().name); if (!h) return;
+  let k = current().name; if (k === 'home' && role() !== 'OPERATOR') k = 'home_office';
+  const h = HELP[k]; if (!h) return;
+  const en = Array.isArray(h) ? h : h.en, hi = Array.isArray(h) ? null : h.hi;
   openSheet(() => ({
-    html: `<div class="snav"><button id="x">${L('close')}</button><span></span><span></span></div><h2 class="nm">${esc(h[0])}</h2>
-      ${h.slice(1).map((x, i) => `<div class="guide" style="margin:10px 0">${esc((i + 1) + '. ' + x)}</div>`).join('')}
-      ${helplineHtml()}<button class="btn btn-primary" id="ok">${LANG === 'hi' ? 'Samajh gaya' : 'Got it'}</button>`,
+    html: `<div class="snav"><button id="x">${L('close')}</button><span></span><span></span></div><h2 class="nm">${esc(en[0])}${hi ? `<span class="hi">${esc(hi[0])}</span>` : ''}</h2>
+      ${en.slice(1).map((x, i) => `<div class="guide" style="margin:10px 0">${esc((i + 1) + '. ' + x)}${hi && hi[i + 1] ? `<span class="hi">${esc(hi[i + 1])}</span>` : ''}</div>`).join('')}
+      ${helplineHtml()}<button class="btn btn-primary" id="ok">Got it<span class="hi">Samajh gaya</span></button>`,
     mount: r => { $('#x', r).onclick = () => closeSheet(); $('#ok', r).onclick = () => closeSheet(); }
   }));
 });
+document.addEventListener('click', e => { const o = e.target.closest && e.target.closest('.otherr'); if (!o) return; const p2 = o.parentElement.nextElementSibling; if (p2 && p2.classList.contains('allr')) p2.hidden = !p2.hidden; });
 function helplineHtml() {
   const u = me(); if (!u || !S.boot) return '';
   const mine = u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id];
@@ -699,12 +772,12 @@ function helplineHtml() {
 const HELP = {
   login: { en: ['How to log in', 'Type the first few letters of your first name.', 'Tap your name in the list.', 'Type your PIN (123456 unless you were told otherwise) and tap Log in.', 'You stay logged in on this phone for 30 days.'],
            hi: ['Login kaise karein', 'Apne pehle naam ke 2-3 akshar likhein.', 'List mein apne naam par tap karein.', 'PIN daalein (jab tak kuch aur na bataya jaye, 123456) aur Log in dabayein.', 'Is phone par 30 din tak login rahega.'] },
-  home: { en: ['This screen', 'The green panel shows how many records got the Farmer ID, how many days are left and today\'s progress.', 'Tap "Start today\'s work" and the app guides you step by step.', 'Make Farmer IDs on the portal as usual. They arrive here by themselves with the evening portal file.', 'The button at the top right shows whether your work has reached the office.'],
-          hi: ['Yeh screen', 'Hara hissa batata hai kitni entries ki Farmer ID bani, kitne din baaki hain aur aaj kitna kaam hua.', '"Aaj ka kaam shuru karein" dabayein, app kadam-kadam batayega.', 'Farmer ID portal par pehle ki tarah banayein. Shaam ki portal file se yahan apne aap aa jayegi.', 'Upar daayein button batata hai ki aapka kaam office pahunch gaya ya nahi.'] },
+  home: { en: ['This screen', 'Your villages are listed with how many people are left.', 'Tap Open on a village to work.', 'Make Farmer IDs on the portal only. They come here by themselves.', 'The button at the top right shows whether your work has reached the office.'],
+          hi: ['Yeh screen', 'Aapke gaon aur kitne log baaki hain.', 'Kaam ke liye gaon par Open dabayein.', 'ID sirf portal par banayein, yahan apne aap aayegi.', 'Upar daayein button batata hai kaam office pahuncha ya nahi.'] },
   today: { en: ["Today's work", 'Do the steps from top to bottom. The green step is the one to do now.', 'Tap the big button in that step. When you come back, finished steps show a tick.', 'You can stop any time. Your work is saved.'],
            hi: ['Aaj ka kaam', 'Upar se neeche kadam karein. Hara wala kadam abhi karna hai.', 'Us kadam ka bada button dabayein. Wapas aane par pure kadam par tick lag jayega.', 'Kabhi bhi ruk sakte hain. Kaam save rehta hai.'] },
-  village: { en: ['Working on a village', 'Start with the yellow and green boxes at the top, if any.', 'Families: tap a family to mark several members at once, for example all heirs of a dead owner.', 'One by one: tap a landholder, then tap the reason. The next landholder opens by itself.', 'Use the buttons Not checked, Stuck and so on to see each group. The search box finds a name or khasra.'],
-             hi: ['Gaon mein kaam', 'Upar peele aur hare box ho to pehle unse shuru karein.', 'Parivaar: parivaar par tap karke kai logon ko ek saath bharein, jaise mare hue maalik ke sab waris.', 'Ek-ek karke: kisan par tap karein, phir wajah chunein. Agla kisan apne aap khulega.', '"Check nahi", "Atka hai" jaise button se har group dekhein. Search se naam ya khasra dhoondhein.'] },
+  village: { en: ['Working on a village', 'Three buttons on top: Link registered, Give reasons, Camp call. The one with work opens first.', 'Families: tap a family to mark several members at once, for example all heirs of a dead owner.', 'One by one: tap a landholder, then tap the reason. The next landholder opens by itself.', 'Use the buttons Not checked, Stuck and so on to see each group. The search box finds a name or khasra.'],
+             hi: ['Gaon mein kaam', 'Upar 3 button: Registered jodein, Wajah batayein, Camp bulawa.', 'Parivaar: parivaar par tap karke kai logon ko ek saath bharein, jaise mare hue maalik ke sab waris.', 'Ek-ek karke: kisan par tap karein, phir wajah chunein. Agla kisan apne aap khulega.', '"Check nahi", "Atka hai" jaise button se har group dekhein. Search se naam ya khasra dhoondhein.'] },
   link: { en: ['Link registered farmers', 'These farmers already got the Farmer ID on the portal.', 'Tick the entry with the right father\'s name and khasras, then tap Link.', 'If the list does not show it, search the village by name.', 'If the farmer has no land in this village, tap "Not in this village".'],
           hi: ['Registered kisan jodein', 'In kisanon ki Farmer ID portal par ban chuki hai.', 'Sahi pita ka naam aur khasra wali entry tick karke "Jodein" dabayein.', 'List mein na ho to gaon mein naam se dhoondhein.', 'Is gaon mein zameen na ho to "Is gaon mein nahi" dabayein.'] },
   camplist: { en: ['Camp call list', 'These landholders can get the Farmer ID now.', 'Tap the phone to call, or WhatsApp to send an invite to the camp.'], hi: ['Camp call list', 'Inki Farmer ID abhi ban sakti hai.', 'Phone dabakar call karein, ya WhatsApp se camp ka bulawa bhejein.'] },
@@ -767,12 +840,12 @@ function topReasons(vid) {
     .sort((x, y) => (freq[y.code] || 0) - (freq[x.code] || 0) || pos(x.code) - pos(y.code)).slice(0, 6);
   S.top[vid] = list; return list;
 }
+function rbtnHtml(r, cur) { const t = rTxt(r); return `<button class="rbtn t${r.tier}${r.code === cur ? ' cur' : ''}" data-code="${r.code}"><b>${esc(t[0])}</b>${t[1] ? `<span class="hi">${esc(t[1])}</span>` : ''}</button>`; }
 function reasonGrid(vid, curCode) {
-  const top = topReasons(vid), topCodes = top.map(r => r.code);
-  const btn = r => `<button class="rbtn t${r.tier}${r.code === curCode ? ' cur' : ''}" data-code="${r.code}"><b>${esc(rLabel(r))}</b>${rSub(r) ? `<small>(${esc(rSub(r))})</small>` : ''}${rExplain(r) ? `<small>${esc(rExplain(r))}</small>` : ''}</button>`;
-  const rest = activeReasons().filter(r => !topCodes.includes(r.code));
-  const grp = t => { const l = rest.filter(r => r.tier === t); return l.length ? `<p class="grp g${t}">${L('lg_' + t)}</p>${l.map(btn).join('')}` : ''; };
-  return `<div class="rgrid">${top.map(btn).join('')}</div><details class="morer"><summary>${L('more_r')}</summary>${grp('A')}${grp('B')}${grp('C')}</details>`;
+  const top = topReasons(vid).slice(0, 5), codes = top.map(r => r.code);
+  const rest = activeReasons().filter(r => !codes.includes(r.code));
+  const grp = t => { const l = rest.filter(r => r.tier === t); return l.length ? `<p class="grp g${t}">${L('lg_' + t)}</p><div class="rgrid">${l.map(r => rbtnHtml(r, curCode)).join('')}</div>` : ''; };
+  return `<div class="rgrid">${top.map(r => rbtnHtml(r, curCode)).join('')}<button class="otherr" type="button"><span>${L('q_other')} \u25BE</span><span class="hi">${H('q_other')}</span></button></div><div class="allr" hidden>${grp('A')}${grp('B')}${grp('C')}</div>`;
 }
 
 /* ======================= SAVING ======================= */
@@ -938,11 +1011,12 @@ function officeCheckHtml(d) {
 const toolTile = (id, icon, t, s) => `<button class="row" id="${id}">${ic(icon, 22)}<span class="rt"><b>${t}</b><small>${s}</small></span></button>`;
 function bindHome() {
   const b = (id, fn) => { const e = $('#' + id); if (e) e.addEventListener('click', fn); };
-  on($('#view'), '.vcard', 'click', el => go('village', { vid: el.dataset.v, filter: 'todo', q: '', n: 150 }));
-  b('today', () => go('today')); b('camp', () => go('camp')); b('paper', () => go('paper')); b('rep', () => go('report')); b('sup', () => go('supervise'));
+  on($('#view'), '.vcard,.fv', 'click', el => go('village', { vid: el.dataset.v, filter: 'todo', q: '', n: 150 }));
+  b('camp', () => go('camp')); b('rep', () => go('report')); b('sup', () => go('supervise'));
   b('help', () => go('help')); b('dq', () => go('quality')); b('act', () => go('activity')); b('staff', () => go('users'));
-  b('vil', () => go('villages')); b('set', () => go('settings')); b('out', logout); b('share', shareMyDay);
-  b('portal', () => go('portal')); b('pLists', () => go('portal', { tab: 'lists' })); b('pVill', () => go('portal', { tab: 'villages' }));
+  b('vil', () => go('villages')); b('set', () => go('settings')); b('out', logout);
+  b('portal', () => go('portal')); b('pLists', () => go('portal', { tab: 'lists' }));
+  b('prac', () => { const p = villages().find(v => v.practice === 'Y'); if (p) go('village', { vid: p.village_id, filter: 'todo', q: '', n: 150 }); });
   b('xl', () => busy($('#xl'), 'Preparing Excel…', exportExcel));
   b('upNow', () => busy($('#upNow'), L('p_busy'), async () => { await sync(); render(); }));
   on($('#view'), '[data-go]', 'click', el => go(el.dataset.go, el.dataset.tab ? { tab: el.dataset.tab } : {}));
@@ -956,18 +1030,18 @@ const telBtn = p => p && p.mobile ? `<a class="callb" href="tel:${esc(p.mobile)}
 function daSteps(t) {
   const hm = nowIST().slice(11, 16);
   return [
-    { en: "Upload today's registered-farmer file", hi: 'Aaj ki registered-farmer file portal se download karke upload karein', done: !!t.reg_today,
+    { en: "Upload today's registered-farmer file", hi: 'Aaj ki registered file upload karein', done: !!t.reg_today,
       st: t.reg_today ? `Done at ${t.reg_today.at.slice(11, 16)} by ${t.reg_today.by}` : 'Not done yet', btn: 'Upload file', go: 'portal', tab: 'reg' },
-    { en: 'Clear the Data check', hi: 'Data check ki entries dekh kar theek karein', done: !t.dq_open,
+    { en: 'Clear the Data check', hi: 'Data check theek karein', done: !t.dq_open,
       st: t.dq_open ? `${t.dq_open} item(s) to check` : 'Nothing to check', btn: 'Open Data check', go: 'quality' },
-    { en: 'Create the report and send it to the DC office by 4:30 PM', hi: 'Report banakar 4:30 baje tak DC office bhejein', done: !!t.report,
+    { en: 'Create the report and send it by 4:30 PM', hi: '4:30 tak report DC office bhejein', done: !!t.report,
       st: t.report ? `Created at ${t.report.at.slice(11, 16)} by ${t.report.by}${t.report.late ? ' (after 4:30 PM)' : ''}` : (hm > '16:30' ? 'LATE: due by 4:30 PM' : 'Due by 4:30 PM'), btn: 'Create report', go: 'report' }
   ];
 }
 function stepCard(steps, act) {
   const cur = steps.findIndex(s => !s.done);
   return steps.map((s, i) => `<div class="step${s.done ? ' done' : i === cur ? ' cur' : ''}"><span class="num">${s.done ? '&#10003;' : i + 1}</span><div class="sb">
-    <h3>${esc(s.en)}</h3><p style="font-style:italic">${esc(s.hi)}</p><p><b style="color:${s.done ? 'var(--made)' : 'var(--ta)'}">${esc(s.st)}</b></p>
+    <h3>${esc(s.en)}<span class="hi">${esc(s.hi)}</span></h3><p><b style="color:${s.done ? 'var(--made)' : 'var(--ta)'}">${esc(s.st)}</b></p>
     ${act && !s.done ? `<button class="btn ${i === cur ? 'btn-primary' : ''}" data-go="${s.go}" ${s.tab ? `data-tab="${s.tab}"` : ''}>${esc(s.btn)}</button>` : ''}${s.call || ''}</div></div>`).join('');
 }
 function villageList() {
@@ -976,60 +1050,65 @@ function villageList() {
   const multi = Object.keys(byT).length > 1;
   return Object.keys(byT).map(t => (multi ? `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p>` : '') + byT[t].map(villageCard).join('')).join('');
 }
-const pracCards = () => villages().filter(v => v.practice === 'Y').map(villageCard).join('');
+function fieldVillageCard(v) {
+  const arr = S.buckets[v.village_id], st = statsFor(v.village_id);
+  let total, left;
+  if (arr && arr.length) { total = arr.length; left = arr.filter(b => b.status === 'NOT_SURVEYED').length; }
+  else if (st && st.list_received) { total = st.in_list; left = st.not_surveyed; }
+  const tl = (S.reg[v.village_id] || []).filter(f => f.candidates && f.candidates.length).length;
+  const pct = total ? Math.round((total - left) * 100 / total) : 0;
+  return `<button class="fv" data-v="${esc(v.village_id)}"><div class="t"><b>${esc(v.name)}</b><span>${L('v_open')}</span></div>
+    ${total !== undefined ? `<div class="gbar"><i style="width:${pct}%"></i></div><div class="n">${bi('v_left_of', left, total)}</div>` : `<div class="n">${L('list_missing')}</div>`}
+    ${tl ? `<div class="tags"><span class="tag">${L('v_tolink', tl)}</span></div>` : ''}</button>`;
+}
 VIEWS.home = async function () {
   setHeader('Farmer ID');
   const u = me();
   if (!Object.keys(S.stats).length) for (const t of ((S.boot && S.boot.tehsils) || [])) { const c = await kget('stats:' + t.tehsil_id); if (c) S.stats[t.tehsil_id] = c; }
   const main = $('#view'), ck = S.checklist;
+  const tn = (u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id]).filter(Boolean).map(tehsilName).join(' / ');
+  const top = `<div class="topline"><span><b>${esc(u.name)}</b><small>${esc(u.designation)}${tn ? ', ' + esc(tn) : ''}</small></span><button class="logout" id="out">${L('logout')}</button></div>`;
   const share = u.role === 'ADMIN' && S.boot.settings.sheet_shared === 'Y' ? '<div class="banner red"><p><b>The database Google Sheet is shared with others.</b> It holds full Aadhaar numbers. In Google Drive, set its sharing to "Restricted".</p></div>' : '';
-  const wait = '<div class="box"><p class="loading"><span class="spin"></span>Checking today\'s tasks…</p></div>';
+  const wait = '<div class="skel" style="height:110px"></div><div class="skel" style="height:110px"></div>';
   if (u.role === 'OPERATOR') {
-    main.innerHTML = `${heroHtml()}<section class="pad">
+    const real = villages().filter(v => v.practice !== 'Y').sort((a, b) => a.name.localeCompare(b.name));
+    const prac = villages().some(v => v.practice === 'Y');
+    main.innerHTML = `<section class="pad">${top}
       ${reminderDue() ? `<div class="banner red"><p>${L('reminder')}</p><button id="upNow">${L('upload')}</button></div>` : ''}
-      <div class="tiles"><button class="tile c7 wide" id="today">${ic('play', 34)}<span><b>${L('start_t')}</b><small>${L('start_s')}</small></span></button></div>
-      <p class="sec">${L('your_v')}</p>${villageList() || `<p class="guide">${L('no_village')}</p>`}
-      <div class="tiles"><button class="tile c6 wide" id="help">${ic('help', 28)}<span><b>${L('help_t')}</b><small>${L('help_s')}</small></span></button></div>
-      <details class="more"><summary>${L('more_t')}</summary>
-        <div class="list">${toolTile('camp', 'camp', L('camp_t'), L('camp_s'))}${toolTile('paper', 'paper', L('paper_t'), L('paper_s'))}${toolTile('share', 'upload', L('share_t'), L('share_s'))}</div>
-        ${paceBoardHtml()}
-        ${pracCards() ? `<p class="sec">${L('practice')}</p>${pracCards()}` : ''}
-        <button class="link" id="out">${L('logout')}</button></details></section>`;
+      <p class="sec">${bi('v_your')}</p>
+      ${real.map(fieldVillageCard).join('') || `<p class="guide">${L('no_village')}</p>`}
+      <div class="btn3"><button id="help">${bi('h_help')}</button><button id="camp">${bi('h_camp')}</button>${prac ? `<button id="prac">${bi('h_prac')}</button>` : ''}</div></section>`;
   } else if (u.role === 'DA') {
     const t = ck && ck.tehsils[0];
     const oldLists = t && (!t.last_list_at || daysBetween(t.last_list_at.slice(0, 10), todayIST()) > 3);
-    main.innerHTML = `<section class="pad">${share}
-      <p class="who">${esc(u.name)}<small>${esc(u.designation)}, Tehsil ${esc(tehsilName(u.tehsil_id))}</small></p>
-      <h2 style="margin-top:6px">Today's work, ${esc(fmtDate(todayIST()))}</h2>
-      <p class="guide">Do these 3 steps every day, in order. Each one turns green when done.<br><i>Yeh 3 kadam roz, isi kram mein karein. Pura hone par hara ho jayega.</i></p>
+    main.innerHTML = `<section class="pad">${top}${share}
+      <h2 style="margin-top:0">Today's work, ${esc(fmtDate(todayIST()))}<span class="hi">Aaj ka kaam, isi kram mein</span></h2>
       ${t ? stepCard(daSteps(t), true) : wait}
-      ${t ? (oldLists ? `<div class="banner red"><p><b>No bucket list from the DC office for ${t.last_list_at ? daysBetween(t.last_list_at.slice(0, 10), todayIST()) + ' days' : 'a long time'}.</b> Ask the DC office for new lists.<br><i>DC office se nayi bucket lists maangein.</i></p><button id="pLists">Upload</button></div>`
-        : `<button class="btn" id="pLists">DC office sent new files or figures? Upload here<br><small style="font-weight:500"><i>DC office ne nayi files ya aankde bheje? Yahan bharein</i></small></button>`) : ''}
+      ${t ? (oldLists ? `<div class="banner red"><p><b>No bucket list from the DC office for ${t.last_list_at ? daysBetween(t.last_list_at.slice(0, 10), todayIST()) + ' days' : 'a long time'}.</b> Ask for new lists.<span class="hi">DC office se nayi lists maangein</span></p><button id="pLists">Upload</button></div>`
+        : `<button class="btn" id="pLists"><span>DC office sent new files or figures? Upload here<span class="hi">DC office ki nayi files yahan</span></span></button>`) : ''}
       <details class="more"><summary>Villages (${villages().filter(v => v.practice !== 'Y').length})</summary>${villageList()}</details>
       <details class="more"><summary>More tools</summary><div class="list">
         ${toolTile('portal', 'map', 'Portal data', 'Bucket lists, registered farmers, village figures')}${toolTile('sup', 'eye', 'Supervision', 'Pace, people, pending approvals')}
         ${toolTile('act', 'list', 'Who did what', 'Work done by each person')}${toolTile('staff', 'staff', 'Staff and logins', 'Add, change or delete')}
         ${toolTile('vil', 'map', 'Staff for villages', 'Assign staff, Patwari, targets')}${toolTile('set', 'settings', 'Settings', 'Deadlines, reasons, texts')}
-        ${toolTile('xl', 'table', 'Download all data', 'Excel file, office use only')}${toolTile('help', 'help', 'Help', 'How to use')}</div>
-        <button class="link" id="out">Log out</button></details></section>`;
+        ${toolTile('xl', 'table', 'Download all data', 'Excel file, office use only')}${toolTile('help', 'help', 'Help', 'How to use')}</div></details></section>`;
   } else if (u.role === 'NT') {
-    main.innerHTML = `<section class="pad">
-      <p class="who">${esc(u.name)}<small>${esc(u.designation)}</small></p>
-      <p class="guide">Make sure the Dealing Assistant finishes his 3 steps every day, and call field staff shown in red.<br><i>Dealing Assistant ke 3 kadam roz pure hon, aur laal wale field staff ko call karein.</i></p>
+    main.innerHTML = `<section class="pad">${top}
+      <p class="guide">Check that the Dealing Assistant's 3 steps are green. Call whoever is red.<span class="hi">Laal wale ko call karein</span></p>
       ${ck ? ck.tehsils.map(t => { const da = t.da[0]; const steps = daSteps(t).map(s => Object.assign(s, { call: s.done ? '' : telBtn(da) }));
         return `<h2>Tehsil ${esc(t.name)}</h2>${stepCard(steps, false)}
         <div class="box"><h3 style="margin-top:0">Field staff</h3>${t.red_people.length ? t.red_people.map(p => `<div class="mem"><span class="dot d-A"></span><span class="rt">${esc(p.name)}: no work today or work still on the phone</span>${telBtn(p)}</div>`).join('') : '<p>All active today.</p>'}</div>
         <div class="box"><p style="margin:0">Farmer IDs pending approval on the portal: <b>${t.pending_approvals}</b></p></div>`; }).join('') : wait}
       <button class="btn btn-primary" id="sup">${ic('eye', 22)} Supervision</button>
       <details class="more"><summary>More tools</summary><div class="list">${toolTile('dq', 'check', 'Data check', 'Entries that need a second look')}${toolTile('act', 'list', 'Who did what', 'Work done by each person')}
-        ${toolTile('portal', 'map', 'Portal data', 'View files and village figures')}${toolTile('help', 'help', 'Help', 'How to use')}</div><button class="link" id="out">Log out</button></details></section>`;
+        ${toolTile('portal', 'map', 'Portal data', 'View files and village figures')}${toolTile('help', 'help', 'Help', 'How to use')}</div></details></section>`;
   } else {
     const s = S.boot.settings, left = s.final_deadline ? Math.max(0, daysBetween(todayIST(), s.final_deadline) + 1) : '';
-    main.innerHTML = `${heroHtml()}<section class="pad">${share}
-      ${ck ? ck.tehsils.map(t => { const st = S.stats[t.tehsil_id]; const T = st ? st.totals : null; const steps = daSteps(t);
+    main.innerHTML = `<section class="pad">${top}${share}
+      ${ck ? ck.tehsils.map(t => { const st = S.stats[t.tehsil_id]; const T = st ? st.totals : null;
         return `<div class="box"><h3 style="margin-top:0">Tehsil ${esc(t.name)}</h3>
-          ${T ? `<p style="margin:0 0 6px"><b style="font-size:22px">${T.claimed}</b> of ${T.total} claimed (${T.achievement_pct}% of achievable). Today ${T.claimed_today} of ${T.daily_target}. ${left} day(s) left.</p>${stripHtml({ total: T.total, made: T.claimed, A: T.tier_a, B: T.tier_b, C: T.tier_c, ns: T.not_surveyed })}` : ''}
-          ${steps.map(x => `<div class="mem"><span class="dot ${x.done ? 'd-made' : 'd-A'}"></span><span class="rt">${esc(x.en)}: <b>${esc(x.st)}</b></span>${x.done ? '' : telBtn(t.da[0])}</div>`).join('')}
+          ${T ? `<p style="margin:0 0 6px"><b style="font-size:24px">${T.claimed}</b> of ${T.total} claimed (${T.achievement_pct}% of achievable). Today ${T.claimed_today} of ${T.daily_target}. ${left} day(s) left.</p>${stripHtml({ total: T.total, made: T.claimed, A: T.tier_a, B: T.tier_b, C: T.tier_c, ns: T.not_surveyed })}` : ''}
+          ${daSteps(t).map(x => `<div class="mem"><span class="dot ${x.done ? 'd-made' : 'd-A'}"></span><span class="rt">${esc(x.en)}: <b>${esc(x.st)}</b></span>${x.done ? '' : telBtn(t.da[0])}</div>`).join('')}
           <div class="mem"><span class="dot ${t.pending_approvals ? 'd-A' : 'd-made'}"></span><span class="rt">Farmer IDs pending approval on the portal: <b>${t.pending_approvals}</b></span></div>
           <div class="mem"><span class="dot ${t.red_people.length ? 'd-A' : 'd-made'}"></span><span class="rt">${t.red_people.length ? 'Field staff needing a call: ' + esc(t.red_people.map(p => p.name).join(', ')) : 'Field staff all active'}</span></div></div>`; }).join('') : wait}
       <div class="row2"><button class="btn btn-primary" id="sup">${ic('eye', 22)} Supervision</button><button class="btn" id="rep">${ic('report', 22)} Daily report</button></div>
@@ -1038,8 +1117,7 @@ VIEWS.home = async function () {
         ${toolTile('portal', 'map', 'Portal data', 'Bucket lists, registered farmers, village figures')}${toolTile('dq', 'check', 'Data check', 'Entries that need a second look')}
         ${toolTile('act', 'list', 'Who did what', 'Work done by each person')}${toolTile('staff', 'staff', 'Staff and logins', 'Add, change or delete')}
         ${toolTile('vil', 'map', 'Staff for villages', 'Assign staff, Patwari, targets')}${toolTile('set', 'settings', 'Settings', 'Deadlines, reasons, texts, start fresh')}
-        ${toolTile('xl', 'table', 'Download all data', 'Excel file, office use only')}${toolTile('help', 'help', 'Help', 'How to use')}</div>
-        ${pracCards() ? `<p class="sec">Practice</p>${pracCards()}` : ''}<button class="link" id="out">Log out</button></details></section>`;
+        ${toolTile('xl', 'table', 'Download all data', 'Excel file, office use only')}${toolTile('prac', 'play', 'Practice village', 'Try the field screens')}${toolTile('help', 'help', 'Help', 'How to use')}</div></details></section>`;
   }
   bindHome();
   refreshStats(true);
@@ -1054,24 +1132,30 @@ const TOUR = [
   ['wifi', ['No signal? No problem', 'Network nahi? Koi baat nahi'], ['Everything is saved on your phone first and uploads by itself when there is signal. Get signal once before 2:30 PM.', 'Sab kuch pehle phone mein save hota hai aur network aate hi upload ho jata hai. 2:30 baje se pehle ek baar network mein aayein.']],
   ['play', ['Learn safely', 'Aaram se seekhein'], ['Use the Practice village to try everything. Nothing there is counted. Tap ? on any screen for help, or call the Dealing Assistant from Help.', 'Practice gaon mein sab try karein, wahan kuch gina nahi jata. Har screen par ? dabakar madad lein, ya Madad se Dealing Assistant ko call karein.']]
 ];
+const TOURS = {
+  OPERATOR: [['check', ['Farmer ID is made on the portal only', 'ID sirf portal par banti hai'], ['Make IDs on the portal as usual. They come into this app by themselves. Never enter them twice.', 'Portal par ID banayein. App mein apne aap aa jayegi, dobara na bharein.']],
+    ['list', ['Here: give reasons', 'Yahan: wajah batayein'], ['Open your village. Link registered farmers, give the reason for the rest, and call people for the camp.', 'Gaon kholein. Registered jodein, baaki ki wajah batayein, camp ke liye bulayein.']],
+    ['wifi', ['Works without signal', 'Bina network chalta hai'], ['Everything saves on the phone and uploads by itself. Get signal once before 2:30 PM.', 'Sab phone mein save hota hai. 2:30 se pehle ek baar network mein aayein.']]],
+  DA: [['report', ['Your 3 daily steps', 'Roz ke 3 kadam'], ["Home shows 3 steps: upload today's registered-farmer file, clear the Data check, create and send the report by 4:30 PM. Each turns green when done.", 'Home par 3 kadam: registered file, Data check, 4:30 tak report. Pura hone par hara.']],
+    ['upload', ['Portal data', 'Portal data'], ['All files from the DC office and the portal go in one place: Portal data. Select all bucket lists at once.', 'Saari files ek jagah: Portal data. Saari bucket lists ek saath chunein.']]],
+  NT: [['eye', ['Your job: supervise', 'Aapka kaam: nigrani'], ["Check that the Dealing Assistant's 3 steps are green every day. Call whoever is shown in red.", 'Roz dekhein ki 3 kadam hare hain. Laal wale ko call karein.']]]
+};
 function showTour() {
-  let i = 0; const k = LANG === 'hi' ? 1 : 0;
+  const T = TOURS[role()]; if (!T) return;
+  let i = 0;
   openSheet(function build() {
-    const t = TOUR[i], last = i === TOUR.length - 1;
-    const colours = i === 2 ? `<div class="mock"><div class="rbtn" style="--t:var(--made)"><b>${L('lg_made')}</b></div><div class="rbtn tC"><b>${L('lg_C')}</b></div><div class="rbtn tB"><b>${L('lg_B')}</b></div><div class="rbtn tA"><b>${L('lg_A')}</b></div></div>` : '';
-    return { html: `<div class="snav"><button id="x">${L('skip')}</button><span>${i + 1} / ${TOUR.length}</span><span></span></div>
-      <div class="tcard"><div class="big">${ic(t[0], 40)}</div><h2>${esc(t[1][k])}</h2><p>${esc(t[2][k])}</p>${colours}</div>
-      <div class="tdots">${TOUR.map((_, n) => `<i class="${n === i ? 'on' : ''}"></i>`).join('')}</div>
-      ${last ? `${villages().some(v => v.practice === 'Y') ? `<button class="btn" id="prac">${k ? 'Practice gaon kholein' : 'Open the Practice village'}</button>` : ''}<button class="btn btn-primary" id="done">${k ? 'Kaam shuru karein' : 'Start working'}</button>`
-             : `<button class="btn btn-primary" id="nx">${k ? 'Aage' : 'Next'}</button>`}
-      ${i ? `<button class="btn" id="pv">${k ? 'Peeche' : 'Back'}</button>` : ''}`,
+    const t = T[i], last = i === T.length - 1;
+    return { html: `<div class="snav"><button id="x">${L('skip')}</button><span>${i + 1} / ${T.length}</span><span></span></div>
+      <div class="tcard"><div class="big">${ic(t[0], 40)}</div><h2>${esc(t[1][0])}<span class="hi">${esc(t[1][1])}</span></h2><p>${esc(t[2][0])}</p><p class="hi">${esc(t[2][1])}</p></div>
+      <div class="tdots">${T.map((_, n) => `<i class="${n === i ? 'on' : ''}"></i>`).join('')}</div>
+      ${last ? `<button class="btn btn-primary" id="done">Start<span class="hi">Shuru karein</span></button>` : `<button class="btn btn-primary" id="nx">Next<span class="hi">Aage</span></button>`}
+      ${i ? '<button class="btn" id="pv">Back</button>' : ''}`,
       mount: r => {
         const fin = () => kput('tour:' + me().user_id, 1);
         $('#x', r).onclick = () => { fin(); closeSheet(); };
         if ($('#nx', r)) $('#nx', r).onclick = () => { i++; SHEET.build = build; drawSheet(); };
         if ($('#pv', r)) $('#pv', r).onclick = () => { i--; SHEET.build = build; drawSheet(); };
         if ($('#done', r)) $('#done', r).onclick = () => { fin(); closeSheet(); };
-        if ($('#prac', r)) $('#prac', r).onclick = () => { fin(); const p = villages().find(v => v.practice === 'Y'); closeSheet(() => go('village', { vid: p.village_id, filter: 'todo', mode: 'fam', q: '', n: 120 })); };
       } };
   });
 }
@@ -1111,9 +1195,9 @@ VIEWS.today = async function (a) {
 
 /* ---------- Village ---------- */
 const FILTERS = [
-  ['todo', 'f_left', b => b.status === 'NOT_SURVEYED'],
-  ['done', 'f_done', b => b.status !== 'NOT_SURVEYED'],
-  ['all', 'f_all', () => true]
+  ['todo', 'c_left', b => b.status === 'NOT_SURVEYED'],
+  ['done', 'c_done', b => b.status !== 'NOT_SURVEYED'],
+  ['all', 'c_all', () => true]
 ];
 const EXTRA_FILTERS = { dup: b => b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED', reopen: b => b.flag === 'REOPENED' };
 function filtered(a, arr) {
@@ -1133,53 +1217,60 @@ VIEWS.village = async function (a) {
     loadVillage(a.vid, true).then(x => { a._bg = false; if (current().args === a && !SHEET) drawVillage(a, x); }).catch(() => { a._bg = false; });
   }
 };
+function villageTasks(vid, arr) {
+  return { link: (S.reg[vid] || []).filter(f => f.candidates && f.candidates.length).length, reason: arr.filter(b => b.status === 'NOT_SURVEYED').length,
+    camp: arr.filter(b => b.status === 'REASON' && tierOf(b.reason_code) === 'C').length };
+}
 function drawVillage(a, arr) {
-  const ro = !canEditV(a.vid); const c = countsLocal(arr);
-  const sug = arr.filter(b => b.status === 'NOT_SURVEYED' && b.suggested_code).length;
-  const dup = arr.filter(EXTRA_FILTERS.dup).length;
-  const regN = (S.reg[a.vid] || []).filter(f => f.candidates && f.candidates.length).length, reopen = arr.filter(EXTRA_FILTERS.reopen).length;
-  const banner = (cls, text, btn, id) => `<div class="banner ${cls}"><p>${text}</p>${btn && !ro ? `<button id="${id}">${btn}</button>` : ''}</div>`;
-  const stv = statsFor(a.vid);
-  if (!FILTERS.some(f => f[0] === a.filter) && !EXTRA_FILTERS[a.filter]) a.filter = 'todo';
+  const v = villageById(a.vid), ro = !canEditV(a.vid), n = villageTasks(a.vid, arr);
+  if (!a.task) a.task = n.link ? 'link' : n.reason ? 'reason' : n.camp ? 'camp' : 'reason';
+  if (ro) a.task = 'reason';
   $('#view').innerHTML = `<section class="pad">
-    ${stripHtml(c)}${legendHtml(c)}
-    ${stv && stv.reg_total ? `<p class="hint" style="margin:4px 0 0">${L('reg_line', stv.reg_total, stv.reg_approved, stv.reg_pending)}</p>` : ''}
+    ${v.practice === 'Y' ? `<div class="prac-band">${bi('prac_band')}</div>` : ''}
     ${!arr.length ? `<p class="err">${L('no_list')}</p>` : ''}
-    ${regN ? banner('ok', L('b_reg', regN), L('b_link'), 'bReg') : ''}
-    ${sug ? banner('', L('b_sug', sug), L('b_confirm'), 'bSug') : ''}
-    ${dup ? banner('info', L('b_dup', dup), L('b_check'), 'bDup') : ''}
-    ${reopen ? banner('', L('b_reopen', reopen), L('b_show'), 'bRe') : ''}
-    <input id="q" class="input search" type="search" placeholder="${esc(L('search_ph'))}" value="${esc(a.q)}">
-    <div class="chips">${FILTERS.map(f => `<button class="chipf ${a.filter === f[0] ? 'on' : ''}" data-f="${f[0]}">${L(f[1])} <b>${arr.filter(f[2]).length}</b></button>`).join('')}</div>
-    <p class="guide" id="ins"></p><div id="list" class="list"></div></section>`;
-  const v = $('#view');
-  on(v, '.chipf', 'click', el => { a.filter = el.dataset.f; a.n = 150; drawVillage(a, arr); });
-  $('#q').addEventListener('input', e => { a.q = e.target.value; a.n = 150; drawList(a, arr); });
-  const b = (id, fn) => { const e = $('#' + id); if (e) e.addEventListener('click', fn); };
-  b('bSug', () => openSuggestions(a.vid));
-  b('bReg', () => go('link', { vid: a.vid }));
-  b('bDup', () => go('dups', { vid: a.vid }));
-  b('bRe', () => { a.filter = 'reopen'; drawVillage(a, arr); });
+    ${ro ? '' : `<div class="tasks">${[['link', 't_link', n.link], ['reason', 't_reason', n.reason], ['camp', 't_camp', n.camp]].map(t => `<button data-t="${t[0]}" class="${a.task === t[0] ? 'on' : ''}${t[2] ? '' : ' zero'}">${bi(t[1], t[2])}</button>`).join('')}</div>`}
+    <div id="tb"></div></section>`;
+  on($('#view'), '.tasks button', 'click', el => { a.task = el.dataset.t; a.n = 150; drawVillage(a, arr); });
+  const tb = $('#tb'), redraw = () => drawVillage(a, arr);
+  if (a.task === 'link') linkPanel(tb, a, arr, redraw);
+  else if (a.task === 'camp') campPanel(tb, a, arr);
+  else reasonPanel(tb, a, arr);
+}
+function reasonPanel(box, a, arr) {
+  const ro = !canEditV(a.vid);
+  const sug = arr.filter(b => b.status === 'NOT_SURVEYED' && b.suggested_code).length, dup = arr.filter(EXTRA_FILTERS.dup).length, re = arr.filter(EXTRA_FILTERS.reopen).length;
+  const chk = [];
+  if (sug && !ro) chk.push(`<button class="link" id="cSug">${L('chk_land', sug)}</button>`);
+  if (dup) chk.push(`<button class="link" id="cDup">${L('chk_dup', dup)}</button>`);
+  if (re) chk.push(`<button class="link" id="cRe">${L('chk_re', re)}</button>`);
+  if (!FILTERS.some(f => f[0] === a.filter) && !EXTRA_FILTERS[a.filter]) a.filter = 'todo';
+  const cnt = k => arr.filter(FILTERS.find(f => f[0] === k)[2]).length;
+  box.innerHTML = `${chk.length ? `<div class="banner"><p><b>${L('chk_first')}</b> ${chk.join(' ')}<span class="hi">${H('chk_first')}</span></p></div>` : ''}
+    <input id="q" class="input search" type="search" placeholder="${esc(L('search_s'))}" value="${esc(a.q || '')}">
+    <div class="chips">${FILTERS.map(f => `<button class="chipf ${a.filter === f[0] ? 'on' : ''}" data-f="${f[0]}">${L(f[1], cnt(f[0]))}</button>`).join('')}</div>
+    <div id="list" class="list"></div>`;
+  on(box, '.chipf', 'click', el => { a.filter = el.dataset.f; a.n = 150; reasonPanel(box, a, arr); });
+  $('#q', box).addEventListener('input', e => { a.q = e.target.value; a.n = 150; drawList(a, arr); });
+  const b = (id, fn) => { const e = $('#' + id, box); if (e) e.addEventListener('click', fn); };
+  b('cSug', () => openSuggestions(a.vid)); b('cDup', () => go('dups', { vid: a.vid })); b('cRe', () => { a.filter = 'reopen'; reasonPanel(box, a, arr); });
   drawList(a, arr);
 }
 function drawList(a, arr) {
-  const items = filtered(a, arr); const ro = !canEditV(a.vid);
-  const box = $('#list'); const ins = $('#ins');
-  if (!items.length) { ins.hidden = true; box.innerHTML = `<p class="guide">${a.filter === 'todo' && arr.length ? L('all_checked') : L('nobody')}</p>`; return; }
-  ins.hidden = false; ins.textContent = ro ? L('ins_ro') : L('ins_one');
+  const items = filtered(a, arr); const ro = !canEditV(a.vid); const box = $('#list');
+  if (!items.length) { box.innerHTML = a.filter === 'todo' && arr.length ? `<div class="empty">${ic('check', 44)}${bi('done_here')}</div>` : `<p class="guide">${L('nobody')}</p>`; return; }
   const fams = {}; items.forEach(b => { const k = normName(b.parentage) || '-'; (fams[k] = fams[k] || []).push(b); });
   const keys = Object.keys(fams).sort((x, y) => fams[y].length - fams[x].length || x.localeCompare(y));
   const order = [], parts = []; let shown = 0;
   for (const k of keys) {
     if (shown >= a.n) break;
     const m = fams[k];
-    if (m.length > 1) parts.push(`<div class="famh"><span class="rt"><b>${esc(L('fam_of', m[0].parentage || '?'))}</b><small>${esc(L('n_lh', m.length))}</small></span>${ro ? '' : `<button class="fb" data-k="${esc(k)}">${L('fam_one')}</button>`}</div>`);
+    if (m.length > 1) parts.push(`<div class="famh"><span class="rt"><b>${esc(L('fam_title', m[0].parentage || '?'))}</b><small>${esc(L('n_lh', m.length))}</small></span>${ro || a.filter !== 'todo' ? '' : `<button class="fb" data-k="${esc(k)}">${L('fam_same')}<span class="hi" style="color:#D9E8DF">${H('fam_same')}</span></button>`}</div>`);
     m.forEach(b => { order.push(b.bucket_id); parts.push(rowHtml(b)); shown++; });
   }
   box.innerHTML = parts.join('') + (items.length > shown ? `<button class="btn" id="more">${L('more_n', items.length - shown)}</button>` : '');
   on(box, '.row', 'click', el => openBucket(a.vid, order, order.indexOf(el.dataset.id)));
   on(box, '.fb', 'click', el => openFamily(a.vid, el.dataset.k));
-  const m = $('#more'); if (m) m.addEventListener('click', () => { a.n += 200; drawList(a, arr); });
+  const mo = $('#more'); if (mo) mo.addEventListener('click', () => { a.n += 200; drawList(a, arr); });
 }
 
 /* ---------- Bucket sheet (one landholder) ---------- */
@@ -1196,69 +1287,68 @@ async function linkLocal(vid, f, b) {
   await kput('b:' + vid, S.buckets[vid]); await kput('r:' + vid, S.reg[vid]); S.dirty = true;
   await enqueue('regConfirm', { farmer_id: f.farmer_id, bucket_id: b.bucket_id }, effects);
 }
+function regFor(vid, bucketId) { return (S.reg[vid] || []).filter(f => (f.candidates || []).includes(bucketId)); }
+async function linkLocal(vid, f, b) {
+  const effects = [{ bucket_id: b.bucket_id, fields: { status: 'CLAIMED', reason_code: '', claimed_source: 'REG', farmer_id: f.farmer_id, reg_status: f.status, mobile: b.mobile || f.mobile || '' } }];
+  Object.assign(b, effects[0].fields); b._pending = true; b.surveyed_date = b.surveyed_date || todayIST();
+  S.reg[vid] = (S.reg[vid] || []).filter(x => x.farmer_id !== f.farmer_id).map(x => Object.assign({}, x, { candidates: (x.candidates || []).filter(c => c !== b.bucket_id) }));
+  await kput('b:' + vid, S.buckets[vid]); await kput('r:' + vid, S.reg[vid]); S.dirty = true;
+  await enqueue('regConfirm', { farmer_id: f.farmer_id, bucket_id: b.bucket_id }, effects);
+}
 function bucketSheet(vid, ids, i) {
   const b = (S.buckets[vid] || []).find(x => x.bucket_id === ids[i]);
   if (!b) return { html: `<p class="err">Not found.</p><button class="btn" id="x">${L('close')}</button>`, mount: r => $('#x', r).onclick = () => closeSheet() };
-  const ro = !canEditV(vid); const s = statusOf(b);
+  const ro = !canEditV(vid), s = statusOf(b), prac = villageById(vid).practice === 'Y';
   const locked = b.status === 'CLAIMED' && (b.claimed_source === 'PORTAL' || b.claimed_source === 'REG' || b.reg_status);
   const fieldMade = b.status === 'CLAIMED' && !locked;
   const sugR = b.status === 'NOT_SURVEYED' && b.suggested_code ? reason(b.suggested_code) : null;
   const regs = b.status !== 'CLAIMED' ? regFor(vid, b.bucket_id) : [];
-  const banners = [];
-  if (regs.length && !ro) banners.push(`<div class="banner ok"><p>${L('reg_hint', esc(regs[0].name) + (regs[0].mobile ? ', \u2026' + esc(String(regs[0].mobile).slice(-4)) : ''))}</p><button id="regYes">${L('b_link')}</button></div>`);
-  if (sugR && !ro) banners.push(`<div class="banner"><p>${L('looks', esc(rLabel(sugR)))}</p><button id="sugYes">${L('yes_c')}</button></div>`);
-  if (b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED') banners.push(`<div class="banner info"><p>${L('dup_maybe')}</p><button id="dupChk">${L('b_check')}</button></div>`);
-  if (b.dup_confirmed === 'Y') banners.push(`<div class="banner ok"><p>${b.dup_role === 'PRIMARY' ? L('dup_main') : L('dup_other')}</p><button id="dupChk">${L('b_check')}</button></div>`);
-  if (b.flag === 'REOPENED') banners.push(`<div class="banner"><p>${L('reopened')}</p></div>`);
+  const near = (S.reg[vid] || []).filter(f => { const n1 = normName(f.name), n2 = normName(b.name); return n1 === n2 || n1.split(' ')[0] === n2.split(' ')[0]; }).slice(0, 5);
   const html = `
-    <div class="snav"><button id="x">${L('close')}</button><span>${L('pos', i + 1, ids.length)}</span><button id="skip">${i + 1 < ids.length ? L('skip') : L('done')}</button></div>
-    <h2 class="nm">${esc(b.name)}</h2>
-    <dl class="facts"><dt>${L('father')}</dt><dd>${esc(b.parentage || '-')}</dd><dt>${L('khasra')}</dt><dd>${esc(b.khasras || '-')}</dd>
-      <dt>${L('village')}</dt><dd>${esc(villageById(vid).name)}</dd><dt>${L('portal_ref')}</dt><dd>\u2026${esc(String(b.bucket_id).slice(-8))}</dd>
-      ${b.farmer_id ? `<dt>Farmer ID</dt><dd>${esc(b.farmer_id)}${b.reg_status ? ' (' + (b.reg_status === 'APPROVED' ? L('appr') : L('pend')) + ')' : ''}</dd>` : ''}</dl>
-    <p class="now">${L('now')} <span class="st st-${s.cls}">${esc(s.text)}</span>${b._pending ? ' <span class="muted">' + L('waiting') + '</span>' : ''}${b.updated_by_name ? `<br><small class="muted">${esc(L('last_by', b.updated_by_name, b.updated_at))}</small>` : ''}</p>
-    ${banners.join('')}
-    ${ro ? '' : locked ? `<p class="guide">${L('g_portal')}</p>${b.farmer_id ? `<button class="btn btn-danger" id="unl">${L('unlink')}</button>` : ''}` : `
-      ${fieldMade ? `<p class="guide">${L('g_field')}</p>` : `<p class="guide">${L('g_main')}</p>`}
-      ${b.status !== 'NOT_SURVEYED' ? `<button class="btn btn-danger" id="reset">${L('undo')}</button>` : ''}
-      ${fieldMade ? '' : `<h3>${L('why')}</h3><p class="hint">${L('more_hint')}</p>${reasonGrid(vid, b.reason_code)}
+    <div class="snav"><button id="x">${L('close')}</button><span>${L('pos', i + 1, ids.length)}</span><span></span></div>
+    ${prac ? `<div class="prac-band">${bi('prac_band')}</div>` : ''}
+    <div class="pname"><h2>${esc(b.name)}</h2><span class="st st-${s.cls}">${esc(s.text)}</span></div>
+    <p class="psub">${L('father_s')}: <b>${esc(b.parentage || '-')}</b><br>${L('khasra')}: ${esc(shortKh(b.khasras) || '-')}</p>
+    ${regs.length && !ro ? `<div class="banner ok"><p>${L('maybe_reg', esc(regs[0].name) + (regs[0].mobile ? ', \u2026' + esc(String(regs[0].mobile).slice(-4)) : ''))}<span class="hi">${H('maybe_reg')}</span></p><button id="regYes">${L('lk_link')}</button></div>` : ''}
+    ${sugR && !ro ? `<div class="banner"><p>${L('looks', esc(rTxt(sugR)[0]))}</p><button id="sugYes">${L('yes_c')}</button></div>` : ''}
+    ${b.dup_group && b.dup_confirmed !== 'Y' && b.status !== 'CLAIMED' ? `<div class="banner info"><p>${L('dup_maybe')}</p><button id="dupChk">${L('b_check')}</button></div>` : ''}
+    ${ro ? '' : locked ? `<div class="donebox">${bi('p_done_portal')}</div>` : fieldMade ? `<div class="donebox">${bi('p_done_field')}</div>` : `
+      <p class="q">${bi('q_why')}</p>${reasonGrid(vid, b.reason_code)}
       <div class="box" id="otherBox" hidden><div class="field"><label for="rem2">${L('write_r')}</label><textarea id="rem2" class="input">${esc(b.remarks)}</textarea></div><button class="btn btn-primary" id="otherSave">${L('save')}</button></div>`}
-      <details class="more"><summary>${L('details')}</summary>
-        <div class="field"><label>${L('gender_q')}</label><div class="toggle" id="gen">
-          ${['M', 'F'].map(g => `<button data-g="${g}" class="${b.gender === g ? 'on' : ''}">${g === 'M' ? L('male') : L('female')}</button>`).join('')}</div>
-          ${b.gender_source === 'AUTO' ? `<small>${L('guessed')}</small>` : ''}</div>
-        <div class="field"><label for="res">${L('lives_q')}</label><select id="res" class="input"><option value="">${L('not_known')}</option>
-          ${S.boot.residence.map(r => `<option ${b.residence === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
-        <div class="field"><label for="loc">${L('place_now')}</label><input id="loc" class="input" value="${esc(b.current_location)}" placeholder="${esc(L('place_ph'))}"></div>
+    ${ro ? '' : `<div class="links">${!locked && b.status !== 'CLAIMED' ? `<button class="link" id="made">${L('q_today')}</button>` : ''}<button class="link" id="det">${L('b_det')}</button>${locked && b.farmer_id ? `<button class="link" id="unl" style="color:var(--ta)">${L('unlink')}</button>` : ''}</div>
+      <div class="box" id="madeIn" hidden><p class="hint">${L('made_g')}</p>
+        ${near.length ? `<p><b>${L('made_pick')}</b></p>${near.map(f => `<button class="btn" data-pick="${esc(f.farmer_id)}">${esc(f.name)}${f.mobile ? ', \u2026' + esc(String(f.mobile).slice(-4)) : ''}</button>`).join('')}` : ''}
+        <button class="btn btn-made" id="madeYes">${bi('made_ok')}</button></div>
+      <div class="box" id="detBox" hidden>
+        <div class="field"><label>${L('gender_q')}</label><div class="toggle" id="gen">${['M', 'F'].map(g => `<button data-g="${g}" class="${b.gender === g ? 'on' : ''}">${g === 'M' ? L('male') : L('female')}</button>`).join('')}</div></div>
+        <div class="field"><label for="res">${L('lives_q')}</label><select id="res" class="input"><option value="">${L('not_known')}</option>${S.boot.residence.map(r => `<option ${b.residence === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
+        <div class="field"><label for="loc">${L('place_now')}</label><input id="loc" class="input" value="${esc(b.current_location)}"></div>
         <div class="field"><label for="aad2">${L('aadhaar')}</label><input id="aad2" class="input" inputmode="numeric" maxlength="14" value="${esc(b.aadhaar)}"></div>
         <div class="field"><label for="mob2">${L('mobile')}</label><input id="mob2" class="input" type="tel" inputmode="numeric" maxlength="10" value="${esc(b.mobile)}"></div>
         <div class="field"><label for="rem">${L('remarks')}</label><textarea id="rem" class="input">${esc(b.remarks)}</textarea></div>
         <button class="btn btn-primary" id="detSave">${L('save_det')}</button>
-      </details>
-      ${b.status === 'CLAIMED' ? '' : `<div class="box" id="madeBox"><button class="link" id="made" style="padding:0">${L('made_link')}</button>
-        <div id="madeIn" hidden><p class="hint">${L('made_g')}</p>
-          ${(() => { const near = (S.reg[vid] || []).filter(f => { const n1 = normName(f.name), n2 = normName(b.name); return n1 === n2 || n1.split(' ')[0] === n2.split(' ')[0]; }).slice(0, 5);
-            return near.length ? `<p><b>${L('made_pick')}</b></p>${near.map(f => `<button class="btn" data-pick="${esc(f.farmer_id)}">${esc(f.name)}${f.mobile ? ', \u2026' + esc(String(f.mobile).slice(-4)) : ''} (${f.status === 'APPROVED' ? L('appr') : L('pend')})</button>`).join('')}` : ''; })()}
-          <button class="btn btn-made" id="madeYes">${ic('check', 22)} ${L('made_yes')}</button></div></div>`}`}
-    ${navigator.onLine ? `<button class="link" id="hist">${L('history')}</button><div id="histBox"></div>` : ''}`;
+        ${navigator.onLine ? `<button class="link" id="hist">${L('history')}</button><div id="histBox"></div>` : ''}</div>`}
+    <div class="sbar"><button class="btn" id="skip">${bi(i + 1 < ids.length ? 'b_skip' : 'done')}</button>
+      ${!ro && b.status !== 'NOT_SURVEYED' && !locked ? `<button class="btn btn-danger" id="reset">${bi('b_undo')}</button>` : `<button class="btn" id="x2">${L('close')}</button>`}</div>`;
   const mount = r => {
     const q = id => $('#' + id, r);
     let running = false;
-    const run = async (fn, okMsg, next) => { if (running) return; running = true; try { await fn(); toast(okMsg + '. ' + L('saved_phone')); if (next) advance(vid, ids, i); else drawSheet(); } catch (e) { fail(e.message); running = false; } };
-    q('x').onclick = () => closeSheet();
+    const run = async (fn, okMsg, next) => { if (running) return; running = true; try { await fn(); toast(okMsg); if (next) advance(vid, ids, i); else drawSheet(); } catch (e) { fail(e.message); running = false; } };
+    q('x').onclick = () => closeSheet(); if (q('x2')) q('x2').onclick = () => closeSheet();
     q('skip').onclick = () => advance(vid, ids, i);
     if (q('regYes')) q('regYes').onclick = () => run(() => linkLocal(vid, regs[0], b), L('linked', regs[0].name), true);
-    if (q('sugYes')) q('sugYes').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: b.suggested_code }), rLabel(sugR), true);
+    if (q('sugYes')) q('sugYes').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: b.suggested_code }), rTxt(sugR)[0], true);
     if (q('dupChk')) q('dupChk').onclick = () => closeSheet(() => go('dups', { vid, focus: b.dup_group }));
-    if (q('made')) q('made').onclick = () => { q('madeIn').hidden = false; };
+    if (q('made')) q('made').onclick = () => { q('madeIn').hidden = !q('madeIn').hidden; };
+    if (q('det')) q('det').onclick = () => { q('detBox').hidden = !q('detBox').hidden; };
     if (q('madeYes')) q('madeYes').onclick = () => run(() => saveOne(vid, b, { status: 'CLAIMED' }), L('st_made'), true);
     $$('[data-pick]', r).forEach(el => el.onclick = () => { const f = (S.reg[vid] || []).find(x => x.farmer_id === el.dataset.pick); run(() => linkLocal(vid, f, b), L('linked', f.name), true); });
     $$('.rbtn', r).forEach(el => el.onclick = () => {
       const code = el.dataset.code;
       if (code === 'B10') { q('otherBox').hidden = false; q('rem2').focus(); return; }
-      run(() => saveOne(vid, b, { status: 'REASON', reason_code: code }), rLabel(reason(code)), true);
+      run(() => saveOne(vid, b, { status: 'REASON', reason_code: code }), rTxt(reason(code))[0], true);
     });
-    if (q('otherSave')) q('otherSave').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: 'B10', remarks: q('rem2').value.trim() }), rLabel(reason('B10')), true);
+    if (q('otherSave')) q('otherSave').onclick = () => run(() => saveOne(vid, b, { status: 'REASON', reason_code: 'B10', remarks: q('rem2').value.trim() }), rTxt(reason('B10'))[0], true);
     let gender = b.gender;
     $$('#gen button', r).forEach(el => el.onclick = () => { gender = el.dataset.g; $$('#gen button', r).forEach(x => x.classList.toggle('on', x === el)); });
     if (q('detSave')) q('detSave').onclick = () => {
@@ -1289,8 +1379,8 @@ function familySheet(vid, key, sel) {
   const locked = b => b.status === 'CLAIMED';
   const html = `
     <div class="snav"><button id="x">${L('close')}</button><span>${L('n_lh', members.length)}</span><span></span></div>
-    <h2 class="nm">${esc(L('fam_of', members[0] ? members[0].parentage : ''))}</h2>
-    <p class="guide">${ro ? L('ins_ro') : L('fam_g')}</p>
+    <h2 class="nm">${esc(L('fam_title', members[0] ? members[0].parentage : ''))}</h2>
+    <p class="guide">${ro ? L('ins_ro') : bi('fam_tick')}</p>
     ${ro ? '' : `<div class="row2"><button class="btn" id="all">${L('tick_all')}</button><button class="btn" id="none">${L('untick')}</button></div>`}
     <div class="box">${members.map(b => { const s = statusOf(b); return `<div class="mem">
       ${ro ? `<span class="dot d-${s.cls}"></span>` : `<input type="checkbox" data-id="${esc(b.bucket_id)}" ${sel.has(b.bucket_id) ? 'checked' : ''} ${locked(b) ? 'disabled' : ''} aria-label="${esc(b.name)}">`}
@@ -1446,42 +1536,32 @@ VIEWS.camp = async function () {
 
 /* ---------- Help ---------- */
 VIEWS.help = async function () {
-  setHeader(L('help_t'));
-  const z = Number(S.zoom || 1), hi = LANG === 'hi';
+  setHeader('Help');
+  const z = Number(S.zoom || 1), field = role() === 'OPERATOR';
+  const g = (en, hi) => `<div class="guide">${en}${hi ? `<span class="hi">${hi}</span>` : ''}</div>`;
   $('#view').innerHTML = `<section class="pad">
-    <h2>${L('lang')}</h2>
-    <div class="tsize" id="lg"><button data-l="hi" class="${hi ? 'on' : ''}">Hinglish</button><button data-l="en" class="${hi ? '' : 'on'}">English</button></div>
-    ${helplineHtml() ? `<h2>${hi ? 'Abhi madad chahiye?' : 'Need help now?'}</h2>${helplineHtml()}` : ''}
-    <h2>${hi ? 'App seekhein' : 'Learn the app'}</h2>
-    <button class="btn btn-primary" id="tour">${hi ? 'Swagat tour dobara dekhein' : 'Show the welcome tour again'}</button>
-    ${villages().some(v => v.practice === 'Y') ? `<button class="btn" id="prac">${hi ? 'Practice gaon kholein (kuch gina nahi jata)' : 'Open the Practice village (nothing is counted)'}</button>` : ''}
-    <h2>${hi ? 'Akshar ka size' : 'Text size'}</h2>
+    ${helplineHtml() ? `<h2>Need help now?<span class="hi">Abhi madad chahiye?</span></h2>${helplineHtml()}` : ''}
+    ${TOURS[role()] ? `<button class="btn btn-primary" id="tour">Show the welcome tour<span class="hi">Swagat tour dobara</span></button>` : ''}
+    ${field ? `<h2>Daily work<span class="hi">Roz ka kaam</span></h2>
+      ${g('1. Make the Farmer ID on the portal. Do not enter it again here.', 'Portal par ID banayein, yahan dobara nahi.')}
+      ${g('2. Open your village. Link registered farmers.', 'Gaon kholein, registered jodein.')}
+      ${g('3. Give the reason for the rest. One reason can cover a whole family.', 'Baaki ki wajah batayein. Poore parivaar ki ek wajah bhi.')}
+      ${g('4. Call people for the camp.', 'Camp ke liye bulayein.')}
+      ${g('5. Get signal once before 2:30 PM.', '2:30 se pehle ek baar network.')}
+      <h2>Mistake?<span class="hi">Galti hui?</span></h2>${g('Open the person again and tap Undo, or tap the right reason.', 'Dobara kholein aur Wapas dabayein, ya sahi wajah chunein.')}
+      <div class="list">${toolTile('paper', 'paper', 'Paper checklist', 'Print, tick, type back')}${toolTile('share', 'upload', 'Share my day', 'WhatsApp summary of today')}</div>` : ''}
+    <h2>Text size<span class="hi">Akshar ka size</span></h2>
     <div class="tsize" id="ts">${[[1, 'A'], [1.12, 'A+'], [1.25, 'A++']].map(x => `<button data-z="${x[0]}" class="${z === x[0] ? 'on' : ''}">${x[1]}</button>`).join('')}</div>
-    <h2>${hi ? 'App phone par lagayein' : 'Put the app on your phone'}</h2>
-    <p><b>Android:</b> ${hi ? 'Chrome mein yeh page kholein, &#8942; menu dabayein, phir <b>Add to Home screen</b> ya <b>Install app</b>.' : 'open this page in Chrome, tap the &#8942; menu, then <b>Add to Home screen</b> or <b>Install app</b>.'}</p>
-    <p><b>iPhone:</b> ${hi ? 'Safari mein yeh page kholein, Share button dabayein, phir <b>Add to Home Screen</b>.' : 'open this page in Safari, tap the Share button, then <b>Add to Home Screen</b>.'}</p>
-    <h2>${hi ? 'Roz ka kaam' : 'Daily work'}</h2>
-    ${(hi ? ['Subah network mein app ek baar kholein. Aapke gaon phone mein aa jayenge.', '"Aaj ka kaam shuru karein" dabayein. App batayega pehle kya karna hai.',
-      'Farmer ID portal par banayein. App mein dobara bharne ki zaroorat nahi, shaam ki portal file se apne aap aa jayegi.', 'Jinki ID nahi ban rahi, unki wajah chunein. Parivaar ek saath bhar sakte hain.',
-      'Registered kisan jodein: sahi entry par ek tap.', '2:30 baje se pehle ek baar network mein aayein taaki kaam office pahunch jaye.']
-     : ['Open the app once where there is signal. Your villages download to the phone.', 'Tap "Start today\'s work". The app shows what to do first.',
-      'Make Farmer IDs on the portal. No need to enter them again here: they arrive automatically with the evening portal file.', 'For landholders whose ID cannot be made, tap the reason. Families can be marked together.',
-      'Link registered farmers: one tap on the right entry.', 'Get signal once before 2:30 PM so your work reaches the office.']).map((x, k) => `<div class="guide">${k + 1}. ${x}</div>`).join('')}
-    <h2>${hi ? 'Rang' : 'Colours'}</h2>${legendHtml({ made: '', C: '', B: '', A: '', ns: '', unl: 0 }).replace(/<b><\/b>/g, '')}
-    <h2>${hi ? 'Shabd' : 'Words used'}</h2>
-    <dl class="gl">${(hi ? [['Entry (bucket)', 'Portal par ek kisan ka record, uske saare khasron ke saath.'], ['ID bani', 'Us entry ki Farmer ID ban chuki hai.'], ['Ek hi kisan', 'Spelling farak se portal ek vyakti ko do entries mein dikha deta hai. ID sirf ek entry se banti hai.'],
-      ['Nahi ho sakta', 'Kabhi Farmer ID nahi banegi, jaise sarkari zameen ya intkal na hua ho.'], ['Atka hai', 'Vyakti aaye ya Aadhaar-mobile link ho tabhi ID banegi.'], ['Ho sakta hai', 'Aam field kaam se ID ban jayegi.'], ['Upload', 'Aapka kaam office pahunch gaya. Tab tak phone mein surakshit hai.']]
-     : [['Entry (bucket)', "One landholder's record on the portal, with all the khasras the portal grouped for that person."], ['ID made', 'The Farmer ID has been generated for that entry.'], ['Same farmer', 'Because of a spelling difference the portal may show one person in two entries. Only one can get the ID.'],
-      ["Can't be claimed", 'Will never get a Farmer ID, for example State land, or a dead owner whose mutation is not done.'], ['Stuck', 'Gets the ID only when the person comes back or links Aadhaar with a mobile.'], ['Can be done', 'Gets the ID with normal field work.'], ['Uploaded', 'Your work has reached the office. Until then it is safe on your phone.']])
-      .map(x => `<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('')}</dl>
-    <h2>${hi ? 'Galti' : 'Mistakes'}</h2>
-    <p>${hi ? 'Kisan ko dobara kholein aur sahi wajah chunein, ya laal "Galti hui?" button dabayein. Koi bhi entry kabhi bhi theek kar sakte hain.' : 'Open the landholder again and tap the correct reason, or tap the red "Wrong entry?" button. You can correct any entry any time.'}</p>
+    <h2>Put the app on your phone<span class="hi">App phone par lagayein</span></h2>
+    ${g('<b>Android:</b> Chrome, tap &#8942;, then <b>Add to Home screen</b> or <b>Install app</b>.', '')}
+    ${g('<b>iPhone:</b> Safari, tap Share, then <b>Add to Home Screen</b>.', '')}
+    <h2>Colours<span class="hi">Rang</span></h2>${legendHtml({ made: '', C: '', B: '', A: '', ns: '', unl: 0 }).replace(/<b><\/b>/g, '')}
     <button class="btn btn-danger" id="out">${L('logout')}</button>
     <p class="hint">Version ${APP_V}</p></section>`;
-  $('#tour').onclick = showTour;
-  const p = $('#prac'); if (p) p.onclick = () => go('village', { vid: villages().find(v => v.practice === 'Y').village_id, filter: 'todo', mode: 'fam', q: '', n: 120 });
+  const t = $('#tour'); if (t) t.onclick = showTour;
+  const p = $('#paper'); if (p) p.onclick = () => go('paper');
+  const sh = $('#share'); if (sh) sh.onclick = shareMyDay;
   on($('#view'), '#ts button', 'click', async el => { S.zoom = Number(el.dataset.z); document.documentElement.style.setProperty('--z', S.zoom); await kput('zoom', S.zoom); render(); });
-  on($('#view'), '#lg button', 'click', async el => { LANG = el.dataset.l; await kput('lang', LANG); S.top = {}; render(); });
   $('#out').onclick = logout;
 };
 
@@ -2432,62 +2512,62 @@ async function exportExcel() {
 
 /* ======================= REGISTERED FARMERS: MATCHING ======================= */
 /* ---------- Patwari: link registered farmers (works offline) ---------- */
+function linkPanel(box, a, arr, redraw) {
+  const vid = a.vid; a.skip = a.skip || {};
+  const list = (S.reg[vid] || []).filter(f => !a.skip[f.farmer_id]).sort((x, y) => (y.candidates.length > 0) - (x.candidates.length > 0) || x.name.localeCompare(y.name));
+  if (a.focus) { const k = list.findIndex(f => f.farmer_id === a.focus); if (k > 0) list.unshift(list.splice(k, 1)[0]); a.focus = ''; }
+  if (!list.length) { box.innerHTML = `<div class="empty">${ic('check', 44)}${bi('lk_done')}</div>`; return; }
+  const f = list[0], ro = !canEditV(vid);
+  const cands = f.candidates.map(id => arr.find(b => b.bucket_id === id)).filter(Boolean);
+  box.innerHTML = `<div class="lkcard"><h2>${esc(f.name)}</h2><p class="psub" style="margin:0">${L('p_done_portal')}${f.mobile ? ` &nbsp; <a href="tel:${esc(f.mobile)}">${esc(f.mobile)}</a>` : ''}</p>
+      <p class="hint" style="margin:4px 0 0">${L('pos', 1, list.length)}</p></div>
+    <p class="q">${bi('lk_q')}</p>
+    <div id="cands">${cands.map((c, k) => `<label class="dm"><input type="radio" name="cb" value="${esc(c.bucket_id)}" ${k === 0 ? 'checked' : ''}>
+      <span class="rt"><b>${esc(c.name)}</b><small>${L('father_s')}: ${esc(c.parentage)}</small><small>${L('khasra')} ${esc(shortKh(c.khasras))}</small></span></label>`).join('') || `<p class="hint">${L('lk_noname')}</p>`}</div>
+    <input id="sq" class="input search" placeholder="${esc(L('search_s'))}"><div id="sr" class="list"></div>
+    ${ro ? '' : `<button class="btn btn-primary" id="ln" ${cands.length ? '' : 'disabled'}>${bi('lk_link')}</button>
+    <div class="row2"><button class="btn" id="nn">${bi('lk_not')}</button><button class="btn" id="sk">${bi('b_skip')}</button></div>`}`;
+  if (ro) return;
+  let running = false;
+  $('#sk', box).onclick = () => { a.skip[f.farmer_id] = 1; redraw(); };
+  $('#nn', box).onclick = async () => { if (running) return; running = true;
+    S.reg[vid] = S.reg[vid].filter(x => x.farmer_id !== f.farmer_id); await kput('r:' + vid, S.reg[vid]);
+    await enqueue('regNone', { farmer_id: f.farmer_id }, []); toast(L('lk_marked_none')); redraw(); };
+  $('#ln', box).onclick = async () => { if (running) return;
+    const r = $('input[name=cb]:checked', box); if (!r) { fail(L('lk_tick')); return; }
+    running = true; const b = arr.find(x => x.bucket_id === r.value);
+    try { await linkLocal(vid, f, b); toast(L('linked', f.name)); redraw(); } catch (e) { fail(e.message); running = false; } };
+  $('#sq', box).addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase(), out = $('#sr', box);
+    if (q.length < 3) { out.innerHTML = ''; return; }
+    const hits = arr.filter(b => b.status !== 'CLAIMED' && (b.name + ' ' + b.parentage + ' ' + b.khasras).toLowerCase().includes(q)).slice(0, 15);
+    out.innerHTML = hits.length ? hits.map(b => `<label class="dm"><input type="radio" name="cb" value="${esc(b.bucket_id)}"><span class="rt"><b>${esc(b.name)}</b><small>${L('father_s')}: ${esc(b.parentage)}</small><small>${L('khasra')} ${esc(shortKh(b.khasras))}</small></span></label>`).join('') : `<p class="hint">${L('lk_found')}</p>`;
+    $$('input[name=cb]', out).forEach(x => x.onchange = () => { $('#ln', box).disabled = false; });
+  });
+}
+function campPanel(box, a, arr) {
+  const list = arr.filter(b => b.status === 'REASON' && tierOf(b.reason_code) === 'C').sort((x, y) => x.name.localeCompare(y.name));
+  const msg = b => encodeURIComponent(L('wa_inv', b.name, me().name));
+  box.innerHTML = `<p class="guide">${bi('camp_q')}</p>${list.length ? list.map(b => `<div class="person"><span class="rt"><b>${esc(b.name)}</b><small>${L('father_s')}: ${esc(b.parentage)}</small><small>${L('khasra')} ${esc(shortKh(b.khasras))}</small>
+      ${b.mobile ? '' : `<small>${L('cl_nonum')}</small>`}</span>
+      ${b.mobile ? `<a class="callb" href="tel:${esc(b.mobile)}" aria-label="Call">${ic('phone', 20)}</a><a class="callb" style="background:#25D366" href="https://wa.me/91${esc(b.mobile)}?text=${msg(b)}" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>` : ''}</div>`).join('')
+    : `<div class="empty">${ic('check', 44)}${bi('cl_empty')}</div>`}`;
+}
 VIEWS.link = async function (a) {
   setHeader(L('lk_t'));
   const main = $('#view');
   if (!S.buckets[a.vid]) main.innerHTML = loadingHtml(L('ld_v'));
-  const arr = await loadVillage(a.vid), vid = a.vid;
-  const list = (S.reg[vid] || []).slice().sort((x, y) => (y.candidates.length > 0) - (x.candidates.length > 0) || x.name.localeCompare(y.name));
-  a.skip = a.skip || {};
-  const left = list.filter(f => !a.skip[f.farmer_id]);
-  if (a.focus) { const k = left.findIndex(f => f.farmer_id === a.focus); if (k > 0) left.unshift(left.splice(k, 1)[0]); a.focus = ''; }
-  if (!left.length) { main.innerHTML = `<section class="pad"><div class="banner ok"><p><b>${L('lk_done')}</b></p></div><button class="btn" id="bk">${L('close')}</button></section>`; $('#bk').onclick = () => history.back(); return; }
-  const f = left[0], ro = !canEditV(vid);
-  const cands = f.candidates.map(id => arr.find(b => b.bucket_id === id)).filter(Boolean);
-  main.innerHTML = `<section class="pad">
-    <p class="guide">${L('lk_g')}</p>
-    <p class="hint">${L('lk_hint_count', 1, left.length, left.filter(x => x.candidates.length).length)}</p>
-    <div class="box"><h2 style="margin:0">${esc(f.name)}</h2>
-      <dl class="facts"><dt>${L('village')}</dt><dd>${esc(villageById(vid).name)}</dd><dt>${L('gender_q')}</dt><dd>${esc(f.gender || '-')}${f.age ? ', ' + esc(f.age) : ''}</dd>
-        <dt>${L('mobile')}</dt><dd>${f.mobile ? `<a href="tel:${esc(f.mobile)}">${esc(f.mobile)}</a>` : '-'}</dd><dt>Farmer ID</dt><dd>${esc(f.farmer_id)}</dd>
-        <dt>${L('lk_status')}</dt><dd>${f.status === 'APPROVED' ? L('appr') : L('pend')}</dd></dl></div>
-    <h3>${cands.length ? (f.link_conf === 'SUGGESTED_STRONG' ? L('lk_same') : L('lk_similar')) : L('lk_noname')}</h3>
-    <div id="cands">${cands.map((c, k) => `<label class="dm"><input type="radio" name="cb" value="${esc(c.bucket_id)}" ${k === 0 ? 'checked' : ''}>
-      <span class="rt"><b>${esc(c.name)}</b><small>${L('father')}: ${esc(c.parentage)}</small><small>${L('khasra')} ${esc(shortKh(c.khasras))}</small><small>${L('now')} ${esc(statusOf(c).text)}</small></span></label>`).join('')}</div>
-    <div class="field" style="margin-top:12px"><label for="sq">${L('lk_search')}</label><input id="sq" class="input" placeholder="${esc(L('lk_search_ph'))}"><div id="sr" class="list" style="margin-top:8px"></div></div>
-    ${ro ? '' : `<button class="btn btn-primary" id="ln" ${cands.length ? '' : 'disabled'}>${ic('check', 22)} ${L('lk_link_btn')}</button>
-    <div class="row2"><button class="btn" id="nn">${L('lk_none')}</button><button class="btn" id="sk">${L('lk_skip')}</button></div>`}</section>`;
-  const next = () => { window.scrollTo(0, 0); render(); };
-  if (ro) return;
-  $('#sk').onclick = () => { a.skip[f.farmer_id] = 1; next(); };
-  let running = false;
-  $('#nn').onclick = async () => { if (running) return; running = true;
-    S.reg[vid] = S.reg[vid].filter(x => x.farmer_id !== f.farmer_id); await kput('r:' + vid, S.reg[vid]);
-    await enqueue('regNone', { farmer_id: f.farmer_id }, []); toast(L('lk_marked_none')); next(); };
-  $('#ln').onclick = async () => { if (running) return;
-    const r = $('input[name=cb]:checked'); if (!r) { fail(L('lk_tick')); return; }
-    running = true; const b = arr.find(x => x.bucket_id === r.value);
-    try { await linkLocal(vid, f, b); toast(L('linked', f.name)); next(); } catch (e) { fail(e.message); running = false; } };
-  $('#sq').addEventListener('input', e => {
-    const q = e.target.value.trim().toLowerCase(), out = $('#sr');
-    if (q.length < 3) { out.innerHTML = ''; return; }
-    const hits = arr.filter(b => b.status !== 'CLAIMED' && (b.name + ' ' + b.parentage + ' ' + b.khasras).toLowerCase().includes(q)).slice(0, 15);
-    out.innerHTML = hits.length ? hits.map(b => `<label class="dm"><input type="radio" name="cb" value="${esc(b.bucket_id)}"><span class="rt"><b>${esc(b.name)}</b><small>${L('father')}: ${esc(b.parentage)}</small><small>${L('khasra')} ${esc(shortKh(b.khasras))}</small></span></label>`).join('') : `<p class="hint">${L('lk_found')}</p>`;
-    $$('input[name=cb]', out).forEach(x => x.onchange = () => { $('#ln').disabled = false; });
-  });
+  const arr = await loadVillage(a.vid);
+  main.innerHTML = '<section class="pad"><div id="tb"></div></section>';
+  const redraw = () => linkPanel($('#tb'), a, arr, redraw); redraw();
 };
 
 /* ---------- Camp call list ---------- */
 VIEWS.camplist = async function (a) {
   setHeader(L('cl_t'));
-  const arr = await loadVillage(a.vid), v = villageById(a.vid);
-  const list = arr.filter(b => b.status === 'REASON' && tierOf(b.reason_code) === 'C').sort((x, y) => x.name.localeCompare(y.name));
-  const msg = b => encodeURIComponent(L('wa_inv', b.name, me().name));
-  $('#view').innerHTML = `<section class="pad"><p class="guide">${L('cl_g')}</p><h2 style="margin-top:4px">${esc(v.name)}: ${list.length}</h2>
-    ${list.length ? list.map(b => `<div class="person"><span class="rt"><b>${esc(b.name)}</b><small>${L('father')}: ${esc(b.parentage)}</small><small>${L('khasra')} ${esc(shortKh(b.khasras))}</small>
-      ${b.mobile ? '' : `<small>${L('cl_nonum')}</small>`}</span>
-      ${b.mobile ? `<a class="callb" href="tel:${esc(b.mobile)}" aria-label="Call">${ic('phone', 20)}</a><a class="callb" style="background:#25D366" href="https://wa.me/91${esc(b.mobile)}?text=${msg(b)}" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>` : ''}</div>`).join('')
-      : `<p class="guide">${L('cl_empty')}</p>`}</section>`;
+  const arr = await loadVillage(a.vid);
+  $('#view').innerHTML = '<section class="pad"><div id="tb"></div></section>';
+  campPanel($('#tb'), a, arr);
 };
 
 /* ---------- Share my day (WhatsApp; the Patwari picks the chat) ---------- */
