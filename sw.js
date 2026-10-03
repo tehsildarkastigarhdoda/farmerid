@@ -1,4 +1,4 @@
-const CACHE = 'farmerid-v7';
+const CACHE = 'farmerid-v8';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
@@ -12,5 +12,9 @@ self.addEventListener('fetch', e => {
       .catch(() => caches.match('./index.html')));
     return;
   }
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+  // Libraries in /lib/ and icons: from the phone's cache once fetched, so Excel and PDF work offline too.
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+    if (res.ok && u.pathname.indexOf('/lib/') >= 0) { const c = res.clone(); caches.open(CACHE).then(x => x.put(e.request, c)); }
+    return res;
+  })));
 });
