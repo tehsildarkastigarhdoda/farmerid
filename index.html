@@ -272,6 +272,20 @@ html,body{font-size:18px}
 .tasks.t4{grid-template-columns:1fr 1fr}
 .rbtn.tns{--t:var(--ns)}
 .step.opt{opacity:.75}.step.opt .num{background:#C9D2CD}
+.nums{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.nc{background:#fff;border:1px solid #E1E7E3;border-radius:12px;padding:8px 4px;text-align:center;cursor:pointer;min-height:76px}
+.nc i{display:block;height:5px;border-radius:3px;margin:0 auto 6px;width:60%}.nc b{display:block;font-size:20px}.nc small{display:block;font-size:11.5px;line-height:1.2;color:#46524C}
+.phh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}.phh b{font-size:19px}.phh small{display:block;color:#46524C;font-size:14px}
+.phh .pc{font-size:22px;font-weight:800;color:var(--pine)}
+.vr{border-top:1px solid #E6EBE8;padding:10px 0 4px;margin-top:8px}.vn{background:none;border:0;padding:0;text-align:left;width:100%;cursor:pointer}.vn b{font-size:17px;color:var(--pine);text-decoration:underline}
+.vn small{display:block;color:#46524C;font-size:14px;margin-bottom:4px}
+.mini{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px}.mc{border:1px solid #E1E7E3;background:#fff;border-radius:8px;padding:4px 2px;font-weight:700;font-size:14px;cursor:pointer}
+.mc i{display:block;height:4px;border-radius:2px;margin:0 auto 3px;width:50%}
+.s-made{background:var(--made)}.s-C{background:var(--tc)}.s-B{background:var(--tb)}.s-A{background:var(--ta)}.s-ns{background:var(--ns)}
+.dabox{background:#fff;border:1px solid #E1E7E3;border-radius:14px;padding:10px 12px;margin-bottom:10px}
+.dastrip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}.dastrip span{border-radius:8px;padding:5px 9px;font-weight:700;font-size:14px}
+.dastrip .ok{background:var(--okbg);color:var(--made)}.dastrip .no{background:#FDECEA;color:var(--ta)}
+@media (max-width:480px){.nums{grid-template-columns:repeat(3,1fr)}}
 @media (prefers-reduced-motion:reduce){#toast,button{transition:none}#netbar{animation:none}}
 @media (max-width:360px){.rgrid{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
 </style>
@@ -286,7 +300,7 @@ html,body{font-size:18px}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '4.0.0';
+const APP_V = '4.1.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -506,7 +520,7 @@ const TXT = {
   n_land: ['State / Shamlat / public land', 'Sarkari / shamlat / aam zameen'], n_misc: ['Land sold, dispute or minor', 'Bikri, jhagda ya nabalig'], n_which: ['Which one?', 'Kaun sa?'],
   p_q1: ['Is the person in the village now?', 'Kya vyakti abhi gaon mein hai?'], yes: ['Yes', 'Haan'], no: ['No', 'Nahi'], p_where: ['Where is the person?', 'Vyakti kahan hai?'],
   p_q2: ['Is Aadhaar linked to their mobile?', 'Kya Aadhaar mobile se link hai?'],
-  later_pile: ['Check later ({0})', 'Baad mein'], later_print: ['Print this list for the Lumberdar / Chowkidar', 'Lumberdar ke liye list print karein'],
+  later_pile: ['Check later ({0})', 'Baad mein'], later_print: ['Send this list to the Lumberdar / Chowkidar (WhatsApp)', 'Lumberdar ko list WhatsApp karein'],
   later_g: ['Ask the Lumberdar or Chowkidar about these, then answer here.', 'Lumberdar ya Chowkidar se poochhein, phir yahan bharein.'], kept_later: ['Kept for later', 'Baad ke liye rakha'],
   fam_line: ['Family', 'Parivaar'], other_reason: ['Other reason', 'Koi aur wajah'], fam_ans: ['Same answer for all', 'Sab ka ek jawab'], sort_left: ['To sort ({0})', 'Chhantai baaki'],
 
@@ -730,7 +744,7 @@ async function refreshStats(rerender, force) {
   if (refreshStats._busy || (refreshStats._at && Date.now() - refreshStats._at < 90000 && !force)) return;
   refreshStats._busy = true;
   try {
-    const ts = role() === 'ADMIN' ? S.boot.tehsils.map(t => t.tehsil_id) : [me().tehsil_id];
+    const ts = S.boot.tehsils.map(t => t.tehsil_id);
     for (const t of ts) { try { const r = await api('getStats', { tehsil_id: t }); S.stats[t] = r; await kput('stats:' + t, r); } catch (e) {} }
     refreshStats._at = Date.now();
     if (rerender && !SHEET && current() && current().name === 'home') render();
@@ -1038,7 +1052,7 @@ function bindHome() {
   b('camp', () => go('camp')); b('rep', () => go('report')); b('sup', () => go('supervise'));
   b('help', () => go('help')); b('dq', () => go('quality')); b('act', () => go('activity')); b('staff', () => go('users'));
   b('vil', () => go('villages')); b('set', () => go('settings')); b('out', logout);
-  b('portal', () => go('portal')); b('pLists', () => go('portal', { tab: 'lists' })); b('regUp', () => quickReg($('#regUp')));
+  b('portal', () => go('portal')); b('pLists', () => go('portal', { tab: 'lists' })); b('regUp', () => quickReg());
   b('prac', () => { const p = villages().find(v => v.practice === 'Y'); if (p) go('village', { vid: p.village_id, filter: 'todo', q: '', n: 150 }); });
   b('xl', () => busy($('#xl'), 'Preparing Excel…', exportExcel));
   b('upNow', () => busy($('#upNow'), L('p_busy'), async () => { await sync(); render(); }));
@@ -1054,13 +1068,9 @@ function daSteps(t) {
   const hm = nowIST().slice(11, 16);
   return [
     { en: "Upload today's registered-farmer file", hi: 'Aaj ki registered file upload karein', done: !!t.reg_today,
-      st: t.reg_today ? `Done at ${t.reg_today.at.slice(11, 16)} by ${t.reg_today.by}` : 'Not done yet', btn: "Upload today's file", act: 'regUp' },
-    { en: 'Clear the Data check', hi: 'Data check theek karein', done: !t.dq_open,
-      st: t.dq_open ? `${t.dq_open} item(s) to check` : 'Nothing to check', btn: 'Open Data check', go: 'quality' },
+      st: t.reg_today ? `Done at ${t.reg_today.at.slice(11, 16)} by ${t.reg_today.by}` : 'Portal: Registration between yesterday and today, Export Excel', btn: "Upload today's file", act: 'regUp' },
     { en: 'Update the DC Google Sheet by 4:30 PM', hi: '4:30 tak DC Google Sheet bharein', done: !!t.dcsheet,
-      st: t.dcsheet ? `Done at ${t.dcsheet.at.slice(11, 16)} by ${t.dcsheet.by}${t.dcsheet.late ? ' (after 4:30 PM)' : ''}` : (hm > '16:30' ? 'LATE: due by 4:30 PM' : 'Due by 4:30 PM'), btn: 'Open DC sheet rows', go: 'dcsheet' },
-    { en: 'PDF report (optional)', hi: 'PDF report (zaroori nahi)', opt: true, done: !!t.report,
-      st: t.report ? `Created at ${t.report.at.slice(11, 16)}` : 'Only if asked for', btn: 'Create PDF', go: 'report' }
+      st: t.dcsheet ? `Done at ${t.dcsheet.at.slice(11, 16)} by ${t.dcsheet.by}${t.dcsheet.late ? ' (after 4:30 PM)' : ''}` : (hm > '16:30' ? 'LATE: due by 4:30 PM' : 'Due by 4:30 PM'), btn: 'Open DC sheet rows', go: 'dcsheet' }
   ];
 }
 function alertsHtml(t, act) {
@@ -1095,66 +1105,57 @@ function fieldVillageCard(v) {
 }
 VIEWS.home = async function () {
   setHeader('Farmer ID');
-  const u = me();
-  if (!Object.keys(S.stats).length) for (const t of ((S.boot && S.boot.tehsils) || [])) { const c = await kget('stats:' + t.tehsil_id); if (c) S.stats[t.tehsil_id] = c; }
-  const main = $('#view'), ck = S.checklist;
+  const u = me(), main = $('#view'), ck = S.checklist;
+  if (!S.checklist) { const c = await kget('checklist'); if (c) S.checklist = c; }
   const tn = (u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id]).filter(Boolean).map(tehsilName).join(' / ');
   const top = `<div class="topline"><span><b>${esc(u.name)}</b><small>${esc(u.designation)}${tn ? ', ' + esc(tn) : ''}</small></span><button class="logout" id="out">${L('logout')}</button></div>`;
-  const share = u.role === 'ADMIN' && S.boot.settings.sheet_shared === 'Y' ? '<div class="banner red"><p><b>The database Google Sheet is shared with others.</b> It holds full Aadhaar numbers. In Google Drive, set its sharing to "Restricted".</p></div>' : '';
-  const wait = '<div class="skel" style="height:110px"></div><div class="skel" style="height:110px"></div>';
+  const share = u.role === 'ADMIN' && S.boot.settings.sheet_shared === 'Y' ? '<div class="banner red"><p><b>The database Google Sheet is shared with others.</b> It holds Aadhaar numbers. In Google Drive, set its sharing to "Restricted".</p></div>' : '';
+  const tids = S.boot.tehsils.map(t => t.tehsil_id);
+  const strip = t => `<div class="dastrip">${daSteps(t).map(x => `<span class="${x.done ? 'ok' : 'no'}">${x.done ? '\u2713' : '\u2717'} ${esc(x.en.replace(' by 4:30 PM', '').replace("Upload today's ", ''))}${x.done ? ' ' + esc(x.st.replace('Done at ', '').split(' by ')[0]) : ''}</span>`).join('')}${daSteps(t).some(x => !x.done) ? telBtn(t.da[0]) : ''}</div>`;
+  const tools = list => `<details class="more"><summary>More tools</summary><div class="list">${list.join('')}</div></details>`;
   if (u.role === 'OPERATOR') {
-    const real = villages().filter(v => v.practice !== 'Y').sort((a, b) => a.name.localeCompare(b.name));
-    const prac = villages().some(v => v.practice === 'Y');
+    const real = villages().filter(v => v.practice !== 'Y' && canEditV(v.village_id)).sort((a, b) => a.name.localeCompare(b.name));
+    const myPh = (S.boot.phs || []).filter(p => p.patwari_user_id === u.user_id);
     main.innerHTML = `<section class="pad">${top}
       ${reminderDue() ? `<div class="banner red"><p>${L('reminder')}</p><button id="upNow">${L('upload')}</button></div>` : ''}
       <p class="sec">${bi('v_your')}</p>
       ${real.map(fieldVillageCard).join('') || `<p class="guide">${L('no_village')}</p>`}
-      <div class="btn3"><button id="help">${bi('h_help')}</button><button id="camp">${bi('h_camp')}</button>${prac ? `<button id="prac">${bi('h_prac')}</button>` : ''}</div></section>`;
-  } else if (u.role === 'DA') {
-    const t = ck && ck.tehsils[0];
-    const oldLists = t && (!t.last_list_at || daysBetween(t.last_list_at.slice(0, 10), todayIST()) > 3);
-    main.innerHTML = `<section class="pad">${top}${share}
-      <h2 style="margin-top:0">Today's work, ${esc(fmtDate(todayIST()))}<span class="hi">Aaj ka kaam, isi kram mein</span></h2>
-      ${t ? stepCard(daSteps(t), true) + alertsHtml(t, true) : wait}
-      ${t ? (oldLists ? `<div class="banner red"><p><b>No bucket list from the DC office for ${t.last_list_at ? daysBetween(t.last_list_at.slice(0, 10), todayIST()) + ' days' : 'a long time'}.</b> Ask for new lists.<span class="hi">DC office se nayi lists maangein</span></p><button id="pLists">Upload</button></div>`
-        : `<button class="btn" id="pLists"><span>DC office sent new files or figures? Upload here<span class="hi">DC office ki nayi files yahan</span></span></button>`) : ''}
-      <details class="more"><summary>Villages (${villages().filter(v => v.practice !== 'Y').length})</summary>${villageList()}</details>
-      <details class="more"><summary>More tools</summary><div class="list">
-        ${toolTile('portal', 'map', 'Portal data', 'Bucket lists, registered farmers, village figures')}${toolTile('sup', 'eye', 'Supervision', 'Pace, people, pending approvals')}
-        ${toolTile('act', 'list', 'Who did what', 'Work done by each person')}${toolTile('staff', 'staff', 'Staff and logins', 'Add, change or delete')}
-        ${toolTile('vil', 'map', 'Staff for villages', 'Assign staff, Patwari, targets')}${toolTile('set', 'settings', 'Settings', 'Deadlines, reasons, texts')}
-        ${toolTile('xl', 'table', 'Download all data', 'Excel file, office use only')}${toolTile('help', 'help', 'Help', 'How to use')}</div></details></section>`;
-  } else if (u.role === 'NT') {
-    main.innerHTML = `<section class="pad">${top}
-      <p class="guide">Check that the Dealing Assistant's 3 steps are green. Call whoever is red.<span class="hi">Laal wale ko call karein</span></p>
-      ${ck ? ck.tehsils.map(t => { const da = t.da[0]; const steps = daSteps(t).map(s => Object.assign(s, { call: s.done ? '' : telBtn(da) }));
-        return `<h2>Tehsil ${esc(t.name)}</h2>${stepCard(steps, false)}${alertsHtml(t, false)}
-        <div class="box"><h3 style="margin-top:0">Field staff</h3>${t.red_people.length ? t.red_people.map(p => `<div class="mem"><span class="dot d-A"></span><span class="rt">${esc(p.name)}: no work today or work still on the phone</span>${telBtn(p)}</div>`).join('') : '<p>All active today.</p>'}</div>
-        <div class="box"><p style="margin:0">Farmer IDs pending approval on the portal: <b>${t.pending_approvals}</b></p></div>`; }).join('') : wait}
-      <button class="btn btn-primary" id="sup">${ic('eye', 22)} Supervision</button>
-      <details class="more"><summary>More tools</summary><div class="list">${toolTile('dq', 'check', 'Data check', 'Entries that need a second look')}${toolTile('act', 'list', 'Who did what', 'Work done by each person')}
-        ${toolTile('portal', 'map', 'Portal data', 'View files and village figures')}${toolTile('help', 'help', 'Help', 'How to use')}</div></details></section>`;
-  } else {
-    const s = S.boot.settings, left = s.final_deadline ? Math.max(0, daysBetween(todayIST(), s.final_deadline) + 1) : '';
-    main.innerHTML = `<section class="pad">${top}${share}
-      ${ck ? ck.tehsils.map(t => { const st = S.stats[t.tehsil_id]; const T = st ? st.totals : null;
-        return `<div class="box"><h3 style="margin-top:0">Tehsil ${esc(t.name)}</h3>
-          ${T ? `<p style="margin:0 0 6px"><b style="font-size:24px">${T.claimed}</b> of ${T.total} claimed (${T.achievement_pct}% of achievable). Today ${T.claimed_today} of ${T.daily_target}. ${left} day(s) left.</p>${stripHtml({ total: T.total, made: T.claimed, A: T.tier_a, B: T.tier_b, C: T.tier_c, ns: T.not_surveyed })}` : ''}
-          ${alertsHtml(t, true)}${daSteps(t).filter(x => !x.opt).map(x => `<div class="mem"><span class="dot ${x.done ? 'd-made' : 'd-A'}"></span><span class="rt">${esc(x.en)}: <b>${esc(x.st)}</b></span>${x.done ? '' : telBtn(t.da[0])}</div>`).join('')}
-          <div class="mem"><span class="dot ${t.pending_approvals ? 'd-A' : 'd-made'}"></span><span class="rt">Farmer IDs pending approval on the portal: <b>${t.pending_approvals}</b></span></div>
-          <div class="mem"><span class="dot ${t.red_people.length ? 'd-A' : 'd-made'}"></span><span class="rt">${t.red_people.length ? 'Field staff needing a call: ' + esc(t.red_people.map(p => p.name).join(', ')) : 'Field staff all active'}</span></div></div>`; }).join('') : wait}
-      <div class="row2"><button class="btn btn-primary" id="sup">${ic('eye', 22)} Supervision</button><button class="btn" id="rep">${ic('report', 22)} Daily report</button></div>
-      <details class="more"><summary>Villages</summary>${villageList()}</details>
-      <details class="more"><summary>More tools</summary><div class="list">
-        ${toolTile('portal', 'map', 'Portal data', 'Bucket lists, registered farmers, village figures')}${toolTile('dq', 'check', 'Data check', 'Entries that need a second look')}
-        ${toolTile('act', 'list', 'Who did what', 'Work done by each person')}${toolTile('staff', 'staff', 'Staff and logins', 'Add, change or delete')}
-        ${toolTile('vil', 'map', 'Staff for villages', 'Assign staff, Patwari, targets')}${toolTile('set', 'settings', 'Settings', 'Deadlines, reasons, texts, start fresh')}
-        ${toolTile('xl', 'table', 'Download all data', 'Excel file, office use only')}${toolTile('prac', 'play', 'Practice village', 'Try the field screens')}${toolTile('help', 'help', 'Help', 'How to use')}</div></details></section>`;
+      ${myPh.length ? `<p class="sec">My Patwar Halqa<span class="hi">Mera halqa</span></p><div id="sb"></div>` : ''}
+      <div class="btn3"><button id="help">${bi('h_help')}</button><button id="camp">${bi('h_camp')}</button>${villages().some(v => v.practice === 'Y') ? `<button id="prac">${bi('h_prac')}</button>` : ''}</div></section>`;
+    bindHome();
+    if (myPh.length) fillStatus($('#sb'), myPh[0].tehsil_id);
+    refreshStats(true);
+    return;
   }
-  bindHome();
-  refreshStats(true);
-  if (u.role !== 'OPERATOR') loadChecklist();
+  if (u.role === 'DA') {
+    const t = ck && ck.tehsils.find(x => x.tehsil_id === u.tehsil_id);
+    main.innerHTML = `<section class="pad">${top}${share}
+      <h2 style="margin-top:0">Today's work, ${esc(fmtDate(todayIST()))}<span class="hi">Aaj ka kaam</span></h2>
+      ${t ? stepCard(daSteps(t), true) + alertsHtml(t, true) : '<div class="skel" style="height:110px"></div>'}
+      <button class="btn" id="pLists"><span>DC office sent bucket lists or figures? Upload here<span class="hi">DC office ki files yahan</span></span></button>
+      <div id="sb"></div>
+      ${tools([toolTile('portal', 'map', 'Portal data', 'Bucket lists, registered farmers, village figures'), toolTile('pos', 'report', 'Position statement', 'Ready text: tehsil and village-wise'),
+        toolTile('dq', 'check', 'Data check', 'Registered not linked, check later overdue'), toolTile('staff', 'staff', 'Staff and logins', 'Add, change, reset PIN'),
+        toolTile('vil', 'map', 'Staff, villages and Patwar Halqas', 'Who works where, PHs, transfer'), toolTile('set', 'settings', 'Settings', 'Deadlines, reasons, texts'),
+        toolTile('xl', 'table', 'Download all data', 'One Excel file'), toolTile('help', 'help', 'Help', 'How to use')])}</section>`;
+    bindHome(); fillStatus($('#sb'), u.tehsil_id);
+  } else {
+    main.innerHTML = `<section class="pad">${top}${share}
+      ${ck ? ck.tehsils.map(t => `<div class="dabox"><b>Tehsil ${esc(t.name)}: Dealing Assistant</b>${strip(t)}${alertsHtml(t, u.role === 'ADMIN')}</div>`).join('') : ''}
+      ${tids.map(t => `<div id="sb_${t}"></div>`).join('')}
+      ${tools([toolTile('pos', 'report', 'Position statement', 'Ready text: tehsil and village-wise'), toolTile('portal', 'map', 'Portal data', u.role === 'NT' ? 'View files and village figures' : 'Bucket lists, registered farmers, village figures'),
+        toolTile('dq', 'check', 'Data check', 'Registered not linked, check later overdue')].concat(u.role === 'ADMIN' ? [toolTile('staff', 'staff', 'Staff and logins', 'Add, change, reset PIN'),
+        toolTile('vil', 'map', 'Staff, villages and Patwar Halqas', 'Who works where, PHs, transfer'), toolTile('set', 'settings', 'Settings', 'Deadlines, reasons, texts, start fresh'),
+        toolTile('xl', 'table', 'Download all data', 'One Excel file'), toolTile('prac', 'play', 'Practice village', 'Try the field screens')] : []).concat([toolTile('help', 'help', 'Help', 'How to use')]))}</section>`;
+    bindHome(); tids.forEach(t => fillStatus($('#sb_' + t), t));
+  }
+  b2('pos', () => go('position'));
+  if (navigator.onLine && (!S.checklistAt || Date.now() - S.checklistAt > 60000)) {
+    S.checklistAt = Date.now();
+    api('checklist', {}, 60000).then(async d => { S.checklist = d; await kput('checklist', d); if (current() && current().name === 'home' && !SHEET) render(); }).catch(() => { S.checklistAt = 0; });
+  }
 };
+function b2(id, fn) { const e = $('#' + id); if (e) e.addEventListener('click', fn); }
 
 /* ---------- First-login tour ---------- */
 const TOUR = [
@@ -1315,7 +1316,7 @@ function sortPanel(box, a, arr) {
     <input id="q" class="input search" type="search" placeholder="${esc(L('search_s'))}" value="${esc(a.q || '')}"><div id="gl" class="list"></div>`;
   bindCheckFirst(box, a);
   on(box, '.chipf', 'click', el => { a.sub = el.dataset.s; a.n = 150; sortPanel(box, a, arr); });
-  const pr = $('#prt', box); if (pr) pr.onclick = () => go('paper', { vid: a.vid, scope: 'later' });
+  const pr = $('#prt', box); if (pr) pr.onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(villageById(a.vid).name + ': please confirm these landholders (alive? in village? mutation?)\n' + later.map((b, i) => `${i + 1}. ${b.name} s/o ${b.parentage} (khasra ${shortKh(b.khasras)})`).join('\n')), '_blank');
   const list = () => groupList($('#gl', box), a, a.sub === 'later' ? later : todo, 'sort');
   $('#q', box).addEventListener('input', e => { a.q = e.target.value; list(); });
   list();
@@ -1822,7 +1823,7 @@ async function parsePortalFile(f) {
     const out = [];
     for (let i = ri + 1; i < rows.length; i++) {
       const r = rows[i], get = k => ci[k] < 0 ? '' : String(r[ci[k]] == null ? '' : r[ci[k]]).trim();
-      if (!get(0)) continue;
+      if (!get(0) && !get(1)) continue;
       out.push([get(0), get(1), get(2), get(3), get(4), get(5), get(6), get(7), get(8), b64digits(get(9)), get(10), get(11), get(12)]);
     }
     const m = f.name.match(/(\d{13})/);
@@ -1905,7 +1906,7 @@ function openUser(u, redraw) {
 
 /* ======================= OFFICE: VILLAGES ======================= */
 VIEWS.villages = async function (a) {
-  setHeader('Staff for villages');
+  setHeader('Staff, villages and PHs');
   const main = $('#view');
   const draw = () => {
     const asg = S.boot.assignments || [], users = S.boot.users || [];
@@ -1913,6 +1914,8 @@ VIEWS.villages = async function (a) {
     const real = villages().filter(v => v.practice !== 'Y'), prac = villages().filter(v => v.practice === 'Y');
     const byT = {}; real.forEach(v => (byT[v.tehsil_id] = byT[v.tehsil_id] || []).push(v));
     main.innerHTML = `<section class="pad"><p class="guide">Tap a village to tick its staff, choose the Patwari shown in reports and set targets. Portal figures and files are in "Villages and portal data".</p>
+      <h2>Patwar Halqas</h2>${S.boot.tehsils.map(t => `<p class="tehsil">Tehsil ${esc(t.name)}</p><div class="list">${(S.boot.phs || []).filter(p2 => p2.tehsil_id === t.tehsil_id).map(p2 => `<button class="row phrow" data-t="${t.tehsil_id}" data-p="${esc(p2.ph_id)}"><span class="rt"><b>${esc(p2.name)}</b><small>Patwari: ${esc(((S.boot.users || []).find(x => x.user_id === p2.patwari_user_id) || {}).name || 'not set')}; ${esc(villages().filter(v => v.ph_id === p2.ph_id).map(v => v.name).concat(String(p2.pending_names || '').split(',').map(x => x.trim()).filter(Boolean).map(x => x + ' (not bucketed)')).join(', '))}</small></span></button>`).join('')}</div>${role() === 'NT' ? '' : `<button class="btn phadd" data-t="${t.tehsil_id}">Add a Patwar Halqa</button>`}`).join('')}
+      <h2>Villages and staff</h2>
       <button class="btn btn-primary" id="add">Add a village</button><button class="btn" id="trf">Move villages to another person (transfer)</button>
       ${Object.keys(byT).map(t => `<p class="tehsil">Tehsil ${esc(tehsilName(t))}</p><div class="list">${byT[t].sort((x, y) => x.name.localeCompare(y.name)).map(v => {
         const st = staffOf(v.village_id); const pw = (users.find(u => u.user_id === v.patwari_user_id) || {}).name;
@@ -1924,6 +1927,8 @@ VIEWS.villages = async function (a) {
     </section>`;
     $('#add').onclick = () => openVillage(null, draw);
     $('#trf').onclick = () => openTransfer(draw);
+    on(main, '.phrow', 'click', el => openPH(el.dataset.t, (S.boot.phs || []).find(x => x.ph_id === el.dataset.p), draw));
+    on(main, '.phadd', 'click', el => openPH(el.dataset.t, null, draw));
     on(main, '.row', 'click', el => openVillage(villageById(el.dataset.id), draw));
     on(main, '[data-reset]', 'click', el => busy(el, 'Resetting…', async () => {
       await api('resetPractice', { tehsil_id: el.dataset.reset });
@@ -2688,37 +2693,29 @@ function deliverBlob(blob, name) {
   }));
 }
 async function exportExcel() {
-  if (!navigator.onLine) throw new Error('Downloading all data needs internet.');
-  const tid = role() === 'ADMIN' ? (S.boot.tehsils.length > 1 ? (prompt('Which tehsil? Type 1 for ' + S.boot.tehsils.map((t, i) => `${i + 1} = ${t.name}`).join(', '), '1') || '1') : '1') : null;
-  const tehsil_id = tid ? (S.boot.tehsils[Number(tid) - 1] || S.boot.tehsils[0]).tehsil_id : me().tehsil_id;
-  const d = await api('exportData', { tehsil_id }, 120000);
+  if (!navigator.onLine) throw new Error('This needs internet.');
   await loadXLSX();
-  const vn = {}; d.villages.forEach(v => vn[v.village_id] = v.name);
-  const un = {}; d.users.forEach(x => un[x.user_id] = x.name);
-  const rl = {}; d.reasons.forEach(r => rl[r.code] = r);
-  const T = { A: 'Cannot be claimed', B: 'Stuck', C: 'Workable' };
-  const rows = d.buckets.filter(b => vn[b.village_id]).map(b => ({
-    Village: vn[b.village_id], 'Bucket ID': b.bucket_id, Name: b.name, 'Father / husband': b.parentage, Khasras: b.khasras,
-    Status: b.status === 'CLAIMED' ? 'Farmer ID made' : b.status === 'NOT_SURVEYED' ? 'Not yet surveyed' : (rl[b.reason_code] || {}).report_label || b.reason_code,
-    Group: b.status === 'REASON' ? T[(rl[b.reason_code] || {}).tier] || '' : '', Gender: b.gender, Lives: b.residence, 'Present place': b.current_location,
-    Mobile: b.mobile, Aadhaar: b.aadhaar, 'Farmer ID': b.farmer_id, Remarks: b.remarks, 'Same farmer group': b.dup_confirmed === 'Y' ? b.dup_group + ' (' + b.dup_role + ')' : '',
-    'Claimed on': b.claimed_date, 'Claimed by': un[b.claimed_by] || (b.claimed_source === 'PORTAL' ? 'Portal' : ''), 'Last updated by': un[b.updated_by] || '', 'Last updated at': b.updated_at
-  }));
-  const vs = d.stats.villages.map(v => ({ Village: v.name, Patwari: v.patwari_name, 'Total buckets': v.total, Claimed: v.claimed, 'Cannot be claimed': v.tier_a, Stuck: v.tier_b,
-    Workable: v.tier_c, 'Not yet surveyed': v.not_surveyed, 'Achievable target': v.achievable, 'Achieved %': v.achievement_pct, 'Claimed today': v.claimed_today, 'Daily target': v.daily_target }));
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'Landholders');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(vs), 'Villages');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.camps.map(c => ({ Village: vn[c.village_id] || c.village_id, Date: c.date, Place: c.venue, Officials: c.officials, 'People who came': c.attended, 'IDs made': c.ids_generated }))), 'Camps');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.users.map(x => ({ Name: x.name, Designation: x.designation, Mobile: x.mobile, Role: ROLE_LABEL[x.role] || x.role, Active: x.active === 'Y' ? 'Yes' : 'No' }))), 'Staff');
-  const bmap = {}; d.buckets.forEach(b => bmap[b.bucket_id] = b);
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet((d.farmers || []).map(f => ({ 'Farmer ID': f.farmer_id, 'Enrolment no.': f.enrollment_no, Name: f.name,
-    Village: vn[f.village_id] || f.village_id, Gender: f.gender, Age: f.age, Category: f.category, 'Portal status': f.status === 'APPROVED' ? 'Approved' : 'Pending approval',
-    'Registered by': f.inserted_by, Mobile: f.mobile, Aadhaar: f.aadhaar, 'Name match %': f.name_score, 'Linked entry': f.bucket_id ? (bmap[f.bucket_id] || {}).name + ' s/o ' + (bmap[f.bucket_id] || {}).parentage : '',
-    'Linked by': f.link_method === 'AADHAAR' ? 'Aadhaar match' : f.link_method === 'MOBILE' ? 'Mobile match' : f.link_method === 'NAME' ? 'Confirmed by DA' : '', 'Bucket ID': f.bucket_id,
-    'First seen': f.first_seen, 'Last seen': f.last_seen }))), 'Registered farmers');
+  const wb = XLSX.utils.book_new(), sum = [], bk = [];
+  for (const t of S.boot.tehsils) {
+    const d = await api('exportData', { tehsil_id: t.tehsil_id }, 120000), ph = await api('phStatus', { tehsil_id: t.tehsil_id }, 60000);
+    const rl = {}; d.reasons.forEach(r => rl[r.code] = r);
+    const phOf = {}; ph.phs.forEach(p => p.villages.forEach(v => phOf[v.village_id] = p.name));
+    const row = (lvl, name, phn, x) => ({ Tehsil: t.name, Level: lvl, 'Patwar Halqa': phn, Village: name, 'Total buckets': x.total, 'Farmer IDs generated': x.generated, 'of which pending approval': x.pending,
+      'Can still be generated': x.can, Stuck: x.stuck, 'Cannot be generated': x.cannot, 'Not yet sorted': x.notsorted, 'Generated %': pctOf(x.generated, x.total) });
+    sum.push(row('Tehsil', '', '', ph.totals));
+    ph.phs.forEach(p => { sum.push(row('PH', '', p.name, p.totals)); p.villages.forEach(v => sum.push(row('Village', v.name, p.name, v))); });
+    const vn = {}; d.villages.forEach(v => vn[v.village_id] = v.name);
+    const cat = { generated: 'Farmer ID generated', can: 'Can still be generated', stuck: 'Stuck', cannot: 'Cannot be generated', notsorted: 'Not yet sorted' };
+    d.buckets.filter(b => String(b.village_id).indexOf('P_') !== 0).forEach(b => bk.push({ Tehsil: t.name, 'Patwar Halqa': phOf[b.village_id] || '', Village: vn[b.village_id] || b.village_id,
+      Landholder: b.name, 'Father / husband': b.parentage, Khasras: b.khasras, Category: cat[CAT(b)], Reason: b.status === 'REASON' ? ((rl[b.reason_code] || {}).report_label || b.reason_code) : '',
+      'Farmer ID': b.farmer_id || '', Remarks: b.remarks || '', 'Bucket ID': b.bucket_id }));
+  }
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sum), 'Summary');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(bk), 'Bucket-wise');
   const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  deliverBlob(new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `FarmerID_all_data_${tehsilName(tehsil_id).replace(/\s/g, '_')}_${todayIST()}.xlsx`);
+  const url = URL.createObjectURL(new Blob([out], { type: 'application/octet-stream' }));
+  const aEl = document.createElement('a'); aEl.href = url; aEl.download = 'FarmerID_all_data_' + todayIST() + '.xlsx'; document.body.appendChild(aEl); aEl.click(); aEl.remove();
+  toast('Excel file downloaded');
 }
 
 /* ======================= REGISTERED FARMERS: MATCHING ======================= */
@@ -2819,15 +2816,12 @@ VIEWS.portal = async function (a) {
         <small>${v.list_received ? (v.list_downloaded_at ? 'Downloaded ' + esc(v.list_downloaded_at.slice(0, 16)) : 'Uploaded ' + esc((v.list_uploaded_at || '').slice(0, 16))) + ', ' + v.in_list + ' unclaimed' : 'Not received from the DC office yet'}</small></span>
         ${badge(LIST_STATE[v.list_state][0], LIST_STATE[v.list_state][1])}</div>`).join('')}</div>`;
   } else if (a.tab === 'reg') {
-    const rg = st.reg, F = d.farmers;
-    body = `<p class="guide">Download the "Registered farmer records" file from your portal login (1 month at a time) and upload it here every day before the report.<br><i>Portal se registered farmer file (ek mahine ki) download karke roz report se pehle yahan upload karein.</i></p>
-      ${rg.files ? `<div class="box"><p>Data as on <b>${esc(fmtDate(rg.as_on.slice(0, 10)))} ${esc(rg.as_on.slice(11, 16))}</b></p>
-        <p>Covered: ${esc(fmtDate(S.boot.settings.reg_start_date))} to ${esc(fmtDate(rg.covered_to))}</p>
-        ${rg.gaps.length ? `<div class="banner red"><p><b>Missing period:</b> ${rg.gaps.map(g => esc(fmtDate(g[0]) + ' to ' + fmtDate(g[1]))).join(', ')}. Download and upload it.</p></div>` : '<div class="banner ok"><p>No missing period.</p></div>'}
-        <p>${F.total} farmers: approved ${F.approved}, pending approval ${F.pending}. Linked to entries ${F.linked}; waiting for field staff ${F.to_link}${F.missing ? `; <b style="color:var(--ta)">no longer on portal ${F.missing}</b>` : ''}.</p>
-        <details class="more"><summary>Files uploaded (${d.files.length})</summary>${d.files.map(f => `<div class="hist"><b>${esc(fmtDate(f.cov_from))} to ${esc(fmtDate(f.cov_to))}</b>, downloaded ${esc(f.downloaded_at.slice(0, 16))}, by ${esc(f.uploaded_by_name || '-')}: ${f.farmers} farmers, ${f.new} new</div>`).join('')}</details></div>`
-        : `<p class="guide">No file uploaded yet. Start from ${esc(fmtDate(S.boot.settings.reg_start_date))}, one month at a time.</p>`}
-      ${edit ? '<div class="field"><label for="rf">Registered farmer files (Excel or CSV)</label><input id="rf" type="file" class="input" accept=".xlsx,.xls,.csv" multiple></div><div id="ro"></div>' : ''}`;
+    const F = d.farmers, rg = st.reg;
+    body = `<p class="guide">Every day: on the portal, Registered Farmer List, "Registration between" <b>yesterday and today</b>, Export Excel. Then tap Upload and choose the file. Old or overlapping files do no harm.<span class="hi">Portal par kal se aaj tak ki list nikaal kar yahan upload karein.</span></p>
+      ${edit ? '<button class="btn btn-primary" id="rfB">Upload registered-farmer file(s)</button>' : ''}
+      <div class="box"><p>Latest file: <b>${rg.as_on ? esc(fmtDate(rg.as_on.slice(0, 10)) + ' ' + rg.as_on.slice(11, 16)) : '-'}</b></p>
+        <p>${F.total} Farmer IDs generated: approved ${F.approved}, pending approval ${F.pending}. Linked to land entries ${F.linked}; waiting for field staff ${F.to_link}.</p>
+        <details class="more"><summary>Files uploaded (${d.files.length})</summary>${d.files.map(f => `<div class="hist"><b>${esc(f.downloaded_at.slice(0, 16))}</b> ${esc(f.file_name || '')}, by ${esc(f.uploaded_by_name || '-')}: ${f.farmers} farmers, ${f.new} new</div>`).join('')}</details></div>`;
   } else if (a.tab === 'villages') {
     body = `<p class="guide">Update this from the DC office's information: total and claimed buckets of each village, and whether it is fully or partially bucketed. Then tap <b>Save</b>. A newly bucketed village is added at the bottom.<br><i>DC office ki jaankari se har gaon ke aankde aur poori/adhoori bucketing bharein, phir Save dabayein.</i></p>
       ${edit ? `<div class="field"><label for="ao">Figures as on</label><input id="ao" type="date" class="input" value="${todayIST()}"></div>` : ''}
@@ -2840,7 +2834,8 @@ VIEWS.portal = async function (a) {
           <div class="field"><label>Note</label><input class="input pn" value="${esc(v.bucketing_note || '')}" ${edit ? '' : 'disabled'}></div></div></div>`).join('')}
       ${edit ? `<div class="box"><b>+ Add a newly bucketed village</b><div class="row2" style="margin-top:8px"><input id="nl" class="input" placeholder="LGD code" inputmode="numeric"><input id="nn" class="input" placeholder="Village name"></div>
         <div class="row2" style="margin-top:8px"><input id="nt" class="input" placeholder="Total buckets" inputmode="numeric"><input id="nc" class="input" placeholder="Claimed" inputmode="numeric"></div>
-        <div class="field" style="margin-top:8px"><label for="np">Patwari shown in reports</label><select id="np" class="input"><option value="">Choose</option>${(S.boot.users || []).filter(u => u.role === 'OPERATOR' && u.active !== 'N' && (u.tehsils || [u.tehsil_id]).includes(a.tid)).map(u => `<option value="${esc(u.user_id)}">${esc(u.name)}, ${esc(u.designation)}</option>`).join('')}</select></div>
+        <div class="field" style="margin-top:8px"><label for="nph">Patwar Halqa</label><select id="nph" class="input"><option value="">Choose</option>${(S.boot.phs || []).filter(p2 => p2.tehsil_id === a.tid).map(p2 => `<option value="${esc(p2.ph_id)}">${esc(p2.name)}</option>`).join('')}</select></div>
+        <div class="field"><label for="np">Patwari shown in reports</label><select id="np" class="input"><option value="">Choose</option>${(S.boot.users || []).filter(u => u.role === 'OPERATOR' && u.active !== 'N' && (u.tehsils || [u.tehsil_id]).includes(a.tid)).map(u => `<option value="${esc(u.user_id)}">${esc(u.name)}, ${esc(u.designation)}</option>`).join('')}</select></div>
         <div class="field"><label>Staff who will work there</label>${(S.boot.users || []).filter(u => u.role === 'OPERATOR' && u.active !== 'N' && (u.tehsils || [u.tehsil_id]).includes(a.tid)).map(u => `<label class="chk"><input type="checkbox" class="ns" value="${esc(u.user_id)}"> ${esc(u.name)}, ${esc(u.designation)}</label>`).join('')}</div></div>
         <button class="btn btn-primary" id="sv">Save</button>` : ''}
       <p class="hint">* Partially bucketed (marked here, or the total grew): reports show a * and a note.</p>`;
@@ -2861,6 +2856,8 @@ VIEWS.portal = async function (a) {
     const res = await api('saveSummary', { tehsil_id: a.tid, as_on: $('#ao').value, source: 'MANUAL', rows });
     const nl = $('#nl').value.trim(), staff = $$('.ns').filter(c => c.checked).map(c => c.value), pw = $('#np').value;
     if (nl && (staff.length || pw)) await api('saveVillageAll', { village: { village_id: nl, patwari_user_id: pw || undefined }, items: (staff.length ? staff : [pw]).map(x => ({ user_id: x })) });
+    const nph = $('#nph') && $('#nph').value;
+    if (nl && nph) { const ph = (S.boot.phs || []).find(x => x.ph_id === nph); const ids = villages().filter(v => v.ph_id === nph).map(v => v.village_id).concat([nl]); await api('savePH', { tehsil_id: a.tid, ph_id: nph, village_ids: ids }); }
     toast(`Saved${res.created.length ? '. New village: ' + res.created.join(', ') : ''}`); await reload();
   });
   // ---- bucket lists: many files at once, sorted village-wise ----
@@ -2882,15 +2879,15 @@ VIEWS.portal = async function (a) {
         return `<div class="mem"><span class="rt"><b>${esc(v.name)}</b><small>${c.buckets} buckets in file${c.new ? ', ' + c.new + ' new' : ''}${c.gone ? ', ' + c.gone + ' claimed since last list' : ''}${c.changed ? ', ' + c.changed + ' changed' : ''}${v.is_new_village ? ', new village' : ''}</small>
           ${v.warnings.map(w => `<small class="w">${esc(w)}</small>`).join('')}</span>${badge(v.blocked ? 'Skipped' : 'Ready', v.blocked ? '#98A29D' : '#16794A')}</div>`; }).join('')).join('')}
       ${good.length ? `<button class="btn btn-primary" id="apl">Apply all (${good.length} file${good.length > 1 ? 's' : ''})</button>` : ''}</div>`;
-    const ap = $('#apl'); if (ap) ap.onclick = () => busy(ap, 'Applying…', async () => {
-      let n = 0;
-      for (const j of good) { await api('uploadApply', { rows: j.p.rows, file_ts: j.p.file_ts }, 180000); archiveUpload(j.f, 'buckets', a.tid);
-        j.pv.villages.forEach(v => { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); }); n++; }
-      toast(`Applied ${n} file(s)`); await reload();
-    });
+    const ap = $('#apl'); if (ap) ap.onclick = () => { out.innerHTML = '<p class="hint">Applying in the background. You can leave this screen.</p>';
+      bgTask(good.length + ' bucket list(s)', async () => { let n = 0;
+        for (const j of good) { await api('uploadApply', { rows: j.p.rows, file_ts: j.p.file_ts }, 180000); archiveUpload(j.f, 'buckets', a.tid);
+          j.pv.villages.forEach(v => { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); }); n++; }
+        await refreshBoot(); return `Applied ${n} bucket list(s)`; }); };
   };
-  // ---- registered farmers: period from the file name, editable ----
-  if ($('#rf')) $('#rf').onchange = async e => {
+  if ($('#rfB')) $('#rfB').onclick = () => quickReg();
+  // (old period-based upload removed)
+  if (false) $('#rf').onchange = async e => {
     const files = Array.from(e.target.files || []); if (!files.length) return; const out = $('#ro');
     out.innerHTML = loadingHtml('Reading the file(s)…');
     try { await loadXLSX(); } catch (err) { out.innerHTML = `<p class="err">${esc(err.message)}</p>`; return; }
@@ -3059,6 +3056,149 @@ function openTransfer(redraw) {
     mount: r => { $('#x', r).onclick = () => closeSheet();
       $('#sv', r).onclick = () => busy($('#sv', r), 'Moving…', async () => { if ($('#f', r).value === $('#t', r).value) throw new Error('Choose two different people.');
         const res = await api('transferVillages', { from_user: $('#f', r).value, to_user: $('#t', r).value }); await refreshBoot(); closeSheet(() => { toast(`Moved ${res.moved} village(s)`); redraw(); }); }); } }));
+}
+
+/* ======================= STATUS: TEHSIL, PATWAR HALQA, VILLAGE ======================= */
+const COLS = [['generated', 'Farmer IDs generated', 's-made'], ['can', 'Can still be generated', 's-C'], ['stuck', 'Stuck', 's-B'], ['cannot', 'Cannot be generated', 's-A'], ['notsorted', 'Not yet sorted', 's-ns']];
+const TIER_OF_COL = { can: 'C', stuck: 'B', cannot: 'A' };
+const pctOf = (a, b) => b ? Math.round(a * 1000 / b) / 10 : 0;
+function numsHtml(x, ref) {
+  return `<div class="nums">${COLS.map(c => `<button class="nc" data-k="${c[0]}" data-ref="${esc(ref)}"><i class="${c[2]}"></i><b>${x[c[0]]}</b><small>${c[1]}${c[0] === 'generated' && x.pending ? ` (${x.pending} pending approval)` : ''}</small></button>`).join('')}</div>`;
+}
+const barOf = x => stripHtml({ total: x.total, made: x.generated, C: x.can, B: x.stuck, A: x.cannot, ns: x.notsorted });
+function statusBlock(d, tname) {
+  const T = d.totals;
+  return `<div class="box st-t"><h2 style="margin:0">Tehsil ${esc(tname)}</h2>
+      <p class="hint" style="margin:2px 0 8px">${T.total} buckets in bucketed villages. Farmer IDs ${pctOf(T.generated, T.total)}%. ${d.reg_as_on ? 'Portal list as on ' + esc(fmtDate(d.reg_as_on.slice(0, 10)) + ' ' + d.reg_as_on.slice(11, 16)) : ''}</p>
+      ${barOf(T)}${numsHtml(T, 'T')}</div>
+    ${d.phs.map(p => `<div class="box ph"><div class="phh"><span><b>${esc(p.name)}</b><small>${p.patwari ? 'Patwari ' + esc(p.patwari) : 'Patwari not set'}</small></span><span class="pc">${pctOf(p.totals.generated, p.totals.total)}%</span></div>
+      ${p.villages.length ? barOf(p.totals) + numsHtml(p.totals, 'P:' + p.ph_id) : ''}
+      ${p.villages.map(v => `<div class="vr"><button class="vn" data-v="${esc(v.village_id)}"><b>${esc(v.name)}${v.partial ? '*' : ''}</b><small>${v.generated} of ${v.total} IDs (${pctOf(v.generated, v.total)}%)</small></button>${barOf(v)}
+        <div class="mini">${COLS.map(c => `<button class="mc" data-k="${c[0]}" data-ref="V:${esc(v.village_id)}"><i class="${c[2]}"></i>${v[c[0]]}</button>`).join('')}</div></div>`).join('')}
+      ${p.unbucketed.length ? `<p class="hint" style="margin:8px 0 0">Not bucketed yet: ${esc(p.unbucketed.join(', '))}</p>` : ''}</div>`).join('')}`;
+}
+function bindStatus(box, d) {
+  const find = ref => { if (ref === 'T') return { x: d.totals, title: 'Tehsil total', vids: null };
+    if (ref.startsWith('P:')) { const p = d.phs.find(q => q.ph_id === ref.slice(2)); return { x: p.totals, title: p.name, vids: p.villages.map(v => v.village_id) }; }
+    for (const p of d.phs) { const v = p.villages.find(q => q.village_id === ref.slice(2)); if (v) return { x: v, title: v.name, vids: [v.village_id] }; } };
+  on(box, '.nc,.mc', 'click', el => {
+    const k = el.dataset.k, f = find(el.dataset.ref); if (!f) return;
+    let body = '';
+    if (TIER_OF_COL[k]) {
+      const list = Object.keys(f.x.by_code || {}).filter(c => (reason(c) || {}).tier === TIER_OF_COL[k] && f.x.by_code[c]).sort((a, b) => f.x.by_code[b] - f.x.by_code[a]);
+      body = list.length ? list.map(c => `<div class="mem"><span class="rt">${esc((reason(c) || {}).report_label || rTxt(reason(c))[0])}</span><b>${f.x.by_code[c]}</b></div>`).join('') : '<p class="hint">None.</p>';
+    } else if (k === 'generated') {
+      const names = (f.vids || Object.keys(d.pending_names)).reduce((a, vid) => a.concat((d.pending_names[vid] || []).map(n => [villageById(vid) ? villageById(vid).name : vid, n])), []);
+      body = `<p>${f.x.generated} Farmer IDs generated, of which <b>${f.x.pending}</b> are pending approval on the portal.</p>${names.length ? `<h3>Pending approval</h3>${names.map(n => `<div class="hist">${esc(n[1])}, ${esc(n[0])}</div>`).join('')}` : ''}`;
+    } else body = `<p>${f.x.notsorted} buckets are not sorted yet: field staff have not answered "Can the ID ever be made?", or the bucket list has not come.</p>`;
+    openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">${esc(f.title)}: ${esc(COLS.find(c => c[0] === k)[1])} (${f.x[k]})</h2>${body}
+      ${f.vids && f.vids.length === 1 ? `<button class="btn btn-primary" id="lst">See the bucket-wise list</button>` : ''}`,
+      mount: r => { $('#x', r).onclick = () => closeSheet(); if ($('#lst', r)) $('#lst', r).onclick = () => closeSheet(() => go('vlist', { vid: f.vids[0], k })); } }));
+  });
+  on(box, '.vn', 'click', el => go('vlist', { vid: el.dataset.v, k: 'all' }));
+}
+async function loadPH(tid, force) {
+  S.ph = S.ph || {};
+  if (!S.ph[tid]) { const c = await kget('ph:' + tid); if (c) S.ph[tid] = c; }
+  if (navigator.onLine && (force || !S.ph[tid] || !S.phAt || !S.phAt[tid] || Date.now() - S.phAt[tid] > 60000)) {
+    try { const r = await api('phStatus', { tehsil_id: tid }, 60000); S.ph[tid] = r; S.phAt = S.phAt || {}; S.phAt[tid] = Date.now(); await kput('ph:' + tid, r); } catch (e) {}
+  }
+  return S.ph[tid];
+}
+/* Fills a box at once from the phone, then quietly with fresh figures. */
+async function fillStatus(box, tid) {
+  S.ph = S.ph || {}; if (!S.ph[tid]) { const c = await kget('ph:' + tid); if (c) S.ph[tid] = c; }
+  const draw = d => { if (!d) { box.innerHTML = '<div class="skel" style="height:140px"></div><div class="skel" style="height:140px"></div>'; return; } box.innerHTML = statusBlock(d, tehsilName(tid)); bindStatus(box, d); };
+  draw(S.ph[tid]);
+  const d = await loadPH(tid, true); if (box.isConnected) draw(d);
+}
+VIEWS.status = async function (a) {
+  setHeader('Villages');
+  a.tid = a.tid || S.boot.tehsils[0].tehsil_id;
+  $('#view').innerHTML = `<section class="pad">${tehsilPicker(a)}<div id="sb"></div><button class="btn" id="xl">Download all data (Excel)</button></section>`;
+  bindTehsilPicker(a); fillStatus($('#sb'), a.tid);
+  $('#xl').onclick = () => busy($('#xl'), 'Preparing Excel…', exportExcel);
+};
+/* Bucket-wise list of one village, with the reason of each bucket */
+const CAT = b => b.status === 'CLAIMED' ? 'generated' : b.status === 'NOT_SURVEYED' ? 'notsorted' : ({ C: 'can', B: 'stuck', A: 'cannot' })[tierOf(b.reason_code)] || 'notsorted';
+VIEWS.vlist = async function (a) {
+  const v = villageById(a.vid); setHeader(v ? v.name : 'Village');
+  const main = $('#view');
+  if (!S.buckets[a.vid]) main.innerHTML = loadingHtml('Loading the buckets…');
+  let arr; try { arr = await loadVillage(a.vid); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; }
+  a.k = a.k || 'all';
+  const cnt = k => k === 'all' ? arr.length : arr.filter(b => CAT(b) === k).length;
+  const draw = () => {
+    const q = (a.q || '').toLowerCase();
+    const list = arr.filter(b => (a.k === 'all' || CAT(b) === a.k) && (!q || (b.name + ' ' + b.parentage + ' ' + b.khasras).toLowerCase().includes(q)))
+      .sort((x, y) => (x.reason_code || '').localeCompare(y.reason_code || '') || x.name.localeCompare(y.name));
+    main.innerHTML = `<section class="pad">
+      ${canEditV(a.vid) ? `<button class="btn btn-primary" id="work">Work on this village</button>` : ''}
+      <div class="chips">${[['all', 'All']].concat(COLS).map(c => `<button class="chipf ${a.k === c[0] ? 'on' : ''}" data-k="${c[0]}">${esc(c[1])} <b>${cnt(c[0])}</b></button>`).join('')}</div>
+      <input id="q" class="input search" type="search" placeholder="Search name or khasra" value="${esc(a.q || '')}">
+      <div class="list">${list.slice(0, a.n || 300).map(b => `<div class="row" style="cursor:default;align-items:flex-start"><span class="dot d-${statusOf(b).cls}" style="margin-top:6px"></span><span class="rt"><b>${esc(b.name)}</b>
+        <small>Father: ${esc(b.parentage || '-')}, khasra ${esc(shortKh(b.khasras))}</small><small><b>${esc(statusOf(b).text)}</b>${b.remarks ? ': ' + esc(b.remarks) : ''}</small></span></div>`).join('') || '<p class="hint">None.</p>'}</div>
+      ${list.length > (a.n || 300) ? '<button class="btn" id="more">Show more</button>' : ''}</section>`;
+    on(main, '.chipf', 'click', el => { a.k = el.dataset.k; a.n = 300; draw(); });
+    $('#q').oninput = e => { a.q = e.target.value; draw(); $('#q').focus(); };
+    if ($('#more')) $('#more').onclick = () => { a.n = (a.n || 300) + 500; draw(); };
+    if ($('#work')) $('#work').onclick = () => go('village', { vid: a.vid, filter: 'todo', q: '', n: 150 });
+  };
+  draw();
+};
+/* ======================= POSITION STATEMENT ======================= */
+VIEWS.position = async function (a) {
+  setHeader('Position statement');
+  const main = $('#view');
+  if (!navigator.onLine) { main.innerHTML = '<div class="pad"><p class="err">This needs internet.</p></div>'; return; }
+  a.tid = a.tid || S.boot.tehsils[0].tehsil_id;
+  if (!a.data) { main.innerHTML = loadingHtml('Preparing the statement…'); try { a.data = await api('positionText', { tehsil_id: a.tid }, 60000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  main.innerHTML = `<section class="pad">${tehsilPicker(a)}
+    <div class="row2"><button class="btn btn-primary" id="cp">Copy</button><button class="btn" id="wa">Share to WhatsApp</button></div>
+    <div class="box"><pre style="white-space:pre-wrap;font:inherit;font-size:15px;margin:0">${esc(a.data.text)}</pre></div></section>`;
+  bindTehsilPicker(a);
+  $('#cp').onclick = async () => (await copyText(a.data.text)) ? toast('Copied') : fail('Could not copy.');
+  $('#wa').onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(a.data.text), '_blank');
+};
+/* ======================= WORK IN THE BACKGROUND ======================= */
+function bgTask(label, fn) {
+  toast('Working in the background: ' + label + '. You can carry on.');
+  S.bg = (S.bg || 0) + 1;
+  return fn().then(msg => { toast(msg); }).catch(e => fail(e.message)).finally(() => {
+    S.bg--; S.checklistAt = 0; S.phAt = {}; refreshStats(false, true);
+    const c = current(); if (c && !SHEET && ['home', 'portal', 'status'].includes(c.name)) { if (c.args) c.args.data = null; render(); }
+  });
+}
+async function quickReg() {
+  const files = await pickFiles('.xlsx,.xls,.csv'); if (!files.length) return;
+  bgTask('registered-farmer file', async () => {
+    await loadXLSX(); let n = 0, nw = 0, ap = 0;
+    for (const f of files) {
+      const p = await parsePortalFile(f);
+      if (p.type !== 'reg') throw new Error(f.name + ' is a bucket list. Bucket lists go in Portal data, Bucket lists.');
+      const r = await api('regApply', { rows: p.rows, file_ts: p.file_ts, file_name: f.name }, 180000);
+      archiveUpload(f, 'reg', (r.villages[0] || {}).tehsil_id || me().tehsil_id);
+      r.villages.forEach(v => { n += v.in_file; nw += v.new; ap += v.newly_approved; });
+    }
+    Object.keys(S.buckets).forEach(v => delete S.fetchedAt[v]);
+    return `Done: ${n} farmers in the file, ${nw} new, ${ap} newly approved`;
+  });
+}
+function pickFiles(accept) { return new Promise(res => { const i = document.createElement('input'); i.type = 'file'; i.accept = accept; i.multiple = true; i.onchange = () => res(Array.from(i.files || [])); i.click(); }); }
+/* ======================= PATWAR HALQAS (edit) ======================= */
+function openPH(tid, ph, redraw) {
+  const vs = villages().filter(v => v.tehsil_id === tid && v.practice !== 'Y').sort((a, b) => a.name.localeCompare(b.name));
+  const ops = (S.boot.users || []).filter(u => u.active !== 'N' && u.role === 'OPERATOR' && (u.tehsils || [u.tehsil_id]).includes(tid));
+  openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">${ph ? esc(ph.name) : 'New Patwar Halqa'}</h2>
+      <div class="field"><label for="pn">Name</label><input id="pn" class="input" value="${esc(ph ? ph.name : 'PH ')}"></div>
+      <div class="field"><label for="pp">Patwari responsible</label><select id="pp" class="input"><option value="">Choose</option>${ops.map(u => `<option value="${esc(u.user_id)}" ${ph && ph.patwari_user_id === u.user_id ? 'selected' : ''}>${esc(u.name)}, ${esc(u.designation)}</option>`).join('')}</select></div>
+      <div class="field"><label>Bucketed villages in this PH</label>${vs.map(v => `<label class="chk"><input type="checkbox" class="pv" value="${esc(v.village_id)}" ${ph && v.ph_id === ph.ph_id ? 'checked' : ''}> ${esc(v.name)}</label>`).join('')}</div>
+      <div class="field"><label for="pu">Villages not bucketed yet (names, with commas)</label><input id="pu" class="input" value="${esc(ph ? ph.pending_names || '' : '')}"></div>
+      <button class="btn btn-primary" id="sv">Save</button>`,
+    mount: r => { $('#x', r).onclick = () => closeSheet();
+      $('#sv', r).onclick = () => busy($('#sv', r), 'Saving…', async () => {
+        await api('savePH', { tehsil_id: tid, ph_id: ph ? ph.ph_id : '', name: $('#pn', r).value, patwari_user_id: $('#pp', r).value, pending_names: $('#pu', r).value, village_ids: $$('.pv', r).filter(c => c.checked).map(c => c.value) });
+        await refreshBoot(); S.phAt = {}; closeSheet(() => { toast('Patwar Halqa saved'); redraw(); }); }); } }));
 }
 
 /* ======================= START ======================= */
