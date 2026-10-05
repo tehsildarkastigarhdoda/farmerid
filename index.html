@@ -286,6 +286,52 @@ html,body{font-size:18px}
 .dastrip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}.dastrip span{border-radius:8px;padding:5px 9px;font-weight:700;font-size:14px}
 .dastrip .ok{background:var(--okbg);color:var(--made)}.dastrip .no{background:#FDECEA;color:var(--ta)}
 @media (max-width:480px){.nums{grid-template-columns:repeat(3,1fr)}}
+/* ===== v4.2: three clear levels, bottom bar, motion ===== */
+#view>*{animation:vin .16s ease-out}@keyframes vin{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+button:active,.btn:active,a.callb:active{transform:scale(.97);transition:transform .05s}
+.wide .pad{max-width:1240px}
+.tgrid{display:grid;gap:18px}@media(min-width:1000px){.tgrid.two{grid-template-columns:1fr 1fr}}
+.tban{background:linear-gradient(135deg,#1F4D3A,#163828);color:#fff;border-radius:18px;padding:16px 16px 12px;box-shadow:0 3px 10px rgba(23,40,30,.25)}
+.lvl{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;border-radius:6px;padding:3px 7px}
+.tban .lvl{background:rgba(255,255,255,.16);color:#F2C14E}
+.tban h2{margin:6px 0 2px;font-size:24px;color:#fff}
+.tban .big{font-size:40px;font-weight:800;line-height:1}.tban .big small{font-size:16px;font-weight:600;opacity:.9;margin-left:6px}
+.kp{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0;font-size:14.5px;color:#DCEBE2}.kp b{color:#fff}
+.tn{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.tn button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:7px 2px;cursor:pointer}
+.tn b{display:block;font-size:19px}.tn small{display:block;font-size:11px;opacity:.85;line-height:1.15}
+.tn i{display:block;height:4px;border-radius:2px;width:50%;margin:0 auto 5px}
+.fun{display:flex;gap:3px;margin:10px 0 2px}.fun div{flex:1;text-align:center}.fun span{display:block;height:8px;border-radius:4px;margin-bottom:3px}
+.fun small{font-size:11px;line-height:1.1;display:block;opacity:.9}.fun b{font-size:14px}
+.fc{font-size:13.5px;margin-top:6px;color:#F2C14E}
+.acards{display:grid;gap:8px;margin:10px 0 4px}
+.acard{background:#fff;border:1px solid #E1E7E3;border-left:5px solid #F2A900;border-radius:12px;padding:10px 12px;font-size:15px}.acard b{font-size:18px}.acard small{display:block;color:#46524C}
+.phc{background:#F1F7F3;border:1px solid #D4E3DA;border-left:6px solid var(--pine);border-radius:14px;margin:10px 0;overflow:hidden}
+.phh2{display:flex;align-items:center;gap:10px;padding:12px;cursor:pointer;background:none;border:0;width:100%;text-align:left}
+.phh2 .lvl{background:#DCEBE2;color:var(--pine)}.phh2 .nm2{flex:1}.phh2 .nm2 b{display:block;font-size:18px;margin-top:3px}.phh2 .nm2 small{color:#46524C;font-size:13.5px}
+.chev{font-size:20px;color:var(--pine);transition:transform .15s}.phc.open .chev{transform:rotate(90deg)}
+.pcts{font-size:15px;font-weight:800;border-radius:8px;padding:4px 8px}
+.pr{background:#FDECEA;color:#B42318}.pa{background:#FFF1D6;color:#9A5B00}.pg{background:#E4F4EA;color:#16794A}
+.phrow2{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 12px 10px}
+.phrow2 button{background:#fff;border:1px solid #E1E7E3;border-radius:8px;padding:5px 2px;font-weight:700;font-size:14px;cursor:pointer}.phrow2 small{display:block;font-weight:500;font-size:10.5px;color:#46524C}
+.vtw{overflow-x:auto;background:#fff;border-top:1px solid #D4E3DA}
+.vtab{width:100%;border-collapse:collapse;font-size:14.5px;min-width:560px}
+.vtab th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:#46524C;text-align:right;padding:7px 8px;border-bottom:1px solid #E1E7E3;font-weight:700}
+.vtab th:first-child,.vtab td:first-child{text-align:left}
+.vtab td{padding:9px 8px;border-bottom:1px solid #EEF2EF;text-align:right;cursor:pointer}.vtab tr:active td{background:#F4F8F5}
+.vtab td:first-child b{color:var(--pine)}.vtab .idle{display:inline-block;width:9px;height:9px;border-radius:50%;background:#F2A900;margin-left:6px}
+.vtab .td{color:var(--made);font-size:12.5px;font-weight:700}
+.unb{font-size:13px;color:#46524C;padding:8px 12px;background:#fff}
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;background:#fff;border-top:1px solid #DDE5E0;box-shadow:0 -2px 10px rgba(0,0,0,.06);padding-bottom:env(safe-area-inset-bottom,0)}
+.bnav button{flex:1;border:0;background:none;padding:8px 2px 9px;font-size:12px;font-weight:700;color:#5D6B64;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.bnav button.on{color:var(--pine)}.bnav svg{width:22px;height:22px}
+body.hasnav #view{padding-bottom:78px}
+.tg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0 14px}@media(max-width:520px){.tg{grid-template-columns:repeat(2,1fr)}}
+.tt{position:relative;background:#fff;border:1px solid #E1E7E3;border-radius:14px;padding:12px 6px;text-align:center;cursor:pointer;box-shadow:0 1px 3px rgba(23,32,28,.06)}
+.tt .ico{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;color:#fff}
+.tt b{display:block;font-size:14px}.tt .bd{position:absolute;top:6px;right:6px;font-size:11px;font-weight:800;border-radius:10px;padding:2px 6px;background:#FDECEA;color:#B42318}
+.tt .bd.ok{background:#E4F4EA;color:#16794A}.tgh{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#46524C;margin:10px 0 0}
+
 @media (prefers-reduced-motion:reduce){#toast,button{transition:none}#netbar{animation:none}}
 @media (max-width:360px){.rgrid{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
 </style>
@@ -300,7 +346,7 @@ html,body{font-size:18px}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '4.1.0';
+const APP_V = '4.2.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -770,8 +816,9 @@ function go(name, args) { NAV.stack.push({ name, args: args || {} }); history.pu
 function setHeader(title) { $('#title').textContent = title; $('#back').hidden = NAV.stack.length < 2; const c = current(); $('#hlp').hidden = !(c && HELP[c.name]); }
 async function render() {
   const c = current(); if (!c) return;
+  updateBnav();
   try { await VIEWS[c.name](c.args); } catch (e) { $('#view').innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; }
-  updatePill();
+  updatePill(); updateBnav();
 }
 let SHEET = null;
 function openSheet(build) { SHEET = { build }; history.pushState({ sheet: 1 }, ''); drawSheet(); }
@@ -923,6 +970,7 @@ VIEWS.login = async function (a) {
       <div class="box"><b id="who"></b><br><button class="link" id="change">Choose a different name</button></div>
       <div class="field"><label for="pin">PIN</label><input id="pin" class="input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="current-password"></div>
       <button id="go" class="btn btn-primary">Log in</button>
+      <button class="link" id="fgt">Forgot PIN?</button><div id="fgtBox"></div>
     </div>
     <p class="hint" style="margin-top:28px">Version ${APP_V}</p></section>`;
   let chosen = null;
@@ -946,11 +994,13 @@ VIEWS.login = async function (a) {
       const boot = await api('bootstrap'); S.boot = boot; await kput('boot', boot); await initLang();
       if (!needPin()) { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); }
       toast(L('welcome', r.user.name));
-      refreshBoot(); scheduleSync(500);
+      refreshBoot(); scheduleSync(500); if (['ADMIN', 'DA', 'NT'].includes(r.user.role)) loadHome(true);
       if (!me().must_change_pin && !(await kget('tour:' + r.user.user_id))) setTimeout(showTour, 400);
     } catch (e) { fail(e.message); delete $('#go').dataset.busy; $('#go').disabled = false; $('#go').textContent = 'Log in'; }
   };
   $('#go').addEventListener('click', doLogin);
+  $('#fgt').addEventListener('click', () => { const r2 = (chosen && chosen.resetter) || {};
+    $('#fgtBox').innerHTML = `<div class="box"><p style="margin-top:0">Your PIN is reset by <b>${esc(r2.name || 'the Dealing Assistant')}</b>. After the reset, log in with 123456 and set a new PIN.<span class="hi">PIN bhool gaye? Inhe call karein.</span></p>${r2.mobile ? `<a class="btn btn-primary" href="tel:${esc(r2.mobile)}">${ic('phone', 20)} Call ${esc(r2.name)}</a>` : ''}</div>`; });
   $('#pin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
   draw();
   if (navigator.onLine) { try { const r = await api('loginList'); list = r.users; await kput('loginList', list); draw(); } catch (e) {} }
@@ -1103,58 +1153,7 @@ function fieldVillageCard(v) {
     ${total !== undefined ? `<div class="gbar"><i style="width:${pct}%"></i></div><div class="n">${bi('v_left_of', left, total)}</div>` : `<div class="n">${L('list_missing')}</div>`}
     ${tl ? `<div class="tags"><span class="tag">${L('v_tolink', tl)}</span></div>` : ''}</button>`;
 }
-VIEWS.home = async function () {
-  setHeader('Farmer ID');
-  const u = me(), main = $('#view'), ck = S.checklist;
-  if (!S.checklist) { const c = await kget('checklist'); if (c) S.checklist = c; }
-  const tn = (u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id]).filter(Boolean).map(tehsilName).join(' / ');
-  const top = `<div class="topline"><span><b>${esc(u.name)}</b><small>${esc(u.designation)}${tn ? ', ' + esc(tn) : ''}</small></span><button class="logout" id="out">${L('logout')}</button></div>`;
-  const share = u.role === 'ADMIN' && S.boot.settings.sheet_shared === 'Y' ? '<div class="banner red"><p><b>The database Google Sheet is shared with others.</b> It holds Aadhaar numbers. In Google Drive, set its sharing to "Restricted".</p></div>' : '';
-  const tids = S.boot.tehsils.map(t => t.tehsil_id);
-  const strip = t => `<div class="dastrip">${daSteps(t).map(x => `<span class="${x.done ? 'ok' : 'no'}">${x.done ? '\u2713' : '\u2717'} ${esc(x.en.replace(' by 4:30 PM', '').replace("Upload today's ", ''))}${x.done ? ' ' + esc(x.st.replace('Done at ', '').split(' by ')[0]) : ''}</span>`).join('')}${daSteps(t).some(x => !x.done) ? telBtn(t.da[0]) : ''}</div>`;
-  const tools = list => `<details class="more"><summary>More tools</summary><div class="list">${list.join('')}</div></details>`;
-  if (u.role === 'OPERATOR') {
-    const real = villages().filter(v => v.practice !== 'Y' && canEditV(v.village_id)).sort((a, b) => a.name.localeCompare(b.name));
-    const myPh = (S.boot.phs || []).filter(p => p.patwari_user_id === u.user_id);
-    main.innerHTML = `<section class="pad">${top}
-      ${reminderDue() ? `<div class="banner red"><p>${L('reminder')}</p><button id="upNow">${L('upload')}</button></div>` : ''}
-      <p class="sec">${bi('v_your')}</p>
-      ${real.map(fieldVillageCard).join('') || `<p class="guide">${L('no_village')}</p>`}
-      ${myPh.length ? `<p class="sec">My Patwar Halqa<span class="hi">Mera halqa</span></p><div id="sb"></div>` : ''}
-      <div class="btn3"><button id="help">${bi('h_help')}</button><button id="camp">${bi('h_camp')}</button>${villages().some(v => v.practice === 'Y') ? `<button id="prac">${bi('h_prac')}</button>` : ''}</div></section>`;
-    bindHome();
-    if (myPh.length) fillStatus($('#sb'), myPh[0].tehsil_id);
-    refreshStats(true);
-    return;
-  }
-  if (u.role === 'DA') {
-    const t = ck && ck.tehsils.find(x => x.tehsil_id === u.tehsil_id);
-    main.innerHTML = `<section class="pad">${top}${share}
-      <h2 style="margin-top:0">Today's work, ${esc(fmtDate(todayIST()))}<span class="hi">Aaj ka kaam</span></h2>
-      ${t ? stepCard(daSteps(t), true) + alertsHtml(t, true) : '<div class="skel" style="height:110px"></div>'}
-      <button class="btn" id="pLists"><span>DC office sent bucket lists or figures? Upload here<span class="hi">DC office ki files yahan</span></span></button>
-      <div id="sb"></div>
-      ${tools([toolTile('portal', 'map', 'Portal data', 'Bucket lists, registered farmers, village figures'), toolTile('pos', 'report', 'Position statement', 'Ready text: tehsil and village-wise'),
-        toolTile('dq', 'check', 'Data check', 'Registered not linked, check later overdue'), toolTile('staff', 'staff', 'Staff and logins', 'Add, change, reset PIN'),
-        toolTile('vil', 'map', 'Staff, villages and Patwar Halqas', 'Who works where, PHs, transfer'), toolTile('set', 'settings', 'Settings', 'Deadlines, reasons, texts'),
-        toolTile('xl', 'table', 'Download all data', 'One Excel file'), toolTile('help', 'help', 'Help', 'How to use')])}</section>`;
-    bindHome(); fillStatus($('#sb'), u.tehsil_id);
-  } else {
-    main.innerHTML = `<section class="pad">${top}${share}
-      ${ck ? ck.tehsils.map(t => `<div class="dabox"><b>Tehsil ${esc(t.name)}: Dealing Assistant</b>${strip(t)}${alertsHtml(t, u.role === 'ADMIN')}</div>`).join('') : ''}
-      ${tids.map(t => `<div id="sb_${t}"></div>`).join('')}
-      ${tools([toolTile('pos', 'report', 'Position statement', 'Ready text: tehsil and village-wise'), toolTile('portal', 'map', 'Portal data', u.role === 'NT' ? 'View files and village figures' : 'Bucket lists, registered farmers, village figures'),
-        toolTile('dq', 'check', 'Data check', 'Registered not linked, check later overdue')].concat(u.role === 'ADMIN' ? [toolTile('staff', 'staff', 'Staff and logins', 'Add, change, reset PIN'),
-        toolTile('vil', 'map', 'Staff, villages and Patwar Halqas', 'Who works where, PHs, transfer'), toolTile('set', 'settings', 'Settings', 'Deadlines, reasons, texts, start fresh'),
-        toolTile('xl', 'table', 'Download all data', 'One Excel file'), toolTile('prac', 'play', 'Practice village', 'Try the field screens')] : []).concat([toolTile('help', 'help', 'Help', 'How to use')]))}</section>`;
-    bindHome(); tids.forEach(t => fillStatus($('#sb_' + t), t));
-  }
-  b2('pos', () => go('position'));
-  if (navigator.onLine && (!S.checklistAt || Date.now() - S.checklistAt > 60000)) {
-    S.checklistAt = Date.now();
-    api('checklist', {}, 60000).then(async d => { S.checklist = d; await kput('checklist', d); if (current() && current().name === 'home' && !SHEET) render(); }).catch(() => { S.checklistAt = 0; });
-  }
-};
+
 function b2(id, fn) { const e = $('#' + id); if (e) e.addEventListener('click', fn); }
 
 /* ---------- First-login tour ---------- */
@@ -1745,7 +1744,7 @@ VIEWS.help = async function () {
     ${role() === 'ADMIN' ? `<details class="more"><summary>Admin handbook</summary>
       <div class="guide"><b>Where things live.</b> Database: the Google Sheet on the office Gmail (never share it: it holds Aadhaar numbers). Backend: Apps Script bound to that Sheet. App: GitHub repository tehsildarkastigarhdoda/farmerid (index.html, sw.js, lib folder). Nightly backup: Drive folder "FarmerID Backups". Uploaded files: Drive folder "FarmerID Portal Files".</div>
       <div class="guide"><b>Updating.</b> Apps Script: paste the new Code.gs, Deploy, Manage deployments, edit, New version, Deploy. GitHub: upload index.html and sw.js, commit. Phones show "Update now".</div>
-      <div class="guide"><b>Accounts.</b> Keep 2-step verification on the office Gmail. A successor Tehsildar: Staff and logins, add a person with role Admin. PINs: the Dealing Assistant resets field staff; the Admin resets Dealing Assistants and the Naib Tehsildar. A reset PIN is 123456 and must be changed at next login.</div>
+      <div class="guide"><b>Accounts.</b> Keep 2-step verification on the office Gmail. A successor Tehsildar: Staff and logins, add a person with role Admin. PINs: the Dealing Assistant resets field staff; the Admin resets Dealing Assistants and the Naib Tehsildar. A reset PIN is 123456 and must be changed at next login. If the Admin forgets the PIN: another Admin resets it; otherwise open Apps Script, choose the function resetAdminPin and press Run.</div>
       <div class="guide"><b>Every day.</b> Dealing Assistant: registered-farmer file, Data check, DC Google Sheet. Naib Tehsildar: checks those are green. Deadline passed: Settings, new deadline.</div>
       <div class="guide"><b>Starting over.</b> Settings, Start fresh clears all field entries but keeps files and figures. Use only before real work or for a new campaign.</div></details>` : ''}
     ${TOURS[role()] ? `<button class="btn btn-primary" id="tour">Show the welcome tour<span class="hi">Swagat tour dobara</span></button>` : ''}
@@ -1800,7 +1799,7 @@ async function logout() {
   if (S.queue.length && !confirm(`${S.queue.length} changes are not uploaded yet. They will stay on this phone and upload after you log in again.\n\nLog out anyway?`)) return;
   try { if (navigator.onLine) await api('logout'); } catch (e) {}
   for (const k of await kkeys()) if (String(k).startsWith('b:') || String(k).startsWith('r:') || String(k).startsWith('stats:')) await kdel(k);
-  S.session = null; S.buckets = {}; S.reg = {}; S.stats = {}; S.top = {}; S.checklist = null; await kdel('session'); await kdel('boot');
+  S.session = null; S.buckets = {}; S.reg = {}; S.stats = {}; S.top = {}; S.checklist = null; S.home = null; S.homeAt = 0; S.ph = {}; await kdel('session'); await kdel('boot'); await kdel('home');
   NAV.stack = [{ name: 'login', args: {} }]; history.replaceState({}, ''); render();
 }
 
@@ -3042,7 +3041,7 @@ VIEWS.dcsheet = async function (a) {
   bindTehsilPicker(a);
   $('#cpAll').onclick = async () => { (await copyText(d.rows.map(tsvRow).join('\n'))) ? toast(`Copied ${d.rows.length} rows. Now paste in column G.`) : fail('Could not copy. Try again.'); };
   on(main, '[data-k]', 'click', async el => { (await copyText(tsvRow(d.rows[+el.dataset.k]))) ? toast('Row copied: ' + d.rows[+el.dataset.k].name) : fail('Could not copy.'); });
-  $('#done').onclick = () => busy($('#done'), 'Saving…', async () => { await api('markSheetDone', { tehsil_id: a.tid }); S.checklistAt = 0; toast('Marked done'); history.back(); });
+  $('#done').onclick = () => busy($('#done'), 'Saving…', async () => { await api('markSheetDone', { tehsil_id: a.tid }); S.checklistAt = 0; S.homeAt = 0; toast('Marked done'); history.back(); });
 };
 
 /* ======================= STAFF: MOVE VILLAGES ON TRANSFER ======================= */
@@ -3165,7 +3164,7 @@ function bgTask(label, fn) {
   toast('Working in the background: ' + label + '. You can carry on.');
   S.bg = (S.bg || 0) + 1;
   return fn().then(msg => { toast(msg); }).catch(e => fail(e.message)).finally(() => {
-    S.bg--; S.checklistAt = 0; S.phAt = {}; refreshStats(false, true);
+    S.bg--; S.checklistAt = 0; S.phAt = {}; S.homeAt = 0; refreshStats(false, true);
     const c = current(); if (c && !SHEET && ['home', 'portal', 'status'].includes(c.name)) { if (c.args) c.args.data = null; render(); }
   });
 }
@@ -3201,6 +3200,169 @@ function openPH(tid, ph, redraw) {
         await refreshBoot(); S.phAt = {}; closeSheet(() => { toast('Patwar Halqa saved'); redraw(); }); }); } }));
 }
 
+/* ======================= STATUS v2: tehsil banner, PH cards, village table ======================= */
+const pctCls = p => p < 10 ? 'pr' : p < 30 ? 'pa' : 'pg';
+const dAgo = d => d ? daysBetween(d, todayIST()) : 999;
+S.open = S.open || {};
+function funnelHtml(x) {
+  const st = [['Buckets', x.total, '#98A29D'], ['Sorted', x.can + x.stuck + x.cannot + x.generated, '#1F57C3'], ['Possible', x.possible + x.ready + x.generated, '#B45309'], ['Ready for camp', x.ready + x.generated, '#C98A00'], ['IDs generated', x.generated, '#16794A']];
+  return `<div class="fun">${st.map(s => `<div><span style="background:${s[2]};opacity:${0.35 + 0.65 * (x.total ? s[1] / x.total : 0)}"></span><b>${s[1]}</b><small>${s[0]}</small></div>`).join('')}</div>`;
+}
+function tehsilBanner(d, tname) {
+  const T = d.totals, p = pctOf(T.generated, T.total), pa = pctOf(T.generated, d.achievable), sortedBase = Math.max(1, T.total - T.generated);
+  const sorted = pctOf(T.can + T.stuck + T.cannot, sortedBase);
+  return `<div class="tban"><span class="lvl">Tehsil</span><h2>${esc(tname)}</h2>
+    <div class="big">${T.generated}<small>Farmer IDs · ${p}% of total · ${pa}% of achievable</small></div>
+    <div class="kp"><span>Today <b>+${T.today}</b></span><span>Sorted <b>${sorted}%</b></span><span><b>${d.days_left}</b> days left</span><span>Needed <b>${d.needed_per_day}</b>/day</span><span>Pending approval <b>${T.pending}</b></span></div>
+    ${funnelHtml(T)}
+    <div class="tn">${COLS.map(c => `<button data-k="${c[0]}" data-ref="T"><i class="${c[2]}"></i><b>${T[c[0]]}</b><small>${c[1]}</small></button>`).join('')}</div>
+    <div class="fc">${d.forecast ? `At this week's pace (${d.forecast.pace}/day): about ${d.forecast.expected} by the deadline, against ${d.forecast.target} achievable.` : 'Forecast appears after 3 days of daily uploads.'}</div></div>
+    ${d.cards && d.cards.length ? `<div class="acards">${d.cards.map(c => `<div class="acard"><b>${c.n}</b> ${esc(c.t)}<small>${esc(c.a)}</small></div>`).join('')}</div>` : ''}`;
+}
+function villageTable(list) {
+  const rows = list.slice().sort((a, b) => pctOf(a.generated, a.total) - pctOf(b.generated, b.total) || a.name.localeCompare(b.name));
+  return `<div class="vtw"><table class="vtab"><thead><tr><th>Village</th><th>IDs</th><th>%</th><th>Can</th><th>Stuck</th><th>Cannot</th><th>Unsorted</th><th>To link</th></tr></thead><tbody>
+    ${rows.map(v => { const p = pctOf(v.generated, v.total), idle = (v.generated < v.total && dAgo(v.last_id) >= 3) || (v.notsorted > 0 && dAgo(v.last_sort) >= 2);
+      return `<tr data-v="${esc(v.village_id)}"><td><b>${esc(v.name)}${v.partial ? '*' : ''}</b>${idle ? '<span class="idle" title="No progress for some days"></span>' : ''}<br><small class="hint">${v.total} buckets</small></td>
+        <td data-k="generated" data-ref="V:${esc(v.village_id)}">${v.generated}${v.today ? `<br><span class="td">+${v.today}</span>` : ''}</td><td><span class="pcts ${pctCls(p)}">${p}%</span></td>
+        <td data-k="can" data-ref="V:${esc(v.village_id)}">${v.can}</td><td data-k="stuck" data-ref="V:${esc(v.village_id)}">${v.stuck}</td><td data-k="cannot" data-ref="V:${esc(v.village_id)}">${v.cannot}</td>
+        <td data-k="notsorted" data-ref="V:${esc(v.village_id)}">${v.notsorted}</td><td>${v.to_link || ''}</td></tr>`; }).join('')}</tbody></table></div>`;
+}
+function phCard(p) {
+  const x = p.totals, pc = pctOf(x.generated, x.total), open = !!S.open[p.ph_id || 'none'];
+  return `<div class="phc${open ? ' open' : ''}"><button class="phh2" data-ph="${esc(p.ph_id || 'none')}"><span class="nm2"><span class="lvl">Patwar Halqa</span><b>${esc(p.name)}</b>
+      <small>${p.patwari ? 'Patwari ' + esc(p.patwari) : 'Patwari not set'} · ${x.generated} of ${x.total} IDs${x.today ? ' · +' + x.today + ' today' : ''}${x.to_link ? ' · ' + x.to_link + ' to link' : ''}</small></span>
+      ${p.villages.length ? `<span class="pcts ${pctCls(pc)}">${pc}%</span>` : ''}<span class="chev">\u203A</span></button>
+    ${p.villages.length ? `<div class="phrow2">${COLS.map(c => `<button data-k="${c[0]}" data-ref="P:${esc(p.ph_id)}">${x[c[0]]}<small>${c[1].replace('Farmer IDs generated', 'IDs').replace('Can still be generated', 'Can').replace('Cannot be generated', 'Cannot').replace('Not yet sorted', 'Unsorted')}</small></button>`).join('')}</div>` : ''}
+    ${open ? (p.villages.length ? villageTable(p.villages) : '') + (p.unbucketed.length ? `<div class="unb">Not bucketed yet: ${esc(p.unbucketed.join(', '))}</div>` : '') : ''}</div>`;
+}
+function statusBlock2(d, tname, opts) {
+  opts = opts || {};
+  return `${opts.noTehsil ? '' : tehsilBanner(d, tname)}${d.phs.map(phCard).join('')}`;
+}
+function bindStatus2(box, d, redraw) {
+  bindStatus(box, d);
+  on(box, '.phh2', 'click', el => { S.open[el.dataset.ph] = !S.open[el.dataset.ph]; redraw(); });
+  on(box, '.vtab tr[data-v] td:first-child', 'click', el => go('vlist', { vid: el.parentElement.dataset.v, k: 'all' }));
+  on(box, '.vtab td[data-k], .tn button, .phrow2 button', 'click', () => {});
+}
+async function fillStatus(box, tid) {
+  S.ph = S.ph || {}; if (!S.ph[tid]) { const c = await kget('ph:' + tid); if (c) S.ph[tid] = c; }
+  const op = role() === 'OPERATOR';
+  const draw = d => { if (!box.isConnected) return; if (!d) { box.innerHTML = '<div class="skel" style="height:160px"></div><div class="skel" style="height:80px"></div>'; return; }
+    box.innerHTML = statusBlock2(d, tehsilName(tid), { noTehsil: op }); bindStatus2(box, d, () => draw(d)); };
+  draw(S.ph[tid]);
+  const d = await loadPH(tid, true); draw(d);
+}
+/* the old village-level tap handler expects .nc/.mc; make the new cells use it too */
+const _bs = bindStatus;
+bindStatus = function (box, d) {
+  _bs(box, d);
+  on(box, '.tn button, .phrow2 button, .vtab td[data-k]', 'click', el => { const f = box.querySelector(`.nc[data-k="${el.dataset.k}"][data-ref="${el.dataset.ref}"]`); if (f) f.click(); else showCell(d, el.dataset.k, el.dataset.ref); });
+};
+function showCell(d, k, ref) {
+  const fake = document.createElement('div'); fake.innerHTML = `<button class="nc" data-k="${esc(k)}" data-ref="${esc(ref)}"></button>`;
+  _bs(fake, d); fake.firstChild.click();
+}
+/* ======================= HOME v2 (one request, updates in place) ======================= */
+function dashHtml(h) {
+  const u = me(), ck = h && h.checklist, st = (h && h.status) || {};
+  const tids = S.boot.tehsils.map(t => t.tehsil_id).filter(t => st[t] || u.role !== 'OPERATOR');
+  const strip = t => `<div class="dastrip">${daSteps(t).map(x => `<span class="${x.done ? 'ok' : 'no'}">${x.done ? '\u2713' : '\u2717'} ${esc(x.en.replace(' by 4:30 PM', '').replace("Upload today's ", ''))}${x.done ? ' ' + esc(x.st.replace('Done at ', '').split(' by ')[0]) : ''}</span>`).join('')}${daSteps(t).some(x => !x.done) ? telBtn(t.da[0]) : ''}</div>`;
+  return `<div class="tgrid${tids.length > 1 ? ' two' : ''}">${tids.map(t => { const c = ck && ck.tehsils.find(x => x.tehsil_id === t);
+    return `<div>${c && u.role !== 'DA' ? `<div class="dabox"><b>Dealing Assistant</b>${strip(c)}</div>` : ''}${c ? alertsHtml(c, u.role !== 'NT') : ''}
+      <div class="sbx" data-t="${t}">${st[t] ? statusBlock2(st[t], tehsilName(t)) : '<div class="skel" style="height:160px"></div>'}</div></div>`; }).join('')}</div>`;
+}
+function bindDash(h) {
+  $$('#dash .sbx').forEach(box => { const d = h && h.status && h.status[box.dataset.t];
+    if (d) { const rd = () => { box.innerHTML = statusBlock2(d, tehsilName(box.dataset.t)); bindStatus2(box, d, rd); }; bindStatus2(box, d, rd); } });
+  on($('#dash'), '[data-go]', 'click', el => go(el.dataset.go, el.dataset.tab ? { tab: el.dataset.tab } : {}));
+}
+async function loadHome(force) {
+  if (!S.home) S.home = await kget('home');
+  if (!navigator.onLine || (!force && S.homeAt && Date.now() - S.homeAt < 45000)) return S.home;
+  try { const r = await api('home', {}, 60000); S.home = r; S.homeAt = Date.now(); await kput('home', r);
+    if (r.checklist) { S.checklist = r.checklist; S.checklistAt = Date.now(); }
+    Object.keys(r.status || {}).forEach(t => { S.ph = S.ph || {}; S.ph[t] = r.status[t]; S.phAt = S.phAt || {}; S.phAt[t] = Date.now(); kput('ph:' + t, r.status[t]); });
+  } catch (e) {}
+  return S.home;
+}
+VIEWS.home = async function () {
+  setHeader('Farmer ID');
+  const u = me(), main = $('#view');
+  if (!S.home) S.home = await kget('home');
+  const h = S.home, ck = (h && h.checklist) || S.checklist;
+  const tn = (u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id]).filter(Boolean).map(tehsilName).join(' / ');
+  const top = `<div class="topline"><span><b>${esc(u.name)}</b><small>${esc(u.designation)}${tn ? ', ' + esc(tn) : ''}</small></span><button class="logout" id="out">${L('logout')}</button></div>`;
+  const share = u.role === 'ADMIN' && S.boot.settings.sheet_shared === 'Y' ? '<div class="banner red"><p><b>The database Google Sheet is shared with others.</b> It holds Aadhaar numbers. In Google Drive, set its sharing to "Restricted".</p></div>' : '';
+  if (u.role === 'OPERATOR') {
+    const real = villages().filter(v => v.practice !== 'Y' && canEditV(v.village_id)).sort((a, b) => a.name.localeCompare(b.name));
+    const myPh = (S.boot.phs || []).filter(p => p.patwari_user_id === u.user_id);
+    main.innerHTML = `<section class="pad">${top}
+      ${reminderDue() ? `<div class="banner red"><p>${L('reminder')}</p><button id="upNow">${L('upload')}</button></div>` : ''}
+      <p class="sec">${bi('v_your')}</p>${real.map(fieldVillageCard).join('') || `<p class="guide">${L('no_village')}</p>`}
+      ${myPh.length ? `<p class="sec">My Patwar Halqa<span class="hi">Mera halqa</span></p><div id="sb"></div>` : ''}
+      <div class="btn3"><button id="help">${bi('h_help')}</button><button id="camp">${bi('h_camp')}</button>${villages().some(v => v.practice === 'Y') ? `<button id="prac">${bi('h_prac')}</button>` : ''}</div></section>`;
+    bindHome(); if (myPh.length) fillStatus($('#sb'), myPh[0].tehsil_id); refreshStats(true); return;
+  }
+  document.body.classList.add('wide');
+  const t = u.role === 'DA' && ck && ck.tehsils.find(x => x.tehsil_id === u.tehsil_id);
+  main.innerHTML = `<section class="pad">${top}${share}
+    ${u.role === 'DA' ? `<h2 style="margin-top:0">Today's work, ${esc(fmtDate(todayIST()))}<span class="hi">Aaj ka kaam</span></h2>
+      ${t ? stepCard(daSteps(t), true) : '<div class="skel" style="height:110px"></div>'}
+      <button class="btn" id="pLists"><span>DC office sent bucket lists or figures? Upload here<span class="hi">DC office ki files yahan</span></span></button>` : ''}
+    <div id="dash">${dashHtml(h)}</div></section>`;
+  bindHome(); bindDash(h);
+  const fresh = await loadHome(false);
+  if (fresh !== h && current() && current().name === 'home' && !SHEET) {
+    const dash = $('#dash'); if (dash) { dash.innerHTML = dashHtml(fresh); bindDash(fresh); }
+    if (u.role === 'DA' && fresh && fresh.checklist && !t) render();
+  }
+};
+/* ======================= BOTTOM BAR AND TOOLS ======================= */
+const NAV_ICONS = { home: 'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z', vil: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z', pos: 'M5 3h10l4 4v14H5zM8 10h8M8 14h8M8 18h5', tools: 'M5 12h.01M12 12h.01M19 12h.01' };
+const navSvg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="${NAV_ICONS[k]}"/></svg>`;
+function updateBnav() {
+  const office = S.session && me() && ['ADMIN', 'DA', 'NT'].includes(role());
+  let nav = $('#bnav');
+  if (!office) { if (nav) nav.remove(); document.body.classList.remove('hasnav', 'wide'); return; }
+  if (!nav) { nav = document.createElement('nav'); nav.id = 'bnav'; nav.className = 'bnav'; document.body.appendChild(nav);
+    nav.innerHTML = [['home', 'Home'], ['vil', 'Villages'], ['pos', 'Statement'], ['tools', 'Tools']].map(x => `<button data-n="${x[0]}">${navSvg(x[0])}${x[1]}</button>`).join('');
+    on(nav, 'button', 'click', el => { const n = el.dataset.n;
+      if (n === 'tools') { openTools(); return; }
+      const target = { home: 'home', vil: 'status', pos: 'position' }[n];
+      if (current().name === target) return;
+      if (n === 'home') { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); } else go(target, {}); }); }
+  document.body.classList.add('hasnav');
+  const cur = current() ? current().name : '';
+  document.body.classList.toggle('wide', ['home', 'status'].includes(cur));
+  $$('#bnav button').forEach(b => b.classList.toggle('on', ({ home: 'home', vil: 'status', pos: 'position' })[b.dataset.n] === cur));
+}
+function openTools() {
+  const u = me(), ck = (S.home && S.home.checklist) || S.checklist, ts = ck ? ck.tehsils : [], st = (S.home && S.home.status) || {};
+  const sum = f => ts.reduce((a, t) => a + f(t), 0);
+  const lists = sum(t => (t.lists || []).filter(l => l.state !== 'green').length), unas = sum(t => (t.unassigned || []).length);
+  const tolink = Object.values(st).reduce((a, d) => a + ((d.totals || {}).to_link || 0), 0);
+  const dcs = ts.filter(t => t.dcsheet).length;
+  const tile = (id, col, icon, label, badge, ok) => `<button class="tt" id="t_${id}"><span class="ico" style="background:${col}">${ic(icon, 22)}</span><b>${label}</b>${badge !== '' && badge !== undefined && badge !== 0 ? `<span class="bd${ok ? ' ok' : ''}">${badge}</span>` : ''}</button>`;
+  const office = u.role !== 'NT';
+  openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">Tools</h2>
+      <p class="tgh">Daily</p><div class="tg">
+        ${tile('portal', '#1F57C3', 'map', 'Portal data', lists ? lists + ' old' : '')}${tile('dq', '#B45309', 'check', 'Data check', tolink)}
+        ${office ? tile('dc', '#16794A', 'table', 'DC sheet', ts.length ? dcs + '/' + ts.length : '', dcs === ts.length && ts.length) : ''}${office ? tile('xl', '#5B4BB7', 'table', 'Excel', '') : ''}</div>
+      ${office ? `<p class="tgh">Setup</p><div class="tg">${tile('staff', '#0E7490', 'staff', 'Staff', '')}${tile('vil', '#7C3AED', 'map', 'Villages & PHs', unas)}
+        ${tile('set', '#475569', 'settings', 'Settings', '')}${u.role === 'ADMIN' ? tile('prac', '#C98A00', 'play', 'Practice', '') : ''}${tile('help', '#46524C', 'help', 'Help', '')}</div>`
+        : `<div class="tg">${tile('help', '#46524C', 'help', 'Help', '')}</div>`}`,
+    mount: r => { $('#x', r).onclick = () => closeSheet();
+      const g2 = (id, fn) => { const e = $('#t_' + id, r); if (e) e.onclick = () => closeSheet(fn); };
+      g2('portal', () => go('portal')); g2('dq', () => go('quality')); g2('dc', () => go('dcsheet')); g2('staff', () => go('users')); g2('vil', () => go('villages'));
+      g2('set', () => go('settings')); g2('help', () => go('help'));
+      g2('prac', () => { const p = villages().find(v => v.practice === 'Y'); if (p) go('village', { vid: p.village_id, filter: 'todo', q: '', n: 150 }); });
+      const xe = $('#t_xl', r); if (xe) xe.onclick = () => busy(xe, '…', async () => { await exportExcel(); closeSheet(); }); } }));
+}
+/* keep the server warm while the app is open, and fetch the home figures right after login */
+setInterval(() => { if (document.visibilityState === 'visible' && navigator.onLine && S.session) fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'ping' }) }).catch(() => {}); }, 240000);
+
 /* ======================= START ======================= */
 async function start() {
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(reg => {
@@ -3226,7 +3388,7 @@ async function start() {
   }
   await initLang();
   if (!needPin()) { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); }
-  refreshBoot(); scheduleSync(800);
+  refreshBoot(); scheduleSync(800); if (['ADMIN', 'DA', 'NT'].includes(role())) loadHome(true).then(() => { if (current() && current().name === 'home' && !SHEET) render(); });
   if (!me().must_change_pin && !(await kget('tour:' + me().user_id))) setTimeout(showTour, 500);
 }
 start();
