@@ -1,7 +1,7 @@
 {
   "name": "Farmer ID Dashboard",
   "short_name": "Farmer ID",
-  "start_url": "./",
+  "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F5F7F4",

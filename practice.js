@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '7.0.0';
+const APP_VERSION = '7.1.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -238,7 +238,7 @@ function json_(o) {
   return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
 }
 
-const PUBLIC_ACTIONS = { ping: () => ({ version: APP_VERSION, time: now_() }), loginList: loginList_, login: login_, pinRequest: pinRequest_, board: board_ };
+const PUBLIC_ACTIONS = { ping: () => ({ version: APP_VERSION, time: now_() }), loginList: loginList_, login: login_, pinRequest: pinRequest_, board: board_, dash: dash_ };
 const NO_DV = ['setPrefs', 'noticeRead', 'setZoom', 'logError', 'changePin', 'supLog', 'errorLog', 'boardKey'];
 const OPEN_WHEN_CLOSED = ['setPrefs', 'changePin', 'setZoom', 'noticeRead', 'logError', 'pinApprove', 'resetPin'];
 
@@ -3795,6 +3795,31 @@ function migrateV11_() {
   if (!read_('Settings').some(r => r.key === 'designations')) setSetting_('designations', JSON.stringify(DESIGNATIONS));
   // the Patwari now comes from the halqa; a Patwari named on the village becomes its In-charge if none is set
   const vs = read_('Villages'), ch = []; vs.forEach(v => { if (!v.incharge_user_id && v.patwari_user_id) { v.incharge_user_id = v.patwari_user_id; ch.push(v); } }); if (ch.length) writeRows_('Villages', ch);
+}
+
+/* ============================== v7.1: PUBLIC DASHBOARD ==============================
+ * Anyone with the link sees this, without login: totals, village progress (names and figures only),
+ * the top 2 of each tehsil, the villages with camps today. No Aadhaar, no farmer names, no one named below target.
+ */
+function dash_(req) {
+  return cached_('dash', 120, () => {
+    const s = settings_(), today = today_(), start = s.reg_start_date || '2026-08-02', deadline = s.final_deadline;
+    const span = Math.max(1, daysBetween_(start, deadline)), gone = Math.max(0, Math.min(span, daysBetween_(start, today)));
+    const closed = s.campaign_closed === 'Y' || today > deadline, daysLeft = Math.max(1, daysBetween_(today, deadline) + 1);
+    return { now: now_(), today, start, deadline, closed, days_left: closed ? 0 : daysLeft, expected_pct: Math.round(gone * 1000 / span) / 10,
+      tehsils: read_('Tehsils').filter(t => t.active === 'Y').map(t => {
+        const tid = t.tehsil_id, p = pulseTehsil_(tid), st = computeStats_(tid), c = dayCredits_(tid, today), vp = {};
+        villagePace_(tid, c, today).forEach(v => vp[v.village_id] = v);
+        const vs = st.villages.filter(v => v.total > 0 && v.kind !== 'COLLECT').map(v => { const x = vp[v.village_id], cls = !x || !x.target ? 'mute' : x.ids >= x.target ? 'ok' : x.proj >= x.target ? 'due' : 'late';
+          return { village_id: v.village_id, name: v.name, total: v.total, made: Math.min(v.total, v.claimed), today: x ? x.ids : ((c.vil[v.village_id] || {}).ids || 0), cls }; })
+          .sort((a, b) => b.made / b.total - a.made / a.total || a.name.localeCompare(b.name));
+        const total = vs.reduce((a, v) => a + v.total, 0), made = vs.reduce((a, v) => a + v.made, 0);
+        const camps = Object.keys(c.dm.byV || {}).filter(vid => (c.dm.byV[vid] || []).length).map(vid => (vs.find(v => v.village_id === vid) || {}).name).filter(Boolean).sort();
+        return { tehsil_id: tid, name: t.name, today: p.today, target: p.target, as_on: p.as_on, last_n: p.last_n, uploads: p.uploads, closed_day: p.closed,
+          top2: p.top2, total, made, pct: total ? Math.round(made * 1000 / total) / 10 : 0, needed: closed ? 0 : Math.ceil(Math.max(0, total - made) / daysLeft),
+          villages: vs, camps, down: p.down.filter(d => !d.to).length > 0 };
+      }) };
+  });
 }
 
 /* ============================== START FRESH ============================== */
