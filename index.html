@@ -5243,6 +5243,111 @@ afterLoginCards = async function () {
   }
 };
 
+/* ---------- 4 PM progress sheet for the district review (A4 landscape, one page per tehsil, cover when two) ---------- */
+const PROG_HEAD = 'Progress of Farmer ID creation in respect of Revenue Villages';
+async function progressPDF(tids) {
+  if (!navigator.onLine) throw new Error('This needs internet.');
+  await loadPDF();
+  const data = [];
+  for (const t of tids) { const d = await loadPH(t, true); if (!d) throw new Error('Figures could not be loaded. Try again.'); data.push(d); }
+  const P = await loadPulse(true);
+  const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'landscape' }), W = doc.internal.pageSize.getWidth();
+  const n = x => Number(x || 0), pc = (a, b) => b ? Math.round(a * 1000 / b) / 10 : 0;
+  const nowS = nowIST(), asOn = `As on ${fmtDate(nowS.slice(0, 10))}, ${fmtT(nowS)}`;
+  const fileAt = tid => { const t = P && P.tehsils ? P.tehsils.find(x => x.tehsil_id === tid) : null; return t && t.as_on ? ` · portal file of ${fmtT(t.as_on)}` : ''; };
+  const fill = p => p >= 30 ? [214, 238, 222] : p >= 10 ? [255, 236, 200] : [250, 214, 210];
+  const totOf = d => { const T = d.totals; return { total: n(T.total), till: n(T.generated), today: n(T.today), upto: n(T.generated) - n(T.today), cannot: n(T.cannot), notsorted: n(T.notsorted), yet: Math.max(0, n(T.total) - n(T.generated)), can: n(T.can) + n(T.stuck), target: n(d.target_today) || 200 }; };
+  const head = (title, sub) => { doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(23, 32, 28); doc.text(title, W / 2, 34, { align: 'center' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(90, 100, 95); doc.text(sub, W / 2, 50, { align: 'center' }); doc.setTextColor(23, 32, 28); };
+  const strip = (items, y) => { const bw = (W - 60 - (items.length - 1) * 8) / items.length;
+    items.forEach((it, i) => { const x = 30 + i * (bw + 8); doc.setDrawColor(200, 214, 205); doc.setFillColor(241, 247, 243); doc.roundedRect(x, y, bw, 40, 5, 5, 'FD');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(it[2] ? 180 : 31, it[2] ? 35 : 90, it[2] ? 24 : 62); doc.text(String(it[1]), x + bw / 2, y + 19, { align: 'center' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(70, 82, 76); doc.text(it[0], x + bw / 2, y + 32, { align: 'center' }); });
+    doc.setTextColor(23, 32, 28); return y + 52; };
+  const tableStyle = { theme: 'grid', styles: { font: 'helvetica', fontSize: 9.5, cellPadding: 3.5, lineColor: [205, 214, 209], lineWidth: 0.5, valign: 'middle' },
+    headStyles: { fillColor: [31, 90, 62], textColor: 255, fontStyle: 'bold', halign: 'center', valign: 'middle', fontSize: 9 }, margin: { left: 30, right: 30 } };
+  // cover page with both tehsils
+  if (data.length > 1) {
+    head('Farmer ID progress: Tehsil ' + data.map(d => tehsilName(d.tehsil_id)).join(' and Tehsil ') + ', District Doda', asOn);
+    const rows = data.map(d => ({ name: tehsilName(d.tehsil_id), t: totOf(d) })), sum = k => rows.reduce((a, r) => a + r.t[k], 0);
+    let y = strip([['Total buckets', fmtN(sum('total'))], ['Farmer IDs till date', `${fmtN(sum('till'))} (${pc(sum('till'), sum('total'))}%)`], ['Created today', `${fmtN(sum('today'))} / ${fmtN(sum('target'))}`, sum('today') < sum('target')], ['Cannot be claimed', fmtN(sum('cannot'))], ['Not sorted yet', fmtN(sum('notsorted')), sum('notsorted') > 0]], 64);
+    doc.autoTable(Object.assign({}, tableStyle, { startY: y + 6, styles: Object.assign({}, tableStyle.styles, { fontSize: 12, cellPadding: 6 }),
+      head: [['Tehsil', 'Total buckets', 'IDs up to yesterday', 'IDs created today', 'Total IDs till date', '%', 'Yet to be created', 'Cannot be claimed', 'Not sorted yet']],
+      body: rows.map(r => [r.name, r.t.total, r.t.upto, r.t.today, r.t.till, pc(r.t.till, r.t.total) + '%', r.t.yet, r.t.cannot, r.t.notsorted].map(c => typeof c === 'number' ? fmtN(c) : c))
+        .concat([[{ content: 'Total', styles: { fontStyle: 'bold' } }, sum('total'), sum('upto'), sum('today'), sum('till'), pc(sum('till'), sum('total')) + '%', sum('yet'), sum('cannot'), sum('notsorted')].map(c => typeof c === 'object' ? c : { content: typeof c === 'number' ? fmtN(c) : c, styles: { fontStyle: 'bold', fillColor: [228, 239, 232] } })]),
+      columnStyles: { 0: { halign: 'left', fontStyle: 'bold' } }, bodyStyles: { halign: 'right' },
+      didParseCell: h => { if (h.section !== 'body') return; if (h.column.index === 3 && Number(h.cell.raw) === 0) h.cell.styles.textColor = [180, 35, 24];
+        if (h.column.index === 5 && h.row.index < rows.length) h.cell.styles.fillColor = fill(parseFloat(h.cell.raw)); } }));
+    doc.setFontSize(8.5); doc.setTextColor(90, 100, 95); doc.text('Village-wise position of each tehsil follows on the next pages.', 30, doc.lastAutoTable.finalY + 18); doc.setTextColor(23, 32, 28);
+  }
+  data.forEach((d, di) => {
+    if (data.length > 1 || di > 0) doc.addPage();
+    const tn = tehsilName(d.tehsil_id), T = totOf(d);
+    head(`${PROG_HEAD} in Tehsil ${tn}, District Doda`, asOn + fileAt(d.tehsil_id));
+    let y = strip([['Total buckets', fmtN(T.total)], ['Farmer IDs till date', `${fmtN(T.till)} (${pc(T.till, T.total)}%)`], ['Created today', `${fmtN(T.today)} / ${fmtN(T.target)}`, T.today < T.target],
+      ['Yet to be created', fmtN(T.yet)], ['Cannot be claimed', fmtN(T.cannot)], ['Not sorted yet', fmtN(T.notsorted), T.notsorted > 0]], 62);
+    const body = [], strong = { fontStyle: 'bold', fillColor: [228, 239, 232] }; let sn = 0;
+    const f = x => typeof x === 'number' ? fmtN(x) : x;
+    const vrow = v => { sn++; const till = n(v.generated), today = n(v.today); return [sn, v.name + (v.partial ? ' *' : ''), n(v.total), till - today, today, till, pc(till, n(v.total)) + '%', Math.max(0, n(v.total) - till)].map((c, i) => i > 1 ? f(c) : c); };
+    d.phs.filter(p => p.villages.length).forEach(p => {
+      body.push([{ content: `${p.name}${p.patwari ? '  ·  Patwari ' + p.patwari : ''}`, colSpan: 8, styles: { fontStyle: 'bold', fillColor: [241, 247, 243], textColor: [31, 90, 62], halign: 'left' } }]);
+      p.villages.forEach(v => body.push(vrow(v)));
+      if (p.villages.length > 1) { const x = p.totals; body.push(['', 'Subtotal ' + p.name.replace(/^PH\s+/i, 'PH '), n(x.total), n(x.generated) - n(x.today), n(x.today), n(x.generated), pc(n(x.generated), n(x.total)) + '%', Math.max(0, n(x.total) - n(x.generated))].map(c => ({ content: f(c), styles: { fontStyle: 'bold', fillColor: [248, 250, 249] } }))); }
+    });
+    (d.collect || []).forEach(c => { sn++; body.push([sn, c.name, { content: `Not bucketed  ·  PM Kisan farmers ${fmtN(c.total)}: checked ${fmtN(c.checked)}, Aadhaar–mobile linked ${fmtN(c.ready)}, not linked ${fmtN(c.not_linked)}, not found ${fmtN(c.not_found)}`, colSpan: 6, styles: { halign: 'left', textColor: [90, 100, 95], fillColor: [244, 245, 244], fontStyle: 'italic' } }]); });
+    body.push(['', 'Total', T.total, T.upto, T.today, T.till, pc(T.till, T.total) + '%', T.yet].map(c => ({ content: f(c), styles: strong })));
+    doc.autoTable(Object.assign({}, tableStyle, { startY: y + 2,
+      head: [['S.No.', 'Name of Revenue Village', 'Total buckets\n(IDs to be created)', 'IDs created up to\n' + fmtDate(addDaysJS(todayIST(), -1)), 'IDs created today\n(up to ' + fmtT(nowS) + ')', 'Total IDs\ncreated till date', '% created', 'Total IDs yet\nto be created']],
+      body, columnStyles: { 0: { halign: 'center', cellWidth: 38 }, 1: { halign: 'left', cellWidth: 170 } }, bodyStyles: { halign: 'right' },
+      didParseCell: h => { if (h.section !== 'body' || h.cell.colSpan > 1) return; const raw = h.cell.raw && typeof h.cell.raw === 'object' ? h.cell.raw.content : h.cell.raw;
+        if (h.column.index === 4 && Number(raw) === 0 && h.row.raw[0] !== '' && typeof h.row.raw[0] !== 'object') { h.cell.styles.textColor = [180, 35, 24]; h.cell.styles.fontStyle = 'bold'; }
+        if (h.column.index === 6 && typeof h.row.raw[0] !== 'object' && h.row.raw[0] !== '') h.cell.styles.fillColor = fill(parseFloat(raw)); } }));
+    // reasons table: reasons down the side, villages across
+    const vs = d.phs.reduce((a, p) => a.concat(p.villages), []), codes = {};
+    vs.forEach(v => Object.keys(v.by_code || {}).forEach(c => { if (v.by_code[c]) codes[c] = 1; }));
+    const order = Object.keys(codes).sort((a, b) => ({ A: 0, B: 1, C: 2 }[tierOf(a)] - { A: 0, B: 1, C: 2 }[tierOf(b)]) || a.localeCompare(b));
+    const tierName = { A: 'Cannot be claimed', B: 'Stuck', C: 'Can be created' };
+    const rbody = [];
+    ['A', 'B', 'C'].forEach(tr => { const cs = order.filter(c => tierOf(c) === tr); if (!cs.length) return;
+      rbody.push([{ content: tierName[tr], colSpan: vs.length + 2, styles: { fontStyle: 'bold', fillColor: [241, 247, 243], textColor: tr === 'A' ? [180, 35, 24] : tr === 'B' ? [154, 91, 0] : [31, 87, 195], halign: 'left' } }]);
+      cs.forEach(c => { const r = reason(c) || {}; const cells = vs.map(v => n((v.by_code || {})[c]) ? fmtN(n((v.by_code || {})[c])) : ''); rbody.push([r.report_label || rTxt(r)[0] || c].concat(cells, [fmtN(vs.reduce((a, v) => a + n((v.by_code || {})[c]), 0))])); }); });
+    rbody.push(['Not sorted yet'].concat(vs.map(v => n(v.notsorted) ? fmtN(n(v.notsorted)) : ''), [fmtN(T.notsorted)]).map((c, i) => ({ content: c, styles: { fontStyle: 'bold', textColor: i && c ? [180, 35, 24] : [23, 32, 28] } })));
+    let ry = doc.lastAutoTable.finalY + 16; const pageH = doc.internal.pageSize.getHeight();
+    if (ry + (rbody.length + 2) * 17 + 40 > pageH - 30) { doc.addPage(); head(`${PROG_HEAD} in Tehsil ${tn}, District Doda (continued)`, asOn + fileAt(d.tehsil_id)); ry = 74; }
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text(`Why IDs are pending: buckets by reason, village-wise (Tehsil ${tn})`, 30, ry);
+    const nameW = 210, cw = Math.max(34, Math.min(70, (W - 60 - nameW - 46) / Math.max(1, vs.length)));
+    doc.autoTable(Object.assign({}, tableStyle, { startY: ry + 6, styles: Object.assign({}, tableStyle.styles, { fontSize: 8.5, cellPadding: 3 }),
+      head: [['Reason'].concat(vs.map(v => v.name), ['Total'])], body: rbody, bodyStyles: { halign: 'right' },
+      columnStyles: Object.assign({ 0: { halign: 'left', cellWidth: nameW } }, ...vs.map((v, i) => ({ [i + 1]: { cellWidth: cw } })), { [vs.length + 1]: { cellWidth: 46, fontStyle: 'bold' } }) }));
+    const fy = Math.min(doc.lastAutoTable.finalY + 14, pageH - 30);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(90, 100, 95);
+    doc.text(doc.splitTextToSize('Total buckets: unclaimed buckets on the portal for the village. IDs: Farmer IDs on the portal (one farmer = one ID; self-registrations included). Today: IDs that appeared in today\'s portal files. Yet to be created = total buckets minus IDs till date. Reasons: as recorded by the Patwaris; "not sorted yet" = no reason recorded. * partially bucketed village.', W - 60), 30, fy);
+    doc.setTextColor(23, 32, 28);
+  });
+  pageNumbers(doc);
+  await kput('sent:prog:' + todayIST(), nowIST());
+  deliverPDF(doc, `Farmer_ID_progress_${tids.map(tehsilName).join('_')}_${todayIST()}.pdf`);
+}
+/* the Dealing Assistant's 4 PM step, reminders at 3:45, and the sheet in Tools for everyone in the office */
+const _steps6 = daSteps6;
+daSteps6 = function (t, P) {
+  const st = _steps6(t, P), sent = S.sent6 || {}, now = hm();
+  st.splice(2, 0, { k: 'prog', tm: '4:00 PM', en: "Today's progress sheet (PDF)", hi: 'Aaj ki progress sheet', done: !!sent.prog, st: sent.prog ? 'Made at ' + t12(sent.prog) : now >= '16:15' ? 'LATE: make it now' : 'Drop the 3:45 portal file, then make it at 4 PM', btn: 'Make the progress sheet' });
+  return st;
+};
+const _home6 = VIEWS.home;
+VIEWS.home = async function () { S.sent6 = Object.assign(S.sent6 || {}, { prog: await kget('sent:prog:' + todayIST()) }); await _home6(); on($('#view'), '[data-step="prog"]', 'click', el => busy(el, 'Preparing…', () => progressPDF([me().tehsil_id]))); };
+const _tools6p = openTools;
+openTools = function () {
+  _tools6p();
+  const box = $('#sheet .sheet-in'), tg = box && box.querySelector('.tg'); if (!tg) return;
+  const b = document.createElement('button'); b.className = 'tt'; b.id = 't_pg6'; b.innerHTML = `<span class="ico" style="background:#1F5A3E">${ic('report', 22)}</span><b>Progress sheet (PDF)</b>`;
+  tg.insertBefore(b, tg.firstChild);
+  b.onclick = () => closeSheet(() => progressPDF(role() === 'DA' ? [me().tehsil_id] : myTehsils()).catch(e => fail(e.message)));
+};
+setInterval(() => { if (!S.session || !canUploadMe() || document.visibilityState !== 'visible') return; const now = hm();
+  if (now >= '15:45' && now <= '15:50' && !S['r345' + todayIST()]) { S['r345' + todayIST()] = 1; toast('3:45 PM: drop the portal file now, then make the 4 PM progress sheet.', 'info', 9000); } }, 60000);
+
 /* ======================= START ======================= */
 async function start() {
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(reg => {
