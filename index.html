@@ -413,6 +413,126 @@ body{background:#F5F7F4}
 pre.wamsg{white-space:pre-wrap;font:inherit;font-size:14.5px;margin:0;line-height:1.45}
 .startbig small{font-weight:600}
 
+/* ===== v7: one look, every screen ===== */
+:root{--bg:#F3F5F2;--card:#fff;--ink:#16201B;--mute:#55635B;--line:#E0E6E2;--pine:#1F5A3E;--pine2:#164530;--saf:#E39B2D;--ok:#1E8A4C;--due:#B26A00;--late:#B42318;--okbg:#E7F5EC;--duebg:#FFF3DC;--latebg:#FDECEA;--rad:14px;--side:220px}
+html,body{overflow-x:hidden;max-width:100vw}
+body{background:var(--bg)}
+body.sun{--bg:#FFFFFF;--mute:#26302B;--line:#A9BAB0;--ink:#000}
+body.sun .hi,body.sun small,body.sun .hint{color:#26302B!important}
+body.sun .box,body.sun .card7,body.sun .rowb,body.sun .row{border-color:#7F958A!important;border-width:1.5px!important}
+body.nohi .hi{display:none!important}
+#view{min-height:60vh}
+.pad{max-width:1180px;margin:0 auto;padding:14px 16px}
+/* header */
+#bar{gap:6px!important;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px!important}
+#bar .hb7{border:1.5px solid #CFDCD3!important;border-radius:12px!important;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex:none;position:relative;background:#fff!important}
+#bar .hb7 .bd7{position:absolute;top:-6px;right:-6px;background:var(--saf);color:#2B1A00;font-size:11px;font-weight:800;border-radius:9px;min-width:18px;height:18px;line-height:18px;text-align:center;padding:0 4px}
+#bar .hb7 .bd7.run{background:var(--pine);color:#fff}
+#netbar{height:4px!important;background:linear-gradient(90deg,transparent,var(--saf),var(--pine),transparent)!important;background-size:50% 100%!important}
+/* side menu on wide screens, bottom bar on phones */
+.bnav button{font-size:12.5px!important}
+@media(min-width:900px){
+  .bnav{top:0!important;bottom:0!important;left:0!important;right:auto!important;width:var(--side)!important;flex-direction:column!important;justify-content:flex-start!important;padding:76px 10px 10px!important;border-top:0!important;border-right:1px solid #DDE5E0!important;gap:2px;background:#fff}
+  .bnav button{flex:none!important;flex-direction:row!important;justify-content:flex-start!important;gap:12px!important;padding:12px 14px!important;font-size:15px!important;border-radius:12px;text-align:left}
+  .bnav button.on{background:#E7F2EB}
+  body.hasnav #view{padding-left:var(--side)!important;padding-bottom:20px!important}
+  body.hasnav #bar{padding-left:calc(var(--side) + 12px)!important}
+  body.hasnav #upd{margin-left:var(--side)}
+}
+@media(max-width:899px){body.hasnav #view{padding-bottom:84px!important}}
+/* phones on their side: shorter bars, two columns */
+@media(orientation:landscape) and (max-height:560px){
+  #bar{min-height:46px!important;padding-top:4px!important;padding-bottom:4px!important}
+  .bnav button{padding:4px 2px 5px!important}.bnav svg{width:19px!important;height:19px!important}
+  .grid7{grid-template-columns:1fr 1fr!important}
+  .hero2 .ringrow svg{width:80px;height:80px}
+}
+/* cards and grids */
+.grid7{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+@media(min-width:1000px){.grid7{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}}
+.cards7{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card7{background:var(--card);border:1px solid var(--line);border-radius:var(--rad);padding:14px 16px;box-shadow:0 1px 3px rgba(22,32,27,.06);min-width:0}
+.card7 h3{margin:0 0 6px;font-size:17px}.card7 p{margin:4px 0}
+.sec7{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:18px 2px 8px}
+.ttl7{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:2px 0 12px}.ttl7 h1{font-size:24px;margin:0;color:var(--pine)}
+/* status colours used everywhere */
+.chip7{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:800;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.chip7.ok{background:var(--okbg);color:var(--ok)}.chip7.due{background:var(--duebg);color:var(--due)}.chip7.late{background:var(--latebg);color:var(--late)}.chip7.mute{background:#EEF1EF;color:var(--mute)}
+/* next action */
+.next7{display:flex;gap:14px;align-items:center;border-radius:18px;padding:16px 18px;margin:0 0 14px;color:#fff;background:linear-gradient(135deg,#1F5A3E,#123826);box-shadow:0 4px 14px rgba(18,56,38,.25)}
+.next7.due{background:linear-gradient(135deg,#E39B2D,#C47A10);color:#2B1A00}.next7.late{background:linear-gradient(135deg,#C4321F,#8E1B10)}
+.next7 .nx{flex:1;min-width:0}.next7 small{display:block;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.next7 b{display:block;font-size:20px;line-height:1.25;margin:2px 0}.next7 span.s{display:block;font-size:14px;opacity:.92}
+.next7 button{flex:none;border:0;border-radius:12px;padding:12px 16px;font-weight:800;font-size:15px;background:#fff;color:var(--pine);cursor:pointer}
+.next7.due button{background:#2B1A00;color:#fff}
+@media(max-width:520px){.next7{flex-direction:column;align-items:stretch}.next7 button{width:100%}}
+/* top performers */
+.top7{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px}
+.top7 .tp{flex:1;min-width:150px;display:flex;align-items:center;gap:10px;background:#FFF8E6;border:1px solid #F1D9A3;border-radius:14px;padding:10px 12px}
+.top7 .tp .md{font-size:26px}.top7 .tp b{display:block;font-size:16px}.top7 .tp small{color:var(--mute)}
+/* village pace rows: a table on laptops, cards on phones */
+.vp7{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1.5fr) minmax(0,.8fr) minmax(0,.8fr) minmax(0,1.6fr);gap:10px;align-items:center;padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer;background:#fff}
+.vp7:hover{background:#F7FAF8}.vp7.hd{cursor:default;background:#F1F5F2;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.vp7 b{font-size:16px;color:var(--pine)}.vp7 small{display:block;color:var(--mute);font-size:12.5px}
+.pbar7{height:10px;border-radius:5px;background:#E6EBE8;overflow:hidden;position:relative;margin-top:4px}.pbar7 i{display:block;height:100%;border-radius:5px}
+.pbar7 i.ok{background:var(--ok)}.pbar7 i.due{background:var(--saf)}.pbar7 i.late{background:var(--late)}
+.list7{border:1px solid var(--line);border-radius:var(--rad);overflow:hidden;background:#fff}
+@media(max-width:759px){.vp7{grid-template-columns:1fr 1fr;row-gap:6px}.vp7.hd{display:none}.vp7 .c1{grid-column:1/-1}.vp7 .c5{grid-column:1/-1}}
+/* task panel */
+#task7{position:fixed;z-index:88;right:16px;bottom:16px;width:min(420px,calc(100vw - 32px));background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.22);padding:14px 16px;display:none}
+#task7.on{display:block}
+@media(max-width:899px){#task7{left:12px;right:12px;width:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 78px)}}
+#task7 h4{margin:0 0 8px;font-size:16px;display:flex;align-items:center;gap:8px}
+#task7 .st{display:flex;align-items:center;gap:8px;font-size:14px;padding:3px 0;color:var(--mute)}#task7 .st.ok{color:var(--ok)}#task7 .st.run{color:var(--ink);font-weight:700}
+#task7 .st i{width:18px;text-align:center;font-style:normal}
+#task7 .res{border-radius:12px;padding:10px 12px;margin-top:8px;font-weight:700}#task7 .res.ok{background:var(--okbg);color:var(--ok)}#task7 .res.err{background:var(--latebg);color:var(--late)}
+#task7 .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}#task7 .acts button,#task7 .acts a{flex:1;min-width:90px;text-align:center;border:1.5px solid var(--pine);background:#fff;color:var(--pine);border-radius:10px;padding:9px 10px;font-weight:800;text-decoration:none;font-size:14px;cursor:pointer}
+#task7 .acts .pri{background:var(--pine);color:#fff}
+#task7 .x{position:absolute;top:8px;right:10px;border:0;background:none;font-size:22px;color:var(--mute);cursor:pointer}
+.bar7{height:5px;border-radius:3px;background:#E6EBE8;overflow:hidden;margin:6px 0 2px}.bar7 i{display:block;height:100%;background:var(--pine);transition:width .3s}
+/* buttons show what happened */
+.okb{background:var(--ok)!important;border-color:var(--ok)!important;color:#fff!important}
+.errb{background:var(--late)!important;border-color:var(--late)!important;color:#fff!important}
+/* report cards */
+.rep7{display:flex;flex-direction:column;gap:6px}.rep7 .rh{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.rep7 .meta{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px;color:var(--mute)}.rep7 .meta b{color:var(--ink);font-weight:700}
+.rep7.dueNow{border:2px solid var(--saf);box-shadow:0 0 0 3px rgba(227,155,45,.18)}
+/* segmented tehsil switch */
+.seg7{display:inline-flex;border:1.5px solid #CFDCD3;border-radius:12px;overflow:hidden;background:#fff}.seg7 button{border:0;background:none;padding:8px 14px;font-weight:800;color:var(--mute);cursor:pointer}.seg7 button.on{background:var(--pine);color:#fff}
+/* staffing rows */
+.sf7{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.1fr) minmax(0,1.7fr) 70px;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);background:#fff;cursor:pointer}
+.sf7.hd{background:#F1F5F2;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);cursor:default}
+.sf7 b{color:var(--pine)}.sf7 small{display:block;color:var(--mute);font-size:12.5px}.sf7 .miss{color:var(--late);font-weight:800}
+.sf7.ph{background:#F7FAF8;font-weight:800;color:var(--pine);cursor:default;grid-template-columns:1fr}
+@media(max-width:759px){.sf7{grid-template-columns:1fr 1fr}.sf7.hd{display:none}.sf7 .c1{grid-column:1/-1}.sf7 .c4{grid-column:1/-1}}
+.lab7{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+@media(min-width:760px){.sf7 .lab7,.vp7 .lab7{display:none}}
+/* tiles */
+.tiles7{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 12px}
+.tile7{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}.tile7 b{display:block;font-size:26px;line-height:1.1;color:var(--pine)}.tile7 span{font-size:13px;color:var(--mute)}
+.tile7.late b{color:var(--late)}.tile7.due b{color:var(--due)}
+.ppl7 .mem{padding:9px 0}
+.viewas7{background:#1F57C3;color:#fff;padding:8px 14px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:56px;z-index:18}
+.viewas7 button{border:0;background:#fff;color:#1F57C3;border-radius:10px;padding:6px 12px;font-weight:800}
+.prac7{background:#FFF1C9;color:#5A4300;padding:8px 14px;font-weight:700;border-bottom:1px dashed #E0B341}
+.task7l{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}.task7l:last-child{border:0}
+.task7l .ck{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid #C9D3CE;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff}.task7l.dn .ck{background:var(--ok);border-color:var(--ok)}
+.roles7{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.roles7 button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:16px;padding:16px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06)}.roles7 b{display:block;font-size:18px;color:var(--pine);margin-bottom:4px}
+.kbd7{border:1px solid #CFDCD3;border-bottom-width:2px;border-radius:6px;padding:0 6px;font-size:12px;font-weight:700}
+/* old pieces made to fit */
+.vtw{max-width:100%}.tgrid{min-width:0}.tgrid>div{min-width:0}.tban{max-width:100%;overflow:hidden}
+.box,.live,.att,.upc{max-width:100%}
+.vp7 .ab{font-size:13px!important;padding:5px 10px!important;min-height:0!important;line-height:1.2;display:inline-block}
+@media(min-width:900px){body.hasnav .prac7,body.hasnav .viewas7{margin-left:var(--side)}}
+.prac7{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.prac7 .ab{font-size:13px;padding:4px 10px}
+#task7 .st{display:flex!important;justify-content:flex-start!important;text-align:left!important;background:none!important;border:0!important;padding:3px 0!important;border-radius:0!important;white-space:normal!important;width:auto!important;font-size:14px!important;margin:0!important}
+.sec7 .hi{display:inline!important;text-transform:none;letter-spacing:0;font-weight:600}
+.vp7 [data-nudge]{background:#25D366!important;color:#fff!important;border:0!important;border-radius:8px!important;padding:5px 10px!important;font-weight:800!important;font-size:12.5px!important;cursor:pointer}
+.vp7 .chip7{font-size:11.5px;padding:3px 8px;white-space:normal;text-align:center}
+
+[hidden]{display:none!important}
+
 @media (prefers-reduced-motion:reduce){#toast,button{transition:none}#netbar{animation:none}}
 @media (max-width:360px){.rgrid{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
 </style>
@@ -427,7 +547,7 @@ pre.wamsg{white-space:pre-wrap;font:inherit;font-size:14.5px;margin:0;line-heigh
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '6.0.0';
+const APP_V = '7.0.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -731,7 +851,7 @@ function canEditV(vid) {
 }
 
 class NetError extends Error {}
-const WRITE_API = ['saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
+const WRITE_API = ['staffingSave', 'designationsSave', 'setPrefs', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
   'saveReason', 'saveSettings', 'saveTehsil', 'deleteUser', 'saveVillageAll', 'resetPractice', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'changePin', 'transferVillages', 'markSheetDone',
   'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'userVillages', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkSave', 'pmkApply', 'portalDown', 'savePH', 'startFresh'];
 async function api(action, payload, timeout) {
@@ -2813,8 +2933,7 @@ async function exportExcel() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(bk), 'Bucket-wise');
   const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
   const url = URL.createObjectURL(new Blob([out], { type: 'application/octet-stream' }));
-  const aEl = document.createElement('a'); aEl.href = url; aEl.download = 'FarmerID_all_data_' + todayIST() + '.xlsx'; document.body.appendChild(aEl); aEl.click(); aEl.remove();
-  toast('Excel file downloaded');
+  addFile(new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'FarmerID_all_data_' + todayIST() + '.xlsx', 'Excel ready ✓ (holds Aadhaar: keep it safe)');
 }
 
 /* ======================= REGISTERED FARMERS: MATCHING ======================= */
@@ -3071,7 +3190,7 @@ VIEWS.pin = async function () {
     const r = await api('changePin', { current: c, pin: p1 });
     S.session.user = r.user; await kput('session', S.session);
     toast(L('pin_ok'));
-    if (forced) { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); if (!(await kget('tour:' + me().user_id))) setTimeout(showTour, 400); }
+    if (forced) { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); setTimeout(afterLoginCards, 400); }
     else history.back();
   });
 };
@@ -3943,7 +4062,7 @@ async function dcExcel(tid) {
   const ws = XLSX.utils.aoa_to_sheet(aoa), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'DC sheet rows');
   const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' }), name = `DC_sheet_${tehsilName(d.tehsil_id)}_${todayIST()}.xlsx`;
   const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), url = URL.createObjectURL(blob);
-  const aEl = document.createElement('a'); aEl.href = url; aEl.download = name; document.body.appendChild(aEl); aEl.click(); aEl.remove();
+  addFile(blob, name, 'Excel ready ✓ Copy columns G to P into the DC sheet.');
   try { const f = new File([blob], name, { type: blob.type }); archiveUpload(f, 'dcsheet', d.tehsil_id); } catch (e) {}
   await api('markSheetDone', { tehsil_id: d.tehsil_id }); S.homeAt = 0; S.checklistAt = 0;
   toast('Excel downloaded. Open it, copy rows (columns G to P) and paste into the DC sheet.'); vibrate();
@@ -4039,7 +4158,7 @@ openTools = function () {
 document.addEventListener('click', e => { if (e.target.closest && e.target.closest('#inv')) groupInvite(); if (e.target.closest && e.target.closest('#rpb')) reportProblem(); });
 /* ======================= v5.1 ======================= */
 const isComp = () => role() === 'COMP';
-const myTehsils = () => { const u = me(); return u ? (u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id]).filter(Boolean) : []; };
+let myTehsils = () => { const u = me(); return u ? (u.tehsils && u.tehsils.length ? u.tehsils : [u.tehsil_id]).filter(Boolean) : []; };
 const ckNow = () => (S.home && S.home.checklist) || S.checklist || null;
 const phNow = tid => (S.home && S.home.status && S.home.status[tid]) || (S.ph && S.ph[tid]) || null;
 const waUrl = (mobile, text) => `https://wa.me/${mobile ? '91' + mobile : ''}?text=${encodeURIComponent(text)}`;
@@ -5348,6 +5467,822 @@ openTools = function () {
 setInterval(() => { if (!S.session || !canUploadMe() || document.visibilityState !== 'visible') return; const now = hm();
   if (now >= '15:45' && now <= '15:50' && !S['r345' + todayIST()]) { S['r345' + todayIST()] = 1; toast('3:45 PM: drop the portal file now, then make the 4 PM progress sheet.', 'info', 9000); } }, 60000);
 
+/* ======================= v7: ONE LOOK, EVERY SCREEN ======================= */
+const isOfficeR = () => ['ADMIN', 'DA', 'NT'].includes(role());
+const prefs = () => (me() && me().prefs) || {};
+/* tehsils in the person's order: the home tehsil first (Kastigarh for the Tehsildar unless he chooses otherwise) */
+function sortTehsils(b) {
+  if (!b || !b.tehsils || !b.user) return;
+  const p = b.user.prefs || {}, home = p.home_tehsil || (b.user.role === 'ADMIN' ? (b.tehsils.find(t => /kastigarh/i.test(t.name)) || {}).tehsil_id : b.user.tehsil_id);
+  b.tehsils.sort((x, y) => (y.tehsil_id === home) - (x.tehsil_id === home) || x.name.localeCompare(y.name));
+}
+{ let _b = S.boot; Object.defineProperty(S, 'boot', { configurable: true, get: () => _b, set: v => { _b = v; try { sortTehsils(v); applyPrefs(); } catch (e) {} } }); }
+myTehsils = () => { const u = me(); if (!u) return []; const ts = S.boot && S.boot.tehsils ? S.boot.tehsils.map(t => t.tehsil_id) : (u.tehsils || [u.tehsil_id]); return ts.filter(Boolean); };
+const curT = () => { const ts = myTehsils(); if (!S.tid || !ts.includes(S.tid)) S.tid = ts[0]; return S.tid; };
+function tehSeg(onChange) {
+  const ts = myTehsils(); if (ts.length < 2) return '';
+  return `<div class="seg7" id="tseg">${ts.map(t => `<button data-tseg="${t}" class="${t === curT() ? 'on' : ''}">${esc(tehsilName(t))}</button>`).join('')}</div>`;
+}
+function bindTehSeg(root) { on(root, '[data-tseg]', 'click', el => { S.tid = el.dataset.tseg; const c = current(); if (c && c.args) { c.args.tid = S.tid; c.args.data = null; } render(); }); }
+/* personal look: Hinglish subtitles, sunlight mode, text size */
+function applyPrefs() {
+  const u = me(); if (!u || !document.body) return;
+  const p = u.prefs || {}, hi = p.hi === undefined ? isField() : !!p.hi;
+  document.body.classList.toggle('nohi', !hi); document.body.classList.toggle('sun', !!p.sun);
+  if (p.zoom || u.zoom) { const z = Number(p.zoom || u.zoom) || 1; S.zoom = z; document.documentElement.style.setProperty('--z', z); }
+}
+async function setPref(k, v) {
+  const u = me(); u.prefs = Object.assign({}, u.prefs || {}, { [k]: v }); await kput('session', S.session); applyPrefs();
+  if (navigator.onLine && !S.viewAs) { try { await api('setPrefs', { [k]: v }); } catch (e) {} }
+}
+
+/* ---------- Every action shows: started → steps → result ---------- */
+const TASKS = []; S.taskSeq = 0;
+function actBadge() {
+  const b = $('#act7'); if (!b) return; const run = TASKS.filter(t => t.status === 'run').length, n = TASKS.length;
+  b.querySelector('.bd7') && b.querySelector('.bd7').remove();
+  if (n) { const s2 = document.createElement('span'); s2.className = 'bd7' + (run ? ' run' : ''); s2.textContent = run ? '…' : n; b.appendChild(s2); }
+}
+function drawTask(t) {
+  let el = $('#task7'); if (!el) { el = document.createElement('div'); el.id = 'task7'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+  if (!t) { el.classList.remove('on'); return; }
+  const done = t.steps.filter(s2 => s2.st === 'ok').length, pct = t.status === 'run' ? Math.max(8, Math.round(done * 100 / Math.max(1, t.steps.length))) : 100;
+  el.innerHTML = `<button class="x" aria-label="Close">×</button><h4>${t.status === 'run' ? '<span class="spin"></span>' : t.status === 'ok' ? '✅' : '⚠️'} ${esc(t.title)}</h4>
+    <div class="bar7"><i style="width:${pct}%"></i></div>
+    ${t.steps.map(s2 => `<div class="st ${s2.st}"><i>${s2.st === 'ok' ? '✓' : s2.st === 'run' ? '<span class="spin" style="width:14px;height:14px"></span>' : '○'}</i>${esc(s2.label)}</div>`).join('')}
+    ${t.status !== 'run' ? `<div class="res ${t.status}">${esc(t.msg || (t.status === 'ok' ? 'Done' : 'Failed'))}</div>` : ''}
+    <div class="acts">${(t.files || []).map((f, i) => `<a class="pri" href="${f.url}" download="${esc(f.name)}">Download</a>${navigator.canShare ? `<button data-sh="${i}">Share</button>` : ''}<a href="${f.url}" target="_blank" rel="noopener">Open</a>`).join('')}
+      ${(t.actions || []).map((a, i) => `<button class="pri" data-ac="${i}">${esc(a.label)}</button>`).join('')}${t.status === 'err' && t.retry ? '<button class="pri" data-rt="1">Try again</button>' : ''}</div>`;
+  el.classList.add('on');
+  el.querySelector('.x').onclick = () => { el.classList.remove('on'); };
+  $$('[data-sh]', el).forEach(b => b.onclick = async () => { const f = t.files[+b.dataset.sh]; try { await navigator.share({ files: [new File([f.blob], f.name, { type: f.blob.type })], title: f.name }); } catch (e) {} });
+  $$('[data-ac]', el).forEach(b => b.onclick = () => { el.classList.remove('on'); t.actions[+b.dataset.ac].fn(); });
+  const rt = $('[data-rt]', el); if (rt) rt.onclick = () => t.retry();
+}
+async function runTask(title, steps, fn) {
+  const t = { id: ++S.taskSeq, title, steps: steps.map(l => ({ label: l, st: 'wait' })), status: 'run', files: [], actions: [], msg: '', at: nowIST() };
+  TASKS.unshift(t); const prev = S.curTask; S.curTask = t; drawTask(t); actBadge(); netOn(1);
+  const step = i => { t.steps.forEach((s2, j) => s2.st = j < i ? 'ok' : j === i ? 'run' : 'wait'); drawTask(t); };
+  step(0);
+  try { const r = await fn(step, t); t.steps.forEach(s2 => s2.st = 'ok'); t.status = 'ok'; t.msg = (r && r.msg) || t.msg || 'Done'; if (r && r.actions) t.actions = r.actions; }
+  catch (e) { t.status = 'err'; t.msg = e.message || 'Something went wrong.'; t.retry = () => runTask(title, steps, fn); }
+  finally { netOn(-1); S.curTask = prev || null; drawTask(t); actBadge(); }
+  return t;
+}
+/* files made by the app land in the task card (Download · Share · Open) instead of a pop-up */
+const _dpdf7 = deliverPDF;
+deliverPDF = function (doc, name) { const blob = doc.output('blob'); addFile(blob, name, 'PDF ready ✓'); };
+dlXlsx = function (wb, name) { const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' }); addFile(new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), name, 'Excel ready ✓'); };
+const _dblob7 = deliverBlob;
+deliverBlob = function (blob, name) { addFile(blob, name, 'File ready ✓'); };
+function addFile(blob, name, msg) {
+  const f = { name, blob, url: URL.createObjectURL(blob) };
+  if (S.curTask) { S.curTask.files.push(f); S.curTask.msg = msg + ' · ' + name; drawTask(S.curTask); return; }
+  const t = { id: ++S.taskSeq, title: name, steps: [], status: 'ok', files: [f], actions: [], msg, at: nowIST() }; TASKS.unshift(t); drawTask(t); actBadge();
+}
+/* every button: spinner while working, then "✓ Saved" (green) or red on failure */
+const doneWord = l => /sav/i.test(l || '') ? 'Saved' : /send/i.test(l || '') ? 'Sent' : /prepar|mak|build/i.test(l || '') ? 'Ready' : /upload/i.test(l || '') ? 'Uploaded' : /reset/i.test(l || '') ? 'Reset' : 'Done';
+busy = async function (btn, label, fn) {
+  if (!btn || btn.dataset.busy) return;
+  const old = btn.innerHTML; btn.dataset.busy = '1'; btn.disabled = true; btn.innerHTML = `<span class="spin"></span>${esc(label || 'Working…')}`; netOn(1);
+  let ok = false;
+  try { const r = await fn(); ok = true; return r; }
+  catch (e) { fail(e.message); if (btn.isConnected) { btn.classList.add('errb'); setTimeout(() => btn.classList.remove('errb'), 1800); } }
+  finally {
+    netOn(-1); delete btn.dataset.busy; btn.disabled = false;
+    if (btn.isConnected) { if (ok) { btn.innerHTML = '✓ ' + esc(doneWord(label)); btn.classList.add('okb'); setTimeout(() => { if (btn.isConnected) { btn.innerHTML = old; btn.classList.remove('okb'); } }, 1600); } else btn.innerHTML = old; }
+  }
+};
+/* background jobs (uploads) run as visible tasks */
+bgTask = function (label, fn) {
+  return runTask('Uploading ' + label, ['Reading the file', 'Sending to the server', 'Applying'], async (step) => {
+    setTimeout(() => step(1), 600); const msg = await fn(); step(2);
+    S.checklistAt = 0; S.phAt = {}; S.homeAt = 0; S.pulseAt = 0; refreshStats(false, true);
+    const c = current(); if (c && !SHEET && ['home', 'portal', 'status', 'reports'].includes(c.name)) { if (c.args) c.args.data = null; render(); }
+    return { msg: msg || 'Uploaded ✓' };
+  });
+};
+
+/* ---------- header: search, activity, view-as banner ---------- */
+function header7() {
+  const bar = $('#bar'); if (!bar || $('#srch7')) return;
+  const mk = (id, svg, lab) => { const b = document.createElement('button'); b.id = id; b.className = 'hb7'; b.setAttribute('aria-label', lab); b.innerHTML = svg; bar.insertBefore(b, $('#pill')); return b; };
+  mk('srch7', '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>', 'Search').onclick = () => go('find', {});
+  mk('act7', '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>', 'Activity').onclick = () => go('activity', {});
+}
+document.addEventListener('keydown', e => { if (e.key === '/' && S.session && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) { e.preventDefault(); go('find', {}); } });
+const _sh7 = setHeader;
+setHeader = function (title) {
+  _sh7(title); header7();
+  const s = !!S.session && !(current() && ['login', 'pin', 'practice', 'board'].includes(current().name));
+  ['#srch7', '#act7'].forEach(id => { const e = $(id); if (e) e.hidden = !s; });
+  let vb = $('#viewas7');
+  if (S.viewAs && s) { if (!vb) { vb = document.createElement('div'); vb.id = 'viewas7'; vb.className = 'viewas7'; $('#bar').after(vb); }
+    vb.innerHTML = `<span>Viewing as <b>${esc(me().name)}</b> (${esc(me().designation)}): read only</span><button id="vaX">Exit</button>`; $('#vaX').onclick = exitViewAs; }
+  else if (vb) vb.remove();
+};
+
+/* ---------- menu: Home · Villages · Reports · Staff · Settings (office), Home · Sort · Search · Me (field) ---------- */
+Object.assign(NAV_ICONS, { rep: 'M6 3h9l4 4v14H6zM9 12h7M9 16h7M9 8h3', staff: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M17 11a3 3 0 1 0 0-6M22 21v-1a5 5 0 0 0-4-4.9', set: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z', sort: 'M4 6h16M7 12h10M10 18h4' });
+const NAV7 = { home: 'home', vil: 'status', rep: 'reports', staff: 'users', set: 'more', search: 'search', sort: 'sort', help: 'help' };
+updateBnav = function () {
+  const r = S.session && me() ? role() : '', c = current();
+  let nav = $('#bnav');
+  if (!r || !c || ['login', 'pin', 'board', 'practice'].includes(c.name) && !S.practice) { if (nav) nav.remove(); document.body.classList.remove('hasnav', 'wide'); return; }
+  const items = isField() ? [['home', 'Home'], ...((me().sorts || []).length ? [['sort', 'Sort']] : []), ['search', 'Search'], ['set', 'Me']]
+    : [['home', 'Home'], ['vil', 'Villages'], ['rep', 'Reports'], ['staff', 'Staff'], ['set', 'Settings']];
+  const sig = items.map(x => x[0]).join(',');
+  if (!nav || nav.dataset.sig !== sig) { if (nav) nav.remove(); nav = document.createElement('nav'); nav.id = 'bnav'; nav.className = 'bnav'; nav.dataset.sig = sig; document.body.appendChild(nav);
+    nav.innerHTML = items.map(x => `<button data-n="${x[0]}" data-t="${NAV7[x[0]]}">${navSvg(x[0])}<span>${x[1]}</span></button>`).join('');
+    on(nav, 'button', 'click', el => { const target = el.dataset.t; if (current().name === target) return; closeAllSheets();
+      if (target === 'home') { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); window.scrollTo(0, 0); render(); } else { NAV.stack = [{ name: 'home', args: {} }]; go(target, {}); } }); }
+  document.body.classList.add('hasnav'); document.body.classList.remove('wide');
+  $$('#bnav button').forEach(b => b.classList.toggle('on', b.dataset.t === c.name));
+};
+openTools = function () { go('reports', {}); };
+
+/* ---------- view as (Tehsildar only, read only) ---------- */
+const _api7 = api;
+api = async function (action, payload, timeout) {
+  if (S.practice) return practiceApi(action, payload || {});
+  if (S.viewAs) { if (WRITE_API.includes(action) || ['changePin', 'logout'].includes(action)) throw new Error('View only: exit "Viewing as" to make changes.'); payload = Object.assign({ as: S.viewAs }, payload || {}); }
+  return _api7(action, payload, timeout);
+};
+const _sync7 = sync; sync = async function () { if (S.viewAs || S.practice) { updatePill(); return; } return _sync7(); };
+async function startViewAs(uid) {
+  S.realUser = S.session.user; S.realBoot = S.boot; S.viewAs = uid;
+  try { const b = await api('bootstrap'); S.session.user = b.user; S.boot = b; } catch (e) { S.viewAs = null; S.session.user = S.realUser; throw e; }
+  S.home = null; S.pulse = null; S.homeAt = 0; S.pulseAt = 0; S.buckets = {}; S.fetchedAt = {}; S.ph = {}; S.phAt = {};
+  NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render();
+}
+async function exitViewAs() {
+  S.viewAs = null; S.session.user = S.realUser; S.boot = S.realBoot; S.home = null; S.pulse = null; S.homeAt = 0; S.pulseAt = 0; S.buckets = {}; S.fetchedAt = {}; S.ph = {}; S.phAt = {};
+  NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); refreshBoot();
+}
+/* never store a viewed person's data as one's own */
+const _kput7 = kput; kput = function (k, v) { if (S.viewAs && ['boot', 'session', 'home', 'pulse'].includes(k)) return Promise.resolve(); return _kput7(k, v); };
+
+/* ======================= v7 B: HOMES ======================= */
+const P7 = () => { const p = S.pulse; return p && p.tehsils && p.now && p.now.slice(0, 10) === todayIST() ? p : null; };
+const pt7 = tid => { const P = P7(); return P ? P.tehsils.find(t => t.tehsil_id === tid) || null : null; };
+const paceCls = v => !v.target ? 'mute' : v.ids >= v.target ? 'ok' : v.proj >= v.target ? 'due' : 'late';
+const PACE_WORD = { ok: 'Target met', due: 'On pace', late: 'Behind', mute: 'No target' };
+const WARN7 = `<div class="banner red" style="margin:10px 0"><p><b>A village below its target at 5 PM invites show cause proceedings against its In-charge and Patwari.</b><span class="hi">5 baje target se kam: In-charge aur Patwari par show cause ho sakta hai.</span></p></div>`;
+const nudgeText = v => `*${v.name}*: ${v.ids} Farmer IDs so far today, target ${v.target}. At this pace about ${v.proj} by 5 PM.${v.block && v.block.act ? '\nSuggested: ' + v.block.act + ' (' + v.block.n + ' ' + v.block.text + ').' : ''}\nPlease push the camp now.\n– ${me().name}`;
+function waTo(mobile, text) {
+  if (S.practice) { pracMark('wa:nudge'); toast('Practice: this would open WhatsApp to the In-charge.', 'info', 4000); return; }
+  if (mobile) window.open(waUrl(mobile, text), '_blank'); else copyText(text).then(c => toast(c ? 'No mobile saved: message copied.' : 'No mobile saved.', 'info', 4000));
+}
+function nextCard(n) {
+  if (!n) return '';
+  return `<div class="next7 ${n.cls || ''}"><div class="nx"><small>Next${n.when ? ' · ' + esc(n.when) : ''}</small><b>${esc(n.t)}</b>${n.s ? `<span class="s">${esc(n.s)}</span>` : ''}${n.hi ? `<span class="hi" style="color:inherit;opacity:.85">${esc(n.hi)}</span>` : ''}</div>${n.btn ? `<button id="nx7">${esc(n.btn)}</button>` : ''}</div>`;
+}
+function bindNext(n) { const b = $('#nx7'); if (b && n && n.fn) b.onclick = () => n.fn(b); }
+function top2Html(tids) {
+  const ts = tids.map(pt7).filter(Boolean); if (!ts.length) return '';
+  return ts.map(t => `<p class="sec7">Top 2 today${ts.length > 1 || tids.length > 1 ? ' · ' + esc(t.name) : ''}<span class="hi"> · Aaj ke top 2</span></p><div class="top7">${(t.top2 || []).length ? t.top2.map((o, i) => `<div class="tp"><span class="md">${i ? '🥈' : '🥇'}</span><span><b>${esc(o.name)}</b><small>${nr(o.today)} IDs · ${esc((o.villages || []).join(', '))}</small></span></div>`).join('')
+    : '<div class="tp"><span class="md">🏁</span><span><b>No ID counted yet today</b><small>The first portal file of the day shows the leaders.</small></span></div>'}</div>`).join('');
+}
+function paceHtml(rows, opts) {
+  opts = opts || {};
+  if (!rows || !rows.length) return '<p class="hint">No village figures yet today. They appear with the first portal file.</p>';
+  const idle = rows.filter(v => !v.target && !v.ids); rows = rows.filter(v => v.target || v.ids);
+  const idleHtml = idle.length ? `<p class="hint" style="margin:8px 2px">No operators or target yet: ${esc(idle.map(v => v.name).join(', '))}${['ADMIN', 'DA'].includes(role()) ? ' · set them in Staff' : ''}.</p>` : '';
+  if (!rows.length) return idleHtml || '<p class="hint">No village figures yet today.</p>';
+  const rk = { late: 0, due: 1, ok: 2, mute: 3 };
+  const ord = rows.slice().sort((a, b) => rk[paceCls(a)] - rk[paceCls(b)] || a.ids / Math.max(1, a.target) - b.ids / Math.max(1, b.target));
+  const closed = hm() >= V6().day_close;
+  return `<div class="list7"><div class="vp7 hd"><span>Village</span><span>Today / target</span><span>${closed ? 'Final' : 'By 5 PM'}</span><span>Status</span><span>In-charge · Patwari</span></div>${ord.map(v => { const c = paceCls(v), p = Math.min(100, Math.round(v.ids * 100 / Math.max(1, v.target)));
+    return `<div class="vp7" data-vv="${esc(v.village_id)}"><span class="c1"><b>${esc(v.name)}</b>${v.block ? `<small>⛔ ${fmtN(v.block.n)} ${esc(v.block.text)}${v.block.act ? ' → ' + esc(v.block.act) : ''}</small>` : ''}</span>
+      <span class="c2"><span class="lab7">Today / target</span><b>${fmtN(v.ids)}</b> / ${fmtN(v.target)}<div class="pbar7"><i class="${c}" style="width:${p}%"></i></div></span>
+      <span class="c3"><span class="lab7">${closed ? 'Final' : 'By 5 PM'}</span>${closed ? fmtN(v.ids) : '~' + fmtN(v.proj)}</span>
+      <span class="c4"><span class="chip7 ${c}">${PACE_WORD[c]}</span></span>
+      <span class="c5"><span class="lab7">In-charge · Patwari</span>${v.incharge ? esc(v.incharge.name) : '<b style="color:var(--late)">No In-charge set</b>'}${v.patwari && (!v.incharge || v.patwari.user_id !== v.incharge.user_id) ? `<small>Patwari ${esc(v.patwari.name)}</small>` : ''}
+        ${opts.nudge && c !== 'ok' && v.incharge ? `<button class="ab" data-nudge="${esc(v.village_id)}" style="margin-top:4px">Nudge on WhatsApp</button>` : ''}</span></div>`; }).join('')}</div>${idleHtml}`;
+}
+function bindPace(root, rows) {
+  root.addEventListener('click', e => {
+    const nb = e.target.closest('[data-nudge]'); if (nb) { e.stopPropagation(); const v = rows.find(x => x.village_id === nb.dataset.nudge); if (v) waTo(v.incharge.mobile, nudgeText(v)); return; }
+    const r = e.target.closest('.vp7[data-vv]'); if (r) go('village7', { vid: r.dataset.vv });
+  });
+}
+function forecastHtml(t) {
+  const f = t && t.forecast; if (!f || !f.deadline) return '';
+  const okF = f.expected >= f.total, left = Math.max(0, f.total - f.made);
+  return `<div class="card7"><h3>Deadline forecast <span class="chip7 ${okF ? 'ok' : 'late'}">${okF ? 'On track' : 'Short'}</span></h3>
+    <p>Deadline <b>${esc(fmtDate(f.deadline))}</b> · ${f.days_left} days left</p>
+    <p>${fmtN(f.made)} of ${fmtN(f.total)} made · ${fmtN(left)} to go</p>
+    <p>Last 7 days: <b>${fmtN(f.pace)}</b> a day → about <b>${fmtN(f.expected)}</b> by the deadline.</p>
+    <p>Needed from today: <b style="color:${okF ? 'var(--ok)' : 'var(--late)'}">${fmtN(f.needed)} a day</b></p></div>`;
+}
+function streakHtml(t) { return t && (t.streaks || []).length ? `<div class="card7"><h3>🔥 3 days in a row above ${t.floor}</h3><p>${esc(t.streaks.join(', '))}</p><p class="hint">Shabash! Recognised in the day-close message.</p></div>` : ''; }
+function liveTiles(t) {
+  if (!t) return '<div class="skel" style="height:90px"></div>';
+  const p = Math.round(t.today * 100 / Math.max(1, t.target)), c = p >= 100 ? 'ok' : hm() >= V6().day_close ? 'late' : 'due';
+  return `<div class="tiles7"><div class="tile7 ${c === 'ok' ? '' : c}"><b>${fmtN(t.today)}<small style="font-size:15px;color:var(--mute)"> / ${fmtN(t.target)}</small></b><span>IDs today · ${p}%</span></div>
+    <div class="tile7"><b>${t.as_on ? esc(t12(t.as_on)) : '–'}</b><span>${t.as_on ? 'Last portal file' + (t.last_n ? ' · +' + t.last_n : '') : 'No portal file yet today'}</span></div>
+    <div class="tile7 ${(t.pace || []).filter(v => paceCls(v) === 'late').length ? 'late' : ''}"><b>${(t.pace || []).filter(v => paceCls(v) === 'late').length}</b><span>villages behind pace</span></div>
+    <div class="tile7"><b>${fmtN(t.self || 0)}</b><span>self-registered today</span></div></div>`;
+}
+
+/* what to do next, by role and time of day */
+function nextOffice(u, P, t, tid) {
+  const now = hm(), sent = S.sent6 || {}, pt = pt7(tid), behind = pt ? (pt.pace || []).filter(v => paceCls(v) === 'late') : [];
+  if (u.role === 'DA') {
+    if (!t) return null;
+    const st = daSteps6(t, P), TM = { plan: '09:00', hour: '11:00', prog: '16:00', dc: '16:30', close: '17:00' }, open = st.map((s2, j) => j).filter(j => st[j].due || !st[j].done), past = open.filter(j => (TM[st[j].k] || '00:00') <= now), i = past.length ? past[past.length - 1] : open.length ? open[0] : -1; if (i < 0) return { t: 'All steps of the day are done', s: 'Shabash. Tomorrow: plan at 9 AM.', when: 'Day done' };
+    const s2 = st[i], cls = /LATE/.test(s2.st) ? 'late' : s2.due || /now/i.test(s2.st) ? 'due' : '';
+    return { cls, when: s2.tm, t: s2.en, s: s2.st, hi: s2.hi, btn: s2.btn, fn: b => daStep(s2.k, t, P, b) };
+  }
+  if (u.role === 'ADMIN') {
+    const pend = P ? P.tehsils.reduce((a, x) => a + (x.pending || 0), 0) : 0;
+    if (pend && !S.apprDone) return { cls: 'due', t: `Approve ${fmtN(pend)} pending Farmer IDs on the portal`, s: 'They count as soon as they are made; approving clears the backlog.', btn: 'Done', fn: async () => { S.apprDone = 1; await kput('appr:' + todayIST() + (now >= '16:00' ? 'pm' : 'am'), 1); render(); } };
+    if (now >= '16:00' && !sent.prog) return { cls: now >= '16:30' ? 'late' : 'due', when: '4:00 PM', t: "Today's progress sheet (PDF)", s: 'For the district review.', btn: 'Make it', fn: () => progTask(myTehsils()) };
+  }
+  if (behind.length && now >= '11:00' && now < V6().day_close) return { cls: 'late', when: 'Now', t: `${behind.length} village${behind.length > 1 ? 's' : ''} behind pace`, s: behind.slice(0, 4).map(v => v.name + (v.incharge ? ' (' + v.incharge.name + ')' : '')).join(', '), hi: 'In-charge ko call ya WhatsApp karein', btn: 'See villages', fn: () => { const e = $('#pace7'); if (e) e.scrollIntoView({ behavior: 'smooth' }); } };
+  if (pt && pt.closed) return { t: 'Day closed', s: `${fmtN(pt.today)} of ${fmtN(pt.target)} today${(pt.explain || []).length ? ' · ' + pt.explain.length + ' villages below target' : ''}`, btn: 'Day-close message', fn: () => messageSheet('Day close', msgClose(P), 'close') };
+  if (now < '10:00') return { when: '9:00 AM', t: "Today's plan: who goes where", s: 'Check the deployment before the camps start.', btn: 'Open the plan', fn: b => busy(b, 'Preparing…', () => openPlan()) };
+  return { t: 'All villages on pace', s: 'Keep an eye on the hourly figures.', when: 'Now' };
+}
+async function daStep(k, t, P, b) {
+  if (k === 'plan') return busy(b, 'Preparing…', () => openPlan());
+  if (k === 'hour' || (k === 'close' && !(P && P.tehsils.some(x => x.closed)))) { const fs = await pickFiles('.xlsx,.xls,.csv'); if (fs.length) uploadFiles(fs, 'reg'); return; }
+  if (k === 'close') return messageSheet('Day close', msgClose(P), 'close');
+  if (k === 'dc') return runTask('DC sheet rows (Excel)', ['Collecting the figures', 'Making the Excel'], async st => { await dcExcel(t.tehsil_id); st(1); await kput('sent:dc:' + todayIST(), nowIST()); return { msg: 'Excel ready ✓' }; }).then(() => render());
+  if (k === 'prog') return progTask([t.tehsil_id]);
+}
+function progTask(tids) {
+  return runTask('Progress sheet (PDF)', ['Loading village figures', 'Reading the latest portal file', 'Drawing the PDF'], async st => {
+    for (const x of tids) await loadPH(x, true); st(1); await loadPulse(true); st(2);
+    await progressPDF(tids); pracMark('pdf:progress'); S.sent6 = Object.assign(S.sent6 || {}, { prog: nowIST() });
+    return { msg: 'Progress sheet ready ✓' };
+  }).then(t => { if (current() && ['home', 'reports'].includes(current().name) && !SHEET) render(); return t; });
+}
+function nextField(u, mine, sortLeft, myPlan) {
+  const now = hm(), floor = V6().floor, n = mine ? mine.today : 0;
+  if (S.boot.campaign_closed) return null;
+  if (now < '10:00') return { when: 'Before the camp', t: myPlan && myPlan.first.length ? `Call ${myPlan.first.length} families before the camp` : 'Reach your village by 9:30', s: myPlan ? 'Today: ' + (myPlan.villages.join(', ') || 'no village set') : 'Ask farmers to bring Aadhaar and the linked mobile.', hi: 'Camp se pehle call karein', btn: myPlan && myPlan.first.length ? 'See the list' : '', fn: () => { const e = $('#plan7'); if (e) e.scrollIntoView({ behavior: 'smooth' }); } };
+  if (now < V6().day_close) return { cls: n >= floor ? '' : now >= '13:00' ? 'due' : '', when: 'In the camp', t: n >= floor ? `Minimum done: ${nr(n)} IDs. Keep going!` : `Make Farmer IDs on the portal: ${nr(n)} of ${floor}`, s: 'Portal only. Nothing to enter in this app.', hi: 'Sirf portal par ID banayein' };
+  if (sortLeft) return { cls: 'due', when: 'After the camp', t: `Sort your villages: ${fmtN(sortLeft)} left`, s: 'One question per family. Finish by tomorrow evening.', hi: 'Camp ke baad chhantai', btn: 'Start sorting', fn: () => go('sort', {}) };
+  return { when: 'Evening', t: 'Call tomorrow\'s families', s: 'Tell them to bring Aadhaar and the linked mobile.', hi: 'Kal ke parivaaron ko call karein' };
+}
+
+/* ---------- Office home: one screen, laptop or phone ---------- */
+VIEWS.home = async function () {
+  const u = me(); if (!u) return;
+  if (isField()) return fieldHome7();
+  setHeader(''); document.body.classList.add('wide');
+  if (!S.home) S.home = await kget('home'); if (!S.pulse) S.pulse = await kget('pulse');
+  const today = todayIST(); S.sent6 = { plan: await kget('sent:plan:' + today), close: await kget('sent:close:' + today), prog: await kget('sent:prog:' + today), hour: await kget('sent:hour:' + today) };
+  S.apprDone = S.apprDone || (await kget('appr:' + today + (hm() >= '16:00' ? 'pm' : 'am')));
+  const P = P7(), tid = curT(), ck = ckNow(), t = ck && ck.tehsils.find(x => x.tehsil_id === tid), pt = pt7(tid);
+  const nx = nextOffice(u, P, t, tid);
+  const share = u.role === 'ADMIN' && S.boot.settings.sheet_shared === 'Y' ? '<div class="banner red"><p><b>The database Google Sheet is shared with others.</b> It holds Aadhaar numbers. Set its sharing to "Restricted".</p></div>' : '';
+  const um = pt ? pt.unmatched || 0 : 0, da = u.role === 'DA';
+  const main = $('#view');
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(greet())}, ${esc(u.name)}</h1><small class="hint">${esc(u.designation)} · ${esc(dateLong(today))}</small></div>${tehSeg()}</div>
+    ${share}${closedHtml()}${staleHtml()}${noticesHtml()}${nextCard(nx)}${top2Html([tid])}
+    <div class="grid7"><div>
+      <p class="sec7">Live · ${esc(tehsilName(tid))}</p>${liveTiles(pt)}
+      <p class="sec7" id="pace7">Villages today<span class="hi"> · Gaon-wise aaj</span></p><div id="pc7">${pt ? paceHtml(pt.pace, { nudge: true }) : '<div class="skel" style="height:160px"></div>'}</div>
+      ${pt ? liveCard({ tehsils: [pt] }, { log: ['NT', 'ADMIN'].includes(u.role) }).replace(/<div class="lvh">[\s\S]*?<div class="gbar">[\s\S]*?<\/div>/, '') : ''}
+    </div><div>
+      ${da ? `<p class="sec7">Your day<span class="hi"> · Aaj ka kaam</span></p>${t ? timeline6(t, P) : '<div class="skel" style="height:140px"></div>'}${uploadCardHtml()}
+        <div class="row2"><button class="btn" id="mdesk">Match desk${um ? ` (${um})` : ''}</button><button class="btn" id="dep6">Who goes where</button></div>` : ''}
+      ${['ADMIN', 'NT'].includes(u.role) ? sortingCard({ tehsils: pt ? [pt] : [] }) : ''}
+      ${forecastHtml(pt)}${streakHtml(pt)}
+      ${attentionHtml2([tid])}
+    </div></div>
+    <p class="foot">Made with care for the field staff of Tehsil Assar &amp; Kastigarh \u{1F341}</p></section>`;
+  bindTehSeg(main); bindNext(nx); bindNotices(main); bindAttention(main); bindUploadCard(main); bindLive(main);
+  if (pt) bindPace($('#pc7'), pt.pace || []);
+  on(main, '[data-step]', 'click', el => daStep(el.dataset.step, t, P, el));
+  b2('mdesk', () => go('match')); b2('dep6', () => go('deploy', {}));
+  b2('pdown', () => busy($('#pdown'), 'Saving…', async () => { await api('portalDown', { tehsil_id: tid, on: !(t && t.portal_down) }); S.homeAt = 0; S.checklistAt = 0; S.pulseAt = 0; await loadHome(true); toast(t && t.portal_down ? 'Marked: portal is back' : 'Everyone now sees: portal down'); render(); }));
+  const [fresh, fp] = await Promise.all([loadHome(false), loadPulse(false)]);
+  if ((fresh !== S._h7 || fp !== S._p7) && current() && current().name === 'home' && !SHEET) { S._h7 = fresh; S._p7 = fp; render(); }
+};
+
+/* ---------- Field home: count, top 2, the village pace meter, the call list ---------- */
+async function fieldHome7() {
+  setHeader('');
+  const u = me(), today = todayIST(), main = $('#view');
+  if (!S.pulse) S.pulse = await kget('pulse');
+  const P = P7(), pt = P ? P.tehsils[0] : null, mine = pt && pt.me, sortMe = pt && pt.mine_sort;
+  const PL = S['plan:auto'] || (await kget('plan:auto')), myPlan = PL && PL.tehsils ? PL.tehsils.reduce((a, t) => a.concat(t.officials), []).find(o => o.user_id === u.user_id) : null;
+  const sortV = (u.sorts || []).filter(v => villages().some(x => x.village_id === v && !isCollV(x))), collV = villages().filter(v => canEditV(v.village_id) && isCollV(v));
+  const rank = pt && mine ? pt.officials.findIndex(o => o.user_id === u.user_id) + 1 : 0, closed = !!S.boot.campaign_closed;
+  const sortLeft = sortMe ? sortMe.left : sortV.reduce((a, v) => a + ((S.buckets[v] || []).filter(b => b.status === 'NOT_SURVEYED').length), 0);
+  const myV = pt ? (pt.pace || []).filter(v => (v.incharge && v.incharge.user_id === u.user_id) || (v.patwari && v.patwari.user_id === u.user_id)) : [];
+  const nx = nextField(u, mine, sortLeft, myPlan);
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(greet())}, ${esc(u.name)}</h1><small class="hint">${esc(u.designation)} · ${esc(dateLong(today))}</small></div></div>
+    ${closedHtml()}${noticesHtml()}${unsentHtml()}${nextCard(nx)}
+    <div class="grid7"><div>
+    <div class="hero2"><div class="ringrow">${ringSvg(mine ? Math.round(mine.today) : 0, V6().floor, 104, true)}<div class="rk">
+      <div>Your Farmer IDs today: <b>${mine ? nr(mine.today) : 0}</b> of ${V6().floor}</div>
+      ${rank ? `<div>You are <b>${ordinal(rank)}</b> of ${pt.officials.length}</div>` : ''}
+      <div style="opacity:.85">${pt && pt.as_on ? 'From the portal, ' + esc(t12(pt.as_on)) : 'Counted from the portal every hour'}</div></div></div></div>
+    ${top2Html(pt ? [pt.tehsil_id] : [])}
+    ${myV.length ? `<p class="sec7">Your villages today<span class="hi"> · Aapke gaon</span></p><div id="pc7">${paceHtml(myV)}</div>${WARN7}` : ''}
+    </div><div>
+    ${myPlan ? `<p class="sec7" id="plan7">Today: ${esc(myPlan.villages.join(', ') || 'no village set')}<span class="hi"> · Aaj ka gaon</span></p>
+      ${myPlan.first.length ? `<p class="hint" style="margin:0 0 6px">Call these families before the camp:</p><div class="att">${myPlan.first.map((f, i) => `<div class="mem"><span class="cnt">${i + 1}</span><span class="rt"><b>${esc(f.father ? f.father + ' family' : f.names[0])} (${f.n})</b><small>${esc(f.names.join(', '))} · ${esc(f.village)}${f.pick ? ' · ⭐' : ''}</small></span>${f.mobile ? `<a class="callb" href="tel:${esc(f.mobile)}">${ic('phone', 20)}</a>` : ''}</div>`).join('')}</div>` : ''}
+      ${myPlan.away.length ? `<p class="sec7">Away, mobile linked<span class="hi"> · Ghar wale call karein</span></p><div class="att">${myPlan.away.map(a => `<div class="mem"><span class="rt"><b>${esc(a.name)}</b><small>${esc(a.village)}</small></span><a class="callb" href="tel:${esc(a.mobile)}">${ic('phone', 20)}</a></div>`).join('')}</div>` : ''}` : ''}
+    ${sortV.length && !closed ? `<button class="startbig" id="srt">▶ Sort my villages<small>${fmtN(sortLeft)} left · after camp hours</small></button>` : ''}
+    ${collV.length && !closed ? `<button class="startbig" id="goC" style="background:#1F57C3;color:#fff">▶ Aadhaar collection (PM Kisan)<small>${esc(collV.map(v => v.name).join(', '))}</small></button>` : ''}
+    ${canUploadMe() ? `<p class="sec7">You are the backup uploader</p>${uploadCardHtml()}<button class="btn" id="sendH">Send the hourly update</button>` : ''}
+    ${!villages().some(v => canEditV(v.village_id)) && !myV.length ? `<div class="guide">No village yet. Call ${esc(daOf(u.tehsil_id).name || 'the Dealing Assistant')}.</div>` : ''}
+    ${pt && pt.officials.length > 1 ? `<details class="more"><summary>Today's ranking (everyone)</summary><table class="rank">${pt.officials.map((o, i) => `<tr class="${o.user_id === u.user_id ? 'me' : ''}"><td>${i + 1}. ${esc(o.name)}</td><td>${nr(o.today)}</td></tr>`).join('')}</table></details>` : ''}
+    </div></div>
+    <p class="foot">Made with care for the field staff of Tehsil Assar &amp; Kastigarh \u{1F341}</p></section>`;
+  bindNext(nx); bindNotices(main); bindUploadCard(main);
+  if ($('#pc7')) bindPace($('#pc7'), myV);
+  b2('srt', () => go('sort', {}));
+  b2('goC', () => busy($('#goC'), 'Preparing…', () => startWork(collV.map(v => v.village_id), 'collect')));
+  b2('sendH', () => busy($('#sendH'), '…', async () => { const P2 = await loadPulse(true); if (P2) messageSheet('Hourly update', hm() >= V6().day_close ? msgClose(P2) : msgHourly(P2), 'hour'); }));
+  if (navigator.onLine && (!S.fhAt || Date.now() - S.fhAt > 60000)) { S.fhAt = Date.now();
+    Promise.all([loadPulse(true), loadPlan(null, true)]).then(() => { if (current() && current().name === 'home' && !SHEET) fieldHome7(); }); }
+}
+fieldHome = async function () { return fieldHome7(); };
+
+/* ---------- "Your job in this app": once, at first login (replaces What's new and the tours) ---------- */
+const JOB7 = {
+  OPERATOR: ['Make Farmer IDs <b>on the portal only</b>. Your count comes from the portal file every hour: nothing to enter here.', 'Home shows your count, your rank, the <b>top 2</b> of the tehsil and the families to call before the camp.', 'If you are a village <b>In-charge</b> or <b>Patwari</b>: your village has a daily target. Below target at 5 PM invites show cause proceedings.', 'Patwaris: <b>Sort</b> your villages after camp hours. One question per family.'],
+  COMP: ['Make Farmer IDs <b>on the portal</b> with the operators. Your count comes from the portal file every hour.', 'Home shows your count, your rank and the <b>top 2</b> of the tehsil.', 'Nothing to enter in this app during the camp.'],
+  DA: ['Your home shows the <b>Next</b> step: 9 AM plan · hourly portal file + update · 4 PM progress sheet · 4:30 DC Excel · 5 PM close.', 'Every upload, PDF and Excel shows its progress and a green card with <b>Download · Share · Open</b>.', '<b>Staff</b>: one table per tehsil: village → Patwari (from the halqa), In-charge, Operators, target.', '<b>Reports</b>: every report in one place, due ones highlighted. Designations are kept by you in Staff.'],
+  NT: ['Home: villages <b>behind pace</b> in red, with their In-charge. Tap <b>Nudge</b> to send a private WhatsApp.', 'Tap a village for what is blocking it; tap an official for his record.', 'Tap <b>Called</b> after each call: it is logged for the Tehsildar.', 'Day close at 5 PM names villages below target with their In-charge and Patwari.'],
+  ADMIN: ['Kastigarh opens first; switch tehsil at the top.', 'Home: Next action, top 2, live figures, village pace, forecast.', '<b>Settings → View as</b> shows the app exactly as any official sees it (read only).', 'Reports, Staff and Settings are in the menu on the left (laptop) or at the bottom (phone).']
+};
+afterLoginCards = async function () {
+  const k = 'job7:' + me().user_id; if (await kget(k)) return; await kput(k, 1); jobSheet();
+};
+function jobSheet() {
+  const pts = JOB7[role()] || JOB7.OPERATOR;
+  openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><div class="tcard"><div class="big">${LEAF_SVG}</div><h2>Your job in this app</h2><p class="hint">${esc(me().designation)}</p>
+    ${pts.map(x => `<p style="text-align:left">• ${x}</p>`).join('')}<p style="text-align:left">• Practise any time without login: <b>Settings → Practice</b>.</p></div><button class="btn btn-primary" id="ok">Got it<span class="hi">Samajh gaya</span></button>`,
+    mount: r => { $('#x', r).onclick = $('#ok', r).onclick = () => closeSheet(); } }));
+}
+showTour = function () {};
+
+/* ======================= v7 C: VILLAGES, A VILLAGE, AN OFFICIAL ======================= */
+const pctC = p => p >= 60 ? 'ok' : p >= 25 ? 'due' : 'late';
+const ACT7 = { B11: 'Aadhaar–mobile linking camp', B01: 'Aadhaar–mobile linking camp', B02: 'Aadhaar–mobile linking camp (doorstep)', A02: 'Mutation list to the Patwari', A03: 'Get the mutation attested', B04: 'Call them: family at the camp relays the OTPs', B03: 'Call them: family relays the OTPs', B05: 'Visit the family', C01: 'Call them to the camp: ready now', C03: 'Visit: possible, not yet checked' };
+async function staffOf(tid, force) {
+  S.staff7 = S.staff7 || {};
+  if (!force && S.staff7[tid] && Date.now() - S.staff7[tid]._at < 120000) return S.staff7[tid];
+  if (isField()) return null;
+  try { const r = await api('staffing', { tehsil_id: tid }, 60000); r._at = Date.now(); S.staff7[tid] = r; } catch (e) { if (!S.staff7[tid]) throw e; }
+  return S.staff7[tid];
+}
+function tillRow(v, extra) {
+  const p = Math.round(v.generated * 100 / Math.max(1, v.total)), c = pctC(p);
+  return `<div class="vp7" data-vv="${esc(v.village_id)}"><span class="c1"><b>${esc(v.name)}</b>${extra ? `<small>${esc(extra)}</small>` : ''}</span>
+    <span class="c2"><span class="lab7">IDs till date / buckets</span><b>${fmtN(v.generated)}</b> / ${fmtN(v.total)}<div class="pbar7"><i class="${c}" style="width:${Math.min(100, p)}%"></i></div></span>
+    <span class="c3"><span class="lab7">Today</span>${v.today ? '+' + fmtN(v.today) : '<span style="color:var(--late);font-weight:800">0</span>'}</span>
+    <span class="c4"><span class="chip7 ${c}">${p}%</span></span>
+    <span class="c5"><span class="lab7">Left</span>${v.notsorted ? `<b style="color:var(--late);font-size:14px">${fmtN(v.notsorted)} not sorted</b>` : '<small>All sorted</small>'}<small>${fmtN(v.cannot)} cannot be claimed · ${fmtN(v.can + v.stuck)} can / stuck</small></span></div>`;
+}
+VIEWS.status = async function (a) {
+  setHeader('Villages'); document.body.classList.add('wide');
+  const tid = curT(), main = $('#view');
+  if (!S.pulse) S.pulse = await kget('pulse');
+  S.ph = S.ph || {}; if (!S.ph[tid]) { const c = await kget('ph:' + tid); if (c) S.ph[tid] = c; }
+  const draw = () => {
+    const d = S.ph[tid], pt = pt7(tid), T = d && d.totals, q = (a.q || '').trim().toLowerCase(), m = (...xs) => !q || xs.some(x => String(x || '').toLowerCase().includes(q));
+    const pace = pt ? (pt.pace || []).filter(v => m(v.name, v.incharge && v.incharge.name, v.patwari && v.patwari.name)) : [];
+    main.innerHTML = `<section class="pad"><div class="ttl7"><h1>Villages</h1>${tehSeg()}</div>
+      ${T ? `<div class="tiles7"><div class="tile7"><b>${fmtN(T.total)}</b><span>total buckets</span></div><div class="tile7"><b>${fmtN(T.generated)}</b><span>IDs till date · ${pctOf(T.generated, T.total)}%</span></div>
+        <div class="tile7"><b>${fmtN(T.today)}</b><span>IDs today</span></div><div class="tile7 ${T.notsorted ? 'late' : ''}"><b>${fmtN(T.notsorted)}</b><span>not sorted yet</span></div><div class="tile7"><b>${fmtN(T.cannot)}</b><span>cannot be claimed</span></div></div>` : '<div class="skel" style="height:80px"></div>'}
+      <input id="vq" class="input search" type="search" placeholder="Find a village, Patwari or In-charge" value="${esc(a.q || '')}">
+      <p class="sec7">Today: pace against each village's target</p><div id="pc7">${pt ? paceHtml(pace, { nudge: !isField() }) : '<p class="hint">Today\'s figures appear with the first portal file.</p>'}</div>
+      <p class="sec7">Till date, by Patwar Halqa</p>
+      <div id="ph7">${d ? d.phs.filter(p => p.villages.length).map(p => { const vs = p.villages.filter(v => m(v.name, p.name, p.patwari)); if (!vs.length) return '';
+        return `<div class="list7" style="margin-bottom:12px"><div class="sf7 ph">${esc(p.name)} · Patwari ${esc(p.patwari || 'not set')} · ${fmtN(p.totals.generated)} / ${fmtN(p.totals.total)} (${pctOf(p.totals.generated, p.totals.total)}%)</div>${vs.map(v => tillRow(v)).join('')}</div>`; }).join('') : '<div class="skel" style="height:200px"></div>'}</div>
+      ${d ? collectCard(d) : ''}
+      ${['ADMIN', 'DA'].includes(role()) ? '<button class="btn" id="xl">Download all data (Excel, with Aadhaar)</button>' : ''}</section>`;
+    bindTehSeg(main);
+    if (pt) bindPace($('#pc7'), pt.pace || []);
+    $('#ph7').addEventListener('click', e => { const r = e.target.closest('.vp7[data-vv]'); if (r) go('village7', { vid: r.dataset.vv }); });
+    on(main, '.vtab tr[data-v] td:first-child', 'click', el => go('vlist', { vid: el.parentElement.dataset.v, k: 'all' }));
+    if ($('#xl')) $('#xl').onclick = () => xlTask();
+    const qi = $('#vq'); qi.oninput = () => { a.q = qi.value; clearTimeout(a._t); a._t = setTimeout(() => { draw(); const i = $('#vq'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 250); };
+  };
+  draw();
+  const [d] = await Promise.all([loadPH(tid, false), loadPulse(false)]);
+  if (current() && current().name === 'status' && !SHEET && d) draw();
+};
+function xlTask() { return runTask('All data (Excel)', ['Collecting every village', 'Making the Excel'], async st => { setTimeout(() => st(1), 1500); await exportExcel(); return { msg: 'Excel ready ✓' }; }); }
+
+/* ---------- One village: figures, people, what is blocking ---------- */
+VIEWS.village7 = async function (a) {
+  const v0 = villageById(a.vid), tid = v0.tehsil_id || curT(); setHeader(v0.name || 'Village'); document.body.classList.add('wide');
+  const main = $('#view');
+  const draw = st => {
+    const d = S.ph && S.ph[tid], vn = d ? d.phs.reduce((x, p) => x.concat(p.villages.map(v => Object.assign({ ph: p }, v))), []).find(v => v.village_id === a.vid) : null;
+    const pv = (pt7(tid) && pt7(tid).pace || []).find(v => v.village_id === a.vid), sv = st && st.villages.find(v => v.village_id === a.vid);
+    const pat = (sv && sv.patwari) || (pv && pv.patwari), inc = (sv && sv.incharge) || (pv && pv.incharge), ops = sv ? sv.operators : (pv ? pv.operators.map(n => ({ name: n })) : []);
+    const codes = vn ? Object.keys(vn.by_code || {}).filter(c => vn.by_code[c] && tierOf(c) !== 'A').sort((x, y) => vn.by_code[y] - vn.by_code[x]) : [];
+    const pc = pv ? paceCls(pv) : 'mute', person = (lab, p) => `<div class="mem"><span class="rt"><small>${lab}</small><b>${p ? esc(p.name) : '<span style="color:var(--late)">Not set</span>'}</b>${p && p.designation ? `<small>${esc(p.designation)}</small>` : ''}</span>${p && p.user_id && !isField() ? `<button class="ab" data-off="${esc(p.user_id)}">Record</button>` : ''}${telBtn(p)}</div>`;
+    main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(v0.name)}</h1><small class="hint">${esc(tehsilName(tid))}${vn && vn.ph ? ' · ' + esc(vn.ph.name) : ''} · LGD ${esc(a.vid)}</small></div>${pv ? `<span class="chip7 ${pc}">${PACE_WORD[pc]}</span>` : ''}</div>
+      <div class="grid7"><div>
+      <div class="tiles7">${pv ? `<div class="tile7 ${pc === 'late' ? 'late' : ''}"><b>${fmtN(pv.ids)}<small style="font-size:15px;color:var(--mute)"> / ${fmtN(pv.target)}</small></b><span>IDs today / target · ~${fmtN(pv.proj)} by 5 PM</span></div>` : ''}
+        ${vn ? `<div class="tile7"><b>${fmtN(vn.generated)}<small style="font-size:15px;color:var(--mute)"> / ${fmtN(vn.total)}</small></b><span>IDs till date · ${pctOf(vn.generated, vn.total)}%</span></div>
+        <div class="tile7 ${vn.notsorted ? 'late' : ''}"><b>${fmtN(vn.notsorted)}</b><span>not sorted yet</span></div><div class="tile7"><b>${fmtN(vn.cannot)}</b><span>cannot be claimed</span></div>` : '<div class="skel" style="height:80px"></div>'}</div>
+      ${pv && pc !== 'ok' && (pv.incharge || pv.patwari) ? WARN7 : ''}
+      <p class="sec7">What's blocking<span class="hi"> · Kya atka hai</span></p><div class="card7">${vn ? (vn.notsorted > 0 ? `<div class="mem"><span class="cnt">${fmtN(vn.notsorted)}</span><span class="rt"><b>Not sorted yet</b><small>→ Patwari to sort this evening (Sort my villages)</small></span></div>` : '')
+        + codes.slice(0, 6).map(c => { const r = reason(c) || {}; return `<div class="mem"><span class="cnt">${fmtN(vn.by_code[c])}</span><span class="rt"><b>${esc(r.report_label || r.label || c)}</b>${ACT7[c] ? `<small>→ ${esc(ACT7[c])}</small>` : ''}</span></div>`; }).join('')
+        + (!vn.notsorted && !codes.length ? '<p class="hint">Nothing recorded as blocking.</p>' : '') : '<p class="hint">Loading…</p>'}</div>
+      </div><div>
+      <p class="sec7">People</p><div class="card7 ppl7">${person('Patwari (from the halqa)', pat)}${person('In-charge (accountable)', inc)}
+        ${ops.length ? ops.map(o => person('Operator', o)).join('') : '<div class="mem"><span class="rt"><small>Operators</small><b style="color:var(--late)">None set</b></span></div>'}</div>
+      <div class="row2" style="margin-top:12px"><button class="btn" id="bl">Bucket list</button>${!isField() ? '<button class="btn" id="cert">Certificate (PDF)</button>' : ''}</div>
+      ${['ADMIN', 'DA'].includes(role()) ? '<button class="btn" id="edst">Change In-charge, operators or target</button>' : ''}
+      ${pv && pv.incharge && !isField() && pc !== 'ok' ? '<button class="btn btn-primary" id="ndg">Nudge the In-charge (WhatsApp)</button>' : ''}
+      </div></div></section>`;
+    on(main, '[data-off]', 'click', el => go('official', { uid: el.dataset.off }));
+    b2('bl', () => go('vlist', { vid: a.vid, k: 'all' }));
+    b2('cert', () => runTask('Certificate: ' + v0.name, ['Reading the village', 'Drawing the PDF'], async s2 => { await certificatePDF(tid, a.vid); s2(1); return { msg: 'Certificate ready ✓' }; }));
+    b2('edst', () => st && sv ? staffSheet(st, sv, () => draw(S.staff7[tid])) : toast('Loading…'));
+    b2('ndg', () => waTo(pv.incharge.mobile, nudgeText(pv)));
+  };
+  draw(S.staff7 && S.staff7[tid]);
+  const [, , st] = await Promise.all([loadPH(tid, false), loadPulse(false), isField() ? null : staffOf(tid).catch(() => null)]);
+  if (current() && current().name === 'village7' && current().args === a && !SHEET) draw(st);
+};
+
+/* ---------- One official: today, the last 7 closes, villages, calls ---------- */
+VIEWS.official = async function (a) {
+  setHeader('Official'); const main = $('#view');
+  if (!a.d) { main.innerHTML = loadingHtml('Loading…'); try { a.d = await api('official', { user_id: a.uid }, 60000); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  const d = a.d, x = d.user, full = (S.boot.users || []).find(y => y.user_id === x.user_id);
+  setHeader(x.name);
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(x.name)}</h1><small class="hint">${esc(x.designation)} · ${esc(tehsilName(x.tehsil_id))}${x.mobile ? ' · ' + esc(x.mobile) : ' · no mobile'}</small></div>${telBtn(x)}</div>
+    <div class="tiles7"><div class="tile7"><b>${nr(d.today)}</b><span>IDs today (credit)</span></div><div class="tile7 ${d.below_days ? 'due' : ''}"><b>${d.below_days}</b><span>of the last ${d.days.length} days below the minimum</span></div></div>
+    <div class="grid7"><div>
+      <p class="sec7">Last days</p><div class="list7">${d.days.length ? d.days.slice().reverse().map(r => `<div class="vp7" style="cursor:default"><span class="c1"><b>${esc(dateLong(r.date))}</b></span><span class="c2"><span class="lab7">IDs</span><b>${nr(r.ids)}</b> / ${r.floor}</span><span class="c4"><span class="chip7 ${r.ids >= r.floor ? 'ok' : 'late'}">${r.ids >= r.floor ? 'Met' : 'Below'}</span></span></div>`).join('') : '<p class="hint" style="padding:10px">No closed day yet.</p>'}</div>
+    </div><div>
+      <p class="sec7">Charge</p><div class="card7">
+        <p><b>Makes IDs in:</b> ${esc(d.villages.join(', ') || '–')}</p>
+        <p><b>In-charge of:</b> ${esc(d.incharge_of.join(', ') || '–')}</p>
+        <p><b>Patwari of:</b> ${esc(d.patwari_of.join(', ') || '–')}</p></div>
+      ${d.calls.length ? `<p class="sec7">Calls logged</p><div class="att">${d.calls.slice().reverse().map(c => `<div class="mem"><span class="rt"><b>${esc(c.note || 'Called')}</b><small>${esc(whenTxt(c.at))}</small></span></div>`).join('')}</div>` : ''}
+      ${full && ['ADMIN', 'DA'].includes(role()) ? '<button class="btn" id="ed">Edit details</button>' : ''}
+      ${canResetPin(x) ? '<button class="btn" id="rp">Reset PIN to 1234</button>' : ''}
+      ${role() === 'ADMIN' && !S.viewAs && x.user_id !== me().user_id ? '<button class="btn" id="va">View the app as ' + esc(x.name) + '</button>' : ''}
+    </div></div></section>`;
+  b2('ed', () => openUser(full, () => { a.d = null; render(); }));
+  b2('rp', () => { if (confirm(`Reset the PIN of ${x.name} to 1234?`)) busy($('#rp'), 'Resetting…', async () => { await api('resetPin', { user_id: x.user_id }); pinDoneSheet(x.name, x.mobile); }); });
+  b2('va', () => busy($('#va'), 'Opening…', () => startViewAs(x.user_id)));
+};
+
+/* ======================= v7 D: REPORTS, STAFF, SETTINGS, SEARCH, ACTIVITY ======================= */
+const sentKey = k => ({ wk: 'wk:', pos: 'sh5:' }[k] || 'sent:' + k + ':') + todayIST();
+function REPS() {
+  const u = me(), r = role(), now = hm(), day = new Date(todayIST() + 'T12:00:00Z').getUTCDay(), off = ['ADMIN', 'DA', 'NT'], mine = r === 'DA' ? [u.tehsil_id] : myTehsils();
+  const msg = (title, f, kind) => b => busy(b, 'Preparing…', async () => { const P = await loadPulse(true); if (!P) throw new Error('This needs internet.'); messageSheet(title, f(P), kind); });
+  return [
+    { k: 'plan', t: "Today's plan", p: 'Who goes where, and the families to call first. For the WhatsApp group.', who: 'Dealing Assistant', when: '9:00 AM daily', due: now >= '08:45' && now < '11:00', roles: off, run: b => busy(b, 'Preparing…', () => openPlan()) },
+    { k: 'hour', t: 'Hourly update', p: 'IDs since the last file, top 3 this hour, slow officials, villages heading below target.', who: 'Dealing Assistant (or backup)', when: 'Every hour, 11 AM – 5 PM', due: now >= V6().hourly_from && now < V6().day_close, hourly: 1, roles: off.concat(canUploadMe() ? [r] : []), run: msg('Hourly update', msgHourly, 'hour') },
+    { k: 'prog', t: 'Progress sheet (PDF)', p: 'Village-wise position on A4 landscape, with the reasons table. For the district review.', who: 'Dealing Assistant', when: '4:00 PM daily, after the 3:45 file', due: now >= '15:45', roles: off, run: () => progTask(mine) },
+    { k: 'dc', t: 'DC sheet rows (Excel)', p: 'Rows to paste into the DC office sheet (columns G to P).', who: 'Dealing Assistant', when: '4:30 PM daily', due: now >= '16:00', roles: ['ADMIN', 'DA'], run: () => runTask('DC sheet rows (Excel)', ['Collecting the figures', 'Making the Excel'], async st => { await dcExcel(curT()); st(1); await kput(sentKey('dc'), nowIST()); return { msg: 'Excel ready ✓' }; }).then(() => render()) },
+    { k: 'close', t: 'Day close and ranking', p: 'Final figures, operator ranking, villages below target with their In-charge and Patwari, and the show cause line.', who: 'Dealing Assistant', when: '5:00 PM daily', due: now >= V6().day_close, roles: off, run: msg('Day close', msgClose, 'close') },
+    { k: 'pos', t: 'Position statement', p: 'Tehsil position in the DC wording, to share on WhatsApp.', who: 'Dealing Assistant / Naib Tehsildar', when: '5:00 PM daily', due: now >= V6().day_close, roles: off, run: async () => { await kput(sentKey('pos'), nowIST()); go('position'); } },
+    { k: 'wk', t: 'Weekly summary for the DC', p: 'The week in numbers, ready to send.', who: 'Dealing Assistant', when: 'Monday', due: day === 1, roles: off, run: b => busy(b, 'Preparing…', weeklySheet) },
+    { k: 'cert7', t: 'Appreciation certificates (PDF)', p: "The week's best operator and best In-charge of each tehsil, ready to sign.", who: 'Tehsildar / Dealing Assistant', when: 'Friday evening', due: day === 5 && now >= '16:00', roles: off, run: () => apprTask() },
+    { k: 'reg', t: 'Cannot-be-claimed register', p: 'Bucket-wise Excel in the DC wording, and a certificate per village for the Patwari to sign.', who: 'Dealing Assistant', when: 'When the DC office asks', roles: off, run: () => registerSheet() },
+    { k: 'xl', t: 'All data (Excel, with Aadhaar)', p: 'Every bucket and registered farmer with full Aadhaar. Keep it safe; never share it on WhatsApp.', who: 'Admin and Dealing Assistants only', when: 'Any time', roles: ['ADMIN', 'DA'], run: () => xlTask() },
+    { k: 'drive', t: 'Drive lists', p: 'Lists for a drive: Aadhaar–mobile linking, mutation, women landholders.', who: 'Dealing Assistant', when: 'Before a drive', roles: ['ADMIN', 'DA'], run: () => driveSheet() },
+    { k: 'cx', t: 'Custom Excel', p: 'Choose the columns and villages you need.', who: 'Dealing Assistant', when: 'Any time', roles: ['ADMIN', 'DA'], run: () => customExcelSheet() },
+    { k: 'slips', t: 'Paper slips (PDF)', p: '8 slips per page to note farmers who will register later.', who: 'Anyone', when: 'Before a camp', run: () => runTask('Paper slips (PDF)', ['Drawing the PDF'], async () => { await slipsPDF(''); return { msg: 'Slips ready ✓' }; }) },
+    { k: 'err', t: 'Portal errors', p: 'Note errors from screenshots; send the list to the district team the same day.', who: 'Anyone', when: 'When they happen', run: b => busy(b, '…', () => loadPulse(true).then(errorSheet)) }
+  ].filter(x => !x.roles || x.roles.includes(r));
+}
+VIEWS.reports = async function () {
+  setHeader('Reports'); document.body.classList.add('wide');
+  const list = REPS(), last = {}; for (const x of list) last[x.k] = await kget(sentKey(x.k));
+  const now = hm(), isDue = x => x.due && (!last[x.k] || (x.hourly && String(last[x.k]).slice(11, 13) < now.slice(0, 2)));
+  const ord = list.slice().sort((a, b) => isDue(b) - isDue(a));
+  $('#view').innerHTML = `<section class="pad"><div class="ttl7"><h1>Reports</h1><span class="hint">${ord.filter(isDue).length ? `<span class="chip7 due">${ord.filter(isDue).length} due now</span>` : '<span class="chip7 ok">Nothing due now</span>'}</span></div>
+    <div class="cards7">${ord.map(x => `<div class="card7 rep7${isDue(x) ? ' dueNow' : ''}"><div class="rh"><h3>${esc(x.t)}</h3>${isDue(x) ? '<span class="chip7 due">Due</span>' : last[x.k] ? '<span class="chip7 ok">Done</span>' : ''}</div>
+      <p>${esc(x.p)}</p><div class="meta"><span>Who</span><b>${esc(x.who)}</b><span>When</span><b>${esc(x.when)}</b>${last[x.k] ? `<span>Last</span><b>${String(last[x.k]).length > 4 ? esc(t12(last[x.k])) + ' today' : 'today'}</b>` : ''}</div>
+      <button class="btn ${isDue(x) ? 'btn-primary' : ''}" data-rep="${x.k}" style="margin-top:6px">${/PDF|Excel/.test(x.t) ? 'Make it' : 'Open'}</button></div>`).join('')}</div></section>`;
+  on($('#view'), '[data-rep]', 'click', el => { const x = list.find(y => y.k === el.dataset.rep); if (x) x.run(el); });
+};
+
+/* ---------- Weekly appreciation certificates ---------- */
+function apprTask() {
+  return runTask('Appreciation certificates (PDF)', ['Reading the week\'s closes', 'Drawing the certificates'], async st => {
+    const d = await api('weekTop', {}, 60000); st(1); await loadPDF();
+    const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'landscape' }), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+    let pages = 0;
+    const page = (t, who, line2) => {
+      if (pages++) doc.addPage();
+      doc.setDrawColor(31, 90, 62); doc.setLineWidth(6); doc.rect(24, 24, W - 48, H - 48); doc.setLineWidth(1.2); doc.rect(36, 36, W - 72, H - 72);
+      doc.setFont('times', 'bold'); doc.setFontSize(34); doc.setTextColor(31, 90, 62); doc.text('Certificate of Appreciation', W / 2, 120, { align: 'center' });
+      doc.setFont('times', 'normal'); doc.setFontSize(15); doc.setTextColor(40, 40, 40); doc.text('Farmer ID campaign · Tehsil ' + t.name + ', District Doda', W / 2, 150, { align: 'center' });
+      doc.setFontSize(16); doc.text('This certificate is awarded to', W / 2, 210, { align: 'center' });
+      doc.setFont('times', 'bold'); doc.setFontSize(30); doc.setTextColor(23, 32, 28); doc.text(who.name, W / 2, 252, { align: 'center' });
+      doc.setFont('times', 'italic'); doc.setFontSize(16); doc.text(who.designation || '', W / 2, 276, { align: 'center' });
+      doc.setFont('times', 'normal'); doc.setFontSize(15); doc.text(doc.splitTextToSize(line2, W - 200), W / 2, 316, { align: 'center' });
+      doc.text(`Week of ${fmtDate(d.from)} to ${fmtDate(d.to)}`, W / 2, 380, { align: 'center' });
+      doc.setFontSize(13); doc.text('Date: ' + fmtDate(todayIST()), 80, H - 80); doc.text('Tehsildar ' + t.name, W - 80, H - 80, { align: 'right' }); doc.setFontSize(10); doc.text('(signature and seal)', W - 80, H - 66, { align: 'right' });
+    };
+    d.tehsils.forEach(t => {
+      if (t.operator && t.operator.ids > 0) page(t, t.operator, `for making the highest number of Farmer IDs in the tehsil this week: ${fmtN(t.operator.ids)} IDs.`);
+      if (t.incharge && t.incharge.target > 0) page(t, t.incharge, `for the best result against target as village In-charge this week: ${fmtN(t.incharge.ids)} IDs against a target of ${fmtN(t.incharge.target)} (${t.incharge.villages.join(', ')}).`);
+    });
+    if (!pages) throw new Error('No closed day this week yet. Certificates are made from the 5 PM closes.');
+    st(1); deliverPDF(doc, `Appreciation_certificates_${todayIST()}.pdf`); await kput(sentKey('cert7'), nowIST());
+    return { msg: pages + ' certificate(s) ready ✓' };
+  });
+}
+
+/* ---------- Staff: one table per tehsil (village → Patwari, In-charge, Operators, target), people, designations ---------- */
+function setupHtml(st) {
+  const items = [
+    [st.phs.filter(p => !p.patwari).length, 'Every Patwar Halqa has its Patwari', 'halqas without a Patwari', 'villages'],
+    [st.villages.filter(v => !v.collect && !v.incharge).length, 'Every village has one In-charge', 'villages without an In-charge'],
+    [st.villages.filter(v => !v.collect && !v.operators.length).length, 'Every village has its operators', 'villages without operators'],
+    [st.people.filter(p => !p.mobile).length, 'Everyone has a mobile number', 'people without a mobile']];
+  if (items.every(x => !x[0])) return '<p class="hint" style="margin:0 0 10px"><span class="chip7 ok">✓ Setup complete</span></p>';
+  return `<div class="card7" style="margin-bottom:12px"><h3>Setup checklist<span class="hi"> · Dealing Assistant</span></h3>${items.map(x => `<div class="task7l${x[0] ? '' : ' dn'}"><span class="ck">${x[0] ? '' : '✓'}</span><span><b>${esc(x[1])}</b>${x[0] ? `<small class="hint" style="display:block;color:var(--late)">${x[0]} ${esc(x[2])}</small>` : ''}</span>${x[3] && x[0] ? '<button class="ab" data-go="villages" style="margin-left:auto">Set</button>' : ''}</div>`).join('')}</div>`;
+}
+function staffTable(st, canEdit) {
+  const groups = st.phs.map(p => ({ p, vs: st.villages.filter(v => v.ph_id === p.ph_id) })).concat([{ p: { name: 'No Patwar Halqa set', patwari: null }, vs: st.villages.filter(v => !st.phs.some(p => p.ph_id === v.ph_id)) }]).filter(g => g.vs.length);
+  return `<div class="list7"><div class="sf7 hd"><span>Village</span><span>Patwari</span><span>In-charge</span><span>Operators</span><span>Target</span></div>
+    ${groups.map(g => `<div class="sf7 ph">${esc(g.p.name)}${g.p.patwari ? ' · Patwari ' + esc(g.p.patwari.name) : ''}</div>${g.vs.map(v => `<div class="sf7" data-sv="${esc(v.village_id)}">
+      <span class="c1"><b>${esc(v.name)}</b>${v.collect ? '<small>Aadhaar collection</small>' : ''}</span>
+      <span class="c2"><span class="lab7">Patwari</span>${v.patwari ? esc(v.patwari.name) : '<span class="miss">Not set</span>'}</span>
+      <span class="c3"><span class="lab7">In-charge</span>${v.incharge ? esc(v.incharge.name) : '<span class="miss">Not set</span>'}</span>
+      <span class="c4"><span class="lab7">Operators</span>${v.operators.length ? esc(v.operators.map(o => o.name).join(', ')) : '<span class="miss">None</span>'}</span>
+      <span class="c5"><span class="lab7">Target</span><b>${fmtN(v.target)}</b><small>${v.target_set ? 'set' : 'auto'}</small></span></div>`).join('')}`).join('')}</div>
+    ${canEdit ? '<p class="hint">Tap a village to set its In-charge, operators and target. The Patwari comes from the halqa (Settings → Villages & PHs).</p>' : ''}`;
+}
+function staffSheet(st, v, after) {
+  const ppl = st.people, inc = v.incharge ? v.incharge.user_id : '', ops = new Set(v.operators.map(o => o.user_id));
+  simpleSheet(esc(v.name), `<p class="guide">Patwari: <b>${v.patwari ? esc(v.patwari.name) : 'not set'}</b> (comes from the Patwar Halqa).</p>
+    <div class="field"><label for="inc">In-charge (one person, answers for the village target)</label><select id="inc" class="input"><option value="">– not set –</option>${ppl.map(p => `<option value="${esc(p.user_id)}" ${p.user_id === inc ? 'selected' : ''}>${esc(p.name)} (${esc(p.designation)})</option>`).join('')}</select></div>
+    <div class="field"><label>Operators (make the IDs, get the credit)</label><input id="opq" class="input search" placeholder="Find a name"><div class="colsel" id="opl">${ppl.map(p => `<label class="chk"><input type="checkbox" class="op" value="${esc(p.user_id)}" ${ops.has(p.user_id) ? 'checked' : ''}> ${esc(p.name)} <small class="hint">&nbsp;${esc(p.designation)}</small></label>`).join('')}</div></div>
+    <div class="field"><label for="tg">Daily target (IDs)</label><input id="tg" class="input" inputmode="numeric" value="${v.target_set ? v.target : ''}"><small id="tgh"></small></div>
+    <button class="btn btn-primary" id="sv">Save</button>`, r => {
+    const upd = () => { const n = $$('.op', r).filter(c => c.checked).length; $('#tgh', r).textContent = `Leave empty for automatic: ${n} operator${n === 1 ? '' : 's'} × ${st.floor} = ${n * st.floor}.`; };
+    $$('.op', r).forEach(c => c.onchange = upd); upd();
+    $('#opq', r).oninput = e => { const q = e.target.value.toLowerCase(); $$('#opl label', r).forEach(l => l.hidden = !!q && !l.textContent.toLowerCase().includes(q)); };
+    $('#sv', r).onclick = () => busy($('#sv', r), 'Saving…', async () => {
+      const tg = $('#tg', r).value.trim(); if (tg && !(Number(tg) > 0)) throw new Error('Target must be a number.');
+      const res = await api('staffingSave', { village_id: v.village_id, incharge_user_id: $('#inc', r).value, operator_ids: $$('.op', r).filter(c => c.checked).map(c => c.value), target_ids: tg ? Number(tg) : 0 });
+      res._at = Date.now(); S.staff7 = S.staff7 || {}; S.staff7[st.tehsil_id] = res; S.pulseAt = 0; pracMark('staffingSave'); refreshBoot().catch(() => {});
+      closeSheet(() => { toast('Saved: ' + v.name); if (after) after(); });
+    });
+  });
+}
+const ROLE_ORD = { ADMIN: 0, NT: 1, DA: 2, OPERATOR: 3, COMP: 4 };
+VIEWS.users = async function (a) {
+  setHeader('Staff'); document.body.classList.add('wide');
+  const tid = curT(), main = $('#view'), r = role(), office = ['ADMIN', 'DA'].includes(r);
+  a.tab = a.tab || 'vil';
+  const draw = () => {
+    const st = S.staff7 && S.staff7[tid];
+    const tabs = [['vil', 'Villages'], ['ppl', 'People']].concat(office ? [['des', 'Designations']] : []);
+    const ppl = office ? (S.boot.users || []).filter(x => x.active !== 'DEL' && (x.role === 'ADMIN' || x.tehsil_id === tid || (x.tehsils || []).includes(tid))) : (st ? st.people.map(p => Object.assign({ role: 'OPERATOR', active: 'Y', tehsil_id: tid }, p)) : []);
+    ppl.sort((x, y) => (x.active === 'Y' ? 0 : 1) - (y.active === 'Y' ? 0 : 1) || ROLE_ORD[x.role] - ROLE_ORD[y.role] || x.name.localeCompare(y.name));
+    const body = a.tab === 'vil' ? (st ? staffTable(st, office) : '<div class="skel" style="height:220px"></div>')
+      : a.tab === 'ppl' ? `${office ? '<div class="row2"><button class="btn btn-primary" id="add">Add a person</button><button class="btn" id="inv">Group invite (WhatsApp)</button></div>' : ''}
+        <div class="list" style="margin-top:12px">${ppl.map(x => `<div class="rowb" ${x.active === 'Y' ? '' : 'style="opacity:.55"'}><button class="rt" data-uid="${esc(x.user_id)}"><b>${esc(x.name)}</b><small>${esc(x.designation)}${x.mobile ? ' · ' + esc(x.mobile) : ' · <b style="color:var(--late)">no mobile</b>'}${x.active === 'Y' ? '' : ' · switched off'}</small>${x.role ? `<small>${esc(ROLE_LABEL[x.role] || x.role)}${x.last_seen !== undefined ? (x.last_seen ? ' · last seen ' + esc(whenTxt(x.last_seen)) : ' · never logged in') : ''}${x.backup ? ' · backup uploader' : ''}</small>` : ''}</button>
+          ${canResetPin(x) && x.active === 'Y' ? `<button class="rp" data-rp="${esc(x.user_id)}">Reset PIN</button>` : ''}</div>`).join('') || '<p class="hint">Nobody yet.</p>'}</div>`
+      : `<p class="guide">The designations everyone chooses from, for both tehsils. Add new ones here; remove only those nobody holds.</p>
+        <div class="chips" id="dl">${(S.boot.designations || []).map((d, i) => `<span class="chipf on" style="cursor:default">${esc(d)} <button class="link" data-dx="${i}" aria-label="Remove ${esc(d)}" style="padding:0 0 0 6px;color:inherit">×</button></span>`).join('')}</div>
+        <div class="row2"><input id="dn" class="input" placeholder="New designation, e.g. Forester"><button class="btn" id="dad">Add</button></div><button class="btn btn-primary" id="dsv">Save the list</button>`;
+    main.innerHTML = `<section class="pad"><div class="ttl7"><h1>Staff</h1>${tehSeg()}</div>${r === 'DA' && st ? setupHtml(st) : ''}
+      <div class="seg7" style="margin-bottom:12px">${tabs.map(t => `<button class="${a.tab === t[0] ? 'on' : ''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div>${body}</section>`;
+    bindTehSeg(main);
+    on(main, '[data-tab]', 'click', el => { a.tab = el.dataset.tab; draw(); });
+    on(main, '[data-go]', 'click', el => go(el.dataset.go, {}));
+    on(main, '.sf7[data-sv]', 'click', el => { const v = st.villages.find(x => x.village_id === el.dataset.sv); if (office) staffSheet(st, v, draw); else go('village7', { vid: v.village_id }); });
+    on(main, '[data-uid]', 'click', el => go('official', { uid: el.dataset.uid }));
+    on(main, '[data-rp]', 'click', el => { const x = ppl.find(y => y.user_id === el.dataset.rp); if (!confirm(`Reset the PIN of ${x.name} to 1234?`)) return; busy(el, '…', async () => { await api('resetPin', { user_id: x.user_id }); pinDoneSheet(x.name, x.mobile); }); });
+    b2('add', () => openUser(null, () => { draw(); staffOf(tid, true).then(draw).catch(() => {}); }));
+    b2('inv', () => groupInvite());
+    if (a.tab === 'des') {
+      const list = (S.boot.designations || []).slice();
+      on(main, '[data-dx]', 'click', el => { const d = list[+el.dataset.dx]; if ((S.boot.users || []).some(x => x.designation === d && x.active !== 'DEL')) { fail(d + ' is held by someone: change their designation first.'); return; } S.boot.designations = list.filter((x, i) => i !== +el.dataset.dx); draw(); });
+      $('#dad').onclick = () => { const v = $('#dn').value.replace(/\s+/g, ' ').trim(); if (!v) return; if (list.some(x => x.toLowerCase() === v.toLowerCase())) { fail('Already in the list.'); return; } S.boot.designations = list.concat([v]); draw(); };
+      $('#dsv').onclick = () => busy($('#dsv'), 'Saving…', async () => { const x = await api('designationsSave', { list: S.boot.designations }); S.boot.designations = x.designations; await kput('boot', S.boot); });
+    }
+  };
+  draw();
+  try { await staffOf(tid); } catch (e) { if (a.tab === 'vil') { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  if (office && navigator.onLine && !a._bg) { a._bg = true; try { const x = await api('listUsers'); S.boot.users = x.users; await kput('boot', S.boot); } catch (e) {} }
+  if (current() && current().args === a && !SHEET) draw();
+};
+/* the person sheet: "Also covers" only for the Naib Tehsildar and Dealing Assistants; backup uploader for field staff */
+openUser = function (u, redraw) {
+  _openUser6(u, redraw);
+  const box = $('#sheet .sheet-in'); if (!box) return;
+  const xt = $$('.xt', box), cov = xt.length ? xt[0].closest('.field') : null, rs = $('#r', box);
+  const sync7 = () => { if (cov) cov.hidden = !['DA', 'NT'].includes(rs.value); };
+  if (rs) { rs.addEventListener('change', sync7); $('#d', box).addEventListener('change', () => setTimeout(sync7)); sync7(); }
+  const dl = $('#d', box); if (dl && dl.parentElement) { const s2 = document.createElement('small'); s2.textContent = 'New designations are added in Staff → Designations.'; dl.parentElement.appendChild(s2); }
+  if (!u || !['OPERATOR', 'COMP'].includes(u.role)) return;
+  const el = document.createElement('label'); el.className = 'chk'; el.innerHTML = `<input type="checkbox" id="bku" ${u.backup ? 'checked' : ''}> Backup uploader (drops the portal file when the Dealing Assistant is away)`;
+  const saveBtn = $('#s', box); box.insertBefore(el, saveBtn);
+  $('#bku', box).onchange = e => busy(saveBtn, '…', async () => { const r = await api('saveUser', { user_id: u.user_id, name: u.name, designation: u.designation, mobile: u.mobile, role: u.role, tehsil_id: u.tehsil_id, active: u.active, backup: e.target.checked });
+    const list = S.boot.users; const i = list.findIndex(x => x.user_id === r.user.user_id); if (i >= 0) list[i] = r.user; await kput('boot', S.boot); toast(e.target.checked ? u.name + ' is backup uploader' : 'Backup removed'); });
+};
+
+/* ---------- Settings / Me ---------- */
+function boardSheet() {
+  simpleSheet('Live board link', `<p class="guide">Pin this link in the WhatsApp group description. It shows names and counts only (no Aadhaar) and refreshes itself.</p><div class="box" style="word-break:break-all">${esc(boardUrl() || 'No link yet')}</div>
+    <button class="btn btn-primary" id="bc">Copy the link</button>${role() === 'ADMIN' ? '<button class="btn btn-danger" id="br">Make a new link (the old one stops working)</button>' : ''}`, r => {
+    $('#bc', r).onclick = async () => (await copyText(boardUrl())) ? toast('Copied') : fail('Could not copy.');
+    if ($('#br', r)) $('#br', r).onclick = () => busy($('#br', r), '…', async () => { const x = await api('boardKey', { reset: true }); S.boot.v6.board_key = x.key; await kput('boot', S.boot); closeSheet(() => toast('New link made: copy it again')); }); });
+}
+function viewAsSheet() {
+  const us = (S.boot.users || []).filter(x => x.active === 'Y' && x.user_id !== me().user_id).sort((x, y) => ROLE_ORD[x.role] - ROLE_ORD[y.role] || x.name.localeCompare(y.name));
+  simpleSheet('View the app as…', `<p class="guide">See the app exactly as this person sees it. Read only: nothing can be changed while viewing.</p><input id="vq" class="input search" placeholder="Find a name">
+    <div class="list" id="vl">${us.map(x => `<button class="row" data-va="${esc(x.user_id)}"><span class="rt"><b>${esc(x.name)}</b><small>${esc(x.designation)} · ${esc(tehsilName(x.tehsil_id))}</small></span></button>`).join('')}</div>`, r => {
+    $('#vq', r).oninput = e => { const q = e.target.value.toLowerCase(); $$('#vl .row', r).forEach(b => b.hidden = !!q && !b.textContent.toLowerCase().includes(q)); };
+    on(r, '[data-va]', 'click', el => closeSheet(() => startViewAs(el.dataset.va).catch(e => fail(e.message))));
+  });
+}
+const ZOOMS = [[0.9, 'A−'], [1, 'A'], [1.15, 'A+'], [1.3, 'A++']];
+VIEWS.more = async function () {
+  const u = me(), r = role(), p = prefs(), office = ['ADMIN', 'DA'].includes(r), hi = p.hi === undefined ? isField() : !!p.hi, z = Number(p.zoom || u.zoom || S.zoom || 1), ts = myTehsils();
+  setHeader(isField() ? 'Me' : 'Settings'); document.body.classList.add('wide');
+  const da = daOf(u.tehsil_id), tile = (id, t, s) => `<button class="row" id="${id}"><span class="rt"><b>${t}</b>${s ? `<small>${s}</small>` : ''}</span></button>`;
+  $('#view').innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(u.name)}</h1><small class="hint">${esc(u.designation)}${u.tehsil_id ? ' · ' + esc(tehsilName(u.tehsil_id)) : ''} · ${esc(ROLE_LABEL[r] || r)}</small></div></div>
+    <div class="cards7">
+    <div class="card7"><h3>Look</h3>
+      <label class="chk"><input type="checkbox" id="phi" ${hi ? 'checked' : ''}> Hinglish lines under the English</label>
+      <label class="chk"><input type="checkbox" id="psun" ${p.sun ? 'checked' : ''}> Sunlight mode (stronger contrast outdoors)</label>
+      <p class="hint" style="margin:8px 0 4px">Text size</p><div class="seg7">${ZOOMS.map(x => `<button data-z="${x[0]}" class="${Math.abs(x[0] - z) < .01 ? 'on' : ''}">${x[1]}</button>`).join('')}</div>
+      ${ts.length > 1 ? `<p class="hint" style="margin:10px 0 4px">Tehsil that opens first</p><div class="seg7">${ts.map(t => `<button data-ht="${t}" class="${t === ts[0] ? 'on' : ''}">${esc(tehsilName(t))}</button>`).join('')}</div>` : ''}</div>
+    <div class="card7"><h3>You</h3><div class="list">${tile('job', 'Your job in this app', 'What you do here, in four lines')}${tile('pin', 'Change my PIN', '')}${tile('prac', 'Practice (no login)', 'Try every screen with sample data. Nothing is saved.')}</div>
+      <button class="logout" id="out" style="margin-top:10px">${L('logout')}</button></div>
+    <div class="card7"><h3>Help</h3><div class="list">${tile('hlp', 'Help', 'How each screen works')}${tile('rpb', 'Report a problem', 'Goes to the office with your phone details')}${da.mobile ? `<a class="row" href="tel:${esc(da.mobile)}"><span class="rt"><b>Call ${esc(da.name || 'the Dealing Assistant')}</b><small>${esc(da.mobile)}</small></span></a>` : ''}</div></div>
+    ${!isField() ? `<div class="card7"><h3>Office</h3><div class="list">${office ? tile('aset', 'App settings', 'Deadlines, reasons, texts') + tile('vph', 'Villages & Patwar Halqas', 'Halqas, their Patwaris and villages') : ''}${tile('ntc', 'Notices', 'Send a notice to everyone, with read ticks')}${boardUrl() ? tile('brd', 'Live board link', 'Names and counts, no Aadhaar') : ''}${['NT', 'ADMIN'].includes(r) ? tile('spt', 'Spot checks', 'Naib Tehsildar') : ''}${office ? tile('hl', 'Health', 'Server, uploads, errors') + tile('inv', 'Group invite (WhatsApp)', '') : ''}</div></div>` : ''}
+    ${r === 'ADMIN' ? `<div class="card7"><h3>Tehsildar</h3><div class="list">${tile('vas', 'View as…', 'See the app as any official, read only')}${tile('cmp', 'Campaign', 'Close or reopen')}</div></div>` : ''}
+    </div><p class="foot">Farmer ID Dashboard ${esc(APP_V)}</p></section>`;
+  $('#phi').onchange = e => { setPref('hi', e.target.checked); pracMark('setPrefs'); };
+  $('#psun').onchange = e => { setPref('sun', e.target.checked); pracMark('setPrefs'); };
+  on($('#view'), '[data-z]', 'click', el => { applyZoom(el.dataset.z); setPref('zoom', Number(el.dataset.z)); pracMark('setPrefs'); render(); });
+  on($('#view'), '[data-ht]', 'click', el => { setPref('home_tehsil', el.dataset.ht); sortTehsils(S.boot); S.tid = el.dataset.ht; render(); });
+  b2('job', jobSheet); b2('pin', () => go('pin')); b2('out', () => S.practice ? (location.href = appUrl()) : logout());
+  b2('prac', () => { location.href = appUrl() + '?practice'; });
+  b2('hlp', () => go('help')); b2('aset', () => go('settings')); b2('vph', () => go('villages')); b2('ntc', noticeSheet); b2('brd', boardSheet); b2('spt', () => go('spot'));
+  b2('hl', () => go('health')); b2('vas', viewAsSheet); b2('cmp', campaignSheet);
+};
+
+/* ---------- Search everything ("/" on a laptop) ---------- */
+const PAGES7 = [['Home', 'home'], ['Villages', 'status', 1], ['Reports', 'reports', 1], ['Staff', 'users', 1], ['Settings', 'more'], ['Who goes where (deployment)', 'deploy', 2], ['Match desk', 'match', 2], ['Position statement', 'position', 1], ['Sort my villages', 'sort'], ['Help', 'help'], ['Activity: files made today', 'activity'], ['Spot checks', 'spot', 3], ['App settings', 'settings', 2], ['Villages & Patwar Halqas', 'villages', 2], ['Health', 'health', 2]];
+VIEWS.find = async function (a) {
+  if (isField()) { setHeader('Search'); return VIEWS.search(a); }
+  setHeader('Search'); document.body.classList.add('wide');
+  a.q = a.q || ''; const r = role(), lv = x => !x[2] || (x[2] === 1) || (x[2] === 2 && ['ADMIN', 'DA'].includes(r)) || (x[2] === 3 && ['ADMIN', 'NT'].includes(r));
+  $('#view').innerHTML = `<section class="pad"><input id="q" class="input search" type="search" placeholder="Village, official, farmer, khasra, Farmer ID, report or page" value="${esc(a.q)}" autofocus>
+    <p class="hint">Tip: press <span class="kbd7">/</span> anywhere on a laptop to search.</p><div id="res"></div></section>`;
+  const draw = async () => {
+    const q = a.q.trim().toLowerCase(), m = s => String(s || '').toLowerCase().includes(q), box = $('#res');
+    if (q.length < 2) { box.innerHTML = `<p class="sec7">Pages</p><div class="list">${PAGES7.filter(lv).map(x => `<button class="row" data-pg="${x[1]}"><span class="rt"><b>${esc(x[0])}</b></span></button>`).join('')}</div>`; bindR(); return; }
+    const pg = PAGES7.filter(lv).filter(x => m(x[0])), rp = REPS().filter(x => m(x.t) || m(x.p)), vs = villages().filter(v => m(v.name)).slice(0, 12), us = (S.boot.users || []).filter(x => x.active !== 'DEL' && (m(x.name) || m(x.designation))).slice(0, 12);
+    const sec = (t, html) => html ? `<p class="sec7">${t}</p><div class="list">${html}</div>` : '';
+    box.innerHTML = sec('Pages', pg.map(x => `<button class="row" data-pg="${x[1]}"><span class="rt"><b>${esc(x[0])}</b></span></button>`).join('')) + sec('Reports', rp.map(x => `<button class="row" data-rp7="${x.k}"><span class="rt"><b>${esc(x.t)}</b><small>${esc(x.when)}</small></span></button>`).join(''))
+      + sec('Villages', vs.map(v => `<button class="row" data-v7="${esc(v.village_id)}"><span class="rt"><b>${esc(v.name)}</b><small>${esc(tehsilName(v.tehsil_id))}</small></span></button>`).join('')) + sec('Officials', us.map(x => `<button class="row" data-uid="${esc(x.user_id)}"><span class="rt"><b>${esc(x.name)}</b><small>${esc(x.designation)} · ${esc(tehsilName(x.tehsil_id))}</small></span></button>`).join(''))
+      + '<div id="srv"><p class="loading"><span class="spin"></span>Searching farmers and land entries…</p></div>';
+    bindR(); pracMark('view:find');
+    try { const x = await api('search', { q }); if (a.q.trim().toLowerCase() !== q || !$('#srv')) return; const hs = x.hits.filter(h => !['Village', 'Official'].includes(h.kind));
+      $('#srv').innerHTML = hs.length ? sec('Farmers and land', hs.map(h => `<button class="row" ${h.village_id ? `data-vl="${esc(h.village_id)}"` : ''}><span class="rt"><small>${esc(h.kind)}</small><b>${esc(h.title)}</b><small>${esc(h.sub || '')}</small></span></button>`).join('')) : (box.querySelector('.row') ? '' : '<p class="hint">Nothing found.</p>');
+      on($('#srv'), '[data-vl]', 'click', el => go('vlist', { vid: el.dataset.vl, k: 'all', q })); } catch (e) { if ($('#srv')) $('#srv').innerHTML = `<p class="hint">${esc(e.message)}</p>`; }
+  };
+  const bindR = () => { const box = $('#res');
+    on(box, '[data-pg]', 'click', el => { const t = el.dataset.pg; if (t === 'home') { NAV.stack = [{ name: 'home', args: {} }]; render(); } else go(t, {}); });
+    on(box, '[data-rp7]', 'click', el => { const x = REPS().find(y => y.k === el.dataset.rp7); if (x) x.run(el); });
+    on(box, '[data-v7]', 'click', el => go('village7', { vid: el.dataset.v7 })); on(box, '[data-uid]', 'click', el => go('official', { uid: el.dataset.uid })); };
+  const qi = $('#q'); qi.oninput = () => { a.q = qi.value; clearTimeout(a._t); a._t = setTimeout(draw, 300); }; draw(); setTimeout(() => qi.focus(), 50);
+};
+
+/* ---------- Activity: everything made or sent in this session ---------- */
+VIEWS.activity = async function () {
+  setHeader('Activity'); document.body.classList.add('wide');
+  $('#view').innerHTML = `<section class="pad"><div class="ttl7"><h1>Activity</h1><span class="hint">This session</span></div>
+    ${TASKS.length ? `<div class="list">${TASKS.map((t, i) => `<button class="row" data-tk="${i}"><span class="dot" style="background:${t.status === 'ok' ? 'var(--ok)' : t.status === 'err' ? 'var(--late)' : 'var(--saf)'}"></span><span class="rt"><b>${esc(t.title)}</b><small>${esc(t12(t.at))} · ${t.status === 'run' ? 'working…' : esc(t.msg || '')}</small></span></button>`).join('')}</div>`
+      : `<div class="empty">${ic('check', 44)}Nothing yet. Files you make, uploads and messages appear here.</div>`}</section>`;
+  on($('#view'), '[data-tk]', 'click', el => drawTask(TASKS[+el.dataset.tk]));
+};
+
+/* ======================= v7 E: MESSAGES, PRACTICE ARENA ======================= */
+const belowOf = t => t.closed ? (t.explain || []) : (t.pace || []).filter(v => v.target > 0 && v.ids < v.target).map(v => ({ village: v.name, ids: v.ids, target: v.target, proj: v.proj, incharge: v.incharge ? v.incharge.name : '', patwari: v.patwari && (!v.incharge || v.patwari.user_id !== v.incharge.user_id) ? v.patwari.name : '' }));
+const SHOWCAUSE = '_The In-charge of each village below target (and its Patwari, where he is not the In-charge) may face show cause proceedings._';
+msgClose = function (P) {
+  const ts = P.tehsils, L2 = [`*Farmer ID – Day close, ${fmtDate(todayIST())}*`, ''], fl = (ts[0] || {}).floor || V6().floor;
+  ts.forEach(t => L2.push(`*${t.name}*: ${t.today} / ${t.target} (${Math.round(t.today * 100 / Math.max(1, t.target))}%)${t.self ? ` · self-registered ${t.self}` : ''}`));
+  ts.forEach(t => { if ((t.top2 || []).length) L2.push('', `🏆 *${t.name} – top 2*: ` + t.top2.map((o, i) => `${i ? '🥈' : '🥇'} ${o.name} ${nr(o.today)}`).join('  ')); });
+  ts.forEach(t => { if (!t.officials.length) return; L2.push('', `*${t.name} – ranking of operators*`); t.officials.forEach((o, i) => L2.push(`${i + 1}. ${o.name}: ${nr(o.today)}${o.today >= o.floor ? ' ✅' : ''}`)); });
+  let any = false;
+  ts.forEach(t => { const ex = belowOf(t); if (!(t.pace || []).length && !ex.length) return;
+    if (!ex.length) { L2.push('', `✅ *${t.name}*: every village met its target.`); return; }
+    any = true; L2.push('', `*${t.name} – villages below target*`); ex.forEach(x => L2.push(`• ${x.village}: ${x.ids} / ${x.target} – In-charge ${x.incharge || '(not set)'}${x.patwari ? ', Patwari ' + x.patwari : ''}`)); });
+  if (any) L2.push('', SHOWCAUSE);
+  const st = ts.reduce((a, t) => a.concat(t.streaks || []), []); if (st.length) L2.push('', `🔥 *3 days in a row above ${fl}*: ${st.join(', ')}. Shabash!`);
+  const sv = ts.reduce((a, t) => a.concat(t.self_villages || []), []); if (sv.length) L2.push('', `*Farmers registering themselves*: ${sv.map(v => v.name + ' ' + v.self).join(', ')}`);
+  ts.forEach(t => (t.down || []).forEach(x => L2.push(`⛔ ${t.name}: portal down ${t12(x.from)}${x.to ? '–' + t12(x.to) : ''}`)));
+  L2.push('', '_Tomorrow: plan at 9 AM. Call the families on your list this evening._');
+  return L2.join('\n');
+};
+const _mh7 = msgHourly;
+msgHourly = function (P) {
+  const L2 = _mh7(P).split('\n'), at = L2.findIndex(l => /^Live board:/.test(l)), add = [];
+  P.tehsils.forEach(t => (t.top2 || []).length && add.push('', `🏆 *${t.name} – top 2 today*: ` + t.top2.map((o, i) => `${i ? '🥈' : '🥇'} ${o.name} ${nr(o.today)}`).join('  ')));
+  if (hm() >= '12:30') P.tehsils.forEach(t => { const b = (t.pace || []).filter(v => v.target > 0 && v.proj < v.target);
+    if (b.length) add.push('', `⚠️ *${t.name} – heading below target by 5 PM*`, ...b.map(v => `• ${v.name}: ${v.ids} / ${v.target} (at this pace ~${v.proj}) – In-charge ${v.incharge ? v.incharge.name : '(not set)'}`), SHOWCAUSE); });
+  if (at >= 0) L2.splice(at - 1, 0, ...add); else L2.push(...add);
+  return L2.join('\n');
+};
+
+/* ---------- Practice arena: ?practice · no login · sample data · nothing saved ---------- */
+const PRAC_ROLES = [['OPERATOR', 'Field official', 'Makes Farmer IDs on the portal. In-charge of a village.', 'Aslam'], ['PATWARI', 'Patwari', 'Sorts his halqa after camp hours. In-charge of a village.', 'Mohan'],
+  ['DA', 'Dealing Assistant', 'Plan, hourly file and update, progress sheet, day close, staffing.', 'Ravi'], ['NT', 'Naib Tehsildar', 'Watches the pace, nudges In-charges, logs calls.', 'Sunil'], ['COMP', 'Computer operator', 'Makes Farmer IDs on the portal.', 'Imran']];
+const PRAC_TASKS = {
+  OPERATOR: [['view:home', 'Home: see your count, your rank and the top 2'], ['view:village7', 'Tap your village (Hari Nagar): pace and what is blocking'], ['view:search', 'Search a farmer: tap Search, type 2 letters'], ['setPrefs', 'Me: switch on Sunlight mode or change the text size']],
+  PATWARI: [['saveBuckets', 'Sort one family: Sort → tap a family → answer'], ['picksSave', 'Put a family on tomorrow\'s call-first list (⭐ in the same sheet)'], ['view:village7', 'Home: tap your village to see its pace'], ['setPrefs', 'Me: change the text size']],
+  DA: [['wa:plan', 'Send today\'s plan (Reports → Today\'s plan → Send)'], ['regApply', 'Get the sample portal file (below), then drop it on "Registered farmers list" on Home'], ['wa:hour', 'Send the hourly update (Reports → Hourly update)'], ['pdf:progress', 'Make the progress sheet (Reports)'], ['staffingSave', 'Staff → tap Panchari → set its In-charge and operators']],
+  NT: [['view:village7', 'Home: tap a red village to see what is blocking it'], ['wa:nudge', 'Nudge its In-charge on WhatsApp'], ['supLog', 'Home: tap "Called" next to an official in "Call now"'], ['view:official', 'Staff → People → open an official\'s record']],
+  COMP: [['view:home', 'Home: see your count, your rank and the top 2'], ['view:search', 'Search a farmer: tap Search, type 2 letters'], ['setPrefs', 'Me: switch on Sunlight mode']]
+};
+function pracMark(k) {
+  if (!S.practice) return; const t = (PRAC_TASKS[S.practice.role] || []).find(x => x[0] === k); if (!t || S.practice.done[k]) return;
+  S.practice.done[k] = 1; pracBar(); setTimeout(() => toast('✓ Practice task done: ' + t[1].split(':')[0], 'info', 3500), 300);
+  if ((PRAC_TASKS[S.practice.role] || []).every(x => S.practice.done[x[0]])) setTimeout(() => simpleSheet('Shabash! 🎉', `<p class="guide">You finished every practice task for <b>${esc(PRAC_ROLES.find(r => r[0] === S.practice.role)[1])}</b>. You are ready for the real app.</p><button class="btn btn-primary" id="pr2">Try another role</button><a class="btn" href="${appUrl()}">Go to the login</a>`, r => { $('#pr2', r).onclick = () => { location.href = appUrl() + '?practice'; }; }), 1200);
+}
+function pracBar() {
+  let el = $('#prac7'); if (!S.practice) { if (el) el.remove(); return; }
+  if (!el) { el = document.createElement('div'); el.id = 'prac7'; el.className = 'prac7'; $('#bar').after(el); }
+  const ts = PRAC_TASKS[S.practice.role] || [], n = ts.filter(x => S.practice.done[x[0]]).length;
+  el.innerHTML = `<span>PRACTICE · ${esc(PRAC_ROLES.find(r => r[0] === S.practice.role)[1])} · sample data, nothing is saved</span> <button class="ab" id="prT">Tasks ${n}/${ts.length}</button> <button class="ab" id="prX">Exit</button>`;
+  $('#prT').onclick = pracTasks; $('#prX').onclick = () => { location.href = appUrl() + '?practice'; };
+}
+function pracTasks() {
+  const ts = PRAC_TASKS[S.practice.role] || [];
+  simpleSheet('Practice tasks', `<p class="guide">Do these in the app. Each one ticks itself when you do it.<span class="hi">Har kaam karte hi tick lag jayega.</span></p>
+    <div class="card7">${ts.map(x => `<div class="task7l${S.practice.done[x[0]] ? ' dn' : ''}"><span class="ck">${S.practice.done[x[0]] ? '✓' : ''}</span><span>${esc(x[1])}</span></div>`).join('')}</div>
+    ${S.practice.role === 'DA' ? '<button class="btn" id="smp">Get the sample portal file</button>' : ''}
+    <button class="btn btn-primary" id="go1">Start</button><button class="btn" id="sw">Switch role</button>`, r => {
+    $('#go1', r).onclick = () => closeSheet();
+    $('#sw', r).onclick = () => { location.href = appUrl() + '?practice'; };
+    if ($('#smp', r)) $('#smp', r).onclick = () => { const f = PRAC.sampleFile(); closeSheet(() => addFile(new Blob([f.text], { type: 'text/csv' }), f.name, 'Sample portal file ready ✓ Download it, then drop it on "Registered farmers list".')); };
+  });
+}
+async function practiceApi(action, payload) {
+  if (!window.PRAC) throw new Error('Practice is still loading.');
+  if (['logout', 'logError', 'archive', 'archiveUpload'].includes(action)) return { ok: true };
+  await new Promise(r => setTimeout(r, 150));
+  const res = PRAC.call(Object.assign({}, payload, { action, token: S.session ? S.session.token : '' }));
+  if (!res.ok) throw new Error(res.error || 'Something went wrong.');
+  if (!['bootstrap', 'pulse', 'home', 'phStatus', 'plan', 'staffing', 'getBuckets', 'search', 'official', 'listUsers'].includes(action)) pracMark(action);
+  return res;
+}
+VIEWS.practice = async function () {
+  $('#title').innerHTML = 'Practice<small>No login · sample data · nothing is saved</small>'; $('#back').hidden = true; $('#hlp').hidden = true; $('#pill').hidden = true;
+  ['#srch7', '#act7'].forEach(id => { const e = $(id); if (e) e.hidden = true; });
+  $('#view').innerHTML = `<section class="pad"><div class="ttl7"><h1>Who are you?</h1></div>
+    <p class="guide">Pick your role. You get 3 to 5 small tasks with sample villages and people. Each task ticks itself when you do it. Nothing you do here reaches the office.<span class="hi">Apna kaam chunein. Yahan kuch save nahi hota.</span></p>
+    <div class="roles7">${PRAC_ROLES.map(r => `<button data-pr="${r[0]}"><b>${esc(r[1])}</b><span class="hint">${esc(r[2])}</span><small class="hint" style="display:block;margin-top:6px">You will be: ${esc(r[3])}</small></button>`).join('')}</div>
+    <a class="btn" href="${appUrl()}" style="margin-top:16px">Back to the login</a></section>`;
+  on($('#view'), '[data-pr]', 'click', el => busy(el, 'Setting up the sample tehsil…', async () => {
+    if (!window.PRAC) await loadScript('practice.js?v=' + APP_V).catch(() => {});
+    if (!window.PRAC) throw new Error('Practice could not load. Check the internet and try again.');
+    const k = el.dataset.pr, s = PRAC.start(k);
+    S.practice = { role: k, done: {}, kv: {} }; S.session = { token: s.token, user: s.user }; S.queue = []; S.problems = []; S.buckets = {}; S.fetchedAt = {};
+    S.boot = await api('bootstrap'); try { await initLang(); } catch (e) {}
+    NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); pracBar(); setTimeout(pracTasks, 700);
+  }));
+};
+/* practice keeps everything in memory, never in the phone's storage */
+const _kg7 = kget; kget = function (k) { if (S.practice) return Promise.resolve(S.practice.kv[k]); return _kg7(k); };
+const _kp7b = kput; kput = function (k, v) { if (S.practice) { S.practice.kv[k] = v; return Promise.resolve(); } return _kp7b(k, v); };
+const _kd7 = kdel; kdel = function (k) { if (S.practice) { delete S.practice.kv[k]; return Promise.resolve(); } return _kd7(k); };
+sync = async function () { if (S.viewAs) { updatePill(); return; } return _sync7(); };
+const _swa7 = sendWA;
+sendWA = async function (text, title) {
+  if (S.practice) { pracMark(/– plan for/.test(text) ? 'wa:plan' : /Day close/.test(text) ? 'wa:close' : /^\*Farmer ID – \d/.test(text) ? 'wa:hour' : 'wa:other'); toast('Practice: this would open WhatsApp with the message.', 'info', 4000); return; }
+  return _swa7(text, title);
+};
+const _rd7 = render;
+render = async function () { await _rd7(); const c = current(); if (S.practice && c) { pracMark('view:' + c.name); pracBar(); } };
+const _login7 = VIEWS.login;
+VIEWS.login = async function (a) {
+  await _login7(a);
+  const f = $('#view .foot'); if (f && !$('#prL')) { const b = document.createElement('a'); b.id = 'prL'; b.className = 'btn'; b.href = appUrl() + '?practice'; b.style.marginTop = '18px'; b.innerHTML = 'Practice without login<span class="hi">Bina login practice karein</span>'; f.before(b); }
+};
+
+Object.assign(HELP, {
+  status: ['Villages', 'Today: each village against its target, with its In-charge and Patwari. Green = met, amber = on pace, red = behind.', 'Till date: by Patwar Halqa. Tap a village for its page.'],
+  village7: ['A village', 'Figures, people (Patwari, In-charge, operators) and what is blocking, with the suggested action.', 'Below target at 5 PM invites show cause proceedings against the In-charge and the Patwari.'],
+  reports: ['Reports', 'Every report in one place: what it is, who makes it, when.', 'Due ones are highlighted. Files open in a card with Download, Share and Open.'],
+  users: ['Staff', 'Villages: one row per village. Patwari comes from the halqa; set one In-charge and the operators. Target = operators × 50 unless you set it.', 'People: tap a name for the record. Designations: kept by the Dealing Assistant for both tehsils.'],
+  more: ['Settings', 'Look: Hinglish lines, Sunlight mode, text size.', 'Practice: try any role with sample data, without login.']
+});
+
 /* ======================= START ======================= */
 async function start() {
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(reg => {
@@ -5359,6 +6294,7 @@ async function start() {
   }).catch(() => {});
   $('#updBtn').onclick = () => location.reload();
   const bk = new URLSearchParams(location.search).get('board'); if (bk) { NAV.stack = [{ name: 'board', args: { key: bk } }]; render(); return; }
+  if (new URLSearchParams(location.search).has('practice')) { NAV.stack = [{ name: 'practice', args: {} }]; render(); return; }
   try { S.zoom = Number(await kget('zoom')) || 1; document.documentElement.style.setProperty('--z', S.zoom); } catch (e) {}
   try { S.session = await kget('session'); } catch (e) { $('#view').innerHTML = '<div class="pad"><p class="err">This browser cannot save data. Do not use private or incognito mode.</p></div>'; return; }
   window.addEventListener('online', () => { updatePill(); sync(); refreshBoot(); });
@@ -5375,7 +6311,7 @@ async function start() {
   await initLang();
   if (!needPin()) { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); }
   maybeLock(); refreshBoot(); scheduleSync(800); if (['ADMIN', 'DA', 'NT'].includes(role())) loadHome(true).then(() => { if (current() && current().name === 'home' && !SHEET) render(); });
-  if (!me().must_change_pin && !(await kget('tour:' + me().user_id))) setTimeout(showTour, 500);
+  if (!me().must_change_pin) setTimeout(afterLoginCards, 600);
 }
 start();
 </script>
