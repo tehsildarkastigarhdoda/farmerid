@@ -65,9 +65,9 @@
     const lead = hm < '09:00' ? 'Camps start at 9 AM' : ts.every(t => t.closed_day) ? 'Day closed: final figures' : 'Live today';
     let s = `<span class="lead">${lead}</span>`;
     s += ts.some(t => t.today) ? 'Today ' + join(ts.map(t => `<b>${esc(t.name)}</b> made <b>${fmt(t.today)}</b>`)) + ' Farmer IDs. ' : 'No Farmer ID counted yet today. ';
-    s += `Till date <b>${fmt(made)}</b> of ${fmt(total)} (${total ? Math.round(made * 1000 / total) / 10 : 0}%). To finish by ${dlong(d.deadline)}: <b>${fmt(need)} a day</b>.`;
+    s += `Till date <b>${fmt(made)}</b> of ${fmt(total)} (${total ? Math.round(made * 1000 / total) / 10 : 0}%). Needed: <b>${fmt(need)} a day</b>.`;
     if (o.forecast) { const ex = ts.reduce((a, t) => a + ((o.forecast[t.tehsil_id] || {}).expected || 0), 0), pc = total ? Math.round(ex * 100 / total) : 0;
-      s += ` <span style="color:${pc >= 100 ? 'var(--ok)' : 'var(--late)'}">At the last 7 days' pace: about ${fmt(ex)} (${pc}%) by the deadline.</span>`; }
+      s += ` <span style="color:${pc >= 100 ? 'var(--ok)' : 'var(--late)'}">At the last 7 days' pace: about ${fmt(ex)} (${pc}%) by the internal deadline.</span>`; }
     return s;
   }
   function mountain(d, narrow) {
@@ -85,7 +85,7 @@
       <path d="${path} L${sx} ${H} L${x0} ${H} Z" fill="#8CC79C"/><path d="${path}" fill="none" stroke="#2F7D52" stroke-width="5" stroke-linecap="round"/>
       ${[25, 50, 75].map(p => { const [x, y] = pt(p); return `<text x="${x}" y="${y + 30 * f}" text-anchor="middle" font-size="${13 * f}" fill="#2F5E44" font-weight="700">${p}%</text>`; }).join('')}
       <g><line x1="${sx}" y1="${sy}" x2="${sx}" y2="${sy - 34}" stroke="#16201B" stroke-width="3"/><path d="M${sx} ${sy - 34} L${sx + 30} ${sy - 26} L${sx} ${sy - 18} Z" fill="#E39B2D"/>
-        <text x="${sx + 30}" y="${sy - 42}" text-anchor="end" font-size="${14 * f}" font-weight="800" fill="#16201B">100% by ${esc(dlong(d.deadline))}</text></g>
+        <text x="${sx + 30}" y="${sy - 42}" text-anchor="end" font-size="${14 * f}" font-weight="800" fill="#16201B">100%</text></g>
       ${d.closed ? '' : `<g><line x1="${ex}" y1="${ey}" x2="${ex}" y2="${ey - 40}" stroke="#B26A00" stroke-width="2.5" stroke-dasharray="5 4"/><path d="M${ex} ${ey - 40} L${ex + 22} ${ey - 34} L${ex} ${ey - 28} Z" fill="#E39B2D"/>
         <text x="${hi ? ex - 6 : ex + 26}" y="${hi ? ey - 30 : ey - 31}" text-anchor="${hi ? 'end' : 'start'}" font-size="${13 * f}" font-weight="800" fill="#6B3F00">Should be here today: ${d.expected_pct}%</text></g>`}
       ${cl}</svg>`;
@@ -133,7 +133,7 @@
       if (!d || !d.tehsils) { root.innerHTML = '<div class="d7"><div class="d7-card" style="height:220px"></div></div>'; return; }
       if (o.order) { const ix = id => { const i = o.order.indexOf(id); return i < 0 ? 99 : i; }; d.tehsils.sort((a, b) => ix(a.tehsil_id) - ix(b.tehsil_id)); }
       root.innerHTML = `<div class="d7"><div class="d7-story">${story(d, o)}</div>
-        <div class="d7-card d7-mtn">${mountain(d, (root.clientWidth || innerWidth) < 600)}<div class="cap"><span>The climb to <b>100% by ${esc(dmy(d.deadline))}</b>${d.closed ? '' : ` · ${d.days_left} days left`}</span><span>${d.closed ? 'Final position' : '<b style="color:#B42318">Red</b> = below the flag · <b style="color:#1E8A4C">green</b> = at or above it'}</span></div></div>
+        <div class="d7-card d7-mtn">${mountain(d, (root.clientWidth || innerWidth) < 600)}<div class="cap"><span>The climb to <b>100%</b></span><span>${d.closed ? 'Final position' : '<b style="color:#B42318">Red</b> = below the flag · <b style="color:#1E8A4C">green</b> = at or above it'}</span></div></div>
         ${d.tehsils.length > 1 ? `<div class="d7-jump">${d.tehsils.map(t => `<a href="#d7-${esc(t.tehsil_id)}">${esc(t.name)}</a>`).join('')}</div>` : ''}
         <div class="d7-cols">${d.tehsils.map(t => panel(d, t, o)).join('')}</div></div>`;
       countUp(root); celebrate(d);

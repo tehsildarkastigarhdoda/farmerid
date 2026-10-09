@@ -13,13 +13,14 @@
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="https://tehsildarkastigarhdoda.github.io/farmerid/">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;overflow-x:hidden}
-body{font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#F3F5F2;color:#16201B}
+body{font:16px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#F3F5F2;color:#16201B}
 .top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid #E0E6E2}
 .top .in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px}
 .top img{width:44px;height:44px;flex:none}
@@ -61,10 +62,12 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
   async function load() {
     try {
       const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'dash' }) }); const d = await r.json();
-      if (!d.ok) throw new Error(d.error || 'Could not load.'); msg.innerHTML = ''; draw(d); try { localStorage.setItem('d7:last', JSON.stringify(d)); } catch (e) {}
-    } catch (e) { msg.innerHTML = `<div class="err">${navigator.onLine ? 'Could not reach the server.' : 'No internet.'} ${last ? 'Showing the last figures.' : 'Try again in a minute.'}</div>`; }
+      if (!d.ok) { const er = new Error(d.error || 'Could not load.'); er.server = 1; throw er; } msg.innerHTML = ''; draw(d); try { localStorage.setItem('d7:last', JSON.stringify(d)); } catch (e) {}
+    } catch (e) { const why = e.server ? (/Unknown action/.test(e.message) ? 'The server is on an older version: the office needs to deploy the new Code.gs (Deploy > Manage deployments > New version).' : 'The server replied: ' + e.message) : navigator.onLine ? 'Could not reach the server.' : 'No internet.';
+      msg.innerHTML = `<div class="err">${why.replace(/</g, '&lt;')} ${last ? 'Showing the last figures.' : 'Try again in a minute.'}</div>`; }
   }
   load(); setInterval(() => { if (document.visibilityState === 'visible') load(); }, 120000);
+  let uv; setInterval(async () => { if (document.visibilityState !== 'visible') return; try { const r = await (await fetch(API_URL, { method: 'POST', redirect: 'follow', body: '{"action":"ver"}' })).json(); if (uv !== undefined && r.uv !== uv) load(); uv = r.uv; } catch (e) {} }, 15000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') load(); });
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

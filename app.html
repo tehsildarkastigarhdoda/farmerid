@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -531,6 +532,96 @@ body.nohi .hi{display:none!important}
 .sec7 .hi{display:inline!important;text-transform:none;letter-spacing:0;font-weight:600}
 .vp7 [data-nudge]{background:#25D366!important;color:#fff!important;border:0!important;border-radius:8px!important;padding:5px 10px!important;font-weight:800!important;font-size:12.5px!important;cursor:pointer}
 .vp7 .chip7{font-size:11.5px;padding:3px 8px;white-space:normal;text-align:center}
+/* ===== v7.2: quiet, professional look ===== */
+:root{--ink:#111816;--mute:#5F6B66;--line:#E3E8E5;--bg:#F7F8F7;--pine:#1F5A3E;--pine2:#174731;--g50:#EEF5F1;--saf:#C27A12;--sf50:#FFF6E8;--late:#B3261E;--latebg:#FDF0EE;--ok:#1E7A46;--okbg:#EAF5EE;--due:#B26A00;--duebg:#FFF6E8}
+html{-webkit-text-size-adjust:100%}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif!important;background:var(--bg)!important;color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-.003em}
+b,strong{font-weight:600}
+h1,h2,h3{font-weight:600!important;letter-spacing:-.01em}
+.ttl7 h1{font-size:22px!important;color:var(--ink)!important}
+#bar{min-height:56px!important;border-bottom:1px solid var(--line)!important}
+#bar #title{color:var(--ink)!important;font-weight:600!important;font-size:16px!important}
+#bar #title small{color:var(--mute)!important;font-weight:400!important}
+#bar .hb7{border:1px solid var(--line)!important;border-radius:9px!important;width:36px;height:36px}
+/* buttons: 40px, sentence case, one solid green */
+.btn{min-height:42px!important;border-radius:10px!important;border:1px solid var(--line)!important;background:#fff!important;color:var(--ink)!important;font-weight:500!important;font-size:15px!important;box-shadow:none!important;margin:6px 0!important}
+.btn-primary{background:var(--pine)!important;border-color:var(--pine)!important;color:#fff!important}
+.btn-danger{color:var(--late)!important;border-color:#EBC5C1!important}
+.btn .hi{display:none!important}
+.btn.okb{background:var(--ok)!important;border-color:var(--ok)!important;color:#fff!important}
+.btn.errb{background:var(--late)!important;border-color:var(--late)!important;color:#fff!important}
+.ab,.att .mem .ab{background:#fff!important;color:var(--pine)!important;border:1px solid var(--line)!important;border-radius:8px!important;padding:6px 11px!important;font-weight:500!important;font-size:13.5px!important}
+.link{color:var(--pine)!important;font-weight:500}
+.input,select.input,textarea.input{min-height:44px!important;border:1px solid #D4DCD7!important;border-radius:10px!important;font-size:15px!important}
+.input:focus{outline:2px solid #BFD8C8;border-color:var(--pine)!important}
+/* surfaces: hairline, no shadow */
+.box,.row,.rowb,.card7,.att,.glance,.live,.list7,.vcard,.upc,.tile7,.d7-card{border:1px solid var(--line)!important;box-shadow:none!important;border-radius:12px!important;background:#fff}
+.row{min-height:54px!important}
+.mem{border-bottom:1px solid #EDF1EE!important}
+.sec,.sec7{font-size:12px!important;font-weight:600!important;letter-spacing:.04em!important;text-transform:uppercase;color:var(--mute)!important}
+.sec .hi,.sec7 .hi{text-transform:none;letter-spacing:0}
+.guide{background:#F4F7F5!important;border:1px solid var(--line)!important;color:#2C3632!important;font-size:14.5px!important;border-radius:10px!important}
+.guide::before{background:var(--pine)!important;color:#fff!important;font-family:inherit!important;font-size:12px!important;width:20px!important;height:20px!important}
+.banner{border:1px solid #F0DEC0!important;background:var(--sf50)!important;border-radius:10px!important}
+.banner.red{background:var(--latebg)!important;border-color:#F0C9C4!important}
+.banner p{font-size:14.5px!important}
+.chipf{border:1px solid var(--line)!important;font-weight:500!important;font-size:14px!important;padding:7px 12px!important}
+.chipf.on{background:var(--ink)!important;border-color:var(--ink)!important}
+.chip7{font-weight:500!important;border-radius:6px!important;padding:2px 8px!important;font-size:12px!important}
+.seg7{border:1px solid var(--line)!important;border-radius:10px!important}.seg7 button{font-weight:500!important;padding:7px 13px!important}
+.hi{font-size:12.5px!important;color:#7A867F!important;font-style:normal!important}
+.hero2{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line)}.hero2:after{display:none}
+.startbig{background:var(--pine)!important;color:#fff!important;border-radius:12px!important;font-size:16px!important;font-weight:600!important;min-height:52px!important;box-shadow:none!important}
+.startbig small{color:#D8E8DE!important;font-weight:400!important}
+.next7{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line);border-left:4px solid var(--pine);box-shadow:none!important;border-radius:12px!important;padding:14px 16px!important}
+.next7.due{border-left-color:var(--saf)!important}.next7.late{border-left-color:var(--late)!important}
+.next7 small{color:var(--mute)!important;font-weight:600!important;letter-spacing:.04em!important}.next7 b{font-size:17px!important;font-weight:600!important}
+.next7 span.s{color:var(--mute)!important;opacity:1!important}
+.next7 button{background:var(--pine)!important;color:#fff!important;border-radius:9px!important;font-weight:500!important;padding:10px 14px!important}
+.top7 .tp{background:#fff!important;border:1px solid var(--line)!important}
+.tile7 b{font-weight:600!important;color:var(--ink)!important}.tile7.late b{color:var(--late)!important}
+.vp7 b,.sf7 b{color:var(--ink)!important;font-weight:600!important}
+.bnav{box-shadow:none!important;border-top:1px solid var(--line)!important}
+.bnav button{font-weight:500!important;color:var(--mute)!important}.bnav button.on{color:var(--pine)!important}
+@media(min-width:900px){.bnav{border-right:1px solid var(--line)!important}.bnav button.on{background:var(--g50)!important}}
+#task7{border-radius:14px!important;box-shadow:0 10px 30px rgba(17,24,22,.16)!important}
+#toast{border-radius:10px!important;font-weight:500!important}
+.foot{color:#7A867F!important;font-size:12.5px!important}
+/* the Dealing Assistant's desk */
+.desk{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:980px){.desk{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}}
+.drop7{border:1.5px dashed #BCC8C1;border-radius:12px;background:#fff;padding:18px;display:flex;gap:14px;align-items:center;cursor:pointer}
+.drop7.drag{border-color:var(--pine);background:var(--g50)}
+.drop7 .ic{width:44px;height:44px;border-radius:10px;background:var(--g50);color:var(--pine);display:flex;align-items:center;justify-content:center;flex:none;font-size:20px}
+.drop7 b{display:block}.drop7 small{color:var(--mute)}
+.rp72{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}.rp72:first-child{border-top:0}
+.rp72 b{display:block;font-weight:600}.rp72 small{color:var(--mute);font-size:12.5px}
+.rp72.due{background:#FFFBF3}.rp72.due small{color:var(--due)}
+.rp72 .btn{width:auto!important;margin:0!important;min-height:36px!important;padding:0 14px!important;font-size:14px!important}
+.kv72{display:grid;grid-template-columns:1fr 1fr}.kv72>div{padding:14px 16px;border-left:1px solid var(--line)}.kv72>div:first-child{border-left:0}
+.kv72 span{font-size:12.5px;color:var(--mute)}.kv72 b{display:block;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+.bar72{height:6px;border-radius:3px;background:#EDF0EE;overflow:hidden;margin-top:8px}.bar72 i{display:block;height:100%;background:var(--pine)}
+.nr72{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 16px;border-top:1px solid var(--line)}.nr72:first-child{border-top:0}
+.tag72{font-size:12px;font-weight:500;border-radius:6px;padding:2px 8px;white-space:nowrap}.tag72.r{background:var(--latebg);color:var(--late)}.tag72.a{background:var(--duebg);color:var(--due)}.tag72.g{background:var(--okbg);color:var(--ok)}.tag72.m{background:#EEF1EF;color:var(--mute)}
+.today72{font-size:13px;color:var(--mute);margin:4px 0 0}
+/* mutations */
+.mu72{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:11px 16px;border-top:1px solid var(--line);cursor:pointer;background:#fff}.mu72:first-child{border-top:0}
+.mu72 b{font-weight:600}.mu72 small{display:block;color:var(--mute);font-size:12.5px}
+.steps72{display:flex;gap:4px}.steps72 i{width:22px;height:6px;border-radius:3px;background:#E3E8E5}.steps72 i.on{background:var(--pine)}
+.ck72{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:15px}.ck72 input{width:22px;height:22px}
+/* loader */
+#ld7{position:fixed;inset:0;z-index:120;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .3s}
+#ld7.off{opacity:0;pointer-events:none}
+#ld7 svg{width:120px;height:120px}
+#ld7 .t1{transform:translateY(120px);animation:ld7up .6s .1s cubic-bezier(.2,.8,.2,1) forwards}#ld7 .t2{transform:translateY(160px);animation:ld7up .6s .35s cubic-bezier(.2,.8,.2,1) forwards}#ld7 .t3{transform:translateY(200px);animation:ld7up .6s .6s cubic-bezier(.2,.8,.2,1) forwards}
+#ld7 .sun{transform:translateY(60px);opacity:0;animation:ld7sun .8s .3s ease-out forwards}
+#ld7 .tick{stroke-dasharray:220;stroke-dashoffset:220;animation:ld7tick .5s 1.1s ease-out forwards}
+@keyframes ld7up{to{transform:translateY(0)}}@keyframes ld7sun{to{transform:translateY(0);opacity:1}}@keyframes ld7tick{to{stroke-dashoffset:0}}
+#ld7 .ls{display:flex;flex-direction:column;gap:6px;min-width:220px}#ld7 .ls div{font-size:14px;color:#9AA59F;display:flex;gap:8px;align-items:center}#ld7 .ls div.on{color:var(--ink)}#ld7 .ls div.ok{color:var(--ok)}
+#ld7 .ln{width:220px;height:3px;border-radius:2px;background:#EDF0EE;overflow:hidden}#ld7 .ln i{display:block;height:100%;width:30%;background:var(--pine);transition:width .4s}
+@media (prefers-reduced-motion:reduce){#ld7 *{animation:none!important;transform:none!important;opacity:1!important;stroke-dashoffset:0!important}}
+.upd72{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:60;background:var(--ink);color:#fff;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none}.upd72.on{opacity:.92}
+.srch72{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}.srch72 b{display:block;font-size:16px}.srch72 p{margin:4px 0 0;color:var(--mute);font-size:14px}
 
 [hidden]{display:none!important}
 #title::before{content:'';float:left;width:30px;height:30px;margin:3px 9px 0 0;background:url(logo.svg) center/contain no-repeat;border-radius:7px}
@@ -549,7 +640,7 @@ body.nohi .hi{display:none!important}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '7.1.0';
+const APP_V = '7.2.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -853,7 +944,7 @@ function canEditV(vid) {
 }
 
 class NetError extends Error {}
-const WRITE_API = ['staffingSave', 'designationsSave', 'setPrefs', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
+const WRITE_API = ['mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
   'saveReason', 'saveSettings', 'saveTehsil', 'deleteUser', 'saveVillageAll', 'resetPractice', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'changePin', 'transferVillages', 'markSheetDone',
   'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'userVillages', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkSave', 'pmkApply', 'portalDown', 'savePH', 'startFresh'];
 async function api(action, payload, timeout) {
@@ -1197,10 +1288,10 @@ VIEWS.login = async function (a) {
     if ($('#go').dataset.busy) return; $('#go').dataset.busy = 1;
     $('#go').disabled = true; $('#go').innerHTML = '<span class="spin"></span>Logging in…';
     try {
-      const r = await api('login', { user_id: chosen.user_id, pin });
+      const r = await api('login', { user_id: chosen.user_id, pin, boot: 1 }); if (typeof ld7 === 'function') ld7(1);
       S.session = { token: r.token, user: r.user }; await kput('session', S.session);
       S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || [];
-      const boot = await api('bootstrap'); S.boot = boot; await kput('boot', boot); await initLang();
+      const boot = r.boot || await api('bootstrap'); S.boot = boot; await kput('boot', boot); await initLang(); if (typeof ld7 === 'function') ld7(2);
       if (!needPin()) { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); }
       toast(L('welcome', r.user.name));
       refreshBoot(); scheduleSync(500); if (['ADMIN', 'DA', 'NT'].includes(r.user.role)) loadHome(true);
@@ -3653,18 +3744,18 @@ VIEWS.login = async function () {
   let busyL = false;
   const doLogin = async () => {
     if (busyL || pin.length < 4) { if (pin.length < 4) fail('Type your PIN.'); return; }
-    busyL = true; $('.kp .ok').innerHTML = '<span class="spin"></span>';
+    busyL = true; $('.kp .ok').innerHTML = '<span class="spin"></span>'; ld7(0);
     try {
-      const r = await api('login', { user_id: chosen.user_id, pin });
+      const r = await api('login', { user_id: chosen.user_id, pin, boot: 1 }); if (typeof ld7 === 'function') ld7(1);
       S.session = { token: r.token, user: r.user }; S.lastPin = pin; await kput('session', S.session);
       recent = [chosen.user_id].concat(recent.filter(x => x !== chosen.user_id)).slice(0, 5); await kput('recentUsers', recent); await kput('lastActive', Date.now());
       S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || [];
-      const boot = await api('bootstrap'); S.boot = boot; await kput('boot', boot); await initLang();
+      const boot = r.boot || await api('bootstrap'); S.boot = boot; await kput('boot', boot); await initLang(); if (typeof ld7 === 'function') ld7(2);
       if (!needPin()) { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); }
-      toast(L('welcome', r.user.name)); vibrate();
+      toast(L('welcome', r.user.name)); vibrate(); setTimeout(ld7off, 500);
       refreshBoot(); scheduleSync(500); if (['ADMIN', 'DA', 'NT'].includes(r.user.role)) loadHome(true);
       if (!me().must_change_pin) setTimeout(afterLoginCards, 500);
-    } catch (e) { fail(e.message); pin = ''; dots(); busyL = false; $('.kp .ok').textContent = '\u2713'; }
+    } catch (e) { ld7off(); fail(e.message); pin = ''; dots(); busyL = false; $('.kp .ok').textContent = '\u2713'; }
   };
   on(main, '.kp button', 'click', el => { const k = el.dataset.k; if (k === 'del') pin = pin.slice(0, -1); else if (k === 'ok') { doLogin(); return; } else if (pin.length < 6) pin += k; dots(); if (pin.length === 4 && chosen && !/123|^1234/.test('')) {} });
   $('#fgt').onclick = () => pinHelp(chosen, $('#fgtBox'));
@@ -4062,7 +4153,7 @@ async function dcExcel(tid) {
   const cols = d.columns && d.columns.length ? d.columns : Object.keys(DC_HEAD);
   const aoa = [[`Daily progress of Farmer IDs – Tehsil ${tehsilName(d.tehsil_id)} – ${fmtDate(todayIST())}${d.portal_down ? ' – Portal down; figures as on last upload' : ''}`], cols.map(c => DC_HEAD[c] || c)].concat(d.rows.map(r => { const x = val(r); return cols.map(c => x[c] === undefined ? '' : x[c]); }));
   const ws = XLSX.utils.aoa_to_sheet(aoa), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'DC sheet rows');
-  const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' }), name = `DC_sheet_${tehsilName(d.tehsil_id)}_${todayIST()}.xlsx`;
+  const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' }), name = fname(d.tehsil_id, 'DC sheet', true) + '.xlsx';
   const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), url = URL.createObjectURL(blob);
   addFile(blob, name, 'Excel ready ✓ Copy columns G to P into the DC sheet.');
   try { const f = new File([blob], name, { type: blob.type }); archiveUpload(f, 'dcsheet', d.tehsil_id); } catch (e) {}
@@ -4927,9 +5018,8 @@ uploadFiles = async function (files, kind) {
     Object.keys(S.buckets).forEach(v => delete S.fetchedAt[v]); S.homeAt = 0; S.checklistAt = 0; S.pulseAt = 0;
     const P = await loadPulse(true), closing = hm() >= V6().day_close;
     const line = r.new_total ? `+${r.new_total} new IDs since the last upload${note}` : `+0: no new IDs since the last upload (same file?)`;
-    if (!SHEET && P) simpleSheet('Portal file applied', `<div class="donebox">✓ ${esc(line)}</div>${(P.tehsils || []).map(t => `<div class="hist"><b>${esc(t.name)}</b>: ${t.today} today · target ${t.target}</div>`).join('')}
-      <button class="btn btn-primary" id="u1">${closing ? 'Send the day-close message' : 'Send the hourly update'}<span class="hi">Group mein bhejein</span></button>`,
-      rr => { $('#u1', rr).onclick = () => closeSheet(() => messageSheet(closing ? 'Day close' : 'Hourly update', closing ? msgClose(P) : msgHourly(P), closing ? 'close' : 'hour')); });
+    const tid0 = (r.villages[0] || {}).tehsil_id; const line2 = line + (r.after_hours ? ` · ${r.after_hours} of them made last night, added to yesterday` : '');
+    if (!SHEET && P) messageSheet((closing ? 'Day close' : 'Hourly message') + ' · ' + line2, closing ? msgClose(P, tid0) : msgHourly(P, tid0), closing ? 'close' : 'hour');
     return line;
   });
 };
@@ -5448,7 +5538,7 @@ async function progressPDF(tids) {
   });
   pageNumbers(doc);
   await kput('sent:prog:' + todayIST(), nowIST());
-  deliverPDF(doc, `Farmer_ID_progress_${tids.map(tehsilName).join('_')}_${todayIST()}.pdf`);
+  deliverPDF(doc, (tids.length === 1 ? fname(tids[0], 'Daily progress', true) : `Assar and Kastigarh – Daily progress – ${dmyL(todayIST())} – ${tFile()}`) + '.pdf');
 }
 /* the Dealing Assistant's 4 PM step, reminders at 3:45, and the sheet in Tools for everyone in the office */
 const _steps6 = daSteps6;
@@ -6349,6 +6439,444 @@ VIEWS.login = async function (a) {
   await _login71(a);
   const f = $('#view .foot'); if (f && !$('#dL')) { const b = document.createElement('a'); b.id = 'dL'; b.className = 'btn'; b.href = appUrl() + '?public'; b.style.marginTop = '10px'; b.textContent = 'See the live dashboard'; f.before(b); }
 };
+
+/* ======================= v7.2: EACH PERSON SEES ONLY THEIR OWN DAY ======================= */
+const MON3 = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const dmyL = d => { const x = new Date(d + 'T12:00:00Z'); return x.getUTCDate() + ' ' + MON3[x.getUTCMonth()] + ' ' + x.getUTCFullYear(); };
+const tFile = () => fmtT(nowIST()).replace(':', '.');
+const fname = (tid, kind, withTime) => `${tehsilName(tid)} – ${kind} – ${dmyL(todayIST())}${withTime ? ' – ' + tFile() : ''}`;
+const isPatwari = () => isField() && (me().sorts || []).length > 0;
+const stK = (k, tid) => 'st72:' + k + ':' + (tid || '') + ':' + todayIST();
+async function stamp(k, tid) { await kput(stK(k, tid), nowIST()); if (k === 'hour') await kput(stK('hourN', tid), ((await kget(stK('hourN', tid))) || 0) + 1); }
+async function stamps(tid) { const o = {}; for (const k of ['morning', 'hour', 'hourN', 'prog', 'dc', 'annexb']) o[k] = await kget(stK(k, tid)); return o; }
+const ago = ts => { if (!ts) return 1e9; const a = Date.parse(String(ts).replace(' ', 'T') + '+05:30'); return Math.round((Date.now() - a) / 60000); };
+function dashBlock() { return `<p class="sec7" style="margin-top:28px">Live dashboard</p><div id="d7"></div>`; }
+function drawDash(o) { const el = $('#d7'); if (el) DASH.render(el, S.dash, Object.assign({ order: myTehsils() }, o || {})); }
+async function freshThen(main, render2) { const was = [S.dash, S.pulse]; const r = await Promise.all([loadDash(false), loadPulse(false)]);
+  if ((r[0] !== was[0] || r[1] !== was[1]) && current() && current().name === 'home' && !SHEET) render2(); }
+
+/* ---------- one place for every portal file ---------- */
+function dropHtml() { return `<div class="drop7" id="drop7"><span class="ic">↑</span><span style="flex:1"><b>Drop the portal file here</b><small>Registered farmers, bucket list or PM Kisan list: the app recognises it</small></span><button class="btn" style="width:auto!important;margin:0!important">Choose file</button></div>`; }
+function bindDrop(root) {
+  const d = $('#drop7', root); if (!d) return;
+  d.onclick = async () => { const fs = await pickFiles('.xlsx,.xls,.csv'); if (fs.length) uploadFiles(fs, null); };
+  d.ondragover = e => { e.preventDefault(); d.classList.add('drag'); }; d.ondragleave = () => d.classList.remove('drag');
+  d.ondrop = e => { e.preventDefault(); d.classList.remove('drag'); const fs = Array.from((e.dataTransfer && e.dataTransfer.files) || []); if (fs.length) uploadFiles(fs, null); };
+}
+
+/* ---------- the WhatsApp messages: short ---------- */
+const link72 = () => 'Live: ' + appUrl().replace(/^https?:\/\//, '');
+msgHourly = function (P, tid) {
+  const ts = P.tehsils.filter(t => !tid || t.tehsil_id === tid), now = hm();
+  return ts.map(t => { const L2 = [`*Farmer ID · ${t.name} · ${t12(t.as_on || nowIST())}*`, `Today: *${t.today}* of ${t.target}${t.last_n ? ' · +' + t.last_n + ' this hour' : ''}`];
+    if ((t.top2 || []).length) L2.push('', t.top2.map((o, i) => `${i ? '🥈' : '🥇'} ${o.name} ${nr(o.today)}`).join(' · '));
+    const b = now >= '11:00' ? (t.pace || []).filter(v => v.target > 0 && v.proj < v.target) : [];
+    if (b.length) L2.push('', 'Behind target:', ...b.map(v => `• ${v.name} ${v.ids}/${v.target} – ${v.incharge ? v.incharge.name : 'no In-charge'}`));
+    (t.down || []).filter(d => !d.to).forEach(() => L2.push('', '⛔ Portal down'));
+    return L2.join('\n'); }).join('\n\n') + '\n\n' + link72();
+};
+msgClose = function (P, tid) {
+  const ts = P.tehsils.filter(t => !tid || t.tehsil_id === tid);
+  return ts.map(t => { const L2 = [`*Farmer ID · ${t.name} · Day close ${dmyL(todayIST()).slice(0, -5)}*`, `Today: *${t.today}* of ${t.target} (${Math.round(t.today * 100 / Math.max(1, t.target))}%)`];
+    if (t.after_hours) L2.push(`Last night after 5 PM: ${t.after_hours} (added to ${dmyL(t.yday ? t.yday.date : todayIST()).slice(0, -5)})`);
+    if ((t.top2 || []).length) L2.push('', t.top2.map((o, i) => `${i ? '🥈' : '🥇'} ${o.name} ${nr(o.today)}`).join(' · '));
+    const ex = belowOf(t);
+    if (ex.length) L2.push('', 'Below target (In-charge, Patwari):', ...ex.map(x => `• ${x.village} ${x.ids}/${x.target} – ${x.incharge || 'no In-charge'}${x.patwari ? ', Patwari ' + x.patwari : ''}`), '_May face show cause proceedings._');
+    else if ((t.pace || []).length) L2.push('', '✅ Every village met its target.');
+    if ((t.streaks || []).length) L2.push('', `🔥 3 days above ${t.floor}: ${t.streaks.join(', ')}`);
+    return L2.join('\n'); }).join('\n\n') + '\n\n' + link72();
+};
+const _ms72 = messageSheet;
+messageSheet = function (title, text, kind) {
+  _ms72(title, text, kind);
+  const b = $('#sheet #snd'); if (b && kind) { const tid = (P7() && P7().tehsils.length === 1) ? P7().tehsils[0].tehsil_id : curT(); b.addEventListener('click', () => stamp(kind === 'close' ? 'close' : 'hour', tid)); }
+};
+
+/* ---------- reports any time: freshness check first ---------- */
+function freshGate(tid, label, fn) {
+  const pt = pt7(tid), age = ago(pt && pt.as_on), now = hm();
+  if (now < '08:00' || now > '20:00' || age <= 45) return fn();
+  const txt = !pt || !pt.as_on ? 'No portal file has been dropped today.' : `The latest portal file is ${age >= 120 ? Math.round(age / 60) + ' hours' : age + ' minutes'} old (${t12(pt.as_on)}).`;
+  simpleSheet(esc(label), `<p class="guide">${esc(txt)} Drop a fresh file first so the ${esc(label.toLowerCase())} has the latest figures.</p>${dropHtml()}<button class="btn" id="any">Make it anyway</button>`, r => {
+    bindDrop(r); $('#any', r).onclick = () => closeSheet(fn); });
+}
+function reportGo(k, tid) {
+  if (k === 'hour') return loadPulse(true).then(P => { if (!P) return fail('This needs internet.'); messageSheet('Hourly message · ' + tehsilName(tid), msgHourly(P, tid), 'hour'); });
+  if (k === 'close') return loadPulse(true).then(P => { if (!P) return fail('This needs internet.'); messageSheet('Day close · ' + tehsilName(tid), msgClose(P, tid), 'close'); });
+  const L = { morning: 'Morning report', prog: 'Daily progress sheet', dc: 'DC sheet', annexb: 'Annexure-B' }[k];
+  freshGate(tid, L, () => {
+    if (k === 'morning') return runTask('Morning report · ' + tehsilName(tid), ['Loading village figures', 'Reading yesterday’s close', 'Drawing the PDF'], async st => { await morningPDF(tid, st); await stamp('morning', tid); pracMark('pdf:morning'); return { msg: 'Morning report ready ✓' }; }).then(() => render());
+    if (k === 'prog') return progTask([tid]).then(t => { if (t && t.status === 'ok') stamp('prog', tid).then(() => render()); });
+    if (k === 'dc') return runTask('DC sheet · ' + tehsilName(tid), ['Collecting the figures', 'Making the Excel'], async st => { await dcExcel(tid); st(1); await stamp('dc', tid); return { msg: 'Excel ready ✓' }; }).then(() => render());
+    if (k === 'annexb') return annexFlow(tid);
+  });
+}
+const PRIMARY72 = tid => {
+  return [['morning', 'Morning report', 'Yesterday village-wise, last night’s IDs, today’s target', '08:30'], ['hour', 'Hourly message', 'Opens by itself after each file; or open it here', ''],
+    ['prog', 'Daily progress sheet', 'Village-wise position with reasons (PDF)', '16:00'], ['dc', 'DC sheet (Excel)', 'Rows G–P for the DC office sheet', '16:30'], ['annexb', 'Annexure-B (DC order)', 'R1, R2 and saturated villages (PDF + Excel)', '17:00'], ['close', 'Day-close message', 'Ranking, villages below target, show cause line', '17:00']];
+};
+async function reportRows(tid) {
+  const st = await stamps(tid), now = hm();
+  return PRIMARY72(tid).map(([k, t, s, due]) => { const made = st[k], isDue = due && now >= due && !made && k !== 'close';
+    const sub = k === 'hour' ? (made ? `${st.hourN || 1} sent today · last ${t12(made)}` : s) : made ? 'Made ' + t12(made) + ' · make again any time' : isDue ? 'Due now' : s;
+    return `<div class="rp72${isDue ? ' due' : ''}"><span><b>${esc(t)}</b><small>${esc(sub)}</small></span><button class="btn${isDue ? ' btn-primary' : ''}" data-rp="${k}">${k === 'hour' || k === 'close' ? 'Open' : 'Make'}</button></div>`; }).join('');
+}
+
+/* ---------- Morning report (PDF) ---------- */
+async function morningPDF(tid, st) {
+  if (!navigator.onLine && !S.practice) throw new Error('This needs internet.');
+  await loadPDF(); const d = await loadPH(tid, true); if (!d) throw new Error('Figures could not be loaded. Try again.'); st(1);
+  const P = await loadPulse(true), pt = P && P.tehsils.find(x => x.tehsil_id === tid) || {}; st(2);
+  const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: 'pt', format: 'a4' }), W = doc.internal.pageSize.getWidth();
+  const n = x => Number(x || 0), T = d.totals, yd = (pt.yday || {}), ydate = yd.date || addDaysJS(todayIST(), -1);
+  try { doc.addImage(LOGO_PNG, 'PNG', 36, 30, 34, 34); } catch (e) {}
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(`Morning report · Tehsil ${tehsilName(tid)}, District Doda`, 80, 46);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(90); doc.text(`${dateLong(todayIST())}, ${fmtT(nowIST())}${pt.as_on ? ' · portal file of ' + fmtT(pt.as_on) : ''}`, 80, 61); doc.setTextColor(20);
+  const ydN = d.phs.reduce((a, p) => a + p.villages.reduce((b, v) => b + n(v.yday), 0), 0);
+  const boxes = [['Yesterday (' + fmtDate(ydate) + ')', fmtN(ydN), pt.after_hours ? `incl. ${pt.after_hours} after 5 PM` : ''], ['Till date', `${fmtN(T.generated)} of ${fmtN(T.total)}`, pctOf(T.generated, T.total) + '%'], ["Today's target", fmtN(pt.target || d.target_today || 200), 'Farmer IDs'], ['Still to make', fmtN(Math.max(0, n(T.total) - n(T.generated))), '']];
+  const bw = (W - 72 - 24) / 4; boxes.forEach((b, i) => { const x = 36 + i * (bw + 8); doc.setDrawColor(215, 224, 219); doc.setFillColor(246, 249, 247); doc.roundedRect(x, 80, bw, 54, 5, 5, 'FD');
+    doc.setFontSize(8.5); doc.setTextColor(95); doc.text(b[0], x + 10, 95); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(25); doc.text(b[1], x + 10, 114); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(95); doc.text(b[2], x + 10, 127); });
+  doc.setTextColor(20); let y = 150;
+  if ((yd.top || []).length) { doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.text('Yesterday’s best: ', 36, y); doc.setFont('helvetica', 'normal'); doc.text(yd.top.map((o, i) => `${i + 1}. ${o.name} (${nr(o.ids)})`).join('   '), 130, y); y += 12; }
+  const body = []; let sn = 0;
+  d.phs.filter(p => p.villages.length).forEach(p => { body.push([{ content: p.name + (p.patwari ? ' · Patwari ' + p.patwari : ''), colSpan: 7, styles: { fontStyle: 'bold', fillColor: [241, 247, 243], textColor: [31, 90, 62] } }]);
+    p.villages.forEach(v => { sn++; body.push([sn, v.name, fmtN(v.total), fmtN(v.generated), n(v.yday) ? fmtN(v.yday) : '0', pctOf(v.generated, v.total) + '%', fmtN(Math.max(0, n(v.total) - n(v.generated)))]); }); });
+  body.push(['', { content: 'Total', styles: { fontStyle: 'bold' } }, ...[T.total, T.generated, ydN].map(x => ({ content: fmtN(x), styles: { fontStyle: 'bold' } })), { content: pctOf(T.generated, T.total) + '%', styles: { fontStyle: 'bold' } }, { content: fmtN(Math.max(0, n(T.total) - n(T.generated))), styles: { fontStyle: 'bold' } }]);
+  doc.autoTable({ startY: y + 4, head: [['S.No.', 'Village', 'Buckets', 'IDs till date', 'Yesterday', '%', 'Left']], body, theme: 'grid', margin: { left: 36, right: 36 },
+    styles: { font: 'helvetica', fontSize: 9.5, cellPadding: 4, lineColor: [215, 224, 219], lineWidth: .5 }, headStyles: { fillColor: [31, 90, 62], textColor: 255 }, columnStyles: { 0: { halign: 'center', cellWidth: 34 }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } },
+    didParseCell: h => { if (h.section === 'body' && h.column.index === 4 && h.cell.raw === '0') { h.cell.styles.textColor = [179, 38, 30]; h.cell.styles.fontStyle = 'bold'; } } });
+  doc.setFontSize(8); doc.setTextColor(110); doc.text('IDs made after 5 PM are counted for that day (they arrive in the next morning’s first portal file). Source: Agristack portal files.', 36, Math.min(doc.lastAutoTable.finalY + 16, doc.internal.pageSize.getHeight() - 30));
+  pageNumbers(doc); deliverPDF(doc, fname(tid, 'Morning report') + '.pdf');
+}
+
+/* ---------- JKLR figures (tehsil totals, once a day) and Annexure-B ---------- */
+const JK72 = [['Villages', [['villages', 'Villages in the tehsil'], ['villages_approved', 'Fully approved villages'], ['unable', 'Khasras unable to survey']]],
+  ['AgriStack module', [['ag_total', 'Total'], ['ag_pending', 'Pending'], ['ag_submitted', 'Submitted'], ['ag_verified', 'Verified'], ['ag_resubmitted', 'Resubmitted (both)'], ['ag_clarification', 'Clarification sought (both)'], ['ag_approved', 'Approved']]],
+  ['Jamabandi', [['jb_total', 'Total'], ['jb_approved', 'Approved'], ['jb_pending', 'Pending'], ['jb_unfreezed', 'Unfreezed'], ['jb_resubmitted', 'Re-submitted'], ['jb_edited', 'Edited / submitted']]],
+  ['Verification module', [['vf_total', 'Total records'], ['vf_pending', 'Pending'], ['vf_done', 'Verified']]],
+  ['Quality check', [['qc_total', 'Total records'], ['qc_pending', 'Pending remarks'], ['qc_done', 'Remarks added']]],
+  ['R1 target', [['target', 'Daily target fixed (khasras), if any']]]];
+function jklrSheet(tid, j, after) {
+  const v = j.today || j.last || {};
+  simpleSheet('JKLR figures · ' + esc(tehsilName(tid)), `<p class="guide">Copy the totals from the JKLR portal (top cards of each module). ${j.last_date ? 'Filled with the figures of ' + esc(fmtDate(j.last_date)) + ': change only what changed.' : ''}</p>
+    ${j.last ? '<button class="btn btn-primary" id="nc">No change today</button>' : ''}
+    ${JK72.map(g => `<p class="sec7">${g[0]}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${g[1].map(f => `<label style="font-size:13px;color:var(--mute)">${f[1]}<input class="input jk" inputmode="numeric" data-k="${f[0]}" value="${v[f[0]] !== undefined ? v[f[0]] : ''}"></label>`).join('')}</div>`).join('')}
+    <button class="btn btn-primary" id="sv">Save${after ? ' and make the report' : ''}</button>`, r => {
+    const save = vals => busy($('#sv', r), 'Saving…', async () => { const x = await api('jklrSave', { tehsil_id: tid, values: vals }); closeSheet(() => { toast('JKLR figures saved'); if (after) after(x); }); });
+    $('#sv', r).onclick = () => { const vals = {}; $$('.jk', r).forEach(i => vals[i.dataset.k] = i.value); save(vals); };
+    if ($('#nc', r)) $('#nc', r).onclick = () => save(j.last);
+  });
+}
+async function annexFlow(tid) {
+  let j; try { j = await api('jklrGet', { tehsil_id: tid }); } catch (e) { return fail(e.message); }
+  if (!j.today) return jklrSheet(tid, j, () => annexTask(tid));
+  return annexTask(tid);
+}
+function annexTask(tid) {
+  return runTask('Annexure-B · ' + tehsilName(tid), ['Collecting R1 and R2', 'Drawing the PDF', 'Making the Excel'], async st => {
+    const [d, j] = await Promise.all([api('annexB', { tehsil_id: tid }, 60000), api('jklrGet', { tehsil_id: tid })]); st(1);
+    await annexPDF(d, j); st(2); await annexXlsx(d, j); await stamp('annexb', tid); pracMark('pdf:annexb'); return { msg: 'Annexure-B ready ✓ (PDF and Excel)' };
+  }).then(() => render());
+}
+function r1Row(d, j) {
+  const r = d.r1 || {}, n = x => Number(x || 0), kh = n(r.ag_total), maker = n(r.ag_submitted) + n(r.ag_verified) + n(r.ag_approved) + n(r.ag_resubmitted) + n(r.ag_clarification), chk = n(r.ag_verified) + n(r.ag_approved), ap = n(r.ag_approved);
+  const pc = x => kh ? Math.round(x * 1000 / kh) / 10 + '%' : '–', done = kh && ap >= kh, prevAp = j && j.prev ? n(j.prev.ag_approved) : null;
+  return ['Doda', d.tehsil, n(r.villages), n(r.villages_approved), kh, n(r.unable), maker, chk, ap, pc(maker), pc(ap), n(r.target) ? n(r.target) : '–', done ? 'Completed' : prevAp === null ? '–' : String(Math.max(0, ap - prevAp))];
+}
+function r2Row(d) { const x = d.r2; return [d.tehsil, x.villages, x.buckets, x.prev, x.week, x.cumulative, x.verified, x.approved, x.left, x.done, x.below60]; }
+async function annexPDF(d, j) {
+  await loadPDF(); const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'landscape' }), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  const f = c => typeof c === 'number' ? fmtN(c) : c, base = { theme: 'grid', margin: { left: 30, right: 30 }, styles: { font: 'helvetica', fontSize: 8.6, cellPadding: 3.5, halign: 'center', valign: 'middle', lineColor: [190, 201, 195], lineWidth: .5 }, headStyles: { fillColor: [31, 90, 62], textColor: 255, fontStyle: 'bold', fontSize: 8.2 } };
+  const head = sub => { try { doc.addImage(LOGO_PNG, 'PNG', 30, 22, 30, 30); } catch (e) {} doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(20); doc.text(`Daily progress report (Annexure-B) · Tehsil ${d.tehsil}, District Doda${sub || ''}`, 68, 36);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(90); doc.text(`Order of the Deputy Commissioner, Doda dated 09.10.2026 · As on ${fmtDate(d.date)}, ${fmtT(d.as_on)}`, 68, 50); doc.setTextColor(20); doc.setDrawColor(31, 90, 62); doc.setLineWidth(1.5); doc.line(30, 60, W - 30, 60); doc.setLineWidth(.5); };
+  head();
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('R1 – AgriStack (khasra level)' + (d.jklr_date && d.jklr_date !== d.date ? `  (JKLR figures of ${fmtDate(d.jklr_date)})` : ''), 30, 80);
+  doc.autoTable(Object.assign({}, base, { startY: 86, head: [[{ content: 'S.No', rowSpan: 2 }, { content: 'District', rowSpan: 2 }, { content: 'Tehsil', rowSpan: 2 }, { content: 'Villages in tehsil', rowSpan: 2 }, { content: 'Fully approved villages', rowSpan: 2 }, { content: 'Khasras in tehsil', rowSpan: 2 }, { content: 'Khasras unable to survey', rowSpan: 2 }, 'Maker point', 'Checker point', 'Approving authority', { content: 'Submitted khasras %', rowSpan: 2 }, { content: 'Approved khasras %', rowSpan: 2 }, { content: 'Daily target fixed', rowSpan: 2 }, { content: 'Daily target achievement', rowSpan: 2 }],
+    ['Uploaded by Patwari Halqa', 'Verified by Girdawar / Naib Tehsildar', 'Approved by Tehsildar']], body: [[1].concat(r1Row(d, j)).map(f)] }));
+  let y = doc.lastAutoTable.finalY + 20; doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('R2 – Farmer ID', 30, y);
+  doc.autoTable(Object.assign({}, base, { startY: y + 6, head: [['S.No', 'Tehsil', 'Villages in tehsil', 'Farmers in tehsil (count of buckets)', `Farmer IDs generated previously (till ${fmtDate(d.prev_to)})`, `Farmer IDs generated in the week (${fmtDate(d.week_from)} to ${fmtDate(d.date)})`, 'Cumulative Farmer IDs generated till date', 'Cumulative Farmer IDs verified till date', 'Cumulative Farmer IDs approved till date', 'Farmers left for creating ID', 'Villages where full work completed', 'Villages where work is less than 60%']],
+    body: [[1].concat(r2Row(d)).map(f)] }));
+  y = doc.lastAutoTable.finalY + 20; doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('Villages where Farmer ID saturation is achieved (cumulative)', 30, y);
+  doc.autoTable(Object.assign({}, base, { startY: y + 6, tableWidth: W * .62, head: [['S.No', 'Village', 'Buckets', 'Farmer IDs', 'Cannot be claimed (certified)', 'Saturation certificate', 'Jamabandi locked on']],
+    body: d.saturated.length ? d.saturated.map((v, i) => [i + 1, v.name, fmtN(v.total), fmtN(v.claimed), fmtN(v.cannot), fmtDate(v.sat_date), v.locked_on ? fmtDate(v.locked_on) : 'Pending']) : [[{ content: 'No village certified yet', colSpan: 7 }]] }));
+  const sig = String(d.signature || 'Tehsildar').split('\n');
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); sig.forEach((l, i) => doc.text(l, W - 40, H - 70 + i * 13, { align: 'right' }));
+  doc.setFontSize(7.5); doc.setTextColor(110); doc.text('R2 from the Agristack portal files (one farmer = one ID; verified = not rejected). R1 from the JKLR module figures entered by the tehsil office. Village-wise detail on the next page.', 30, H - 26); doc.setTextColor(20);
+  doc.addPage(); head(' · village-wise');
+  doc.autoTable(Object.assign({}, base, { startY: 72, head: [['S.No', 'Village', 'Buckets', 'Farmer IDs till date', '%', 'Not sorted yet', 'Cannot be claimed', 'Saturation certificate', 'Jamabandi locked']],
+    body: d.villages.map((v, i) => [i + 1, v.name, fmtN(v.total), fmtN(v.claimed), v.pct + '%', fmtN(v.notsorted), fmtN(v.cannot), v.sat_date ? fmtDate(v.sat_date) : '–', v.locked_on ? fmtDate(v.locked_on) : '–']), columnStyles: { 1: { halign: 'left' } } }));
+  pageNumbers(doc); deliverPDF(doc, fname(d.tehsil_id, 'Annexure-B') + '.pdf');
+}
+async function annexXlsx(d, j) {
+  await loadXLSX(); const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([[`Annexure-R1 (AgriStack) – Tehsil ${d.tehsil} – ${fmtDate(d.date)}`], ['S.No', 'Name of District', 'Name of Tehsil', 'Total No. of Villages in Tehsil', 'Fully approved Villages', 'Total No. of Khasras in the Tehsil', 'No. of Khasras unable to survey', 'No. of Khasras uploaded by Patwari Halqa', 'No. of Khasras verified by Girdawar/Naib-Tehsildar', 'No. of Khasras approved by Tehsildar', 'Submitted Khasras percentage', 'Approved Khasras Percentage', 'Daily Targets fixed', 'Daily target achievement'], [1].concat(r1Row(d, j))]), 'R1');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([[`Annexure R2 – Farmer ID – Tehsil ${d.tehsil} – ${fmtDate(d.date)}`], ['S. No.', 'Name of Tehsil', 'Total No. of Villages in Tehsil', 'Total No. of Farmers in the Tehsil (count of buckets)', 'Total No. of Farmers ID generated previously', 'Total No. of Farmers ID generated in the week', 'Cumulative Farmers ID generated till date', 'Cumulative Farmer IDs verified till date', 'Cumulative Farmer IDs approved till date', 'Total No. of Farmer Left for creating ID', 'No. of villages where full work completed', 'No. of Villages where such work is completed less than 60%'], [1].concat(r2Row(d))]), 'R2');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.saturated.length ? d.saturated.map((v, i) => ({ 'S.No': i + 1, Village: v.name, Buckets: v.total, 'Farmer IDs': v.claimed, 'Cannot be claimed': v.cannot, 'Saturation certificate': fmtDate(v.sat_date), 'Jamabandi locked on': v.locked_on ? fmtDate(v.locked_on) : 'Pending' })) : [{ Note: 'No village certified yet' }]), 'Saturated villages');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.villages.map((v, i) => ({ 'S.No': i + 1, Village: v.name, Buckets: v.total, 'Farmer IDs till date': v.claimed, '%': v.pct, 'Not sorted yet': v.notsorted, 'Cannot be claimed': v.cannot, 'Saturation certificate': v.sat_date ? fmtDate(v.sat_date) : '', 'Jamabandi locked': v.locked_on ? fmtDate(v.locked_on) : '' }))), 'Villages');
+  dlXlsx(wb, fname(d.tehsil_id, 'Annexure-B') + '.xlsx');
+}
+
+/* ---------- Saturation: certify, then lock ---------- */
+async function loadSat(tid, force) {
+  S.sat72 = S.sat72 || {}; const c = S.sat72[tid];
+  if (!force && c && Date.now() - c._at < 90000) return c;
+  try { const r = await api('satList', { tehsil_id: tid }, 60000); r._at = Date.now(); S.sat72[tid] = r; } catch (e) {}
+  return S.sat72[tid];
+}
+const SIGN72 = tid => /kastigarh|kashtigarh/i.test(tehsilName(tid)) ? ['Patwari Halqa', 'Girdawar Qanungo', 'Office Qanungo', 'Naib Tehsildar', 'Tehsildar'] : ['Patwari Halqa', 'BCG', 'Naib Tehsildar', 'Tehsildar'];
+function satSheet(tid, v, after) {
+  const certified = !!v.sat_date;
+  simpleSheet(esc(v.name), `<div class="card7 kv72" style="padding:0;grid-template-columns:1fr 1fr 1fr"><div><span>Buckets</span><b>${fmtN(v.total)}</b></div><div><span>Farmer IDs</span><b>${fmtN(v.claimed)}</b></div><div><span>Cannot be claimed</span><b>${fmtN(v.cannot)}</b></div></div>
+    ${certified ? `<p class="guide">Certified on ${esc(fmtDate(v.sat_date))}${v.sat_note ? ' (' + esc(v.sat_note) + ')' : ''}. ${v.locked_on ? 'Jamabandi locked on ' + esc(fmtDate(v.locked_on)) + '.' : 'Lock the Jamabandi on JKLR, then tap Locked.'}</p>
+      ${v.locked_on ? '' : '<button class="btn btn-primary" id="lk">Locked on JKLR today</button>'}<button class="btn" id="cp">Certificate PDF again</button><button class="link" id="un">Undo the certificate</button>`
+    : `${v.dead_pending ? `<div class="banner"><p><b>${v.dead_pending} dead-owner case${v.dead_pending > 1 ? 's' : ''}: inheritance mutation pending.</b> Wait for the mutations, or certify now and they are listed in the annexure as "inheritance mutation pending".</p></div>` : ''}
+      <label class="ck72"><input type="checkbox" id="jb" ${v.jb_ok ? 'checked' : ''}> All Jamabandi records of ${esc(v.name)} are approved on JKLR</label>
+      ${v.dead_pending ? `<label class="ck72"><input type="checkbox" id="anyw"> Certify now, with the pending mutations listed</label>` : ''}
+      <button class="btn btn-primary" id="mk">Make the saturation certificate</button>`}`, r => {
+    const save = (body, msg) => api('satSave', Object.assign({ village_id: v.village_id }, body)).then(x => { x._at = Date.now(); S.sat72[tid] = x; return x; });
+    if ($('#mk', r)) $('#mk', r).onclick = () => { if (!$('#jb', r).checked) return fail('First confirm that all Jamabandi records are approved on JKLR.'); if ($('#anyw', r) && !$('#anyw', r).checked) return fail('Tick "Certify now" or wait for the mutations.');
+      closeSheet(() => runTask('Saturation certificate · ' + v.name, ['Recording the certificate', 'Drawing the PDF'], async st => { await save({ jb_ok: true, sat: true, note: v.dead_pending ? v.dead_pending + ' inheritance mutation(s) pending' : '' }); st(1); await satPDF(tid, v); return { msg: 'Certificate ready ✓ Now lock the Jamabandi on JKLR.' }; }).then(() => { if (after) after(); })); };
+    if ($('#lk', r)) $('#lk', r).onclick = () => busy($('#lk', r), 'Saving…', async () => { await save({ locked: true }); closeSheet(() => { toast(v.name + ': Jamabandi locked'); if (after) after(); }); });
+    if ($('#cp', r)) $('#cp', r).onclick = () => closeSheet(() => runTask('Saturation certificate · ' + v.name, ['Drawing the PDF'], async () => { await satPDF(tid, v); return { msg: 'Certificate ready ✓' }; }));
+    if ($('#un', r)) $('#un', r).onclick = () => { if (confirm('Undo the saturation certificate of ' + v.name + '?')) busy($('#un', r), '…', async () => { await save({ sat: false }); closeSheet(() => { if (after) after(); }); }); };
+  });
+}
+async function satPDF(tid, v) {
+  await loadPDF(); const { rl, rows } = await unclaimableData(tid), list = rows.filter(b => b.village_id === v.village_id);
+  const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: 'pt', format: 'a4' }), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  try { doc.addImage(LOGO_PNG, 'PNG', W / 2 - 18, 30, 36, 36); } catch (e) {}
+  doc.setFont('times', 'bold'); doc.setFontSize(15); doc.text('SATURATION CERTIFICATE: FARMER ID', W / 2, 88, { align: 'center' });
+  doc.setFont('times', 'normal'); doc.setFontSize(11); doc.text(`Village: ${v.name} (LGD ${v.village_id})    Tehsil: ${tehsilName(tid)}    District: Doda    Date: ${fmtDate(todayIST())}`, W / 2, 106, { align: 'center' });
+  const dead = list.filter(b => ['A02', 'A03'].includes(b.reason_code)).length;
+  doc.autoTable({ startY: 122, theme: 'grid', margin: { left: 90, right: 90 }, styles: { font: 'times', fontSize: 11, cellPadding: 5 }, headStyles: { fillColor: [31, 90, 62] },
+    head: [['Particulars', 'Number']], body: [['Total buckets (landholders) of the village', fmtN(v.total)], ['Farmer IDs generated', fmtN(v.claimed)], ['Buckets that cannot be claimed (Annexure)', fmtN(list.length)], ...(dead ? [['  of which: owner died, inheritance mutation pending', fmtN(dead)]] : [])], columnStyles: { 1: { halign: 'right', cellWidth: 90 } } });
+  let y = doc.lastAutoTable.finalY + 24;
+  const txt = doc.splitTextToSize(`Certified that Farmer IDs have been generated for all eligible landholders of village ${v.name}, Tehsil ${tehsilName(tid)}. The remaining ${list.length} bucket(s) cannot be claimed for the reasons stated against each in the annexure, as verified from the revenue record and enquiry in the village${dead ? `, including ${dead} case(s) where the owner has died and the inheritance mutation is pending` : ''}. The Jamabandi of the village stands updated to reflect the current landowners and is being locked.`, W - 120);
+  doc.text(txt, 60, y); y += txt.length * 14 + 60;
+  const sg = SIGN72(tid), cw = (W - 80) / sg.length; doc.setFontSize(10);
+  sg.forEach((s, i) => { const x = 40 + i * cw + cw / 2; doc.line(x - cw / 2 + 8, y, x + cw / 2 - 8, y); doc.text(s, x, y + 13, { align: 'center' }); });
+  if (list.length) { doc.addPage(); doc.setFont('times', 'bold'); doc.setFontSize(12); doc.text(`Annexure: buckets of ${v.name} that cannot be claimed`, W / 2, 50, { align: 'center' });
+    doc.autoTable({ startY: 64, head: [['S.No.', 'Bucket ID', 'Landholder', 'Father / husband', 'Khasra No(s).', 'Reason']], body: list.map((b, i) => [i + 1, b.bucket_id, b.name, b.parentage || '', String(b.khasras || ''), ['A02', 'A03'].includes(b.reason_code) ? 'Owner died – inheritance mutation pending' : (rl[b.reason_code] || {}).report_label || b.reason_code]),
+      styles: { font: 'times', fontSize: 9, cellPadding: 3 }, headStyles: { fillColor: [31, 90, 62] }, columnStyles: { 1: { cellWidth: 92 }, 4: { cellWidth: 90 } } }); }
+  pageNumbers(doc); deliverPDF(doc, `${tehsilName(tid)} – Saturation certificate – ${v.name} – ${dmyL(todayIST())}.pdf`);
+}
+
+/* ---------- Dead owners: person by person ---------- */
+const MSTEP = ['Inheritance mutation attested', 'Entered in the Digitized Jamabandi (Backlog Mutation Module)', 'Owner details updated in AgriStack (heirs then join the call list)', 'Heirs registered for Farmer ID (new registration)'];
+VIEWS.muts = async function (a) {
+  setHeader('Dead owners'); document.body.classList.add('wide'); const main = $('#view'), office = !isField(), tid = office ? curT() : '';
+  a.f = a.f || 'pending';
+  if (!a.rows || a.tid !== tid) { main.innerHTML = loadingHtml('Loading…'); try { a.rows = (await api('mutList', office ? { tehsil_id: tid } : {}, 60000)).rows; a.tid = tid; } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  const st = x => x.s4 ? 'done' : x.s3 ? 'heirs' : 'pending', n = k => a.rows.filter(x => st(x) === k).length;
+  const rows = a.rows.filter(x => a.f === 'all' || st(x) === a.f), byV = {}; rows.forEach(x => (byV[x.village] = byV[x.village] || []).push(x));
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Dead owners</h1><small class="hint">Every bucket sorted as "Owner died" appears here by itself</small></div>${office ? tehSeg() : ''}</div>
+    <div class="seg7" style="margin-bottom:12px">${[['pending', 'Pending', n('pending')], ['heirs', 'Heirs', n('heirs')], ['done', 'Done', n('done')], ['all', 'All', a.rows.length]].map(f => `<button data-f="${f[0]}" class="${a.f === f[0] ? 'on' : ''}">${f[1]} · ${f[2]}</button>`).join('')}</div>
+    ${Object.keys(byV).sort().map(vn => `<p class="sec7">${esc(vn)} · ${byV[vn].length}</p><div class="card7" style="padding:0">${byV[vn].map(x => `<div class="mu72" data-b="${esc(x.bucket_id)}"><span><b>${esc(x.name)}</b><small>s/o ${esc(x.parentage || '-')} · khasra ${esc(shortKh(x.khasras))}${x.mut_no ? ' · mutation ' + esc(x.mut_no) + (x.mut_date ? ', ' + esc(fmtDate(x.mut_date)) : '') : ''}</small></span><span class="steps72">${[x.s1, x.s2, x.s3, x.s4].map(s2 => `<i class="${s2 ? 'on' : ''}"></i>`).join('')}</span></div>`).join('')}</div>`).join('') || `<div class="empty">${ic('check', 44)}Nothing here.</div>`}</section>`;
+  bindTehSeg(main); on(main, '[data-f]', 'click', el => { a.f = el.dataset.f; render(); });
+  on(main, '.mu72', 'click', el => { const x = a.rows.find(y => y.bucket_id === el.dataset.b);
+    simpleSheet(esc(x.name), `<p class="hint">s/o ${esc(x.parentage || '-')} · ${esc(x.village)} · khasra ${esc(x.khasras)}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label style="font-size:13px;color:var(--mute)">Mutation number<input class="input" id="mn" value="${esc(x.mut_no)}"></label><label style="font-size:13px;color:var(--mute)">Date<input class="input" type="date" id="md" value="${esc(x.mut_date)}"></label></div>
+      ${MSTEP.map((s2, i) => `<label class="ck72"><input type="checkbox" class="ms" data-i="${i + 1}" ${x['s' + (i + 1)] ? 'checked' : ''}> ${i + 1}. ${esc(s2)}</label>`).join('')}
+      <button class="btn btn-primary" id="sv">Save</button>`, r => {
+      $('#sv', r).onclick = () => busy($('#sv', r), 'Saving…', async () => { const body = { bucket_id: x.bucket_id, mut_no: $('#mn', r).value, mut_date: $('#md', r).value }; $$('.ms', r).forEach(c => body['s' + c.dataset.i] = c.checked);
+        await api('mutSave', body); Object.assign(x, body); a.rows = null; closeSheet(() => { toast('Saved'); render(); }); });
+    }); });
+};
+
+/* ---------- Homes ---------- */
+async function fieldHome72(main) {
+  const u = me(), today = todayIST();
+  if (!S.pulse) S.pulse = await kget('pulse'); if (!S.dash) S.dash = await kget('dash');
+  const P = P7(), pt = P ? P.tehsils[0] : null, mine = pt && pt.me, rank = pt && mine ? pt.officials.findIndex(o => o.user_id === u.user_id) + 1 : 0, fl = V6().floor;
+  const PL = S['plan:auto'] || (await kget('plan:auto')), myPlan = PL && PL.tehsils ? PL.tehsils.reduce((a, t) => a.concat(t.officials), []).find(o => o.user_id === u.user_id) : null;
+  const myV = pt ? (pt.pace || []).filter(v => (v.incharge && v.incharge.user_id === u.user_id) || (v.patwari && v.patwari.user_id === u.user_id)) : [];
+  const collV = villages().filter(v => canEditV(v.village_id) && isCollV(v)), closed = !!S.boot.campaign_closed, n = mine ? mine.today : 0;
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(greet())}, ${esc(u.name)}</h1><small class="hint">${esc(u.designation)} · ${esc(dateLong(today))}</small></div></div>
+    ${closedHtml()}${noticesHtml()}${unsentHtml()}
+    <div class="desk"><div>
+    <div class="card7" style="padding:16px 18px"><span class="hint">Your Farmer IDs today</span><div style="display:flex;align-items:baseline;gap:8px;margin-top:2px"><b style="font-size:40px;font-weight:600">${nr(n)}</b><span class="hint">of ${fl}${rank ? ' · ' + ordinal(rank) + ' of ' + pt.officials.length : ''}</span></div>
+      <div class="bar72"><i style="width:${Math.min(100, Math.round(n * 100 / fl))}%"></i></div><small class="hint" style="display:block;margin-top:8px">${pt && pt.as_on ? 'From the portal file of ' + esc(t12(pt.as_on)) : 'Counted from the portal file every hour'} · make IDs on the portal only</small><span class="hi">Sirf portal par ID banayein. Ginti apne aap aati hai.</span></div>
+    ${isPatwari() && !closed ? `<p class="sec7">Your work as Patwari</p><div class="card7" style="padding:0"><div class="rp72"><span><b>Sort my villages</b><small>${pt && pt.mine_sort ? fmtN(pt.mine_sort.left) + ' left · ' : ''}after camp hours</small></span><button class="btn" id="srt">Open</button></div>
+      <div class="rp72"><span><b>Dead owners (mutations)</b><small id="mutN">Inheritance mutations, person by person</small></span><button class="btn" id="mut">Open</button></div></div>` : ''}
+    ${pt && (pt.top2 || []).length ? `<p class="sec7">Top 2 today</p><div class="card7" style="padding:0">${pt.top2.map((o, i) => `<div class="nr72"><span>${i + 1} · ${esc(o.name)}</span><span class="hint">${nr(o.today)} · ${esc((o.villages || []).join(', '))}</span></div>`).join('')}</div>` : ''}
+    ${myV.length ? `<p class="sec7">Your village${myV.length > 1 ? 's' : ''} today</p><div id="pc7">${paceHtml(myV)}</div>${WARN7}` : ''}
+    ${collV.length && !closed ? `<button class="startbig" id="goC">Aadhaar collection (PM Kisan)<small>${esc(collV.map(v => v.name).join(', '))}</small></button>` : ''}
+    </div><div>
+    ${canUploadMe() ? `<p class="sec7">Backup uploader</p>${dropHtml()}<button class="btn" id="sendH">Hourly message</button>` : ''}
+    ${myPlan && myPlan.first.length ? `<p class="sec7">Call before the camp</p><div class="card7" style="padding:0">${myPlan.first.map(f => `<div class="nr72"><span><b>${esc(f.father ? f.father + ' family' : f.names[0])}</b>${f.heirs ? ' <span class="tag72 a">heirs: new registration</span>' : ''}<small class="hint" style="display:block">${f.n} ${f.n === 1 ? 'person' : 'people'} · ${esc(f.village)}</small></span>${f.mobile ? `<a class="callb" href="tel:${esc(f.mobile)}">${ic('phone', 18)}</a>` : ''}</div>`).join('')}</div>` : ''}
+    ${myPlan && myPlan.away.length ? `<p class="sec7">Away, mobile linked: family at the camp calls them</p><div class="card7" style="padding:0">${myPlan.away.map(x => `<div class="nr72"><span>${esc(x.name)}<small class="hint" style="display:block">${esc(x.village)}</small></span><a class="callb" href="tel:${esc(x.mobile)}">${ic('phone', 18)}</a></div>`).join('')}</div>` : ''}
+    </div></div>
+    ${dashBlock()}<p class="foot" style="line-height:1.6">${CREDIT7}</p></section>`;
+  drawDash({}); bindNotices(main); bindDrop(main); if ($('#pc7')) bindPace($('#pc7'), myV);
+  b2('srt', () => go('sort', {})); b2('mut', () => go('muts', {}));
+  b2('goC', () => busy($('#goC'), 'Preparing…', () => startWork(collV.map(v => v.village_id), 'collect')));
+  b2('sendH', () => reportGo('hour', u.tehsil_id));
+  if (navigator.onLine && (!S.fhAt || Date.now() - S.fhAt > 60000)) { S.fhAt = Date.now(); Promise.all([loadPulse(true), loadPlan(null, true), loadDash(true)]).then(() => { if (current() && current().name === 'home' && !SHEET) render(); }); }
+}
+async function daHome72(main) {
+  const u = me(), tid = curT(), today = todayIST();
+  if (!S.pulse) S.pulse = await kget('pulse'); if (!S.dash) S.dash = await kget('dash'); if (!S.home) S.home = await kget('home');
+  const pt = pt7(tid), sat = S.sat72 && S.sat72[tid], ck = ckNow(), t = ck && ck.tehsils.find(x => x.tehsil_id === tid);
+  const st = await stamps(tid), line = [st.morning ? 'Morning report ' + t12(st.morning) : '', st.hour ? `Hourly ${st.hourN || 1} sent` : '', st.prog ? 'Progress sheet ' + t12(st.prog) : '', st.dc ? 'DC sheet ' + t12(st.dc) : '', st.annexb ? 'Annexure-B ' + t12(st.annexb) : ''].filter(Boolean);
+  const needs = [];
+  if (sat) { sat.villages.filter(v => v.ready && !v.sat_date).forEach(v => needs.push(`<div class="nr72"><span>Ready to certify: <b>${esc(v.name)}</b>${v.dead_pending ? ` <span class="tag72 a">${v.dead_pending} mutation pending</span>` : ''}</span><button class="ab" data-sat="${esc(v.village_id)}">Certify</button></div>`));
+    sat.villages.filter(v => v.sat_date && !v.locked_on).forEach(v => needs.push(`<div class="nr72"><span>Lock the Jamabandi: <b>${esc(v.name)}</b></span><button class="ab" data-sat="${esc(v.village_id)}">Locked?</button></div>`)); }
+  const pins = t ? (t.pin_requests || []) : []; if (pins.length) needs.push(`<div class="nr72"><span>PIN reset requests</span><button class="ab" id="pinr">${pins.length} · Approve</button></div>`);
+  if (pt && pt.unmatched) needs.push(`<div class="nr72"><span>Match desk</span><button class="ab" id="mdk">${pt.unmatched} to match</button></div>`);
+  const behind = pt ? (pt.pace || []).filter(v => paceCls(v) === 'late') : []; if (behind.length && hm() >= '11:00') needs.push(`<div class="nr72"><span>Behind pace</span><span class="tag72 r">${esc(behind.slice(0, 3).map(v => v.name + ' ' + v.ids + '/' + v.target).join(' · '))}</span></div>`);
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Today, ${esc(dateLong(today))}</h1><small class="hint">${esc(u.name)} · ${esc(u.designation)}, ${esc(tehsilName(tid))}</small></div>${tehSeg()}</div>
+    ${closedHtml()}${staleHtml()}${noticesHtml()}
+    <div class="desk"><div>${dropHtml()}
+      <p class="sec7">Reports · any time, as often as needed</p><div class="card7" style="padding:0" id="rps">${await reportRows(tid)}</div>
+      ${line.length ? `<p class="today72">Today: ${esc(line.join(' · '))}</p>` : ''}
+    </div><div>
+      <div class="card7 kv72" style="padding:0"><div><span>IDs today</span><b>${pt ? fmtN(pt.today) : '–'} <small style="font-size:14px;color:var(--mute);font-weight:400">/ ${pt ? fmtN(pt.target) : 200}</small></b><div class="bar72"><i style="width:${pt ? Math.min(100, Math.round(pt.today * 100 / Math.max(1, pt.target))) : 0}%"></i></div></div>
+        <div><span>Last night, after 5 PM</span><b>${pt ? fmtN(pt.after_hours || 0) : '–'}</b><small class="hint">added to ${esc(dmyL(addDaysJS(today, -1)).slice(0, -5))}</small></div></div>
+      <p class="sec7">Needs you</p><div class="card7" style="padding:0">${needs.join('') || '<div class="nr72"><span class="hint">Nothing waiting.</span></div>'}</div>
+      <p class="sec7">Occasional</p><div class="card7" style="padding:0"><div class="nr72"><span>JKLR figures (once a day)</span><button class="ab" id="jk">Enter</button></div><div class="nr72"><span>Dead owners (mutations)</span><button class="ab" id="mut">Open</button></div><div class="nr72"><span>Who goes where · plan</span><button class="ab" id="dep">Open</button></div></div>
+    </div></div>${dashBlock()}</section>`;
+  drawDash({ onVillage: vid => go('village7', { vid }) }); bindTehSeg(main); bindNotices(main); bindDrop(main);
+  on(main, '[data-rp]', 'click', el => reportGo(el.dataset.rp, tid));
+  on(main, '[data-sat]', 'click', el => { const v = sat.villages.find(x => x.village_id === el.dataset.sat); satSheet(tid, v, () => render()); });
+  b2('pinr', () => pinApproveSheet(pins)); b2('mdk', () => go('match', {})); b2('mut', () => go('muts', {})); b2('dep', () => go('deploy', {}));
+  b2('jk', () => busy($('#jk'), '…', async () => jklrSheet(tid, await api('jklrGet', { tehsil_id: tid }))));
+  const was = [S.dash, S.pulse, sat];
+  const r = await Promise.all([loadDash(false), loadPulse(false), loadSat(tid, false), loadHome(false)]);
+  if ((r[0] !== was[0] || r[1] !== was[1] || r[2] !== was[2]) && current() && current().name === 'home' && !SHEET) render();
+}
+async function ntHome72(main) {
+  const u = me(), tid = curT(), today = todayIST();
+  if (!S.pulse) S.pulse = await kget('pulse'); if (!S.dash) S.dash = await kget('dash'); if (!S.home) S.home = await kget('home');
+  const pt = pt7(tid), ck = ckNow(), t = ck && ck.tehsils.find(x => x.tehsil_id === tid), pins = t ? (t.pin_requests || []) : [];
+  const behind = pt ? (pt.pace || []).filter(v => ['late', 'due'].includes(paceCls(v))) : [];
+  const call = pt ? pt.officials.filter(o => o.silent || o.idle) : [], called = new Set(((pt && pt.sup) || []).map(x => x.user_id));
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(greet())}, ${esc(u.name)}</h1><small class="hint">${esc(u.designation)} · ${esc(dateLong(today))}</small></div>${tehSeg()}</div>
+    ${closedHtml()}${noticesHtml()}
+    <div class="desk"><div><p class="sec7" id="pace7">Villages behind pace</p><div id="pc7">${behind.length ? paceHtml(behind, { nudge: true }) : '<div class="card7" style="padding:14px 16px"><span class="hint">Every village is on pace or has met its target.</span></div>'}</div></div>
+    <div><p class="sec7">Call now</p><div class="card7" style="padding:0">${call.length ? call.map(o => `<div class="nr72"><span><b>${esc(o.name)}</b><small class="hint" style="display:block">${o.silent ? 'No ID in 2 hours' : 'Slow: ' + nr(o.last) + ' in the last file'} · ${esc(o.villages.join(', '))}${called.has(o.user_id) ? ' · called ✓' : ''}</small></span><span style="display:flex;gap:6px"><button class="ab" data-called="${esc(o.user_id)}">Called</button>${telBtn(o)}</span></div>`).join('') : '<div class="nr72"><span class="hint">Nobody to call right now.</span></div>'}</div>
+    ${pins.length ? `<p class="sec7">PIN requests</p><div class="card7" style="padding:0"><div class="nr72"><span>${pins.length} waiting</span><button class="ab" id="pinr">Approve</button></div></div>` : ''}</div></div>
+    ${dashBlock()}</section>`;
+  drawDash({ onVillage: vid => go('village7', { vid }) }); bindTehSeg(main); bindNotices(main); bindLive(main); if (behind.length) bindPace($('#pc7'), behind); b2('pinr', () => pinApproveSheet(pins));
+  const was = [S.dash, S.pulse]; const r = await Promise.all([loadDash(false), loadPulse(false), loadHome(false)]);
+  if ((r[0] !== was[0] || r[1] !== was[1]) && current() && current().name === 'home' && !SHEET) render();
+}
+const _home72 = VIEWS.home;
+VIEWS.home = async function () {
+  const u = me(); if (!u) return; setHeader(''); document.body.classList.add('wide'); const main = $('#view');
+  if (isField()) return fieldHome72(main);
+  if (u.role === 'DA') return daHome72(main);
+  if (u.role === 'NT') return ntHome72(main);
+  await _home72(); const mw = $('#mw'); if (mw) mw.remove();
+};
+
+/* ---------- Reports page: the five on top, the rest below ---------- */
+VIEWS.reports = async function () {
+  setHeader('Reports'); document.body.classList.add('wide'); const tid = curT(), main = $('#view');
+  const other = REPS().filter(x => !['hour', 'prog', 'dc', 'close'].includes(x.k));
+  main.innerHTML = `<section class="pad"><div class="ttl7"><h1>Reports</h1>${tehSeg()}</div>
+    <div class="card7" style="padding:0">${await reportRows(tid)}</div>
+    <p class="sec7">Other reports</p><div class="card7" style="padding:0">${other.map(x => `<div class="rp72"><span><b>${esc(x.t)}</b><small>${esc(x.p)} · ${esc(x.when)}</small></span><button class="btn" data-ot="${x.k}">${/PDF|Excel/.test(x.t) ? 'Make' : 'Open'}</button></div>`).join('')}</div></section>`;
+  bindTehSeg(main); on(main, '[data-rp]', 'click', el => reportGo(el.dataset.rp, tid)); on(main, '[data-ot]', 'click', el => other.find(x => x.k === el.dataset.ot).run(el));
+};
+
+/* ---------- Menu by role ---------- */
+Object.assign(NAV_ICONS, { muts: 'M12 3v4M8 7h8l-1 13H9zM6 7h12', more: 'M5 12h.01M12 12h.01M19 12h.01' });
+Object.assign(NAV7, { muts: 'muts', more: 'more' });
+updateBnav = function () {
+  const r = S.session && me() ? role() : '', c = current();
+  let nav = $('#bnav');
+  if (!r || !c || ['login', 'pin', 'board', 'practice'].includes(c.name) && !S.practice) { if (nav) nav.remove(); document.body.classList.remove('hasnav', 'wide'); return; }
+  const items = isField() ? [['home', 'Home'], ...(isPatwari() ? [['sort', 'Sort'], ['muts', 'Dead owners']] : []), ['search', 'Search'], ['set', 'Me']]
+    : r === 'NT' ? [['home', 'Home'], ['vil', 'Villages'], ['rep', 'Reports'], ['more', 'More']]
+    : [['home', 'Home'], ['vil', 'Villages'], ['rep', 'Reports'], ['staff', 'Staff'], ['more', 'More']];
+  const sig = items.map(x => x[0]).join(',');
+  if (!nav || nav.dataset.sig !== sig) { if (nav) nav.remove(); nav = document.createElement('nav'); nav.id = 'bnav'; nav.className = 'bnav'; nav.dataset.sig = sig; document.body.appendChild(nav);
+    nav.innerHTML = items.map(x => `<button data-n="${x[0]}" data-t="${NAV7[x[0]]}">${navSvg(x[0])}<span>${x[1]}</span></button>`).join('');
+    on(nav, 'button', 'click', el => { const target = el.dataset.t; if (current().name === target) return; closeAllSheets();
+      if (target === 'home') { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); window.scrollTo(0, 0); render(); } else { NAV.stack = [{ name: 'home', args: {} }]; go(target, {}); } }); }
+  document.body.classList.add('hasnav'); document.body.classList.remove('wide');
+  $$('#bnav button').forEach(b => b.classList.toggle('on', b.dataset.t === c.name));
+};
+/* More: the occasional tools, by role */
+const _more72 = VIEWS.more;
+VIEWS.more = async function () {
+  await _more72(); if (isField()) return;
+  const r = role(), office = ['ADMIN', 'DA'].includes(r), box = document.createElement('div'); box.className = 'card7';
+  const tl = [[office || r === 'NT', 'muts', 'Dead owners (mutations)'], [office, 'jklr', 'JKLR figures'], [office, 'match', 'Match desk'], [office || r === 'NT', 'deploy', 'Who goes where · today’s plan'], [true, 'reports', 'All reports'], [office, 'villages', 'Villages & Patwar Halqas']].filter(x => x[0]);
+  box.innerHTML = `<h3>Tools</h3><div class="list">${tl.map(x => `<button class="row" data-tl="${x[1]}"><span class="rt"><b>${esc(x[2])}</b></span></button>`).join('')}</div>`;
+  const grid = $('#view .cards7'); if (grid) grid.insertBefore(box, grid.firstChild);
+  on(box, '[data-tl]', 'click', el => { const k = el.dataset.tl; if (k === 'jklr') busy(el, '…', async () => jklrSheet(curT(), await api('jklrGet', { tehsil_id: curT() }))); else go(k, {}); });
+  setHeader(isField() ? 'Me' : 'More');
+};
+
+/* ---------- Search explains itself ---------- */
+const _search72 = VIEWS.search;
+VIEWS.search = async function (a) {
+  await _search72(a);
+  const sec = $('#view section'); if (!sec || $('#srx')) return;
+  const c = document.createElement('div'); c.className = 'srch72'; c.id = 'srx';
+  c.innerHTML = `<b>Find a farmer</b><p>Is his Farmer ID made? Which land entry is his? What did the Patwari record? Type 2 letters of the name, the father's name, a khasra number, or the last 4 digits of the Aadhaar.</p><span class="hi">Kisan ka naam likhein: ID bani ya nahi, turant pata chalega.</span>`;
+  sec.insertBefore(c, sec.firstChild);
+};
+
+/* ---------- Every screen refreshes within 15 seconds of a new file ---------- */
+function upd72() { let e = $('#upd72'); if (!e) { e = document.createElement('div'); e.id = 'upd72'; e.className = 'upd72'; document.body.appendChild(e); } e.textContent = 'Updated ' + fmtT(nowIST()); e.classList.add('on'); clearTimeout(upd72._t); upd72._t = setTimeout(() => e.classList.remove('on'), 2500); }
+async function verCheck() {
+  if (!S.session || S.viewAs || document.visibilityState !== 'visible' || !navigator.onLine) return;
+  try {
+    const r = S.practice ? (window.PRAC ? PRAC.call({ action: 'ver' }) : null) : await (await fetch(API_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'ver' }) })).json();
+    if (!r || !r.ok) return; const uv = r.uv || '';
+    if (S.uv === undefined) { S.uv = uv; return; }
+    if (uv !== S.uv) { S.uv = uv; S.pulseAt = 0; S.homeAt = 0; S.dashAt = 0; S.phAt = {}; S.sat72 = {}; S.staff7 = {};
+      await Promise.all([loadPulse(true), loadDash(true)]); const c = current();
+      if (c && !SHEET && ['home', 'status', 'village7', 'reports', 'muts', 'users'].includes(c.name)) { if (c.args) { c.args.data = null; c.args.rows = null; } render(); } upd72(); }
+  } catch (e) {}
+}
+setInterval(verCheck, 15000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') verCheck(); });
+
+/* ---------- Login: one trip, a loading screen that builds the logo ---------- */
+const LD7_SVG = `<svg viewBox="0 0 512 512"><defs><clipPath id="ldc"><rect width="512" height="512" rx="116"/></clipPath></defs><g clip-path="url(#ldc)"><rect width="512" height="512" fill="#1B5A3F"/>
+  <g class="sun"><circle cx="140" cy="146" r="88" fill="#F2A93B" opacity=".14"/><circle cx="140" cy="146" r="56" fill="#F2A93B"/></g>
+  <g class="t1"><path d="M-8 512 V392 Q-8 372 12 371 L520 360 V512 Z" fill="#2F7D52"/><path d="M-8 380 Q-8 366 12 365 L520 354 V376 L12 387 Q-8 388 -8 400 Z" fill="#6DBF7E"/></g>
+  <g class="t2"><path d="M150 366 V300 Q150 282 170 281 L520 272 V362 Z" fill="#3C9461"/><path d="M150 292 Q150 276 170 275 L520 266 V288 L170 297 Q150 298 150 310 Z" fill="#94D28E"/></g>
+  <g class="t3"><path d="M300 278 V216 Q300 198 320 197 L520 190 V274 Z" fill="#4FA96E"/><path d="M300 208 Q300 192 320 191 L520 184 V206 L320 213 Q300 214 300 226 Z" fill="#C8EAA0"/></g>
+  <path class="tick" d="M330 120 L372 162 L452 78" fill="none" stroke="#fff" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/></g></svg>`;
+const LD7_STEPS = ['Checking your PIN', 'Getting your villages and figures', 'Opening your screen'];
+function ld7(i) {
+  let e = $('#ld7'); if (!e) { e = document.createElement('div'); e.id = 'ld7'; e.innerHTML = `${LD7_SVG}<div class="ln"><i></i></div><div class="ls">${LD7_STEPS.map((s2, k) => `<div data-k="${k}"><span>○</span>${s2}</div>`).join('')}</div>`; document.body.appendChild(e); }
+  e.classList.remove('off'); $$('.ls div', e).forEach(d => { const k = +d.dataset.k; d.className = k < i ? 'ok' : k === i ? 'on' : ''; d.firstChild.textContent = k < i ? '✓' : k === i ? '●' : '○'; });
+  $('.ln i', e).style.width = Math.round((i + 1) * 100 / (LD7_STEPS.length + 0.4)) + '%';
+}
+function ld7off() { const e = $('#ld7'); if (!e) return; e.classList.add('off'); setTimeout(() => e.remove(), 400); }
+const _login72 = VIEWS.login;
+VIEWS.login = async function (a) { try { fetch(API_URL, { method: 'POST', redirect: 'follow', body: '{"action":"ping"}' }).catch(() => {}); } catch (e) {} return _login72(a); };
+
+/* ---------- One card after this update ---------- */
+const NEW72 = { OPERATOR: ['Your Home now shows only your day: your count, the top 2, your village and the families to call.', 'Patwaris: <b>Sort</b> and <b>Dead owners</b> are in the menu. Every bucket you sort as "Owner died" appears in Dead owners by itself.', '<b>Search</b> finds any farmer: is his ID made?'],
+  COMP: ['Your Home now shows only your day: your count, the top 2 and your village.', '<b>Search</b> finds any farmer: is his ID made?'],
+  DA: ['<b>One place for every file:</b> drop it on Home. The hourly message opens by itself.', '<b>Reports any time:</b> Morning report, Hourly message, Progress sheet, DC sheet, Annexure-B. Each file name has the date and time.', '<b>Needs you:</b> villages to certify and lock, PIN requests, match desk. Everything else is under More.'],
+  NT: ['Home shows the villages behind pace (with Nudge), the officials to call, and PIN requests.', 'Everything else is under More.'],
+  ADMIN: ['Every screen refreshes within 15 seconds of a new portal file.', 'Dealing Assistants have one upload place and five report buttons; Annexure-B is one of them.', 'Dead owners, saturation certificates and locking are tracked village by village.'] };
+afterLoginCards = async function () {
+  const k = 'v72:' + me().user_id; if (await kget(k)) return; await kput(k, 1); await kput('job7:' + me().user_id, 1);
+  const pts = NEW72[role()] || NEW72.OPERATOR;
+  openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><div class="tcard"><div class="big">${LEAF_SVG}</div><h2>Your screen is simpler</h2>${pts.map(x => `<p style="text-align:left">• ${x}</p>`).join('')}<p style="text-align:left">• Try it without risk: <b>${isField() ? 'Me' : 'More'} → Practice</b>.</p></div><button class="btn btn-primary" id="ok">Got it</button>`,
+    mount: r => { $('#x', r).onclick = $('#ok', r).onclick = () => closeSheet(); } }));
+};
+
+/* ---------- 4 PM and 5 PM nudges for whoever uploads ---------- */
+setInterval(async () => {
+  if (!S.session || !canUploadMe() || document.visibilityState !== 'visible' || S.viewAs) return;
+  const now = hm(), tid = role() === 'ADMIN' ? curT() : me().tehsil_id;
+  if (now >= '16:00' && now < '17:00' && !(await kget(stK('prog', tid))) && !S['n4' + todayIST()]) { S['n4' + todayIST()] = 1; toast('4 PM: make the daily progress sheet (Home → Daily progress sheet).', 'info', 10000); }
+  if (now >= '17:00' && now < '19:00' && !(await kget(stK('annexb', tid))) && !S['n5' + todayIST()]) { S['n5' + todayIST()] = 1; toast('5 PM: make Annexure-B and send the day-close message.', 'info', 10000); }
+}, 60000);
+PRAC_TASKS.DA = [['pdf:morning', 'Make the Morning report (Home → Reports)'], ['regApply', 'Get the sample portal file (below), then drop it on Home'], ['wa:hour', 'Send the hourly message that opens after the upload'], ['pdf:annexb', 'Make Annexure-B (enter the JKLR figures when asked)'], ['staffingSave', 'Staff → tap Panchari → set its In-charge and operators']];
+PRAC_TASKS.PATWARI = [['saveBuckets', 'Sort one family: Sort → tap a family → answer'], ['mutSave', 'Dead owners → tap a person → tick a step and save'], ['picksSave', 'Put a family on tomorrow\'s call-first list (⭐ in the sort sheet)'], ['view:search', 'Search a farmer']];
+PRAC_TASKS.OPERATOR = [['view:home', 'Home: your count, the top 2 and your village'], ['view:village7', 'Tap your village (Hari Nagar): what is blocking it'], ['view:search', 'Search a farmer: is his ID made?'], ['setPrefs', 'Me: Sunlight mode or text size']];
+HELP.muts = ['Dead owners', 'Every bucket sorted as "Owner died" appears here by itself.', 'Tap a person: type the mutation number and date, tick each step as it is done.', 'After step 3 (AgriStack updated) the heirs appear on the call list as a new registration. Step 4 closes the case.'];
+HELP.home_office = ['Home', 'Dealing Assistant: drop every portal file here; the hourly message opens by itself. Reports can be made any time; each file name has the date and time.', 'Needs you: villages to certify and lock, PIN requests, match desk.', 'The live dashboard is below.'];
 
 Object.assign(HELP, {
   status: ['Villages', 'Today: each village against its target, with its In-charge and Patwari. Green = met, amber = on pace, red = behind.', 'Till date: by Patwar Halqa. Tap a village for its page.'],
