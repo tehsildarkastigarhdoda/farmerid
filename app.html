@@ -622,6 +622,33 @@ h1,h2,h3{font-weight:600!important;letter-spacing:-.01em}
 @media (prefers-reduced-motion:reduce){#ld7 *{animation:none!important;transform:none!important;opacity:1!important;stroke-dashoffset:0!important}}
 .upd72{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:60;background:var(--ink);color:#fff;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none}.upd72.on{opacity:.92}
 .srch72{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}.srch72 b{display:block;font-size:16px}.srch72 p{margin:4px 0 0;color:var(--mute);font-size:14px}
+/* ===== v7.3 ===== */
+.b73{display:inline-block;width:72px;height:5px;border-radius:3px;background:#EDF0EE;vertical-align:middle;position:relative;overflow:hidden}
+.b73 i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--late)}.b73 i.ok{background:var(--ok)}
+.b73.full{display:block;width:100%;margin-top:8px}.b73.n i{background:var(--pine)}
+.of73,.vr73{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.4fr) minmax(0,.9fr) auto;gap:10px;align-items:center;padding:11px 16px;border-top:1px solid var(--line);background:#fff;width:100%;text-align:left;font:inherit;color:inherit;border-left:0;border-right:0;border-bottom:0}
+.of73:first-child,.vr73:first-child{border-top:0}.vr73{cursor:pointer}.vr73:hover{background:#F7F9F8}
+.of73.me{background:#F4F9F6}
+.of73 .nm b,.vr73 .nm b{display:block;font-weight:600}.of73 .nm small,.vr73 .nm small{color:var(--mute);font-size:12.5px}
+.of73 .vl,.vr73 .vl{font-size:13px;color:#2C3632;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.of73 .ct,.vr73 .ct,.vr73 .pc{font-size:13.5px;white-space:nowrap}.of73 .ct b{font-size:16px;font-weight:600}
+.of73 .st,.vr73 .st{display:flex;gap:6px;align-items:center;justify-content:flex-end}
+.vr73{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.7fr) auto}
+.vr73 .vl small{margin-right:6px}
+@media(max-width:640px){.of73{grid-template-columns:1fr auto;grid-template-areas:"nm st" "vl vl" "ct ct";row-gap:4px}.of73 .nm{grid-area:nm}.of73 .st{grid-area:st}.of73 .vl{grid-area:vl;white-space:normal}.of73 .ct{grid-area:ct}
+  .vr73{grid-template-columns:1fr auto;grid-template-areas:"nm st" "pc ct";row-gap:4px}.vr73 .nm{grid-area:nm}.vr73 .st{grid-area:st}.vr73 .pc{grid-area:pc}.vr73 .ct{grid-area:ct;text-align:right}.vr73 .vl{grid-column:1/-1}}
+.scn73{padding:14px 16px!important;margin-bottom:10px}.scn73.ex{opacity:.6}.scn73 .hd{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}.scn73 .hd span:last-child{display:flex;gap:6px;flex-wrap:wrap}
+.scn73 .ln{font-size:14px;margin-top:6px}.scn73 .ac{margin-top:8px}
+.dcr73{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}@media(min-width:980px){.dcr73{grid-template-columns:1fr 1fr}}
+.dl73{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}.dl73:nth-of-type(1){border-top:0}
+.dl73 span{font-size:13.5px;color:#2C3632}.dl73 b{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dcr73 h3{font-size:15px}
+#d7{margin-top:4px}
+
+.of73,.vr73{font-size:14.5px}.of73 .nm b,.vr73 .nm b{font-size:15px;line-height:1.25}.of73 .nm small,.vr73 .nm small{display:block;margin-top:1px}
+.of73 .callb{width:34px;height:34px;min-width:34px}.of73 .callb svg{width:16px;height:16px}
+.vr73 .pc .b73{width:90px;margin-right:6px}
+.of73 .ct{white-space:normal}.of73 .ct .b73{display:block;width:100%;max-width:140px;margin-top:5px}
 
 [hidden]{display:none!important}
 #title::before{content:'';float:left;width:30px;height:30px;margin:3px 9px 0 0;background:url(logo.svg) center/contain no-repeat;border-radius:7px}
@@ -640,7 +667,7 @@ h1,h2,h3{font-weight:600!important;letter-spacing:-.01em}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '7.2.0';
+const APP_V = '7.3.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -944,7 +971,7 @@ function canEditV(vid) {
 }
 
 class NetError extends Error {}
-const WRITE_API = ['mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
+const WRITE_API = ['scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
   'saveReason', 'saveSettings', 'saveTehsil', 'deleteUser', 'saveVillageAll', 'resetPractice', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'changePin', 'transferVillages', 'markSheetDone',
   'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'userVillages', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkSave', 'pmkApply', 'portalDown', 'savePH', 'startFresh'];
 async function api(action, payload, timeout) {
@@ -6445,7 +6472,7 @@ const MON3 = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oc
 const dmyL = d => { const x = new Date(d + 'T12:00:00Z'); return x.getUTCDate() + ' ' + MON3[x.getUTCMonth()] + ' ' + x.getUTCFullYear(); };
 const tFile = () => fmtT(nowIST()).replace(':', '.');
 const fname = (tid, kind, withTime) => `${tehsilName(tid)} – ${kind} – ${dmyL(todayIST())}${withTime ? ' – ' + tFile() : ''}`;
-const isPatwari = () => isField() && (me().sorts || []).length > 0;
+let isPatwari = () => isField() && (me().sorts || []).length > 0;
 const stK = (k, tid) => 'st72:' + k + ':' + (tid || '') + ':' + todayIST();
 async function stamp(k, tid) { await kput(stK(k, tid), nowIST()); if (k === 'hour') await kput(stK('hourN', tid), ((await kget(stK('hourN', tid))) || 0) + 1); }
 async function stamps(tid) { const o = {}; for (const k of ['morning', 'hour', 'hourN', 'prog', 'dc', 'annexb']) o[k] = await kget(stK(k, tid)); return o; }
@@ -6545,6 +6572,9 @@ async function morningPDF(tid, st) {
   doc.autoTable({ startY: y + 4, head: [['S.No.', 'Village', 'Buckets', 'IDs till date', 'Yesterday', '%', 'Left']], body, theme: 'grid', margin: { left: 36, right: 36 },
     styles: { font: 'helvetica', fontSize: 9.5, cellPadding: 4, lineColor: [215, 224, 219], lineWidth: .5 }, headStyles: { fillColor: [31, 90, 62], textColor: 255 }, columnStyles: { 0: { halign: 'center', cellWidth: 34 }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } },
     didParseCell: h => { if (h.section === 'body' && h.column.index === 4 && h.cell.raw === '0') { h.cell.styles.textColor = [179, 38, 30]; h.cell.styles.fontStyle = 'bold'; } } });
+  try { const Lv = await loadLive(true), l0 = Lv && Lv.tehsils.find(x => x.tehsil_id === tid);
+    if (l0 && l0.sorting.some(x => x.left)) { doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(20); doc.text('Left to sort (Patwari-wise)', 36, doc.lastAutoTable.finalY + 22); doc.setFont('helvetica', 'normal');
+      doc.autoTable({ startY: doc.lastAutoTable.finalY + 28, head: [['Patwari', 'Villages', 'Left to sort', 'Overdue']], body: l0.sorting.filter(x => x.left).map(x => [x.name, x.villages.map(v => v.name + ' ' + v.left).join(', '), fmtN(x.left), fmtN(x.due)]), theme: 'grid', margin: { left: 36, right: 36 }, styles: { font: 'helvetica', fontSize: 9.5, cellPadding: 4, lineColor: [215, 224, 219], lineWidth: .5 }, headStyles: { fillColor: [31, 90, 62], textColor: 255 }, columnStyles: { 2: { halign: 'right' }, 3: { halign: 'right' } } }); } } catch (e) {}
   doc.setFontSize(8); doc.setTextColor(110); doc.text('IDs made after 5 PM are counted for that day (they arrive in the next morning’s first portal file). Source: Agristack portal files.', 36, Math.min(doc.lastAutoTable.finalY + 16, doc.internal.pageSize.getHeight() - 30));
   pageNumbers(doc); deliverPDF(doc, fname(tid, 'Morning report') + '.pdf');
 }
@@ -6869,8 +6899,8 @@ afterLoginCards = async function () {
 setInterval(async () => {
   if (!S.session || !canUploadMe() || document.visibilityState !== 'visible' || S.viewAs) return;
   const now = hm(), tid = role() === 'ADMIN' ? curT() : me().tehsil_id;
-  if (now >= '16:00' && now < '17:00' && !(await kget(stK('prog', tid))) && !S['n4' + todayIST()]) { S['n4' + todayIST()] = 1; toast('4 PM: make the daily progress sheet (Home → Daily progress sheet).', 'info', 10000); }
-  if (now >= '17:00' && now < '19:00' && !(await kget(stK('annexb', tid))) && !S['n5' + todayIST()]) { S['n5' + todayIST()] = 1; toast('5 PM: make Annexure-B and send the day-close message.', 'info', 10000); }
+  if (false && now >= '16:00' && !(await kget(stK('prog', tid))) && !S['n4' + todayIST()]) { S['n4' + todayIST()] = 1; toast('4 PM: make the daily progress sheet (Home → Daily progress sheet).', 'info', 10000); }
+  if (false && !(await kget(stK('annexb', tid))) && !S['n5' + todayIST()]) { S['n5' + todayIST()] = 1; toast('5 PM: make Annexure-B and send the day-close message.', 'info', 10000); }
 }, 60000);
 PRAC_TASKS.DA = [['pdf:morning', 'Make the Morning report (Home → Reports)'], ['regApply', 'Get the sample portal file (below), then drop it on Home'], ['wa:hour', 'Send the hourly message that opens after the upload'], ['pdf:annexb', 'Make Annexure-B (enter the JKLR figures when asked)'], ['staffingSave', 'Staff → tap Panchari → set its In-charge and operators']];
 PRAC_TASKS.PATWARI = [['saveBuckets', 'Sort one family: Sort → tap a family → answer'], ['mutSave', 'Dead owners → tap a person → tick a step and save'], ['picksSave', 'Put a family on tomorrow\'s call-first list (⭐ in the sort sheet)'], ['view:search', 'Search a farmer']];
@@ -6878,11 +6908,565 @@ PRAC_TASKS.OPERATOR = [['view:home', 'Home: your count, the top 2 and your villa
 HELP.muts = ['Dead owners', 'Every bucket sorted as "Owner died" appears here by itself.', 'Tap a person: type the mutation number and date, tick each step as it is done.', 'After step 3 (AgriStack updated) the heirs appear on the call list as a new registration. Step 4 closes the case.'];
 HELP.home_office = ['Home', 'Dealing Assistant: drop every portal file here; the hourly message opens by itself. Reports can be made any time; each file name has the date and time.', 'Needs you: villages to certify and lock, PIN requests, match desk.', 'The live dashboard is below.'];
 
+/* ======================= v7.3: ACCOUNTABLE OFFICIALS, NOTICES, DC REPORT ======================= */
+const D73F = ['Patwari', 'GQ', 'OQ', 'BCG', 'Other official'], D73O = ['Tehsildar', 'Naib Tehsildar', 'Dealing Assistant'];
+const isHelperMe = () => !!(me() && me().helper);
+isPatwari = () => isField() && !isHelperMe() && (me().ph_of || []).length > 0;
+const canSortMe = () => isField() && (me().sorts || []).length > 0;
+const pl = (n, w, ws) => `${fmtN(n)} ${n === 1 ? w : (ws || w + 's')}`;
+const yesterday = () => addDaysJS(todayIST(), -1);
+
+/* ---------- live figures for the homes: In-charges, sorting ---------- */
+async function loadLive(force) {
+  if (!S.live73) S.live73 = await kget('live73');
+  if (S.uv !== S.liveUv) force = true;
+  if (!navigator.onLine || (!force && S.liveAt && Date.now() - S.liveAt < 60000)) return S.live73;
+  try { const r = await api('live73', {}, 60000); S.live73 = r; S.liveAt = Date.now(); S.liveUv = S.uv; await kput('live73', r); } catch (e) {}
+  return S.live73;
+}
+const L73 = () => { const l = S.live73; return l && l.today === todayIST() ? l : null; };
+const lt = tid => { const l = L73(); return l ? l.tehsils.find(t => t.tehsil_id === tid) || null : null; };
+const bar73 = (n, t, c) => `<span class="b73 ${c || ''}"><i style="width:${t ? Math.min(100, Math.round(n * 100 / t)) : 0}%" class="${t && n >= t ? 'ok' : ''}"></i></span>`;
+const tag73 = (cls, t) => `<span class="tag72 ${cls}">${esc(t)}</span>`;
+
+/* one row per accountable official: name, villages, IDs against target */
+function offRows(list, opts) {
+  opts = opts || {};
+  if (!list.length) return `<div class="nr72"><span class="hint">${esc(opts.empty || 'No village has an In-charge yet.')}</span></div>`;
+  return list.map(x => `<div class="of73${x.user_id === (me() || {}).user_id ? ' me' : ''}">
+    <span class="nm"><b>${esc(x.name)}</b><small>${esc(x.designation || '')}</small></span>
+    <span class="vl">${esc(x.villages.map(v => v.name + ' ' + v.ids + '/' + v.target).join(' · '))}</span>
+    <span class="ct"><b>${fmtN(x.ids)}</b> / ${fmtN(x.target)} ${bar73(x.ids, x.target)}</span>
+    <span class="st">${x.target && x.ids >= x.target ? tag73('g', 'Met') : x.target ? tag73('r', 'Below') : tag73('m', 'Done')}${opts.tel ? telBtn(x) : ''}</span></div>`).join('');
+}
+function sortRows(list) {
+  return list.filter(x => x.left).map(x => `<div class="of73"><span class="nm"><b>${esc(x.name)}</b><small>Patwari</small></span>
+    <span class="vl">${esc(x.villages.map(v => v.name + ' ' + v.left + (v.sorter ? ' (' + v.sorter + ')' : '')).join(' · '))}</span>
+    <span class="ct"><b>${fmtN(x.left)}</b> left</span><span class="st">${x.due ? tag73('r', fmtN(x.due) + ' overdue') : tag73('a', 'Due')}${telBtn(x)}</span></div>`).join('') || '<div class="nr72"><span class="hint">Everything is sorted.</span></div>';
+}
+function vilRows(t, tid) {
+  const d = S.dash && S.dash.tehsils.find(x => x.tehsil_id === tid); if (!d) return '';
+  const rank = { late: 0, due: 1, mute: 2, ok: 3, done: 4 }, W = { late: ['r', 'Behind'], due: ['a', 'On pace'], ok: ['g', 'Met'], mute: ['m', '–'], done: ['g', 'Done'] };
+  const inc = {}; (t ? t.incharges : []).forEach(x => x.villages.forEach(v => inc[v.village_id] = x.name));
+  const vs = d.villages.map(v => Object.assign({}, v, { s: v.total && v.made >= v.total ? 'done' : v.cls || 'mute' })).sort((a, b) => rank[a.s] - rank[b.s] || a.made / a.total - b.made / b.total);
+  return vs.map(v => { const p = Math.round(v.made * 1000 / Math.max(1, v.total)) / 10;
+    return `<button class="vr73" data-vid="${esc(v.village_id)}"><span class="nm"><b>${esc(v.name)}</b><small>${esc(inc[v.village_id] || 'No In-charge')}</small></span><span class="pc">${bar73(v.made, v.total, 'n')} ${p}%</span><span class="ct">${v.target ? fmtN(v.today) + ' / ' + fmtN(v.target) : v.today ? fmtN(v.today) : '–'}</span><span class="st">${tag73(W[v.s][0], W[v.s][1])}</span></button>`; }).join('');
+}
+function dashCards(o) { return `<div id="d7"></div>`; }
+function drawCards(o) { const el = $('#d7'); if (el) DASH.render(el, S.dash, Object.assign({ order: myTehsils(), staff: true, noVill: true }, o || {})); }
+
+/* ---------- Home: Tehsildar and Naib Tehsildar (both tehsils on one screen) ---------- */
+async function officeHome73(main) {
+  const u = me(), today = todayIST(), ts = myTehsils(), r = role();
+  if (!S.dash) S.dash = await kget('dash'); if (!S.live73) S.live73 = await kget('live73'); if (!S.pulse) S.pulse = await kget('pulse');
+  const fc = {}; ts.forEach(tid => { const t = lt(tid); if (t && t.forecast) fc[tid] = t.forecast; });
+  const needs = [];
+  ts.forEach(tid => { const t = lt(tid), sat = S.sat72 && S.sat72[tid], tn = tehsilName(tid);
+    if (t && t.pending && r === 'ADMIN') needs.push([tn, `Approve ${pl(t.pending, 'pending Farmer ID')} on the portal`, '', '']);
+    if (t && t.unassigned.length) needs.push([tn, `${pl(t.unassigned.length, 'village')} without an In-charge`, 'users', 'See']);
+    if (sat) { const c = sat.villages.filter(v => v.ready && !v.sat_date).length; if (c) needs.push([tn, `${pl(c, 'village')} ready for the saturation certificate`, 'sat', 'See']); }
+    const sl = t ? t.sorting.reduce((a, x) => a + x.left, 0) : 0; if (sl) needs.push([tn, `${fmtN(sl)} landholdings not sorted yet`, '#srt73', 'See']); });
+  if (hm() >= '09:30') needs.push(['', 'Show-cause notices for yesterday', 'scn73', 'Open']);
+  const late = hm() >= '16:00' && hm() < '19:00';
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(greet())}, ${esc(u.name)}</h1><small class="hint">${esc(u.designation)} · ${esc(dateLong(today))}</small></div></div>
+    ${closedHtml()}${noticesHtml()}
+    ${dashCards()}
+    <p class="sec7">Needs you</p><div class="card7" style="padding:0">${needs.map(n => `<div class="nr72"><span>${n[0] ? `<small class="hint">${esc(n[0])}</small> ` : ''}${esc(n[1])}</span>${n[2] ? `<button class="ab" data-nd="${esc(n[2])}">${esc(n[3])}</button>` : ''}</div>`).join('') || '<div class="nr72"><span class="hint">Nothing waiting.</span></div>'}</div>
+    ${ts.map(tid => { const t = lt(tid), bl = t ? t.incharges.filter(x => x.target && x.ids < x.target).length : 0;
+      return `<p class="sec7">Officials today · ${esc(tehsilName(tid))}${t ? ` <span class="hint" style="text-transform:none;letter-spacing:0">· ${bl} of ${t.incharges.length} below target${late ? ' (4 PM list)' : ''}</span>` : ''}</p>
+      <div class="card7" style="padding:0">${t ? offRows(t.incharges, { tel: true }) : '<div class="skel" style="height:120px"></div>'}</div>`; }).join('')}
+    <div id="srt73">${ts.map(tid => { const t = lt(tid); return t && t.sorting.some(x => x.left) ? `<p class="sec7">Left to sort · ${esc(tehsilName(tid))}</p><div class="card7" style="padding:0">${sortRows(t.sorting)}</div>` : ''; }).join('')}</div>
+    ${ts.map(tid => `<p class="sec7">Villages · ${esc(tehsilName(tid))}</p><div class="card7" style="padding:0">${vilRows(lt(tid), tid) || '<div class="skel" style="height:120px"></div>'}</div>`).join('')}
+    <p class="foot" style="line-height:1.6">${CREDIT7}</p></section>`;
+  drawCards({ forecast: fc }); bindNotices(main);
+  on(main, '[data-nd]', 'click', el => { const k = el.dataset.nd; if (k[0] === '#') { const x = $(k); if (x) x.scrollIntoView({ behavior: 'smooth' }); } else go(k === 'sat' ? 'status' : k, {}); });
+  on(main, '[data-vid]', 'click', el => go('village7', { vid: el.dataset.vid }));
+  const was = [S.dash, S.live73]; const rr = await Promise.all([loadDash(false), loadLive(false), loadPulse(false), ...ts.map(t => loadSat(t, false))]);
+  if ((rr[0] !== was[0] || rr[1] !== was[1]) && current() && current().name === 'home' && !SHEET) render();
+}
+
+/* ---------- Home: Dealing Assistant ---------- */
+const PRIMARY73 = [['morning', 'Morning report', 'Yesterday’s final position, today’s target, left to sort', '09:30'], ['hour', 'Hourly message', 'Opens by itself after each file', ''],
+  ['scn', 'Show-cause notices', 'Yesterday’s shortfalls, one Word file', '10:00'], ['dcr', 'DC report (R1, R2, R4, R5)', 'The figures to type into the DC office sheet', '17:00'], ['close', 'Day-close message', 'Officials below target, top 2', '17:00']];
+async function reportRows73(tid) {
+  const now = hm(), st = {}; for (const k of ['morning', 'hour', 'hourN', 'scn', 'dcr', 'close']) st[k] = await kget(stK(k, tid));
+  return PRIMARY73.map(([k, t, s, due]) => { const made = st[k], isDue = due && now >= due && !made && k !== 'close';
+    const sub = k === 'hour' ? (made ? `${st.hourN || 1} sent today · last ${t12(made)}` : s) : made ? (k === 'scn' ? 'Done ' : 'Made ') + t12(made) + ' · open again any time' : isDue ? 'Due now' : s;
+    return `<div class="rp72${isDue ? ' due' : ''}"><span><b>${esc(t)}</b><small>${esc(sub)}</small></span><button class="btn${isDue ? ' btn-primary' : ''}" data-rp="${k}">${['hour', 'close', 'scn', 'dcr'].includes(k) ? 'Open' : 'Make'}</button></div>`; }).join('');
+}
+const _reportGo72 = reportGo;
+reportGo = function (k, tid) {
+  if (k === 'scn') return go('scn73', {}); if (k === 'dcr') return go('dcr73', {});
+  return _reportGo72(k, tid);
+};
+async function loadScn(tid, force) {
+  S.scn73 = S.scn73 || {}; const c = S.scn73[tid];
+  if (!force && c && Date.now() - c._at < 300000 && c.date === yesterday()) return c;
+  try { const r = await api('scnList', { tehsil_id: tid }, 60000); r._at = Date.now(); S.scn73[tid] = r; } catch (e) {}
+  return S.scn73[tid];
+}
+async function load73(tid) { S.g73 = S.g73 || {}; try { S.g73[tid] = await api('get73', { tehsil_id: tid }); } catch (e) {} return S.g73[tid]; }
+async function daHome73(main) {
+  const u = me(), tid = curT(), today = todayIST();
+  if (!S.pulse) S.pulse = await kget('pulse'); if (!S.dash) S.dash = await kget('dash'); if (!S.home) S.home = await kget('home'); if (!S.live73) S.live73 = await kget('live73');
+  const pt = pt7(tid), t = lt(tid), sat = S.sat72 && S.sat72[tid], ck = ckNow(), tc = ck && ck.tehsils.find(x => x.tehsil_id === tid), scn = S.scn73 && S.scn73[tid], g = S.g73 && S.g73[tid];
+  const needs = [];
+  if (scn && scn.ready) { const n = scn.items.filter(x => !x.exempt && !x.issued_on).length; if (n) needs.push(`<div class="nr72"><span>Show-cause notices for ${esc(dmyL(scn.date).slice(0, -5))}: <b>${n}</b></span><button class="ab" data-gn="scn73">Open</button></div>`); }
+  if (t && t.unassigned.length) needs.push(`<div class="nr72"><span>No In-charge: <b>${esc(t.unassigned.map(v => v.name).join(', '))}</b></span><button class="ab" data-gn="users">Allot</button></div>`);
+  if (sat) { sat.villages.filter(v => v.ready && !v.sat_date).forEach(v => needs.push(`<div class="nr72"><span>Ready to certify: <b>${esc(v.name)}</b>${v.dead_pending ? ` <span class="tag72 a">${v.dead_pending} mutation pending</span>` : ''}</span><button class="ab" data-sat="${esc(v.village_id)}">Certify</button></div>`));
+    sat.villages.filter(v => v.sat_date && !v.sat_sent).forEach(v => needs.push(`<div class="nr72"><span>Send the certificate to the DC office: <b>${esc(v.name)}</b></span><button class="ab" data-sat="${esc(v.village_id)}">Sent?</button></div>`));
+    sat.villages.filter(v => v.sat_date && !v.locked_on).forEach(v => needs.push(`<div class="nr72"><span>Lock the Jamabandi: <b>${esc(v.name)}</b></span><button class="ab" data-sat="${esc(v.village_id)}">Locked?</button></div>`)); }
+  if (g && g.switched_off && g.switched_off.length) needs.push(`<div class="nr72"><span>Switched off in the update (helpers): <b>${g.switched_off.length}</b>. Officials among them? Set their designation.</span><button class="ab" data-gn="users">Check</button></div>`);
+  const pins = tc ? (tc.pin_requests || []) : []; if (pins.length) needs.push(`<div class="nr72"><span>PIN reset requests</span><button class="ab" id="pinr">${pins.length} · Approve</button></div>`);
+  if (pt && pt.unmatched) needs.push(`<div class="nr72"><span>Match desk</span><button class="ab" id="mdk">${pt.unmatched} to match</button></div>`);
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Today, ${esc(dateLong(today))}</h1><small class="hint">${esc(u.name)} · ${esc(u.designation)}, ${esc(tehsilName(tid))}</small></div>${tehSeg()}</div>
+    ${closedHtml()}${staleHtml()}${noticesHtml()}
+    <div class="desk"><div>${dropHtml()}
+      <p class="sec7">Reports · any time, as often as needed</p><div class="card7" style="padding:0" id="rps">${await reportRows73(tid)}</div>
+      <p class="sec7">Officials today${hm() >= '16:00' ? ' (4 PM list)' : ''}</p><div class="card7" style="padding:0">${t ? offRows(t.incharges, { tel: true }) : '<div class="skel" style="height:100px"></div>'}</div>
+    </div><div>
+      <div class="card7 kv72" style="padding:0"><div><span>IDs today</span><b>${pt ? fmtN(pt.today) : '–'} <small style="font-size:14px;color:var(--mute);font-weight:400">/ ${pt ? fmtN(pt.target) : 200}</small></b>${bar73(pt ? pt.today : 0, pt ? pt.target : 200, 'full n')}</div>
+        <div><span>Last night, after 5 PM</span><b>${pt ? fmtN(pt.after_hours || 0) : '–'}</b><small class="hint">added to ${esc(dmyL(addDaysJS(today, -1)).slice(0, -5))}</small></div></div>
+      <p class="sec7">Needs you</p><div class="card7" style="padding:0">${needs.join('') || '<div class="nr72"><span class="hint">Nothing waiting.</span></div>'}</div>
+      <p class="sec7">Occasional</p><div class="card7" style="padding:0"><div class="nr72"><span>JKLR figures (for R1)</span><button class="ab" id="jk">Enter</button></div><div class="nr72"><span>Inheritance mutations (R5)</span><button class="ab" data-gn="r5c73">Open</button></div>
+        <div class="nr72"><span>Dead owners, person by person</span><button class="ab" data-gn="muts">Open</button></div><div class="nr72"><span>Who sorts which village</span><button class="ab" data-gn="sort73">Open</button></div><div class="nr72"><span>Village In-charges and staff</span><button class="ab" data-gn="users">Open</button></div></div>
+    </div></div>${dashCards()}</section>`;
+  drawCards({ only: [tid] }); bindTehSeg(main); bindNotices(main); bindDrop(main);
+  on(main, '[data-rp]', 'click', el => reportGo(el.dataset.rp, tid));
+  on(main, '[data-gn]', 'click', el => go(el.dataset.gn, {}));
+  on(main, '[data-sat]', 'click', el => { const v = sat.villages.find(x => x.village_id === el.dataset.sat); satSheet(tid, v, () => render()); });
+  b2('pinr', () => pinApproveSheet(pins)); b2('mdk', () => go('match', {}));
+  b2('jk', () => busy($('#jk'), '…', async () => jklrSheet(tid, await api('jklrGet', { tehsil_id: tid }))));
+  const was = [S.dash, S.pulse, sat, S.live73, scn, g];
+  const rr = await Promise.all([loadDash(false), loadPulse(false), loadSat(tid, false), loadLive(false), hm() >= '09:00' ? loadScn(tid, false) : scn, g ? g : load73(tid), loadHome(false)]);
+  if (rr.slice(0, 6).some((x, i) => x !== was[i]) && current() && current().name === 'home' && !SHEET) render();
+}
+
+/* ---------- Home: Patwari, GQ, OQ, BCG and other officials ---------- */
+async function fieldHome73(main) {
+  if (isHelperMe()) return helperHome73(main);
+  const u = me(), today = todayIST();
+  if (!S.live73) S.live73 = await kget('live73'); if (!S.dash) S.dash = await kget('dash'); if (!S.pulse) S.pulse = await kget('pulse');
+  const L = L73(), t = L ? L.tehsils[0] : null, mine = t && t.me, ms = t && t.my_sort, closed = !!S.boot.campaign_closed;
+  const PL = S['plan:auto'] || (await kget('plan:auto')), myPlan = PL && PL.tehsils ? PL.tehsils.reduce((a, x) => a.concat(x.officials), []).find(o => o.user_id === u.user_id) : null;
+  const others = t ? t.incharges.filter(x => x.user_id !== u.user_id) : [], nt = t && t.my_notice;
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(greet())}, ${esc(u.name)}</h1><small class="hint">${esc(u.designation)} · ${esc(dateLong(today))}</small></div></div>
+    ${closedHtml()}${noticesHtml()}${unsentHtml()}
+    ${nt ? `<div class="banner red"><p><b>Show-cause notice issued to you on ${esc(fmtDate(nt.issued_on))}</b> for ${esc(fmtDate(nt.date))} (${esc(nt.kind === 'SORT' ? 'sorting not complete' : nt.kind === 'IDS' ? 'Farmer IDs below target' : 'Farmer IDs below target and sorting not complete')}). Reply in writing by 11:00 AM on ${esc(fmtDate(addDaysJS(nt.issued_on, 1)))}.</p></div>` : ''}
+    <div class="desk"><div>
+    <div class="card7" style="padding:16px 18px"><span class="hint">${mine ? 'Farmer IDs today in the villages in your charge' : 'Villages in your charge'}</span>
+      ${mine ? `<div style="display:flex;align-items:baseline;gap:8px;margin-top:2px"><b style="font-size:40px;font-weight:600">${fmtN(mine.ids)}</b><span class="hint">of ${fmtN(mine.target)}</span>${mine.target && mine.ids >= mine.target ? tag73('g', 'Target met') : ''}</div>${bar73(mine.ids, mine.target, 'full')}
+        <div style="margin-top:10px">${mine.villages.map(v => `<div class="nr72" style="padding:6px 0;border:0"><span>${esc(v.name)}</span><span><b>${fmtN(v.ids)}</b> / ${fmtN(v.target)}</span></div>`).join('')}</div>
+        <small class="hint" style="display:block;margin-top:6px">${t && t.as_on ? 'From the portal file of ' + esc(t12(t.as_on)) : 'Counted from the portal files the office uploads'} · target: ${L ? L.village_target : 40} a day per village, or what is left</small>`
+      : `<p class="hint" style="margin:6px 0 0">${L ? 'No village is in your charge yet. The Dealing Assistant allots villages.' : 'Loading…'}</p>`}</div>
+    ${isPatwari() && !closed ? `<p class="sec7">Your Patwar Halqa</p><div class="card7" style="padding:0">
+      <div class="rp72"><span><b>Sorting</b><small>${ms ? (ms.left ? `${fmtN(ms.left)} landholdings left${ms.due ? ' · ' + fmtN(ms.due) + ' overdue' : ''}` : 'Everything is sorted ✓') : '…'}${L && L.sort_deadline ? ' · due by ' + esc(fmtDate(L.sort_deadline)) + ', 6 PM; new lists within a day' : ''}</small></span>${canSortMe() ? '<button class="btn btn-primary" id="srt">Sort</button>' : ''}</div>
+      <div class="rp72"><span><b>Who sorts which village</b><small>You decide; you can add a sorting helper</small></span><button class="btn" data-gn="sort73">Open</button></div>
+      <div class="rp72"><span><b>Dead owners</b><small>Inheritance mutations, person by person</small></span><button class="btn" data-gn="muts">Open</button></div>
+      <div class="rp72"><span><b>Other inheritance mutations (R5)</b><small>Counts for landholders outside the Farmer ID lists</small></span><button class="btn" data-gn="r5c73">Open</button></div></div>
+      <p class="sec7">Officials of your Halqa today</p><div class="card7" style="padding:0">${offRows(others, { tel: true, empty: 'No other official has a village in your Halqa.' })}</div>`
+    : canSortMe() && !closed ? `<div class="card7 rp72" style="margin-top:14px"><span><b>Sort your villages</b><small>After camp hours</small></span><button class="btn btn-primary" id="srt">Sort</button></div>` : ''}
+    </div><div>
+    ${canUploadMe() ? `<p class="sec7">Backup uploader</p>${dropHtml()}` : ''}
+    ${myPlan && myPlan.first.length ? `<p class="sec7">Call before the camp</p><div class="card7" style="padding:0">${myPlan.first.map(f => `<div class="nr72"><span><b>${esc(f.father ? f.father + ' family' : f.names[0])}</b>${f.heirs ? ' <span class="tag72 a">heirs: new registration</span>' : ''}<small class="hint" style="display:block">${f.n} ${f.n === 1 ? 'person' : 'people'} · ${esc(f.village)}</small></span>${f.mobile ? `<a class="callb" href="tel:${esc(f.mobile)}">${ic('phone', 18)}</a>` : ''}</div>`).join('')}</div>` : ''}
+    </div></div>
+    <p class="sec7" style="margin-top:24px">Live</p>${dashCards()}<p class="foot" style="line-height:1.6">${CREDIT7}</p></section>`;
+  const el = $('#d7'); if (el) DASH.render(el, S.dash, { order: myTehsils(), only: [u.tehsil_id], noSum: true });
+  bindNotices(main); bindDrop(main); b2('srt', () => go('sort', {})); on(main, '[data-gn]', 'click', e2 => go(e2.dataset.gn, {}));
+  if (navigator.onLine && (!S.fhAt || Date.now() - S.fhAt > 60000 || S.uv !== S.liveUv)) { S.fhAt = Date.now(); Promise.all([loadLive(true), loadPlan(null, true), loadDash(true)]).then(() => { if (current() && current().name === 'home' && !SHEET) render(); }); }
+}
+async function helperHome73(main) {
+  const u = me(), vs = (u.sorts || []).map(v => villageById(v)).filter(Boolean);
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(greet())}, ${esc(u.name)}</h1><small class="hint">Sorting helper</small></div></div>
+    <div class="card7" style="padding:18px"><p style="margin:0 0 6px">You sort the landholdings of:</p><p style="font-size:20px;margin:0 0 12px"><b>${esc(vs.map(v => v.name).join(', ') || 'no village yet')}</b></p>
+    <p class="hint">For each family, answer: can these people ever get a Farmer ID? The Patwari who added you answers for this work.</p><span class="hi">Har parivaar: kya ID kabhi ban sakti hai?</span>
+    ${vs.length ? '<button class="startbig" id="srt" style="margin-top:14px">Start sorting</button>' : ''}</div></section>`;
+  b2('srt', () => go('sort', {}));
+}
+VIEWS.home = async function () {
+  const u = me(); if (!u) return; setHeader(''); document.body.classList.add('wide'); const main = $('#view');
+  if (isField()) return fieldHome73(main);
+  if (u.role === 'DA') return daHome73(main);
+  return officeHome73(main);
+};
+
+/* ---------- Show-cause notices: list, exemptions, one Word file, issued ---------- */
+VIEWS.scn73 = async function (a) {
+  setHeader('Show-cause notices'); document.body.classList.add('wide'); const tid = curT(), main = $('#view'), office = ['ADMIN', 'DA'].includes(role());
+  a.date = a.date || yesterday();
+  if (!a.data || a.tid !== tid || a.data.date !== a.date) { main.innerHTML = loadingHtml('Checking yesterday’s figures…'); try { a.data = await api('scnList', { tehsil_id: tid, date: a.date }, 90000); a.tid = tid; } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  const L = a.data, due = L.items.filter(x => !x.exempt), open = due.filter(x => !x.issued_on);
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Show-cause notices</h1><small class="hint">Tehsil ${esc(L.tehsil)} · for ${esc(dateLong(L.date))}</small></div>${tehSeg()}</div>
+    <div class="row2" style="align-items:end"><label style="font-size:13px;color:var(--mute);flex:1">Day of the shortfall<input class="input" type="date" id="dd" value="${esc(a.date)}" max="${esc(yesterday())}"></label></div>
+    ${!L.ready ? '<div class="banner"><p><b>Not final yet.</b> IDs made after 5 PM yesterday come in today’s first portal file and count for yesterday. Drop the first file (or wait till 10 AM), then open this again.</p></div>' : ''}
+    ${L.portal_down ? '<div class="banner"><p>The portal was marked down that day: no notices.</p></div>' : ''}
+    <p class="guide">Target: ${L.target_rule} Farmer IDs a day per village (or what was left), carried by the village In-charge. Sorting: everything by ${esc(fmtDate(L.sort_deadline))}, new lists within a day. Each notice also goes to the Patwari of the village and the Naib Tehsildar.</p>
+    ${L.unassigned.length ? `<div class="banner"><p><b>No In-charge</b> that day for ${esc(L.unassigned.map(v => v.name).join(', '))}: no notice can be made for these villages.</p></div>` : ''}
+    ${L.items.length ? L.items.map(x => `<div class="card7 scn73${x.exempt ? ' ex' : ''}"><div class="hd"><span><b>${esc(x.name)}</b> <small class="hint">${esc(x.designation)}</small></span>
+        <span>${x.issued_on ? tag73('g', 'Issued ' + fmtDate(x.issued_on)) : ''}${x.exempt ? tag73('m', 'Exempt: ' + x.exempt) : ''}${x.repeat ? tag73('r', 'Second notice') : ''}</span></div>
+      ${x.ids ? `<div class="ln">Farmer IDs <b>${fmtN(x.ids.ids)}</b> of ${fmtN(x.ids.target)} · ${esc(x.ids.villages.map(v => v.name + ' ' + v.ids + '/' + v.target).join(', '))}</div>` : ''}
+      ${x.sort ? `<div class="ln">Not sorted: <b>${fmtN(x.sort.due)}</b> · ${esc(x.sort.villages.map(v => v.name + ' ' + v.due).join(', '))}</div>` : ''}
+      <div class="ln hint">With: ${esc(x.patwaris.map(p => p.name + ' (Patwari)').concat(x.nts.map(n => n.name + ' (Naib Tehsildar)')).join(', ') || '–')}${x.repeat ? ' · earlier notice for ' + esc(fmtDate(x.repeat)) + ': matter reported to the DC' : ''}</div>
+      ${office && !x.issued_on ? `<div class="ac">${x.exempt ? `<button class="ab" data-unex="${esc(x.user_id)}">Remove exemption</button>` : `<button class="ab" data-ex="${esc(x.user_id)}">Exempt (leave, other duty…)</button>`}</div>` : ''}</div>`).join('')
+      : `<div class="empty">${ic('check', 44)}${L.ready ? 'Everyone met the target that day.' : 'Nothing yet.'}</div>`}
+    ${office && L.ready && due.length ? `<div class="card7" style="margin-top:14px"><p class="hint" style="margin:0 0 8px">1. Make the Word file (one page per notice; no number, no letterhead). 2. Send it to the Tehsildar. 3. After he signs, post it in the group and tap "Mark as issued".</p>
+      <button class="btn btn-primary" id="mk">Make the notices (${due.length}) · Word file</button>
+      ${open.length ? `<button class="btn" id="iss">Mark ${open.length === due.length ? 'all' : open.length} as issued today</button>` : `<button class="btn" id="msg">Message for the group</button><button class="link" id="undo">Undo "issued"</button>`}</div>` : ''}
+  </section>`;
+  bindTehSeg(main);
+  $('#dd').onchange = e => { a.date = e.target.value || yesterday(); a.data = null; render(); };
+  const reload = x => { a.data = x; S.scn73 = S.scn73 || {}; if (a.date === yesterday()) { x._at = Date.now(); S.scn73[tid] = x; } render(); };
+  on(main, '[data-ex]', 'click', el => { const x = L.items.find(y => y.user_id === el.dataset.ex);
+    simpleSheet('Exempt ' + esc(x.name), `<p class="guide">No notice for ${esc(x.name)} for ${esc(fmtDate(L.date))}. Choose why:</p>${['On leave', 'On other official duty', 'Village had nothing left to do'].map(t => `<button class="btn" data-why="${esc(t)}">${esc(t)}</button>`).join('')}<div class="row2"><input class="input" id="oth" placeholder="Other reason"><button class="btn" id="ok">Save</button></div>`, r => {
+      const save = why => busy($('#ok', r), 'Saving…', async () => { const y = await api('scnExempt', { tehsil_id: tid, date: L.date, user_id: x.user_id, reason: why }); closeSheet(() => reload(y)); });
+      on(r, '[data-why]', 'click', b => save(b.dataset.why)); $('#ok', r).onclick = () => { const v = $('#oth', r).value.trim(); if (!v) return fail('Type the reason.'); save(v); }; }); });
+  on(main, '[data-unex]', 'click', el => busy(el, '…', async () => reload(await api('scnExempt', { tehsil_id: tid, date: L.date, user_id: el.dataset.unex, reason: '' }))));
+  b2('mk', () => runTask('Show-cause notices · ' + L.tehsil, ['Writing the notices', 'Making the Word file'], async st => { const blob = scnDocx(L, due); st(1);
+    addFile(blob, `${L.tehsil} – Show cause notices – for ${dmyL(L.date)}.docx`, 'Word file ready ✓'); await stamp('scn', tid); return { msg: `${due.length} notice${due.length > 1 ? 's' : ''} ready ✓ Send the file to the Tehsildar for signature.` }; }));
+  b2('iss', () => { if (!confirm(`Mark ${open.length} notice(s) as issued today (signed and posted in the group)?`)) return; busy($('#iss'), 'Saving…', async () => { const y = await api('scnIssue', { tehsil_id: tid, date: L.date, user_ids: open.map(x => x.user_id) }); await stamp('scn', tid); reload(y); setTimeout(() => scnMsg(y), 300); }); });
+  b2('msg', () => scnMsg(L));
+  b2('undo', () => { if (confirm('Undo "issued" for these notices?')) busy($('#undo'), '…', async () => reload(await api('scnIssue', { tehsil_id: tid, date: L.date, user_ids: due.map(x => x.user_id), undo: true }))); });
+};
+function scnMsg(L) {
+  const its = L.items.filter(x => x.issued_on);
+  messageSheet('Group message · notices', `*Show cause notices · Tehsil ${L.tehsil} · for ${dmyL(L.date)}*\n` + its.map((x, i) => `${i + 1}. ${x.name} (${x.designation})${x.ids ? ' – ' + x.ids.villages.map(v => v.name + ' ' + v.ids + '/' + v.target).join(', ') : ''}${x.sort ? ' – not sorted ' + x.sort.due : ''}; with ${x.patwaris.map(p => p.name).concat(x.nts.map(n => n.name)).join(', ') || '–'}`).join('\n') +
+    `\n\nReply in writing by 11:00 AM on ${dmyL(addDaysJS(its[0] ? its[0].issued_on : todayIST(), 1))}.`, '');
+}
+
+/* ---------- the Word file: tiny zip writer + WordprocessingML ---------- */
+const CRC73 = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc73 = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC73[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zip73(files, type) {
+  const enc = new TextEncoder(), parts = [], cd = []; let off = 0;
+  files.forEach(f => { const nm = enc.encode(f.name), d = typeof f.data === 'string' ? enc.encode(f.data) : f.data, crc = crc73(d);
+    const h = new DataView(new ArrayBuffer(30)); h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(12, 0x21, true); h.setUint32(14, crc, true); h.setUint32(18, d.length, true); h.setUint32(22, d.length, true); h.setUint16(26, nm.length, true);
+    parts.push(new Uint8Array(h.buffer), nm, d);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true); c.setUint32(20, d.length, true); c.setUint32(24, d.length, true); c.setUint16(28, nm.length, true); c.setUint32(42, off, true);
+    cd.push(new Uint8Array(c.buffer), nm); off += 30 + nm.length + d.length; });
+  const cdLen = cd.reduce((a, x) => a + x.length, 0), e = new DataView(new ArrayBuffer(22)); e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cdLen, true); e.setUint32(16, off, true);
+  return new Blob(parts.concat(cd, [new Uint8Array(e.buffer)]), { type });
+}
+const xe73 = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const WR = (t, o) => { o = o || {}; return `<w:r><w:rPr>${o.b ? '<w:b/>' : ''}${o.u ? '<w:u w:val="single"/>' : ''}${o.sz ? `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>` : ''}</w:rPr><w:t xml:space="preserve">${xe73(t)}</w:t></w:r>`; };
+const WP = (runs, o) => { o = o || {}; const r = Array.isArray(runs) ? runs.map(x => typeof x === 'string' ? WR(x) : WR(x[0], x[1])).join('') : typeof runs === 'string' && runs.indexOf('<w:r>') !== 0 ? WR(runs) : runs;
+  return `<w:p><w:pPr>${o.keep ? '<w:keepNext/>' : ''}${o.tabs ? '<w:tabs><w:tab w:val="right" w:pos="9638"/></w:tabs>' : ''}<w:spacing w:before="${o.before || 0}" w:after="${o.after == null ? 100 : o.after}" w:line="259" w:lineRule="auto"/>${o.ind ? `<w:ind w:left="${o.ind}" w:hanging="${o.hang || 0}"/>` : ''}<w:jc w:val="${o.jc || 'both'}"/></w:pPr>${r}</w:p>`; };
+const WTAB = '<w:r><w:tab/></w:r>', WBRK = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+function WTBL(head, rows, widths) {
+  const bd = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(k => `<w:${k} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('');
+  const cell = (t, w, b, jc) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/></w:tcPr><w:p><w:pPr><w:spacing w:before="40" w:after="40"/><w:jc w:val="${jc || 'left'}"/></w:pPr>${WR(t, { b })}</w:p></w:tc>`;
+  return `<w:tbl><w:tblPr><w:tblW w:w="${widths.reduce((a, b) => a + b, 0)}" w:type="dxa"/><w:jc w:val="center"/><w:tblBorders>${bd}</w:tblBorders><w:tblCellMar><w:left w:w="90" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>
+    <w:tr>${head.map((h, i) => cell(h, widths[i], true, i ? 'center' : 'left')).join('')}</w:tr>${rows.map(r => `<w:tr>${r.map((c, i) => cell(c.t != null ? c.t : c, widths[i], !!c.b, i ? 'center' : 'left')).join('')}</w:tr>`).join('')}</w:tbl>${WP('', { after: 60 })}`;
+}
+function scnBody(L, x) {
+  const date = fmtDate(L.date), reply = fmtDate(addDaysJS(todayIST(), 1)), vn = x.ids ? x.ids.villages.map(v => v.name).join(', ') : '';
+  const who = [{ n: x.name, d: x.designation + (x.ids ? ', In-charge of village' + (x.ids.villages.length > 1 ? 's ' : ' ') + vn : '') }]
+    .concat(x.patwaris.map(p => ({ n: p.name, d: 'Patwari' + (p.villages.length ? ' (village' + (p.villages.length > 1 ? 's ' : ' ') + p.villages.join(', ') + ')' : '') })), x.nts.map(n => ({ n: n.name, d: 'Naib Tehsildar' })));
+  const ref = L.order_ref ? `this office Order ${L.order_ref}` : 'this office Order No. ____________ dated ____________';
+  const out = [];
+  out.push(WP([['SHOW CAUSE NOTICE', { b: true, u: true, sz: 26 }]], { jc: 'center', after: 200 }));
+  out.push(WP(WR('No.: ____________________') + WTAB + WR('Dated: ____________'), { tabs: true, jc: 'left', after: 200 }));
+  out.push(WP([['To', { b: true }]], { jc: 'left', after: 60 }));
+  who.forEach((w, i) => out.push(WP(`${i + 1}.  Sh. ${w.n}, ${w.d}.`, { ind: 720, hang: 360, jc: 'left', after: 40 })));
+  out.push(WP([['Subject: ', { b: true }], `Failure to ${x.ids && x.sort ? 'achieve the daily target of Farmer ID generation and to complete the sorting of landholdings' : x.ids ? 'achieve the daily target of Farmer ID generation' : 'complete the sorting of landholdings'} on ${date}.`], { ind: 1080, hang: 1080, before: 160 }));
+  out.push(WP([['Reference: ', { b: true }], `${ref}.`], { ind: 1080, hang: 1080, after: 200 }));
+  out.push(WP(`Whereas, vide the order referred above, every official in-charge of a village has been directed to generate a minimum of ${L.target_rule} Farmer IDs per village every day (or the number of landholders remaining, whichever is lower); the Patwaris have been directed to complete the sorting of all landholdings of their Patwar Halqa by ${fmtDate(L.sort_deadline)} and of every new list within a day of its receipt; and the Naib Tehsildar has been made responsible for ensuring compliance by the field staff;`));
+  out.push(WP(`And whereas, as per ${x.ids ? 'the records of the Agristack portal' : 'the sorting records of the Farmer ID lists'}${x.ids && x.sort ? ' and the sorting records' : ''}, the following position has emerged in respect of ${date}:`, { keep: true }));
+  if (x.ids) { const vs = x.ids.villages, rows = vs.map(v => [v.name, String(v.target), String(v.ids), String(Math.max(0, v.target - v.ids))]);
+    if (vs.length > 1) rows.push([{ t: 'Total', b: true }, { t: String(x.ids.target), b: true }, { t: String(x.ids.ids), b: true }, { t: String(Math.max(0, x.ids.target - x.ids.ids)), b: true }]);
+    out.push(WTBL(['Village', 'Daily target', 'Farmer IDs generated', 'Shortfall'], rows, [3200, 1900, 2400, 1700])); }
+  if (x.sort) out.push(WP(`Landholdings of the Patwar Halqa not sorted by the end of the day: ${x.sort.due} (${x.sort.villages.map(v => v.name + ': ' + v.due).join(', ')}).`));
+  out.push(WP('This shows that you have failed to perform your official duties, as under:', { keep: true }));
+  const charge = [x.ids && x.sort ? 'failed to generate the minimum Farmer IDs in the village(s) under your charge and to complete the sorting of the landholdings of your Patwar Halqa' : x.ids ? 'failed to generate the minimum Farmer IDs in the village(s) under your charge' : 'failed to complete the sorting of the landholdings of your Patwar Halqa within the time allowed']
+    .concat(x.patwaris.map(() => 'failed to ensure the achievement of the target in your Patwar Halqa'), x.nts.map(() => 'failed to ensure compliance of the directions by the field staff'));
+  who.forEach((w, i) => out.push(WP(`(${String.fromCharCode(97 + i)})  Sh. ${w.n}, ${w.d.split(',')[0].split(' (')[0]}: ${charge[i]};`, { ind: 720, hang: 360, after: 60 })));
+  if (x.repeat) out.push(WP(`It is further noticed that a show cause notice was issued earlier in respect of the shortfall on ${fmtDate(x.repeat)}, and the failure has been repeated. The matter is accordingly being reported to the Deputy Commissioner, Doda.`, { before: 80 }));
+  out.push(WP(`You are, therefore, directed to show cause, in writing, by 11:00 AM on ${reply}, as to why disciplinary action under the Jammu and Kashmir Civil Services (Classification, Control and Appeal) Rules, 1956 read with the Jammu and Kashmir Government Employees (Conduct) Rules, 1971 should not be initiated against you. In case no reply is received within the stipulated time, it shall be presumed that you have nothing to say in your defence and further action shall be taken accordingly.`, { before: 80, after: 360 }));
+  out.push(WP([['Tehsildar', { b: true }]], { jc: 'right', after: 0 })); out.push(WP(L.tehsil, { jc: 'right', after: 240 }));
+  out.push(WP([['Copy to the:', { b: true }]], { jc: 'left', after: 60 }));
+  const cp = (x.repeat ? ['Deputy Commissioner, Doda, for favour of kind information and necessary action.'] : []).concat([(L.copy_to || '____________') + ', for favour of kind information.', 'Office record file (Nazir).']);
+  cp.forEach((c, i) => out.push(WP(`${i + 1}.  ${c}`, { ind: 720, hang: 360, jc: 'left', after: 40 })));
+  return out.join('');
+}
+function scnDocx(L, items) {
+  const body = items.map(x => scnBody(L, x)).join(WBRK);
+  const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-IN"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`;
+  return zip73([
+    { name: '[Content_Types].xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>' },
+    { name: '_rels/.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>' },
+    { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
+    { name: 'word/document.xml', data: doc }, { name: 'word/styles.xml', data: styles }], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+}
+
+/* ---------- DC report: R1, R2, R4, R5 in the DC's own column order ---------- */
+const DCR_COLS = {
+  r1: ['AgriStack (R1)', [['villages', 'Total No. of Villages in Tehsil'], ['villages_approved', 'Fully approved Villages'], ['khasras', 'Total No. of Khasras in the Tehsil'], ['unable', 'No. of Khasras unable to survey'], ['maker', 'Maker point: Khasras uploaded by Patwari Halqa'], ['checker', 'Checker point: Khasras verified by Girdawar / Naib Tehsildar'], ['approved', 'Approving authority: Khasras approved by Tehsildar'], ['submitted_pct', 'Submitted Khasras percentage'], ['approved_pct', 'Approved Khasras percentage'], ['target', 'Daily targets fixed'], ['achievement', 'Daily target achievement']]],
+  r2: ['Farmer ID (R2)', [['villages', 'Total No. of Villages in Tehsil'], ['buckets', 'Total No. of Farmers in the Tehsil (count of buckets)'], ['prev', 'Total No. of Farmers ID generated previously'], ['week', 'Total No. of Farmers ID generated in the week'], ['cumulative', 'Cumulative Farmers ID generated till date'], ['verified', 'Cumulative Farmer IDs verified till date'], ['approved', 'Cumulative Farmer IDs approved till date'], ['left', 'Total No. of Farmer Left for creating ID'], ['done', 'No. of villages where full work completed'], ['below60', 'No. of Villages where such work is completed less than 60%']]],
+  r4: ['Saturation and locking (R4)', [['villages', 'Total No. of villages in tehsil'], ['saturated', 'No. of villages where farmers id creation has been saturated'], ['submitted', 'No. of Certificate of each ID saturated village submitted'], ['pendency', 'Pendency in submitting certificate of ID saturation'], ['locked', 'Locking status of the saturated village (locked)'], ['sat_not_locked', 'No. of villages saturated but not locked']]],
+  r5: ['Inheritance mutations (R5)', [['villages', 'Total no. of villages in Tehsil'], ['pending', 'Total number of inheritance mutations pending'], ['done', 'Total no. of inheritance mutations done'], ['not_uploaded', 'Total no. of inheritance mutations done but not uploaded on agristack portal'], ['pending_upload', 'Inheritance mutations pending for uploading on agristack portal'], ['remarks', 'Remarks']]]
+};
+VIEWS.dcr73 = async function (a) {
+  setHeader('DC report'); document.body.classList.add('wide'); const tid = curT(), main = $('#view'), office = ['ADMIN', 'DA'].includes(role());
+  if (!a.data || a.tid !== tid) { main.innerHTML = loadingHtml('Collecting R1, R2, R4 and R5…'); try { a.data = await api(office ? 'dcReport' : 'dcReport', { tehsil_id: tid, date: a.date || '', peek: !office }, 90000); a.tid = tid; if (office && !a.date) stamp('dcr', tid); } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  const d = a.data, f = v => typeof v === 'number' ? fmtN(v) : String(v || '–').length > 6 ? `<small style="font-size:14px;font-weight:500">${esc(v)}</small>` : esc(v || '–'), bad = d.checks.filter(c => !c.ok);
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>DC report</h1><small class="hint">Tehsil ${esc(d.tehsil)} · as on ${esc(fmtDate(d.date))}, ${esc(t12(d.as_on))}${d.history ? ' (saved copy)' : ''}</small></div>${tehSeg()}</div>
+    <p class="guide">Type these figures into the DC office sheet, table by table. Each line is the DC sheet’s own column, in the same order.</p>
+    <div class="row2">${office ? '<button class="btn" id="jk">JKLR figures (R1)</button><button class="btn" id="r5">R5 counts</button>' : ''}<button class="btn" id="xl">Excel copy</button><button class="btn" id="rf">Refresh</button></div>
+    ${(d.history_dates || []).length > 1 ? `<label style="font-size:13px;color:var(--mute)">Earlier reports<select class="input" id="hd"><option value="">Today (live)</option>${d.history_dates.filter(x => x !== todayIST()).map(x => `<option value="${x}" ${a.date === x ? 'selected' : ''}>${esc(fmtDate(x))}</option>`).join('')}</select></label>` : ''}
+    <div class="card7" style="padding:0;margin-top:12px">${d.checks.map(c => `<div class="nr72"><span>${c.ok ? '<b style="color:var(--ok)">✓</b>' : '<b style="color:var(--late)">✗</b>'} ${esc(c.text)}</span>${/DC sheet/.test(c.text) && office ? '<button class="ab" id="dcb">Change</button>' : ''}</div>`).join('')}
+      ${d.stale.length ? `<div class="nr72"><span><b style="color:var(--due)">!</b> R5 counts not updated for 3 days: ${esc(d.stale.map(s2 => s2.name + (s2.last ? ' (' + fmtDate(s2.last) + ')' : ' (never)')).join(', '))}</span></div>` : ''}</div>
+    ${bad.length ? `<div class="banner red"><p>${bad.length} check${bad.length > 1 ? 's' : ''} failed. Correct the figures before sending, or tell the Tehsildar.</p></div>` : ''}
+    <div class="dcr73">${['r1', 'r2', 'r4', 'r5'].map(k => `<div class="card7" style="padding:0"><h3 style="padding:12px 16px 0;margin:0">${DCR_COLS[k][0]}${k === 'r2' ? ` <small class="hint" style="font-weight:400">week ${esc(fmtDate(d.week_from))} to today</small>` : ''}</h3>
+      ${DCR_COLS[k][1].map((c, i) => `<div class="dl73"><span>${esc(c[1])}</span><b>${f(d[k][c[0]])}${/pct/.test(c[0]) ? '%' : ''}</b></div>`).join('')}</div>`).join('')}</div></section>`;
+  bindTehSeg(main);
+  b2('rf', () => { a.data = null; a.date = ''; render(); });
+  if ($('#hd')) $('#hd').onchange = e => { a.date = e.target.value; a.data = null; render(); };
+  b2('jk', () => busy($('#jk'), '…', async () => jklrSheet(tid, await api('jklrGet', { tehsil_id: tid }), () => { a.data = null; render(); })));
+  b2('r5', () => go('r5c73', {}));
+  b2('dcb', () => simpleSheet('Farmers in the DC sheet', `<p class="guide">The DC office sheet shows this tehsil’s count of buckets. Type it; the app warns when its own count differs.</p><input class="input" id="v" inputmode="numeric"><button class="btn btn-primary" id="s">Save</button>`, r => { $('#s', r).onclick = () => busy($('#s', r), 'Saving…', async () => { await api('save73', { tehsil_id: tid, values: { dc_buckets: $('#v', r).value } }); closeSheet(() => { a.data = null; render(); }); }); }));
+  b2('xl', () => runTask('DC report · ' + d.tehsil, ['Making the Excel'], async () => { await loadXLSX(); const wb = XLSX.utils.book_new();
+    ['r1', 'r2', 'r4', 'r5'].forEach(k => { const cols = DCR_COLS[k][1]; XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([[`${DCR_COLS[k][0]} – Tehsil ${d.tehsil} – ${fmtDate(d.date)}`], ['S. No.'].concat(k === 'r1' ? ['Name of District', 'Name of Tehsil'] : ['Name of Tehsil'], cols.map(c => c[1])), [1].concat(k === 'r1' ? ['Doda', d.tehsil] : [d.tehsil], cols.map(c => d[k][c[0]]))]), k.toUpperCase()); });
+    dlXlsx(wb, fname(tid, 'DC report') + '.xlsx'); return { msg: 'Excel ready ✓' }; }));
+};
+
+/* ---------- R5: inheritance mutations outside the Farmer ID lists (counts per village) ---------- */
+VIEWS.r5c73 = async function (a) {
+  setHeader('Inheritance mutations (R5)'); const main = $('#view'), office = !isField(), tid = office ? curT() : '';
+  if (!a.data || a.tid !== tid) { main.innerHTML = loadingHtml('Loading…'); try { a.data = await api('mutCounts', office ? { tehsil_id: tid } : {}); a.tid = tid; } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  const d = a.data, F = [['pending', 'Pending (not attested)'], ['attested', 'Attested (done)'], ['backlog', 'Of these: in the Backlog Mutation Module'], ['agristack', 'Of these: in AgriStack']];
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Inheritance mutations</h1><small class="hint">Landholders outside the Farmer ID lists · for R5</small></div>${office ? tehSeg() : ''}</div>
+    <p class="guide">Dead owners in the Farmer ID lists are counted by themselves (Dead owners screen). Here, enter the other pending inheritance mutations of each village from your register. Change the numbers only when something changes; "No change" records that you checked.${d.off ? ' The Backlog Mutation Module is not working yet: leave its number at 0.' : ''}</p>
+    ${d.villages.map(v => `<div class="card7" data-v="${esc(v.village_id)}"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b>${esc(v.name)}</b><small class="hint">${v.at ? 'Updated ' + esc(fmtDate(v.at.slice(0, 10))) + (v.by ? ' by ' + esc(v.by) : '') : 'Never updated'}</small></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">${F.map(x => `<label style="font-size:13px;color:var(--mute)">${x[1]}<input class="input" inputmode="numeric" data-k="${x[0]}" value="${v[x[0]]}"></label>`).join('')}</div>
+      <div class="row2"><button class="btn btn-primary" data-sv="1">Save</button><button class="btn" data-nc="1">No change</button></div></div>`).join('') || '<p class="hint">No village.</p>'}</section>`;
+  if (office) bindTehSeg(main);
+  const save = (card, b) => { const body = { village_id: card.dataset.v }; $$('[data-k]', card).forEach(i => body[i.dataset.k] = i.value); busy(b, 'Saving…', async () => { a.data = await api('mutCountsSave', body); render(); }); };
+  on(main, '[data-sv],[data-nc]', 'click', b => save(b.closest('[data-v]'), b));
+};
+
+/* ---------- Who sorts which village (the Patwari decides; sorting helpers) ---------- */
+VIEWS.sort73 = async function (a) {
+  setHeader('Who sorts'); const main = $('#view'), office = !isField(), tid = office ? curT() : '';
+  if (!a.data || a.tid !== tid) { main.innerHTML = loadingHtml('Loading…'); try { a.data = await api('sorters', office ? { tehsil_id: tid } : {}); a.tid = tid; } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  const d = a.data, helpers = d.people.filter(p => p.helper), pp = d.people;
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Who sorts which village</h1><small class="hint">${office ? 'Tehsil ' + esc(tehsilName(tid)) : 'Your Patwar Halqa'}</small></div>${office ? tehSeg() : ''}</div>
+    <p class="guide">Pick one person per village. The Patwari of the Halqa can always sort every village of the Halqa too. A sorting helper sees only the sort screen of his village.</p>
+    <div class="card7" style="padding:0">${d.villages.map(v => `<div class="nr72"><span><b>${esc(v.name)}</b><small class="hint" style="display:block">${v.left ? fmtN(v.left) + ' left to sort' : 'All sorted ✓'}</small></span>
+      <select class="input" data-sv="${esc(v.village_id)}" style="max-width:220px"><option value="">The Patwari</option>${pp.map(p => `<option value="${esc(p.user_id)}" ${p.user_id === v.sorter_user_id ? 'selected' : ''}>${esc(p.name)} · ${esc(p.designation)}</option>`).join('')}</select></div>`).join('') || '<div class="nr72"><span class="hint">No village.</span></div>'}</div>
+    ${isPatwari() || office ? `<p class="sec7">Sorting helpers</p><div class="card7" style="padding:0">${helpers.map(h => `<div class="nr72"><span>${esc(h.name)}</span><button class="ab" data-off="${esc(h.user_id)}">Switch off</button></div>`).join('') || '<div class="nr72"><span class="hint">None. Add one only if an official cannot sort.</span></div>'}</div>
+      ${isPatwari() ? '<button class="btn" id="addh">Add a sorting helper</button>' : ''}` : ''}</section>`;
+  if (office) bindTehSeg(main);
+  on(main, '[data-sv]', 'change', el => busy(el, '…', async () => { a.data = await api('sorterSave', { village_id: el.dataset.sv, user_id: el.value }); toast('Saved'); render(); }));
+  on(main, '[data-off]', 'click', el => { if (confirm('Switch off this sorting helper?')) busy(el, '…', async () => { await api('helperSave', { user_id: el.dataset.off, off: true }); a.data = null; render(); }); });
+  b2('addh', () => simpleSheet('Add a sorting helper', `<p class="guide">He logs in with his name and PIN 1234, then sets his own PIN. You answer for his sorting.</p>
+    <div class="field"><label>Name</label><input class="input" id="hn"></div><div class="field"><label>Mobile</label><input class="input" id="hm" inputmode="numeric" maxlength="10"></div>
+    <div class="field"><label>Village he sorts</label><select class="input" id="hv">${d.villages.map(v => `<option value="${esc(v.village_id)}">${esc(v.name)}</option>`).join('')}</select></div><button class="btn btn-primary" id="hs">Add</button>`, r => {
+    $('#hs', r).onclick = () => busy($('#hs', r), 'Adding…', async () => { const vn = (d.villages.find(v => v.village_id === $('#hv', r).value) || {}).name || 'your village';
+      const x = await api('helperSave', { name: $('#hn', r).value, mobile: $('#hm', r).value, village_id: $('#hv', r).value }); pracMark('helperSave');
+      closeSheet(() => { a.data = null; render(); messageSheet('Message for ' + x.user.name, `Farmer ID app: you sort the landholdings of ${vn}.\nOpen ${appUrl()}\nChoose your name: ${x.user.name}\nPIN: 1234 (you will set your own)`, ''); }); }); }));
+};
+
+/* ---------- Staff: designations from a fixed list, one In-charge per village ---------- */
+VIEWS.users = async function (a) {
+  setHeader('Staff'); document.body.classList.add('wide');
+  const tid = curT(), main = $('#view'), r = role(), office = ['ADMIN', 'DA'].includes(r);
+  a.tab = a.tab || 'vil';
+  const draw = () => {
+    const st = S.staff7 && S.staff7[tid], g = S.g73 && S.g73[tid];
+    const ppl = office ? (S.boot.users || []).filter(x => x.active !== 'DEL' && (x.role === 'ADMIN' || x.tehsil_id === tid || (x.tehsils || []).includes(tid))) : [];
+    const grp = [['Officials (accountable for villages)', x => x.role === 'OPERATOR' && !x.helper && x.active === 'Y'], ['Office', x => ['ADMIN', 'NT', 'DA'].includes(x.role) && x.active === 'Y'], ['Sorting helpers', x => x.helper && x.active === 'Y'], ['Switched off', x => x.active !== 'Y']];
+    const inc = {}; if (st) st.villages.forEach(v => { if (v.incharge) (inc[v.incharge.user_id] = inc[v.incharge.user_id] || []).push(v.name); });
+    const vil = st ? st.phs.concat([{ ph_id: '', name: 'Not in a Patwar Halqa', patwari: null }]).map(p => { const vs = st.villages.filter(v => (v.ph_id || '') === p.ph_id); if (!vs.length) return '';
+      return `<p class="sec7">${esc(p.name)}${p.patwari ? ' · Patwari ' + esc(p.patwari.name) : ''}</p><div class="card7" style="padding:0">${vs.map(v => `<button class="vr73" data-sv="${esc(v.village_id)}"><span class="nm"><b>${esc(v.name)}</b><small>${v.collect ? 'Data collection only' : 'Target ' + v.target + ' a day'}</small></span>
+        <span class="vl"><small class="hint">In-charge</small> ${v.incharge ? `<b>${esc(v.incharge.name)}</b> <small class="hint">${esc(v.incharge.designation)}</small>` : '<b style="color:var(--late)">Not set</b>'}</span><span class="vl"><small class="hint">Sorts</small> ${v.sorter ? esc(v.sorter.name) : 'The Patwari'}</span></button>`).join('')}</div>`; }).join('') : '<div class="skel" style="height:220px"></div>';
+    const peo = `${office ? '<div class="row2"><button class="btn btn-primary" id="add">Add an official</button><button class="btn" id="inv">Group invite (WhatsApp)</button></div>' : ''}
+      ${g && g.switched_off && g.switched_off.length ? `<div class="banner"><p><b>${g.switched_off.length} switched off in the update:</b> ${esc(g.switched_off.map(x => x.name + ' (' + x.designation + ')').join(', '))}. Helpers (NYC, MTS, operators) are no longer in the app. If any of them is an official, open and choose the designation.</p></div>` : ''}
+      ${grp.map(([t, fn]) => { const l = ppl.filter(fn).sort((x, y) => (x.designation || '').localeCompare(y.designation || '') || x.name.localeCompare(y.name)); return l.length ? `<p class="sec7">${esc(t)} · ${l.length}</p><div class="list">${l.map(x => `<div class="rowb" ${x.active === 'Y' ? '' : 'style="opacity:.6"'}><button class="rt" data-uid="${esc(x.user_id)}"><b>${esc(x.name)}</b><small>${esc(x.designation)}${x.mobile ? ' · ' + esc(x.mobile) : ' · <b style="color:var(--late)">no mobile</b>'}${inc[x.user_id] ? ' · In-charge: ' + esc(inc[x.user_id].join(', ')) : ''}</small></button>
+        ${canResetPin(x) && x.active === 'Y' ? `<button class="rp" data-rp="${esc(x.user_id)}">Reset PIN</button>` : ''}</div>`).join('')}</div>` : ''; }).join('')}`;
+    main.innerHTML = `<section class="pad"><div class="ttl7"><h1>Staff</h1>${tehSeg()}</div>
+      <div class="seg7" style="margin-bottom:12px"><button class="${a.tab === 'vil' ? 'on' : ''}" data-tab="vil">Villages</button>${office ? `<button class="${a.tab === 'ppl' ? 'on' : ''}" data-tab="ppl">People</button>` : ''}</div>
+      ${a.tab === 'vil' ? `<p class="guide">One In-charge per village (Patwari, GQ, OQ, BCG or another official). He carries the village target and the show-cause notice. ${office ? 'Tap a village to change.' : ''}</p>${vil}` : peo}</section>`;
+    bindTehSeg(main);
+    on(main, '[data-tab]', 'click', el => { a.tab = el.dataset.tab; draw(); });
+    on(main, '[data-sv]', 'click', el => { const v = st.villages.find(x => x.village_id === el.dataset.sv); if (office) villageSheet73(st, v, () => staffOf(tid, true).then(draw)); else go('village7', { vid: v.village_id }); });
+    on(main, '[data-uid]', 'click', el => { const x = ppl.find(y => y.user_id === el.dataset.uid); if (office && x) personSheet73(x, draw); else go('official', { uid: el.dataset.uid }); });
+    on(main, '[data-rp]', 'click', el => { const x = ppl.find(y => y.user_id === el.dataset.rp); if (!confirm(`Reset the PIN of ${x.name} to 1234?`)) return; busy(el, '…', async () => { await api('resetPin', { user_id: x.user_id }); pinDoneSheet(x.name, x.mobile); }); });
+    b2('add', () => personSheet73(null, draw)); b2('inv', () => groupInvite());
+  };
+  draw();
+  try { await staffOf(tid); } catch (e) { if (a.tab === 'vil') { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  if (office && navigator.onLine && !a._bg) { a._bg = true; try { const x = await api('listUsers'); S.boot.users = x.users; await kput('boot', S.boot); } catch (e) {} load73(tid); }
+  if (current() && current().args === a && !SHEET) draw();
+};
+function villageSheet73(st, v, after) {
+  const opts = (sel, none) => `<option value="">${none}</option>` + st.people.map(p => `<option value="${esc(p.user_id)}" ${p.user_id === sel ? 'selected' : ''}>${esc(p.name)} · ${esc(p.designation)}</option>`).join('');
+  simpleSheet(esc(v.name), `<p class="hint">${v.patwari ? 'Patwari of the Halqa: ' + esc(v.patwari.name) : 'No Patwari set for this village’s Halqa'}</p>
+    <div class="field"><label>In-charge (accountable)</label><select class="input" id="ic">${opts(v.incharge && v.incharge.user_id, '— Not set —')}</select><small>Target: ${v.target} Farmer IDs a day (40, or what is left).</small></div>
+    <div class="field"><label>Who sorts</label><select class="input" id="so">${opts(v.sorter && v.sorter.user_id, 'The Patwari')}</select><small>The Patwari can also change this from his phone.</small></div>
+    <button class="btn btn-primary" id="s">Save</button>`, r => {
+    $('#s', r).onclick = () => busy($('#s', r), 'Saving…', async () => {
+      const ic = $('#ic', r).value, so = $('#so', r).value;
+      if (ic !== ((v.incharge || {}).user_id || '')) await api('staffingSave', { village_id: v.village_id, incharge_user_id: ic });
+      if (so !== ((v.sorter || {}).user_id || '')) await api('sorterSave', { village_id: v.village_id, user_id: so });
+      closeSheet(() => { toast(v.name + ' saved'); if (after) after(); }); }); });
+}
+function personSheet73(x, after) {
+  const admin = role() === 'ADMIN', list = (admin ? D73O : []).concat(D73F), d0 = x ? x.designation : 'Patwari', isOther = x && !D73O.concat(D73F, ['Sorting helper']).includes(d0);
+  const both = x && (x.tehsils || []).length > 1;
+  simpleSheet(x ? esc(x.name) : 'Add an official', `<div class="field"><label>Name</label><input class="input" id="nm" value="${esc(x ? x.name : '')}"></div>
+    <div class="field"><label>Mobile</label><input class="input" id="mb" inputmode="numeric" maxlength="10" value="${esc(x ? x.mobile || '' : '')}"></div>
+    ${x && x.helper ? '<p class="hint">Sorting helper, added by a Patwari.</p>' : `<div class="field"><label>Designation</label><select class="input" id="ds">${list.map(dz => `<option ${dz === d0 || (isOther && dz === 'Other official') ? 'selected' : ''}>${esc(dz)}</option>`).join('')}</select></div>
+    <div class="field" id="pf" ${isOther ? '' : 'hidden'}><label>Post (for "Other official")</label><input class="input" id="po" placeholder="e.g. Forester" value="${esc(isOther ? d0 : '')}"></div>`}
+    ${admin ? `<div class="field" id="tf"><label>Tehsil</label><select class="input" id="th">${S.boot.tehsils.map(t => `<option value="${t.tehsil_id}" ${x && x.tehsil_id === t.tehsil_id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></div>
+      <label class="chk" id="bf"><input type="checkbox" id="bt" ${both ? 'checked' : ''}> Covers both tehsils (Naib Tehsildar)</label>` : ''}
+    ${x && x.role === 'OPERATOR' && !x.helper ? `<label class="chk"><input type="checkbox" id="bk" ${x.backup ? 'checked' : ''}> Backup uploader (drops the portal file when the Dealing Assistant is away)</label>` : ''}
+    ${x ? `<label class="chk"><input type="checkbox" id="ac" ${x.active === 'Y' ? '' : 'checked'}> Switched off (cannot log in)</label>` : ''}
+    <button class="btn btn-primary" id="s">Save</button>`, r => {
+    const ds = $('#ds', r), sync = () => { if (!ds) return; $('#pf', r).hidden = ds.value !== 'Other official'; if ($('#tf', r)) $('#tf', r).hidden = ds.value === 'Tehsildar'; if ($('#bf', r)) $('#bf', r).hidden = !['Naib Tehsildar', 'Dealing Assistant'].includes(ds.value); };
+    if (ds) { ds.onchange = sync; sync(); }
+    $('#s', r).onclick = () => busy($('#s', r), 'Saving…', async () => {
+      let des = ds ? ds.value : d0; if (des === 'Other official') { des = $('#po', r).value.replace(/\s+/g, ' ').trim(); if (!des) throw new Error('Type the post of the official.'); }
+      const th = $('#th', r) ? $('#th', r).value : (x ? x.tehsil_id : me().tehsil_id);
+      const body = { user_id: x ? x.user_id : undefined, name: $('#nm', r).value, mobile: $('#mb', r).value, designation: des, role: x && x.helper ? 'OPERATOR' : D73O.includes(des) ? undefined : 'OPERATOR', tehsil_id: th, active: $('#ac', r) && $('#ac', r).checked ? 'N' : 'Y' };
+      if (admin && $('#bt', r)) body.tehsils = $('#bt', r).checked ? S.boot.tehsils.map(t => t.tehsil_id).join(',') : th;
+      if ($('#bk', r)) body.backup = $('#bk', r).checked;
+      const y = await api('saveUser', body), l = S.boot.users || (S.boot.users = []), i = l.findIndex(z => z.user_id === y.user.user_id); if (i >= 0) l[i] = y.user; else l.push(y.user);
+      await kput('boot', S.boot); S.staff7 = {}; closeSheet(() => { toast('Saved'); if (after) after(); }); }); });
+}
+
+/* ---------- saturation certificate: "sent to the DC office" ---------- */
+const _satSheet72 = satSheet;
+satSheet = function (tid, v, after) {
+  _satSheet72(tid, v, after);
+  const box = $('#sheet .sheet-in'); if (!box || !v.sat_date) return;
+  const el = document.createElement('div');
+  el.innerHTML = v.sat_sent ? `<p class="hint">Certificate sent to the DC office on ${esc(fmtDate(v.sat_sent))}.</p>` : `<button class="btn btn-primary" id="snt">Certificate sent to the DC office today</button>`;
+  const ref = $('#cp', box) || $('#lk', box); if (ref) ref.parentNode.insertBefore(el, ref); else box.appendChild(el);
+  if ($('#snt', box)) $('#snt', box).onclick = () => busy($('#snt', box), 'Saving…', async () => { const x = await api('satSave', { village_id: v.village_id, sent: true }); x._at = Date.now(); S.sat72[tid] = x; closeSheet(() => { toast(v.name + ': sent to the DC office'); if (after) after(); }); });
+};
+
+/* ---------- Emergency upload (Tehsildar, Naib Tehsildar) and the offline reading ---------- */
+function emergencySheet() {
+  simpleSheet('Emergency upload', `<p class="guide">Use this when the Dealing Assistant is away. Drop the portal file exactly as the Dealing Assistant does; every screen updates.</p>${dropHtml()}
+    <p class="sec7">Server not answering?</p><p class="hint">Read the portal file on this phone: village-wise counts and a message for the group. Nothing is saved; upload the same file normally once the server is back.</p><button class="btn" id="off">Read a file here (offline)</button>`, r => {
+    bindDrop(r); $('#off', r).onclick = async () => { const fs = await pickFiles('.xlsx,.xls,.csv'); if (fs.length) closeSheet(() => offlineRead(fs[0])); }; });
+}
+async function offlineRead(f) {
+  try { await loadXLSX(); } catch (e) { return fail('The Excel reader is not on this phone yet. Open the app once with internet.'); }
+  let p; try { p = await parsePortalFile(f); } catch (e) { return fail(e.message); }
+  if (p.type !== 'reg') return fail('This is not the registered-farmers file.');
+  const by = {}; p.rows.forEach(r => by[r[11]] = (by[r[11]] || 0) + 1);
+  const vs = villages(), inc = {}; ((L73() || S.live73 || {}).tehsils || []).forEach(t => t.incharges.forEach(x => x.villages.forEach(v => inc[v.village_id] = x.name)));
+  const byT = {}; Object.keys(by).forEach(id => { const v = vs.find(x => x.village_id === id); const tn = v ? tehsilName(v.tehsil_id) : 'Other'; (byT[tn] = byT[tn] || []).push({ name: v ? v.name : id, n: by[id], inc: inc[id] || '' }); });
+  const txt = `*Farmer ID · read from the portal file (offline) · ${t12(nowIST())}*\nIDs in the file (yesterday and today together):\n` + Object.keys(byT).map(tn => `\n*${tn}*: ${byT[tn].reduce((a, x) => a + x.n, 0)}\n` + byT[tn].sort((a, b) => b.n - a.n).map(x => `• ${x.name} ${x.n}${x.inc ? ' – ' + x.inc : ''}`).join('\n')).join('\n');
+  simpleSheet('Read offline', `<p class="guide">The file covers yesterday and today, so these are totals in the file, not today's count.</p>${Object.keys(byT).map(tn => `<p class="sec7">${esc(tn)}</p><div class="card7" style="padding:0">${byT[tn].map(x => `<div class="nr72"><span>${esc(x.name)}<small class="hint" style="display:block">${esc(x.inc)}</small></span><b>${x.n}</b></div>`).join('')}</div>`).join('')}<button class="btn btn-primary" id="m">Message for the group</button>`, r => { $('#m', r).onclick = () => closeSheet(() => messageSheet('Offline reading', txt, '')); });
+}
+const _more73 = VIEWS.more;
+VIEWS.more = async function () {
+  await _more73(); if (isField()) return;
+  const r = role(), box = $('#view .card7 .list'); if (!box) return;
+  const add = (k, t) => { const b = document.createElement('button'); b.className = 'row'; b.innerHTML = `<span class="rt"><b>${esc(t)}</b></span>`; b.onclick = () => k === 'emerg' ? emergencySheet() : go(k, {}); box.appendChild(b); };
+  add('scn73', 'Show-cause notices'); add('dcr73', 'DC report (R1, R2, R4, R5)'); add('r5c73', 'Inheritance mutations (R5 counts)'); add('sort73', 'Who sorts which village');
+  if (['ADMIN', 'NT'].includes(r)) add('emerg', 'Emergency upload');
+};
+
+/* ---------- menu ---------- */
+Object.assign(NAV7, { muts: 'muts', more: 'more' });
+updateBnav = function () {
+  const r = S.session && me() ? role() : '', c = current();
+  let nav = $('#bnav');
+  if (!r || !c || ['login', 'pin', 'board', 'practice'].includes(c.name) && !S.practice) { if (nav) nav.remove(); document.body.classList.remove('hasnav', 'wide'); return; }
+  const items = isField() ? (isHelperMe() ? [['home', 'Home'], ['sort', 'Sort'], ['set', 'Me']] : [['home', 'Home'], ...(canSortMe() ? [['sort', 'Sort']] : []), ...(isPatwari() ? [['muts', 'Dead owners']] : []), ['search', 'Search'], ['set', 'Me']])
+    : r === 'NT' ? [['home', 'Home'], ['vil', 'Villages'], ['rep', 'Reports'], ['more', 'More']]
+    : [['home', 'Home'], ['vil', 'Villages'], ['rep', 'Reports'], ['staff', 'Staff'], ['more', 'More']];
+  const sig = items.map(x => x[0]).join(',');
+  if (!nav || nav.dataset.sig !== sig) { if (nav) nav.remove(); nav = document.createElement('nav'); nav.id = 'bnav'; nav.className = 'bnav'; nav.dataset.sig = sig; document.body.appendChild(nav);
+    nav.innerHTML = items.map(x => `<button data-n="${x[0]}" data-t="${NAV7[x[0]]}">${navSvg(x[0])}<span>${x[1]}</span></button>`).join('');
+    on(nav, 'button', 'click', el => { const target = el.dataset.t; if (current().name === target) return; closeAllSheets();
+      if (target === 'home') { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); window.scrollTo(0, 0); render(); } else { NAV.stack = [{ name: 'home', args: {} }]; go(target, {}); } }); }
+  document.body.classList.add('hasnav'); document.body.classList.remove('wide');
+  $$('#bnav button').forEach(b => b.classList.toggle('on', b.dataset.t === c.name));
+};
+
+/* ---------- Reports page ---------- */
+VIEWS.reports = async function () {
+  setHeader('Reports'); document.body.classList.add('wide'); const tid = curT(), main = $('#view');
+  const other = REPS().filter(x => !['hour', 'close'].includes(x.k));
+  main.innerHTML = `<section class="pad"><div class="ttl7"><h1>Reports</h1>${tehSeg()}</div>
+    <div class="card7" style="padding:0">${await reportRows73(tid)}</div>
+    <p class="sec7">Other reports</p><div class="card7" style="padding:0">${other.map(x => `<div class="rp72"><span><b>${esc(x.t)}</b><small>${esc(x.p)} · ${esc(x.when)}</small></span><button class="btn" data-ot="${x.k}">${/PDF|Excel/.test(x.t) ? 'Make' : 'Open'}</button></div>`).join('')}</div></section>`;
+  bindTehSeg(main); on(main, '[data-rp]', 'click', el => reportGo(el.dataset.rp, tid)); on(main, '[data-ot]', 'click', el => other.find(x => x.k === el.dataset.ot).run(el));
+};
+
+/* ---------- WhatsApp: top 2 by In-charge, no medals ---------- */
+const top2Line = t => (t.top2 || []).length ? 'Top today: ' + t.top2.map((o, i) => `${i + 1}. ${o.name}${o.designation ? ' (' + o.designation + ')' : ''} ${nr(o.today)}`).join(' · ') : '';
+msgHourly = function (P, tid) {
+  const ts = P.tehsils.filter(t => !tid || t.tehsil_id === tid), now = hm();
+  return ts.map(t => { const L2 = [`*Farmer ID · ${t.name} · ${t12(t.as_on || nowIST())}*`, `Today: *${t.today}* of ${t.target}${t.last_n ? ' · +' + t.last_n + ' since the last file' : ''}`];
+    const tl = top2Line(t); if (tl) L2.push('', tl);
+    const lv = lt(t.tehsil_id), b = now >= '11:00' && lv ? lv.incharges.filter(x => x.target && x.proj < x.target) : [];
+    if (b.length) L2.push('', 'Behind target:', ...b.map(x => `• ${x.name} (${x.designation}) ${x.ids}/${x.target} – ${x.villages.map(v => v.name).join(', ')}`));
+    (t.down || []).filter(d => !d.to).forEach(() => L2.push('', 'Portal down'));
+    return L2.join('\n'); }).join('\n\n') + '\n\n' + link72();
+};
+msgClose = function (P, tid) {
+  const ts = P.tehsils.filter(t => !tid || t.tehsil_id === tid);
+  return ts.map(t => { const L2 = [`*Farmer ID · ${t.name} · Day close ${dmyL(todayIST()).slice(0, -5)}*`, `Today: *${t.today}* of ${t.target} (${Math.round(t.today * 100 / Math.max(1, t.target))}%)`];
+    if (t.after_hours) L2.push(`Last night after 5 PM: ${t.after_hours} (added to ${dmyL(t.yday ? t.yday.date : todayIST()).slice(0, -5)})`);
+    const tl = top2Line(t); if (tl) L2.push('', tl);
+    const lv = lt(t.tehsil_id), ex = lv ? lv.incharges.filter(x => x.target && x.ids < x.target) : [];
+    if (ex.length) L2.push('', 'Below target (In-charge):', ...ex.map(x => `• ${x.name} (${x.designation}) ${x.ids}/${x.target} – ${x.villages.map(v => v.name).join(', ')}`), '_Show-cause notices will be issued tomorrow morning (IDs made tonight still count)._');
+    else if (lv && lv.incharges.length) L2.push('', 'Every In-charge met the target.');
+    const so = lv ? lv.sorting.filter(x => x.due) : []; if (so.length) L2.push('', 'Sorting overdue:', ...so.map(x => `• ${x.name} (Patwari) ${x.due}`));
+    return L2.join('\n'); }).join('\n\n') + '\n\n' + link72();
+};
+const _rg73 = reportGo;
+reportGo = function (k, tid) { if (k === 'hour' || k === 'close') return loadLive(true).then(() => _rg73(k, tid)); return _rg73(k, tid); };
+
+/* ---------- reminders for whoever uploads: 3:45 and 4:45 PM fresh file, 5 PM DC report, morning notices ---------- */
+setInterval(async () => {
+  if (!S.session || !canUploadMe() || document.visibilityState !== 'visible' || S.viewAs || S.practice) return;
+  const now = hm(), tid = role() === 'ADMIN' ? curT() : me().tehsil_id, pt = pt7(tid), age = ago(pt && pt.as_on), k = x => 'r73' + x + todayIST();
+  if (now >= '15:45' && now < '16:00' && age > 30 && !S[k('a')]) { S[k('a')] = 1; toast('Upload a fresh portal file now: the 4 PM below-target list uses it.', 'info', 12000); }
+  if (now >= '16:45' && now < '17:00' && age > 30 && !S[k('b')]) { S[k('b')] = 1; toast('Upload the final portal file before 5 PM.', 'info', 12000); }
+  if (role() !== 'ADMIN' && now >= '17:00' && now < '19:00' && !(await kget(stK('dcr', tid))) && !S[k('c')]) { S[k('c')] = 1; toast('5 PM: open the DC report (Home → Reports) and type it into the DC sheet.', 'info', 12000); }
+  if (role() === 'DA' && now >= '10:00' && now < '13:00' && !(await kget(stK('scn', tid))) && !S[k('d')]) { const L = await loadScn(tid, false); if (L && L.ready && L.items.some(x => !x.exempt && !x.issued_on)) { S[k('d')] = 1; toast('Show-cause notices for yesterday are ready (Home → Reports).', 'info', 12000); } }
+}, 60000);
+
+/* ---------- refresh: a new file updates the live figures too ---------- */
+setInterval(() => { if (S.session && S.uv !== undefined && S.uv !== S.liveUv && navigator.onLine && !S.viewAs) loadLive(true).then(() => { const c = current(); if (c && c.name === 'home' && !SHEET) render(); }); }, 5000);
+
+/* ---------- one card after this update ---------- */
+const NEW73 = { OPERATOR: ['Each village now has one <b>In-charge</b> (Patwari, GQ, OQ or BCG). The In-charge carries the target: <b>40 Farmer IDs a day per village</b>, or what is left.', 'IDs count by the village of the land, whoever makes them.', 'Below target: a show-cause notice the next morning, also to the Patwari and the Naib Tehsildar.'],
+  PATWARI: ['Your Home shows your villages against target and every official of your Halqa.', '<b>Sorting:</b> everything by the deadline; new lists within a day. You decide who sorts each village (Home → Who sorts).', 'Other inheritance mutations: enter the counts per village (R5).'],
+  HELPER: ['You sort the landholdings of the village the Patwari gave you. Tap Sort.'],
+  DA: ['<b>Reports:</b> Morning report, Hourly message, Show-cause notices (Word file), DC report (R1, R2, R4, R5), Day close.', '<b>Staff:</b> one In-charge per village; designations from a fixed list. Helpers are switched off.', 'Reminders at 3:45 and 4:45 PM for a fresh file; 5 PM for the DC report.'],
+  NT: ['Home shows both tehsils: every official against the target, sorting left, villages.', 'Every show-cause notice is also addressed to you. More → Emergency upload when the Dealing Assistant is away.'],
+  ADMIN: ['Home shows both tehsils: officials against 40 a village, sorting left, villages; Needs you on top.', 'Show-cause notices are made as one Word file each morning for your signature.', 'More → Emergency upload when the Dealing Assistant is away.'] };
+afterLoginCards = async function () {
+  const k = 'v73:' + me().user_id; if (await kget(k)) return; await kput(k, 1); await kput('v72:' + me().user_id, 1);
+  const pts = isHelperMe() ? NEW73.HELPER : isPatwari() ? NEW73.PATWARI : NEW73[role()] || NEW73.OPERATOR;
+  openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><div class="tcard"><div class="big">${LEAF_SVG}</div><h2>What is new</h2>${pts.map(x => `<p style="text-align:left">• ${x}</p>`).join('')}</div><button class="btn btn-primary" id="ok">Got it</button>`,
+    mount: r => { $('#x', r).onclick = $('#ok', r).onclick = () => closeSheet(); } }));
+};
+
+/* ---------- practice and help ---------- */
+PRAC_ROLES.splice(0, PRAC_ROLES.length, ['OPERATOR', 'GQ / OQ / BCG', 'In-charge of a village: 40 Farmer IDs a day.', 'Deepak (GQ)'], ['PATWARI', 'Patwari', 'In-charge of a village; sorts his Halqa; decides who sorts.', 'Mohan'],
+  ['DA', 'Dealing Assistant', 'Portal file, reports, show-cause notices, DC report, staff.', 'Ravi'], ['NT', 'Naib Tehsildar', 'Both tehsils: officials against target, sorting, villages.', 'Sunil']);
+PRAC_TASKS.OPERATOR = [['view:home', 'Home: your villages against the target'], ['view:search', 'Search a farmer: is his ID made?'], ['setPrefs', 'Me: Sunlight mode or text size']];
+PRAC_TASKS.PATWARI = [['saveBuckets', 'Sort one family: Sort → tap a family → answer'], ['sorterSave', 'Home → Who sorts → pick someone for a village'], ['mutCountsSave', 'Home → Other inheritance mutations → save one village'], ['mutSave', 'Dead owners → tap a person → tick a step and save']];
+PRAC_TASKS.DA = [['regApply', 'Get the sample portal file (below), then drop it on Home'], ['wa:hour', 'Send the hourly message that opens after the upload'], ['view:scn73', 'Reports → Show-cause notices → make the Word file'], ['view:dcr73', 'Reports → DC report'], ['staffingSave', 'Staff → tap a village → set its In-charge']];
+PRAC_TASKS.NT = [['view:home', 'Home: officials below target, both tehsils'], ['view:scn73', 'More → Show-cause notices: see who gets one'], ['view:village7', 'Tap a village at the bottom of Home']];
+HELP.scn73 = ['Show-cause notices', 'Made the next morning, after the overnight IDs are counted.', 'Exempt anyone on leave or other duty first; then make the Word file, get it signed, post it, and tap "Mark as issued".', 'A second shortfall makes the notice say the matter is reported to the DC.'];
+HELP.dcr73 = ['DC report', 'R1 from the JKLR figures, R2 from the portal files, R4 from the certificates, R5 from the mutations.', 'Each line is the DC sheet’s own column, in the same order. Fix any ✗ before sending.'];
+HELP.sort73 = ['Who sorts', 'The Patwari picks one person per village. A sorting helper sees only his village.'];
+HELP.r5c73 = ['Inheritance mutations (R5)', 'Counts per village for landholders outside the Farmer ID lists. Dead owners in the lists are counted by themselves.'];
+
 Object.assign(HELP, {
   status: ['Villages', 'Today: each village against its target, with its In-charge and Patwari. Green = met, amber = on pace, red = behind.', 'Till date: by Patwar Halqa. Tap a village for its page.'],
   village7: ['A village', 'Figures, people (Patwari, In-charge, operators) and what is blocking, with the suggested action.', 'Below target at 5 PM invites show cause proceedings against the In-charge and the Patwari.'],
   reports: ['Reports', 'Every report in one place: what it is, who makes it, when.', 'Due ones are highlighted. Files open in a card with Download, Share and Open.'],
-  users: ['Staff', 'Villages: one row per village. Patwari comes from the halqa; set one In-charge and the operators. Target = operators × 50 unless you set it.', 'People: tap a name for the record. Designations: kept by the Dealing Assistant for both tehsils.'],
+  users: ['Staff', 'Villages: one row per village, by Patwar Halqa. Each village has one In-charge (Patwari, GQ, OQ, BCG or another official): he carries the target of 40 a day (or what is left).', 'People: officials, office, sorting helpers, switched off. Tap a name to change the designation or switch off.'],
   more: ['Settings', 'Look: Hinglish lines, Sunlight mode, text size.', 'Practice: try any role with sample data, without login.']
 });
 

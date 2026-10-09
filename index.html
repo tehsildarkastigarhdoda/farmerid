@@ -35,7 +35,7 @@ footer .cr{margin-top:6px;color:#55635B;font-weight:600}
 @media (max-width:420px){.top .nm b{font-size:16.5px}.login{padding:9px 12px}}
 </style>
 </head>
-<body>
+<body class="pub">
 <header class="top"><div class="in"><img src="logo.svg" alt=""><div class="nm"><b>Farmer ID Dashboard</b><small>Tehsil Assar &amp; Kastigarh · District Doda</small></div><a class="login" href="app.html">Log in</a></div></header>
 <main><div class="upd" id="upd"></div><div id="msg"></div><div id="dash"></div></main>
 <footer>Figures are compiled from the Agristack portal files uploaded by the Tehsil offices and are indicative. The portal remains the official record.
@@ -57,7 +57,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
   } catch (e) {}
   const root = document.getElementById('dash'), upd = document.getElementById('upd'), msg = document.getElementById('msg');
   let last = null; try { last = JSON.parse(localStorage.getItem('d7:last') || 'null'); } catch (e) {}
-  const draw = d => { DASH.render(root, d, {}); upd.innerHTML = `<span>Updated ${DASH.t12(d.now)} · refreshes every 2 minutes</span><button id="rf">Refresh</button>`; document.getElementById('rf').onclick = load; };
+  const draw = d => { DASH.render(root, d, {}); upd.innerHTML = `<span>Updated ${DASH.t12(d.now)} · updates by itself</span><button id="rf">Refresh</button>`; document.getElementById('rf').onclick = load; };
   if (last) draw(last); else DASH.render(root, null);
   async function load() {
     try {
