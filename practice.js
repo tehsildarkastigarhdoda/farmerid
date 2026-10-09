@@ -3847,7 +3847,7 @@ function dash_(req) {
         const camps = Object.keys(c.dm.byV || {}).filter(vid => (c.dm.byV[vid] || []).length).map(vid => (vs.find(v => v.village_id === vid) || {}).name).filter(Boolean).sort();
         return { tehsil_id: tid, name: t.name, today: p.today, target: p.target, as_on: p.as_on, last_n: p.last_n, uploads: p.uploads, closed_day: p.closed,
           top2: p.top2, total, made, pct: total ? Math.round(made * 1000 / total) / 10 : 0, needed: closed ? 0 : Math.ceil(Math.max(0, total - made) / daysLeft),
-          villages: vs, camps, down: p.down.filter(d => !d.to).length > 0 };
+          villages: vs, camps, down: p.down.filter(d => !d.to).length > 0, days: daySeries_(tid, start, today) };
       }) };
   });
 }
@@ -4246,6 +4246,14 @@ function get73_(req, u) {
   return { tehsil_id: tid, dc_buckets: setting_('dc_buckets_' + tid) || '', scn_order: setting_('scn_order_' + tid) || '', scn_copy: setting_('scn_copy_' + tid) || '',
     backlog_module_off: setting_('backlog_module_off') === 'Y', sort_deadline: setting_('sort_deadline') || '', village_target: Number(setting_('village_target') || 40),
     switched_off: off.filter(x => (!tid || x.tehsil_id === tid || u.role === 'ADMIN') && users[x.user_id] && users[x.user_id].active === 'N') };
+}
+
+/** IDs per day since the start (for the climb line and the last 30 days on the dashboard). */
+function daySeries_(tid, start, today) {
+  const by = {}; read_('Farmers').forEach(f => { if (f.tehsil_id === tid && f.missing !== 'Y' && f.status !== 'REJECTED' && f.first_seen) by[f.first_seen] = (by[f.first_seen] || 0) + 1; });
+  const out = []; let d = start || '2026-08-02'; let guard = 0;
+  while (d <= today && guard++ < 400) { out.push(by[d] || 0); d = addDays_(d, 1); }
+  return { from: start || '2026-08-02', n: out };
 }
 
 /* ============================== START FRESH ============================== */
