@@ -3,10 +3,11 @@
 (function () {
   const CSS = `
 .d7{--g:#1F5A3E;--lt:#7CC79A;--ink:#111816;--mute:#5F6B66;--line:#E3E8E5;--soft:#EDF0EE;--ok:#1E7A46;--late:#B3261E;--sf:#C27A12;--card:#fff;--c1:#B9DCC5;--c2:#6DB088;--c3:#1F5A3E;color:var(--ink);font-variant-numeric:tabular-nums}
-@media (prefers-color-scheme:dark){body.pub{background:#0F1513!important;color:#E7ECE9}
-  body.pub .d7{--ink:#E7ECE9;--mute:#9AA8A1;--line:#26302C;--soft:#1E2824;--card:#151D1A;--g:#7CC79A;--lt:#2E6A49;--c1:#1F4A34;--c2:#2F7D52;--c3:#7CC79A}
-  body.pub .top{background:rgba(15,21,19,.92)!important;border-color:#26302C!important}body.pub .top .nm b{color:#7CC79A!important}body.pub .top .nm small,body.pub footer,body.pub .upd{color:#9AA8A1!important}
-  body.pub .upd button{background:#151D1A!important;border-color:#26302C!important;color:#7CC79A!important}body.pub .d7-pop{background:#E7ECE9;color:#111816}}
+.dk body.pub,body.pub.dk{background:#0F1513!important;color:#E7ECE9}
+.dk .d7{--ink:#E7ECE9;--mute:#9AA8A1;--line:#26302C;--soft:#1E2824;--card:#151D1A;--g:#7CC79A;--lt:#2E6A49;--c1:#1F4A34;--c2:#2F7D52;--c3:#7CC79A}
+.dk body.pub .top{background:rgba(15,21,19,.92)!important;border-color:#26302C!important}.dk body.pub .top .nm b{color:#7CC79A!important}.dk body.pub .top .nm small,.dk body.pub footer,.dk body.pub .upd{color:#9AA8A1!important}
+.dk body.pub .upd button{background:#151D1A!important;border-color:#26302C!important;color:#7CC79A!important}.dk .d7-pop{background:#E7ECE9;color:#111816}.dk .d7-down{background:#3A1F1C;color:#F2B8B0}
+.d7-tb svg{display:block;width:100%;height:auto}.d7-upd{font-size:12.5px;color:var(--mute);text-align:right}
 .d7 *{box-sizing:border-box}
 .d7-sum{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;margin:2px 0 14px;color:var(--mute);font-size:14px}.d7-sum b{color:var(--ink);font-weight:600}
 .d7-cols{display:grid;grid-template-columns:1fr;gap:14px}
@@ -80,7 +81,7 @@
       <g style="stroke:var(--line)"><line x1="${L}" y1="${top}" x2="${R}" y2="${top}"/><line x1="${L}" y1="${(top + bot) / 2}" x2="${R}" y2="${(top + bot) / 2}"/><line x1="${L}" y1="${bot}" x2="${R}" y2="${bot}"/></g>
       <text x="${R}" y="${top - 4}" text-anchor="end" font-size="9.5" style="fill:var(--mute)">100%</text><text x="${R}" y="${(top + bot) / 2 - 4}" text-anchor="end" font-size="9.5" style="fill:var(--mute)">50%</text>
       <path d="${path} L${last[0]} ${bot} L${L} ${bot} Z" fill="url(#${gid})"/><path d="${path}" fill="none" style="stroke:var(--g)" stroke-width="2.2" stroke-linejoin="round"/>
-      ${staffEnd > ser.length - 1 ? `<path d="M${last[0]} ${last[1]} L${R} ${top}" style="stroke:var(--sf)" stroke-width="1.4" stroke-dasharray="4 4"/><text x="${R - 2}" y="${top + 13}" text-anchor="end" font-size="9.5" style="fill:var(--sf)">pace to 100% by ${esc(dlong(d.deadline))}</text>` : ''}
+      ${staffEnd > ser.length - 1 ? `<path d="M${last[0]} ${last[1]} L${R} ${top}" style="stroke:var(--sf)" stroke-width="1.4" stroke-dasharray="4 4"/><text x="${R - 2}" y="${top + 26}" text-anchor="end" font-size="9.5" style="fill:var(--sf)">pace to 100% by ${esc(dlong(d.deadline))}</text>` : ''}
       <circle cx="${last[0]}" cy="${last[1]}" r="9" style="fill:var(--g)" opacity=".18"/><circle cx="${last[0]}" cy="${last[1]}" r="4" style="fill:var(--g)"/>
       <text x="${L}" y="${H - 6}" font-size="9.5" style="fill:var(--mute)">${esc(dlong(t.days.from))}</text><text x="${last[0]}" y="${H - 6}" text-anchor="${last[0] > R - 30 ? 'end' : 'middle'}" font-size="9.5" style="fill:var(--mute)">today</text></svg></div>`;
   }
@@ -96,6 +97,31 @@
     if (Object.keys(by).length < 2) return '';
     return `<div class="d7-hb">${hrs.map(h => `<i class="${by[h] ? '' : 'z'}" style="height:${by[h] ? Math.max(4, Math.round(by[h] * 40 / mx)) : 3}px" title="${(h % 12) || 12}: ${by[h] || 0}"></i>`).join('')}</div>`;
   }
+  const toM = x => Number(String(x).slice(0, 2)) * 60 + Number(String(x).slice(3, 5));
+  /* green "Live" only while the figures are fresh; otherwise say which file is awaited */
+  function liveTag(t, d) {
+    if (!t.as_on) return `<span class="d7-live off"><i></i>No portal file yet today</span>`;
+    const nowM = toM(String(d.now || '').slice(11, 16)), age = nowM - toM(t.as_on.slice(11, 16)), working = nowM >= 600 && nowM <= 1230;
+    if (working && age > 70 && t.next_slot) return `<span class="d7-live off"><i></i>Waiting for the ${esc(t12(d.today + ' ' + t.next_slot + ':00')).replace(':00 ', ' ')} file</span>`;
+    return `<span class="d7-live"><i></i>Live · ${esc(t12(t.as_on))}</span>`;
+  }
+  /* Through the day: one bar per upload slot (10 … 5, 8 PM); the morning file holds everything since last night's file */
+  function dayBars(t, d) {
+    const ts = d.slot_times || ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '20:00'];
+    const ups = (t.uploads || []).map(u => ({ m: toM(String(u.at).slice(11, 16)), n: u.n })).filter(u => u.m > 0);
+    if (!ups.length) return '';
+    const nowM = toM(String(d.now || '').slice(11, 16)), sl = ts.map((x, i) => { const s = toM(x), from = i ? s - 10 : 0, to = i < ts.length - 1 ? toM(ts[i + 1]) - 10 : 1440;
+      const us = ups.filter(u => u.m >= from && u.m < to); return { x, n: us.reduce((a, u) => a + u.n, 0), k: us.length, past: nowM >= to, cur: nowM >= from && nowM < to }; });
+    const W = 460, H = 120, L = 6, R = W - 6, base = 92, cw = (R - L) / ts.length, pace = t.target / ts.length, mx = Math.max(pace * 1.4, ...sl.map(z => z.n), 1), Y = v => base - v * 70 / mx;
+    const lab = x => { const h = Number(x.slice(0, 2)); return ((h % 12) || 12) + (h >= 18 ? ' PM' : ''); };
+    let g = `<line x1="${L}" y1="${base}" x2="${R}" y2="${base}" style="stroke:var(--line)"/><line x1="${L}" y1="${Y(pace)}" x2="${R}" y2="${Y(pace)}" style="stroke:var(--sf)" stroke-dasharray="4 4" opacity=".8"/>`;
+    sl.forEach((z, i) => { const x = L + i * cw + cw * .2, w = cw * .6;
+      if (z.k) g += `<rect x="${x}" y="${Y(z.n)}" width="${w}" height="${Math.max(2, base - Y(z.n))}" rx="4" style="fill:${i === 0 ? 'var(--lt)' : 'var(--g)'}"><title>${z.n} new IDs</title></rect><text x="${x + w / 2}" y="${Y(z.n) - 5}" text-anchor="middle" font-size="11" font-weight="600" style="fill:var(--ink)">${z.n}</text>`;
+      else g += `<rect x="${x}" y="${base - 3}" width="${w}" height="3" rx="1.5" style="fill:${z.cur ? 'var(--g)' : 'var(--soft)'}" opacity="${z.cur ? .45 : 1}"/>`;
+      g += `<text x="${x + w / 2}" y="${base + 15}" text-anchor="middle" font-size="10.5" style="fill:${z.cur ? 'var(--g)' : 'var(--mute)'}" font-weight="${z.cur ? 600 : 400}">${lab(z.x)}</text>`; });
+    g += `<text x="${L + cw / 2}" y="${base + 27}" text-anchor="middle" font-size="9" style="fill:var(--mute)">morning</text>`;
+    return `<div class="d7-sec">Through the day</div><div class="d7-tb"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="New IDs in each portal file today">${g}</svg></div>`;
+  }
   function villageRows(t, o) {
     const rank = { late: 0, due: 1, ok: 3, mute: 2, done: 4 };
     const vs = t.villages.map(v => Object.assign({}, v, { s: v.made >= v.total && v.total ? 'done' : v.cls || 'mute' })).sort((a, b) => rank[a.s] - rank[b.s] || a.made / a.total - b.made / b.total);
@@ -108,11 +134,11 @@
       ${!d.closed && !o.staff && (t.camps || []).length ? `<div class="d7-sec">Camps today</div><div class="d7-camps">${t.camps.map(c => `<span>${esc(c)}</span>`).join('')}</div>` : ''}`;
     const c30 = cal(t);
     return `<section class="d7-card" id="d7-${esc(t.tehsil_id)}">
-      <div class="d7-hd"><h2>${esc(t.name)}</h2><span class="d7-live ${t.as_on ? '' : 'off'}"><i></i>${t.as_on ? 'Live · ' + esc(t12(t.as_on)) : 'No portal file yet today'}</span></div>
+      <div class="d7-hd"><h2>${esc(t.name)}</h2>${liveTag(t, d)}</div>
       <div class="d7-hero">${waffle(t, d, o)}<div><div class="d7-pct"><span data-to="${p}" data-k="${key}">${p}</span><small>%</small></div>
         <div class="d7-of"><b>${fmt(t.made)}</b> of ${fmt(t.total)} farmers<br>have a Farmer ID</div>
         <div class="d7-leg"><span><i style="background:var(--g)"></i>done</span><span><i style="background:var(--lt)"></i>today</span>${o.staff && !d.closed ? '<span><i style="border:1.2px dashed var(--sf)"></i>should be</span>' : ''}</div></div></div>
-      ${d.closed ? '' : `<div class="d7-row"><div><div class="d7-k">Today</div><div class="d7-today">${fmt(t.today)} <span>/ ${fmt(t.target)}</span></div></div>${hourBars(t)}</div>`}
+      ${d.closed ? '' : `<div class="d7-row"><div><div class="d7-k">Today</div><div class="d7-today">${fmt(t.today)} <span>/ ${fmt(t.target)}</span></div></div><div class="d7-upd">${t.as_on ? 'Updated ' + esc(t12(t.as_on)) : ''}${t.next_slot ? '<br>next file about ' + esc(t12(d.today + ' ' + t.next_slot + ':00')) : ''}</div></div>${dayBars(t, d)}`}
       ${t.down ? '<div class="d7-down">Portal down: figures as of the last file</div>' : ''}
       ${climb(t, d, o) ? `<div class="d7-sec">The climb since ${esc(dlong(t.days.from))}</div>${climb(t, d, o)}` : ''}
       ${fc && !d.closed ? `<div class="d7-fc">At the last 7 days’ pace: about ${fmt(fc.expected)} (${fc.total ? Math.round(fc.expected * 100 / fc.total) : 0}%) by ${esc(dlong(d.deadline))}.</div>` : ''}

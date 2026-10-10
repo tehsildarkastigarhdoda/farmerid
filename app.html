@@ -649,6 +649,96 @@ h1,h2,h3{font-weight:600!important;letter-spacing:-.01em}
 .of73 .callb{width:34px;height:34px;min-width:34px}.of73 .callb svg{width:16px;height:16px}
 .vr73 .pc .b73{width:90px;margin-right:6px}
 .of73 .ct{white-space:normal}.of73 .ct .b73{display:block;width:100%;max-width:140px;margin-top:5px}
+/* ===== v7.4: login, slots, theme, polish ===== */
+:root{--hi:#5F6B66}
+/* ---- type and component scale (older screens too) ---- */
+.hi{color:#6B7771!important}
+.pad h2{font-size:19px!important;font-weight:600!important;letter-spacing:-.01em}
+.sheet h2,.sheet .nm{font-size:19px!important;font-weight:600!important}
+.row,.rowb{border-radius:12px!important}
+.list .row+.row{margin-top:6px}
+.callb{width:36px!important;height:36px!important;min-width:36px;border-radius:10px!important;background:transparent!important;border:1px solid var(--line)!important;color:var(--pine)!important}
+.callb svg{width:17px;height:17px}
+.chips .chipf{border-radius:999px!important}
+.empty{color:var(--mute);font-size:14px}
+.skel{border-radius:12px!important;background:linear-gradient(90deg,#EEF1EF,#F6F8F7,#EEF1EF)!important;background-size:200% 100%!important;animation:sk74 1.4s infinite linear}
+@keyframes sk74{to{background-position:-200% 0}}
+.sec,.sec7{margin-top:22px}
+/* ---- sticky summary on phones (office homes) ---- */
+.stk74{display:none}
+@media(max-width:700px){.stk74{display:flex;gap:14px;position:sticky;top:56px;z-index:6;background:rgba(247,248,247,.94);backdrop-filter:blur(8px);margin:0 -16px 10px;padding:8px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--mute);overflow-x:auto;white-space:nowrap}.stk74 b{color:var(--ink);font-weight:600}}
+/* ---- upload slots ---- */
+.sl74{padding:14px 16px!important;margin-bottom:14px}.hd74{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.hd74 .nx{font-size:13px;color:var(--mute)}.hd74 .nx b{color:var(--pine);font-weight:600}.hd74 .nx b.lt{color:var(--due)}
+.sls74{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:5px;margin:10px 0 8px}
+.sls74 .sl{border-radius:9px;padding:7px 0 6px;text-align:center;border:1px solid var(--line);font-size:11px;color:#9AA59F;min-width:0;overflow:hidden;white-space:nowrap}
+.sls74 .sl b{display:block;font-size:13.5px;font-weight:600;margin-bottom:1px;color:inherit}
+.sls74 .ok{background:#EAF5EE;border-color:#CFE6D8;color:var(--ok)}.sls74 .lt{background:#FFF6E8;border-color:#F0DEC0;color:var(--due)}.sls74 .ms{background:#FDF0EE;border-color:#F0C9C4;color:var(--late)}
+.sls74 .due{border:1.5px solid var(--pine);box-shadow:0 0 0 3px rgba(31,90,62,.1);color:var(--pine)}.sls74 .due.lt{border-color:var(--due);box-shadow:0 0 0 3px rgba(178,106,0,.12)}
+@media(max-width:420px){.sls74{gap:3px}.sls74 .sl{font-size:9.5px;padding:6px 0 5px}.sls74 .sl b{font-size:12px}}
+/* ---- login ---- */
+body.login74 #bar,body.login74 .bnav{display:none!important}body.login74 #view{padding:0!important;max-width:none!important}
+.lg74{min-height:100vh;display:flex}
+.lg74b{display:none;width:44%;background:#123826;color:#fff;padding:44px 48px;flex-direction:column;justify-content:space-between}
+.lg74b .lv{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:#9FCDB1}.lg74b .big{font-size:clamp(64px,7vw,92px);font-weight:600;letter-spacing:-.04em;line-height:1;margin:10px 0}
+.lg74b p{color:#CFE6D8;font-size:15px;max-width:420px;line-height:1.5}.lg74b small{color:#9FCDB1;font-size:12px}
+@media(min-width:900px){.lg74b{display:flex}.brand74.sm{display:none!important}}
+.brand74{display:flex;align-items:center;gap:10px}.brand74 img{border-radius:10px}.brand74 b{font-size:16px;font-weight:600}.brand74 small{display:block;color:var(--mute);font-size:12.5px}
+.lg74f{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:48px 22px 28px}@media(min-width:900px){.lg74f{align-items:center}}
+.in74{width:100%;max-width:380px}
+.in74 h1{font-size:26px;font-weight:600;letter-spacing:-.02em;margin:28px 0 4px}.sub74{color:var(--mute);font-size:14px;margin:0 0 16px}
+.who74{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 14px;margin:0 0 8px;font:inherit;color:inherit;cursor:pointer}
+.who74:hover{border-color:#BFD8C8}.who74 .tx{flex:1;min-width:0}.who74 b{display:block;font-weight:600}.who74 small{color:var(--mute);font-size:12.5px}.who74 .ar{color:var(--pine);font-size:22px}
+.av74{width:38px;height:38px;border-radius:50%;background:#E3EFE8;color:var(--pine);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex:none}
+.lnk74{background:none;border:0;color:var(--pine);font:inherit;font-size:14px;padding:6px 0;cursor:pointer}
+.fld74{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 14px}.fld74 span{color:var(--mute)}.fld74 input{flex:1;border:0;outline:0;font:inherit;font-size:16px;padding:13px 0;background:transparent;color:inherit}
+.fld74:focus-within{border-color:var(--pine);box-shadow:0 0 0 3px rgba(31,90,62,.12)}.nl74{margin-top:12px}
+.pins74{display:flex;gap:12px;justify-content:center;margin:20px 0 8px;position:relative;cursor:text}
+.pins74 input{position:absolute;inset:0;opacity:0;width:100%;height:100%;font-size:16px;border:0;caret-color:transparent}
+.pins74 span{width:54px;height:62px;border-radius:12px;border:1.5px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;transition:border-color .15s,box-shadow .15s}
+.pins74 span.f::after{content:'';width:12px;height:12px;border-radius:50%;background:var(--ink)}.pins74 span.f{border-color:var(--pine)}.pins74 span.c{border-color:var(--pine);box-shadow:0 0 0 4px rgba(31,90,62,.12)}
+.pins74.bad{animation:sh74 .4s}.pins74.bad span{border-color:var(--late)!important;box-shadow:none!important}
+@keyframes sh74{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.ft74{margin-top:28px;font-size:13.5px;text-align:center}.ft74 a{color:var(--pine)}
+.in74 .btn{margin-top:8px!important}
+/* ---- dark theme for the app ---- */
+html.dk{color-scheme:dark;--ink:#E7ECE9;--mute:#9AA8A1;--line:#26302C;--bg:#0F1513;--g50:#18241F;--pine:#7CC79A;--pine2:#5DB383;--ok:#7CC79A;--okbg:#173326;--late:#F28B82;--latebg:#3A1F1C;--due:#F2C879;--duebg:#3A2E14;--sf50:#2A2214}
+html.dk body{background:#0F1513!important;color:#E7ECE9!important}
+html.dk :is(#bar,.bnav,.card7,.box,.row,.rowb,.att,.glance,.live,.list7,.vcard,.upc,.tile7,.of73,.vr73,.mu72,.drop7,.srch72,.next7,.hero2,.sheet-in,#task7,.tcard,.nb,.who74,.fld74,.pins74 span,.dl73,.scn73,.hist,.mem,.top7 .tp){background:#151D1A!important;border-color:#26302C!important;color:#E7ECE9!important}
+html.dk :is(.sheet,.sheet-in,.snav){background:#151D1A!important;color:#E7ECE9!important}
+html.dk :is(.input,select.input,textarea.input,.field input,.field select,input,select,textarea){background:#1A2420!important;border-color:#2F3B36!important;color:#E7ECE9!important}
+html.dk :is(.btn,.ab,.rp,.chipf,.seg7,.seg7 button,.logout){background:#1A2420!important;border-color:#2F3B36!important;color:#E7ECE9!important}
+html.dk :is(.btn-primary,.startbig,.next7 button,.btn.okb){background:#2F7D52!important;border-color:#2F7D52!important;color:#fff!important}
+html.dk :is(.seg7 button.on,.chipf.on){background:#E7ECE9!important;color:#111816!important}
+html.dk :is(.hint,.hi,.sec,.sec7,.foot,.sub74,.today72,small){color:#9AA8A1!important}
+html.dk :is(.ttl7 h1,#bar #title,h1,h2,h3,b,strong){color:inherit}
+html.dk :is(.link,.lnk74,a){color:#7CC79A}
+html.dk .guide{background:#16201C!important;border-color:#26302C!important;color:#CFD8D3!important}
+html.dk .banner{background:#2A2214!important;border-color:#4A3A1C!important;color:#F1E3C6!important}html.dk .banner.red{background:#2E1A18!important;border-color:#4A2622!important;color:#F6D3CE!important}
+html.dk .tag72.r{background:#3A1F1C;color:#F2B8B0}html.dk .tag72.g{background:#173326;color:#9FD8B4}html.dk .tag72.a{background:#3A2E14;color:#F2C879}html.dk .tag72.m{background:#1E2824;color:#9AA8A1}
+html.dk .rp72.due{background:#1F1B12!important}html.dk :is(.nr72,.rp72,.dl73,.mu72,.of73,.vr73){border-color:#26302C!important}
+html.dk .kv72>div{border-color:#26302C!important}html.dk .b73{background:#26302C}html.dk .of73.me{background:#18241F!important}html.dk .vr73:hover{background:#18241F!important}
+html.dk .bnav button.on{background:#18241F!important;color:#7CC79A!important}html.dk .bnav button{color:#9AA8A1!important}
+html.dk .skel{background:linear-gradient(90deg,#1A2420,#202B26,#1A2420)!important;background-size:200% 100%!important}
+html.dk #ld7{background:#0F1513}html.dk #ld7 .ls div.on{color:#E7ECE9}
+html.dk .stk74{background:rgba(15,21,19,.92)}
+html.dk .sls74 .sl{border-color:#2F3B36;color:#6F7C76}html.dk .sls74 .ok{background:#173326;border-color:#22503A;color:#9FD8B4}html.dk .sls74 .lt{background:#3A2E14;border-color:#57451F;color:#F2C879}html.dk .sls74 .ms{background:#3A1F1C;border-color:#5A2C27;color:#F2B8B0}html.dk .sls74 .due{color:#7CC79A;border-color:#7CC79A}
+html.dk .av74{background:#1F3A2C;color:#7CC79A}html.dk .pins74 span.f::after{background:#E7ECE9}
+html.dk .lg74b{background:#0B241A}
+html.dk table td,html.dk table th{border-color:#26302C!important}
+html.dk .upd72{background:#E7ECE9;color:#111816}
+html.dk #toast{background:#E7ECE9!important;color:#111816!important}
+html.dk .dots i{border-color:#9AA8A1}
+html.dk .fld74 input{background:transparent!important;border:0!important}
+html.dk :is(.d7-card,.d7-final,#bar .hb7,.hb7){background:#151D1A!important;border-color:#26302C!important;color:#E7ECE9!important}
+html.dk :is(.of73 .vl,.vr73 .vl,.dl73 span,.scn73 .ln,.guide){color:#C4CEC9!important}
+html.dk .of73 .nm small,html.dk .vr73 .nm small{color:#9AA8A1!important}
+@media(max-width:640px){.sl-line{flex-direction:column;align-items:flex-start!important;gap:2px}}
+.sls74 .sl i{font-style:normal;display:block}
+@media(max-width:520px){.sls74 .sl i{display:none}.sls74 .sl{padding:9px 0}.sls74 .sl b{margin:0}}
+html.dk :is(.vp7,.pv7,.pc7>div,.seg,.seg button,.tabs button,.lab7,.chip7,.kp button,.dots,.welcome,.err){background:#151D1A!important;border-color:#26302C!important;color:#E7ECE9!important}
+html.dk :is(.seg button.on,.seg .on){background:#2F7D52!important;color:#fff!important}
+html.dk .err{background:#2E1A18!important;color:#F6D3CE!important}
+html.dk .pbar7{background:#26302C!important}
 
 [hidden]{display:none!important}
 #title::before{content:'';float:left;width:30px;height:30px;margin:3px 9px 0 0;background:url(logo.svg) center/contain no-repeat;border-radius:7px}
@@ -667,7 +757,7 @@ h1,h2,h3{font-weight:600!important;letter-spacing:-.01em}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '7.3.0';
+const APP_V = '7.4.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -6970,8 +7060,10 @@ async function officeHome73(main) {
   const late = hm() >= '16:00' && hm() < '19:00';
   main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>${esc(greet())}, ${esc(u.name)}</h1><small class="hint">${esc(u.designation)} · ${esc(dateLong(today))}</small></div></div>
     ${closedHtml()}${noticesHtml()}
+    <div class="stk74">${ts.map(tid => { const d0 = S.dash && S.dash.tehsils.find(x => x.tehsil_id === tid); return d0 ? `<span><b>${esc(d0.name)}</b> ${fmtN(d0.today)}/${fmtN(d0.target)} · ${d0.pct}%</span>` : ''; }).join('')}</div>
     ${dashCards()}
     <p class="sec7">Needs you</p><div class="card7" style="padding:0">${needs.map(n => `<div class="nr72"><span>${n[0] ? `<small class="hint">${esc(n[0])}</small> ` : ''}${esc(n[1])}</span>${n[2] ? `<button class="ab" data-nd="${esc(n[2])}">${esc(n[3])}</button>` : ''}</div>`).join('') || '<div class="nr72"><span class="hint">Nothing waiting.</span></div>'}</div>
+    ${ts.some(tid => lt(tid) && lt(tid).slots) ? `<p class="sec7">Portal files today</p><div class="card7" style="padding:0">${ts.map(tid => slotLine(lt(tid))).join('')}</div>` : ''}
     ${ts.map(tid => { const t = lt(tid), bl = t ? t.incharges.filter(x => x.target && x.ids < x.target).length : 0;
       return `<p class="sec7">Officials today · ${esc(tehsilName(tid))}${t ? ` <span class="hint" style="text-transform:none;letter-spacing:0">· ${bl} of ${t.incharges.length} below target${late ? ' (4 PM list)' : ''}</span>` : ''}</p>
       <div class="card7" style="padding:0">${t ? offRows(t.incharges, { tel: true }) : '<div class="skel" style="height:120px"></div>'}</div>`; }).join('')}
@@ -7021,12 +7113,12 @@ async function daHome73(main) {
   if (pt && pt.unmatched) needs.push(`<div class="nr72"><span>Match desk</span><button class="ab" id="mdk">${pt.unmatched} to match</button></div>`);
   main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Today, ${esc(dateLong(today))}</h1><small class="hint">${esc(u.name)} · ${esc(u.designation)}, ${esc(tehsilName(tid))}</small></div>${tehSeg()}</div>
     ${closedHtml()}${staleHtml()}${noticesHtml()}
-    <div class="desk"><div>${dropHtml()}
+    ${slotStrip(t)}<div class="desk"><div>${dropHtml()}
       <p class="sec7">Reports · any time, as often as needed</p><div class="card7" style="padding:0" id="rps">${await reportRows73(tid)}</div>
       <p class="sec7">Officials today${hm() >= '16:00' ? ' (4 PM list)' : ''}</p><div class="card7" style="padding:0">${t ? offRows(t.incharges, { tel: true }) : '<div class="skel" style="height:100px"></div>'}</div>
     </div><div>
       <div class="card7 kv72" style="padding:0"><div><span>IDs today</span><b>${pt ? fmtN(pt.today) : '–'} <small style="font-size:14px;color:var(--mute);font-weight:400">/ ${pt ? fmtN(pt.target) : 200}</small></b>${bar73(pt ? pt.today : 0, pt ? pt.target : 200, 'full n')}</div>
-        <div><span>Last night, after 5 PM</span><b>${pt ? fmtN(pt.after_hours || 0) : '–'}</b><small class="hint">added to ${esc(dmyL(addDaysJS(today, -1)).slice(0, -5))}</small></div></div>
+        <div><span>Files on time today</span><b>${t && t.slots ? `${t.slots.on_time} <small style="font-size:14px;color:var(--mute);font-weight:400">/ ${t.slots.on_time + t.slots.late + t.slots.missed}</small>` : '–'}</b><small class="hint">${t && t.slots && t.slots.last ? 'last file ' + esc(hm12(t.slots.last)) : 'no file yet'}</small></div></div>
       <p class="sec7">Needs you</p><div class="card7" style="padding:0">${needs.join('') || '<div class="nr72"><span class="hint">Nothing waiting.</span></div>'}</div>
       <p class="sec7">Occasional</p><div class="card7" style="padding:0"><div class="nr72"><span>JKLR figures (for R1)</span><button class="ab" id="jk">Enter</button></div><div class="nr72"><span>Inheritance mutations (R5)</span><button class="ab" data-gn="r5c73">Open</button></div>
         <div class="nr72"><span>Dead owners, person by person</span><button class="ab" data-gn="muts">Open</button></div><div class="nr72"><span>Who sorts which village</span><button class="ab" data-gn="sort73">Open</button></div><div class="nr72"><span>Village In-charges and staff</span><button class="ab" data-gn="users">Open</button></div></div>
@@ -7427,8 +7519,8 @@ reportGo = function (k, tid) { if (k === 'hour' || k === 'close') return loadLiv
 setInterval(async () => {
   if (!S.session || !canUploadMe() || document.visibilityState !== 'visible' || S.viewAs || S.practice) return;
   const now = hm(), tid = role() === 'ADMIN' ? curT() : me().tehsil_id, pt = pt7(tid), age = ago(pt && pt.as_on), k = x => 'r73' + x + todayIST();
-  if (now >= '15:45' && now < '16:00' && age > 30 && !S[k('a')]) { S[k('a')] = 1; toast('Upload a fresh portal file now: the 4 PM below-target list uses it.', 'info', 12000); }
-  if (now >= '16:45' && now < '17:00' && age > 30 && !S[k('b')]) { S[k('b')] = 1; toast('Upload the final portal file before 5 PM.', 'info', 12000); }
+  if (false && now >= '15:45' && age > 30 && !S[k('a')]) { S[k('a')] = 1; toast('Upload a fresh portal file now: the 4 PM below-target list uses it.', 'info', 12000); }
+  if (false && now >= '16:45' && age > 30 && !S[k('b')]) { S[k('b')] = 1; toast('Upload the final portal file before 5 PM.', 'info', 12000); }
   if (role() !== 'ADMIN' && now >= '17:00' && now < '19:00' && !(await kget(stK('dcr', tid))) && !S[k('c')]) { S[k('c')] = 1; toast('5 PM: open the DC report (Home → Reports) and type it into the DC sheet.', 'info', 12000); }
   if (role() === 'DA' && now >= '10:00' && now < '13:00' && !(await kget(stK('scn', tid))) && !S[k('d')]) { const L = await loadScn(tid, false); if (L && L.ready && L.items.some(x => !x.exempt && !x.issued_on)) { S[k('d')] = 1; toast('Show-cause notices for yesterday are ready (Home → Reports).', 'info', 12000); } }
 }, 60000);
@@ -7461,6 +7553,135 @@ HELP.scn73 = ['Show-cause notices', 'Made the next morning, after the overnight 
 HELP.dcr73 = ['DC report', 'R1 from the JKLR figures, R2 from the portal files, R4 from the certificates, R5 from the mutations.', 'Each line is the DC sheet’s own column, in the same order. Fix any ✗ before sending.'];
 HELP.sort73 = ['Who sorts', 'The Patwari picks one person per village. A sorting helper sees only his village.'];
 HELP.r5c73 = ['Inheritance mutations (R5)', 'Counts per village for landholders outside the Farmer ID lists. Dead owners in the lists are counted by themselves.'];
+
+/* ======================= v7.4: THEME, LOGIN, UPLOAD SLOTS ======================= */
+/* ---------- one theme for the public page and the app: follows the phone, or the person's choice ---------- */
+const THEME_K = 'fid-theme';
+const themePref = () => { try { return localStorage.getItem(THEME_K) || 'auto'; } catch (e) { return 'auto'; } };
+function applyTheme() {
+  const p = themePref(), dk = p === 'dark' || (p === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.classList.toggle('dk', !!dk);
+  let m = document.querySelector('meta[name="theme-color"]'); if (!m) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.appendChild(m); } m.content = dk ? '#0F1513' : '#FFFFFF';
+}
+applyTheme();
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme); } catch (e) {}
+function setTheme(v) { try { localStorage.setItem(THEME_K, v); } catch (e) {} applyTheme(); }
+
+/* ---------- Login: "Continue as", search by name, 4 PIN boxes on the phone's own keyboard ---------- */
+const _sh74 = setHeader;
+setHeader = function (t) { _sh74(t); const c = current(); document.body.classList.toggle('login74', !!c && c.name === 'login'); };
+const ini = n => String(n || '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+VIEWS.login = async function () {
+  setHeader(''); document.body.classList.add('login74');
+  const main = $('#view');
+  let list = (await kget('loginList')) || [], recent = (await kget('recentUsers')) || [], chosen = null, busyL = false, mode = 'pick';
+  let last = null; try { last = JSON.parse(localStorage.getItem('d7:last') || 'null'); } catch (e) {} if (!last) last = S.dash || (await kget('dash'));
+  const ts = last && last.tehsils ? last.tehsils : [], made = ts.reduce((a, t) => a + (t.made || 0), 0), tot = ts.reduce((a, t) => a + (t.total || 0), 0), td = ts.reduce((a, t) => a + (t.today || 0), 0);
+  const nm = u => u.label.split(' – ')[0], ds = u => (u.label.split(' – ')[1] || '') + (u.tehsil ? ' · ' + u.tehsil : '');
+  const card = (u, arrow) => `<button class="who74" data-id="${esc(u.user_id)}"><span class="av74">${esc(ini(nm(u)))}</span><span class="tx"><b>${esc(nm(u))}</b><small>${esc(ds(u))}</small></span>${arrow ? '<span class="ar">›</span>' : ''}</button>`;
+  main.innerHTML = `<div class="lg74">
+    <aside class="lg74b"><div class="brand74"><img src="logo.svg" alt="" width="40" height="40"><b>Farmer ID Dashboard</b></div>
+      ${tot ? `<div><div class="lv">${last.now ? 'Live · ' + esc(t12(last.now)) : 'Live'}</div><div class="big">${Math.round(made * 1000 / tot) / 10}%</div><p>${fmtN(made)} of ${fmtN(tot)} farmers in Assar and Kastigarh have a Farmer ID${td ? ' · ' + fmtN(td) + ' today' : ''}</p></div>` : '<div></div>'}
+      <small>Designed and developed by Pushpak Saroop, JKAS, Tehsildar Kastigarh.</small></aside>
+    <section class="lg74f"><div class="in74">
+      <div class="brand74 sm"><img src="logo.svg" alt="" width="40" height="40"><span><b>Farmer ID Dashboard</b><small>Assar &amp; Kastigarh</small></span></div>
+      ${inApp() ? '<div class="inapp"><b>Open this link in your browser</b> (Chrome or other). Tap ⋮ or the share icon, then "Open in browser".</div>' : ''}
+      <div id="st74"></div>
+      <p class="ft74"><a href="${esc(appUrl())}?public">See the live dashboard</a></p></div></section></div>`;
+  const st = $('#st74');
+  const draw = () => {
+    if (mode === 'pin' && chosen) {
+      st.innerHTML = `<h1>Your PIN</h1><p class="sub74">${esc(greet())}</p>${card(chosen)}<button class="lnk74" id="chg">Not you? Change</button>
+        <label class="pins74" id="pb"><input id="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="current-password" aria-label="PIN">${[0, 1, 2, 3].map(i => `<span data-i="${i}"></span>`).join('')}</label>
+        <p class="sub74" id="pm" style="text-align:center">Type your 4-digit PIN</p>
+        <button class="btn btn-primary" id="go">Log in</button><button class="lnk74" id="fgt" style="display:block;margin:12px auto 0">Forgot PIN?</button><div id="fgtBox"></div>`;
+      const inp = $('#pin'), boxes = () => $$('#pb span').forEach((s2, i) => { s2.className = i < inp.value.length ? 'f' : i === inp.value.length ? 'c' : ''; });
+      inp.oninput = () => { inp.value = inp.value.replace(/\D/g, ''); boxes(); if (inp.value.length === 4) doLogin(); };
+      $('#pb').onclick = () => inp.focus(); boxes(); setTimeout(() => inp.focus(), 60);
+      $('#go').onclick = doLogin; $('#chg').onclick = () => { mode = 'search'; draw(); };
+      $('#fgt').onclick = () => pinHelp(chosen, $('#fgtBox')); if (chosen.reset) pinHelp(chosen, $('#fgtBox'));
+      return;
+    }
+    const rec = recent.map(id => list.find(u => u.user_id === id)).filter(Boolean).slice(0, 3);
+    if (mode === 'pick' && rec.length) {
+      st.innerHTML = `<h1>Welcome back</h1><p class="sub74">Continue as</p>${rec.map(u => card(u, true)).join('')}<button class="lnk74" id="srch">Not you? Find your name</button>`;
+      $('#srch').onclick = () => { mode = 'search'; draw(); }; return;
+    }
+    st.innerHTML = `<h1>Log in</h1><p class="sub74">Find your name</p><label class="fld74"><span>⌕</span><input id="q" autocomplete="off" autocapitalize="words" placeholder="Type 2 letters of your name"></label><div id="names" class="nl74"></div>`;
+    const q = $('#q'); q.oninput = names; setTimeout(() => q.focus(), 60); names();
+  };
+  function names() {
+    const el = $('#names'); if (!el) return; const q = ($('#q').value || '').trim().toLowerCase();
+    el.innerHTML = q.length < 2 ? '<p class="sub74">Tap your name, then type your PIN.</p>' : (list.filter(u => nm(u).toLowerCase().split(/\s+/).some(w => w.startsWith(q))).slice(0, 8).map(u => card(u)).join('')
+      || `<p class="sub74">${navigator.onLine ? 'No name found. Ask the Dealing Assistant to add you.' : 'Connect to the internet to see names.'}</p>`);
+  }
+  main.onclick = e => { const el = e.target.closest && e.target.closest('.who74[data-id]'); if (!el || mode === 'pin') return; chosen = list.find(u => u.user_id === el.dataset.id); if (chosen) { mode = 'pin'; draw(); } };
+  async function doLogin() {
+    const inp = $('#pin'); if (!inp) return; const pin = inp.value;
+    if (busyL || pin.length < 4) { if (pin.length < 4) $('#pm').textContent = 'Type all 4 digits.'; return; }
+    busyL = true; $('#go').innerHTML = '<span class="spin"></span>'; ld7(0);
+    try {
+      const r = await api('login', { user_id: chosen.user_id, pin, boot: 1 }); ld7(1);
+      S.session = { token: r.token, user: r.user }; S.lastPin = pin; await kput('session', S.session);
+      recent = [chosen.user_id].concat(recent.filter(x => x !== chosen.user_id)).slice(0, 5); await kput('recentUsers', recent); await kput('lastActive', Date.now());
+      S.queue = (await kget(qKey())) || []; S.problems = (await kget(pKey())) || [];
+      const boot = r.boot || await api('bootstrap'); S.boot = boot; await kput('boot', boot); await initLang(); ld7(2);
+      document.body.classList.remove('login74');
+      if (!needPin()) { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); }
+      toast(L('welcome', r.user.name)); vibrate(); setTimeout(ld7off, 500);
+      refreshBoot(); scheduleSync(500); if (['ADMIN', 'DA', 'NT'].includes(r.user.role)) loadHome(true);
+      if (!me().must_change_pin) setTimeout(afterLoginCards, 500);
+    } catch (e) { ld7off(); busyL = false; const b = $('#go'); if (b) b.textContent = 'Log in';
+      const pb = $('#pb'); if (pb) { pb.classList.remove('bad'); void pb.offsetWidth; pb.classList.add('bad'); } if ($('#pm')) $('#pm').textContent = e.message;
+      if (inp) { inp.value = ''; $$('#pb span').forEach((s2, i) => s2.className = i === 0 ? 'c' : ''); inp.focus(); } }
+  }
+  draw();
+  if (navigator.onLine) { try { const r = await api('loginList'); list = r.users; await kput('loginList', list); if (mode !== 'pin') draw(); } catch (e) {} }
+};
+
+/* ---------- Upload slots: the Dealing Assistant's strip; one line for the Tehsildar and the Naib Tehsildar ---------- */
+const slotLab = x => { const h = Number(String(x).slice(0, 2)); return ((h % 12) || 12) + (h >= 18 ? ' PM' : ''); };
+const hm12 = x => { if (!x) return ''; const h = Number(x.slice(0, 2)), m = x.slice(3, 5); return ((h % 12) || 12) + ':' + m; };
+function slotNext(s) {
+  const due = s.list.find(z => z.st === 'due' || z.st === 'over'), toM = x => Number(x.slice(0, 2)) * 60 + Number(x.slice(3, 5)), nowM = toM(hm());
+  if (due) { const late = nowM - toM(due.t); return due.st === 'over' ? `<b class="lt">${slotLab(due.t)} file is late (${late} min)</b>` : `<b>${slotLab(due.t)} file due ${late < 0 ? 'in ' + (-late) + ' min' : 'now'}</b>`; }
+  const up = s.list.find(z => z.st === 'up'); if (up) return `Next: <b>${slotLab(up.t)} file</b> in ${toM(up.t) - nowM >= 60 ? Math.floor((toM(up.t) - nowM) / 60) + ' h ' : ''}${(toM(up.t) - nowM) % 60} min`;
+  return 'All files in for today';
+}
+function slotStrip(t) {
+  const s = t && t.slots; if (!s) return '';
+  const C = { ok: 'ok', late: 'lt', miss: 'ms', due: 'due', over: 'due lt', up: 'up' }, W = { ok: '', late: ' late', miss: 'missed', due: 'due', over: 'late', up: '·' };
+  return `<div class="card7 sl74"><div class="hd74"><span class="sec7" style="margin:0">Portal files today</span><span class="nx">${slotNext(s)}</span></div>
+    <div class="sls74">${s.list.map(z => `<span class="sl ${C[z.st]}" title="${z.at ? 'Uploaded ' + hm12(z.at) : W[z.st]}"><b>${slotLab(z.t)}</b><i>${z.at ? hm12(z.at) : W[z.st]}</i></span>`).join('')}</div>
+    <small class="hint">On time = up to 20 minutes after the hour · a late file still counts in full</small></div>`;
+}
+function slotLine(t) {
+  const s = t && t.slots; if (!s) return '';
+  const lateL = s.list.filter(z => z.st === 'late').map(z => slotLab(z.t)), missL = s.list.filter(z => z.st === 'miss').map(z => slotLab(z.t)), due = s.on_time + s.late + s.missed;
+  return `<div class="nr72 sl-line"><span><b>${esc(t.name)}</b> · ${esc(t.uploader || 'Dealing Assistant')}</span><span>${due ? `${s.on_time} of ${due} on time` : 'No file due yet'}${lateL.length ? ` · <span style="color:var(--due)">${esc(lateL.join(', '))} late</span>` : ''}${missL.length ? ` · <span style="color:var(--late)">${esc(missL.join(', '))} missed</span>` : ''}${s.last ? ' · last ' + hm12(s.last) : ''}</span></div>`;
+}
+
+/* in-app reminders for whoever uploads (no phone notifications): 10 and 25 minutes into a slot with no file */
+setInterval(() => {
+  if (!S.session || !canUploadMe() || document.visibilityState !== 'visible' || S.viewAs || S.practice) return;
+  const tid = role() === 'ADMIN' || role() === 'NT' ? null : me().tehsil_id; if (!tid) return;
+  const t = lt(tid), s = t && t.slots; if (!s) return;
+  const toM = x => Number(x.slice(0, 2)) * 60 + Number(x.slice(3, 5)), nowM = toM(hm());
+  s.list.forEach(z => { if (z.at || (z.st !== 'due' && z.st !== 'over')) return; const k = 'sl74' + todayIST() + z.t, d = nowM - toM(z.t);
+    if (d >= 10 && d < 25 && !S[k + 'a']) { S[k + 'a'] = 1; toast(`The ${slotLab(z.t)} portal file is due: download it and drop it on Home.`, 'info', 12000); }
+    if (d >= 25 && !S[k + 'b']) { S[k + 'b'] = 1; toast(`The ${slotLab(z.t)} file is now late. Upload it as soon as you can.`, 'error', 12000); } });
+}, 60000);
+
+/* ---------- Me → Look: theme ---------- */
+const _more74 = VIEWS.more;
+VIEWS.more = async function () {
+  await _more74();
+  const sun = $('#psun'); if (!sun) return; const card = sun.closest('.card7'); if (!card) return;
+  const p = themePref(), el = document.createElement('div');
+  el.innerHTML = `<p class="hint" style="margin:10px 0 4px">Theme</p><div class="seg7">${[['auto', 'Auto (like the phone)'], ['light', 'Light'], ['dark', 'Dark']].map(x => `<button data-th="${x[0]}" class="${p === x[0] ? 'on' : ''}">${x[1]}</button>`).join('')}</div>`;
+  card.insertBefore(el, sun.closest('label').nextSibling);
+  on(el, '[data-th]', 'click', b => { setTheme(b.dataset.th); $$('[data-th]', el).forEach(x => x.classList.toggle('on', x === b)); });
+};
 
 Object.assign(HELP, {
   status: ['Villages', 'Today: each village against its target, with its In-charge and Patwari. Green = met, amber = on pace, red = behind.', 'Till date: by Patwar Halqa. Tap a village for its page.'],

@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '7.3.0';
+const APP_VERSION = '7.4.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -166,7 +166,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '13';
+const SCHEMA_VERSION = '14';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -361,6 +361,7 @@ function migrate_() {
     if (Number(ver) < 11) migrateV11_();
     if (Number(ver) < 12) migrateV12_();
     if (Number(ver) < 13) migrateV13_();
+    if (Number(ver) < 14) migrateV14_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -1705,7 +1706,7 @@ function regPlan_(req, u, apply) {
   const dl = req.file_ts ? tsToIst_(req.file_ts) : now;
   const covTo = req.cov_to || dl.slice(0, 10), covFrom = req.cov_from || addDays_(covTo, -30);
   const fileIds = {}, ahM = {}, yday = addDays_(today, -1);
-  const isAH = tid => { if (ahM[tid] === undefined) ahM[tid] = !req.backlog && now.slice(11, 16) < String(setting_('ah_cutoff') || '10:00') && !read_('RegFiles').some(x => x.tehsil_id === tid && String(x.uploaded_at).slice(0, 10) === today && x.note !== 'backlog'); return ahM[tid]; };
+  const isAH = tid => { return false; if (ahM[tid] === undefined) ahM[tid] = !req.backlog && now.slice(11, 16) < String(setting_('ah_cutoff') || '10:00') && !read_('RegFiles').some(x => x.tehsil_id === tid && String(x.uploaded_at).slice(0, 10) === today && x.note !== 'backlog'); return ahM[tid]; };
   (req.rows || []).forEach(r => {
     const fid = String(r[0] || '').trim() || (String(r[1] || '').trim() ? 'E:' + String(r[1]).trim() : ''); if (!fid || seen[fid]) return; seen[fid] = 1;
     // A farmer listed first without a Central ID (kept by enrolment number) is merged once the portal gives the ID.
@@ -3836,7 +3837,7 @@ function dash_(req) {
     const s = settings_(), today = today_(), start = s.reg_start_date || '2026-08-02', deadline = s.internal_deadline || s.final_deadline;
     const span = Math.max(1, daysBetween_(start, deadline)), gone = Math.max(0, Math.min(span, daysBetween_(start, today)));
     const closed = s.campaign_closed === 'Y' || today > deadline, daysLeft = Math.max(1, daysBetween_(today, deadline) + 1);
-    return { now: now_(), today, start, deadline, closed, days_left: closed ? 0 : daysLeft, expected_pct: Math.round(gone * 1000 / span) / 10,
+    return { slot_times: slotTimes74_(), now: now_(), today, start, deadline, closed, days_left: closed ? 0 : daysLeft, expected_pct: Math.round(gone * 1000 / span) / 10,
       tehsils: read_('Tehsils').filter(t => t.active === 'Y').map(t => {
         const tid = t.tehsil_id, p = pulseTehsil_(tid), st = computeStats_(tid), c = dayCredits_(tid, today), vp = {};
         villagePace_(tid, c, today).forEach(v => vp[v.village_id] = v);
@@ -3847,7 +3848,7 @@ function dash_(req) {
         const camps = Object.keys(c.dm.byV || {}).filter(vid => (c.dm.byV[vid] || []).length).map(vid => (vs.find(v => v.village_id === vid) || {}).name).filter(Boolean).sort();
         return { tehsil_id: tid, name: t.name, today: p.today, target: p.target, as_on: p.as_on, last_n: p.last_n, uploads: p.uploads, closed_day: p.closed,
           top2: p.top2, total, made, pct: total ? Math.round(made * 1000 / total) / 10 : 0, needed: closed ? 0 : Math.ceil(Math.max(0, total - made) / daysLeft),
-          villages: vs, camps, down: p.down.filter(d => !d.to).length > 0, days: daySeries_(tid, start, today) };
+          villages: vs, camps, down: p.down.filter(d => !d.to).length > 0, days: daySeries_(tid, start, today), next_slot: slots74_(tid, today).next };
       }) };
   });
 }
@@ -4049,7 +4050,7 @@ function scnList_(req, u) {
   const today = today_(), date = req.date || addDays_(today, -1);
   if (date >= today) throw new Error('Notices are made the next morning, after the overnight IDs are counted.');
   const firstFile = read_('RegFiles').some(x => x.tehsil_id === tid && String(x.uploaded_at).slice(0, 10) === today && x.note !== 'backlog');
-  const ready = date < addDays_(today, -1) || firstFile || now_().slice(11, 16) >= String(setting_('ah_cutoff') || '10:00');
+  const ready = true || firstFile;   // v7.4: a day is final with its 8 PM file
   let snap = read_('Snapshots').find(x => x.tehsil_id === tid && x.village_id === 'CLOSE' && x.date === date), d = {};
   try { d = snap ? JSON.parse(snap.data) : {}; } catch (e) {}
   if (!d.inc && ready) { closeDay_(tid, date); snap = read_('Snapshots').find(x => x.tehsil_id === tid && x.village_id === 'CLOSE' && x.date === date); try { d = JSON.parse(snap.data); } catch (e) { d = {}; } }
@@ -4105,7 +4106,7 @@ function live73_(req, u) {
     const mine = isField_(u) ? phVillageIds_(u).concat(inchargeVillageIds_(u)) : null;
     let list = inc.list, sort = sd.list;
     if (mine) { list = list.filter(x => x.user_id === u.user_id || x.villages.some(v => mine.indexOf(v.village_id) >= 0)); sort = sort.filter(x => x.user_id === u.user_id); }
-    return { tehsil_id: tid, name: tehsilName_(tid), as_on: p.as_on, today: p.today, target: p.target, incharges: list, unassigned: mine ? [] : inc.none, sorting: sort,
+    return { slots: slots74_(tid, today), uploader: (read_('Users').find(x => x.role === 'DA' && x.active === 'Y' && x.tehsil_id === tid) || {}).name || '', tehsil_id: tid, name: tehsilName_(tid), as_on: p.as_on, today: p.today, target: p.target, incharges: list, unassigned: mine ? [] : inc.none, sorting: sort,
       me: list.find(x => x.user_id === u.user_id) || null, my_sort: sd.list.find(x => x.user_id === u.user_id) || null, down: p.down.filter(x => !x.to).length > 0,
       my_notice: read_('Scn').filter(x => x.tehsil_id === tid && x.user_id === u.user_id && x.issued_on >= addDays_(today, -1)).map(x => ({ date: x.date, issued_on: x.issued_on, kind: x.kind }))[0] || null,
       pending: p.pending, forecast: p.forecast };
@@ -4254,6 +4255,34 @@ function daySeries_(tid, start, today) {
   const out = []; let d = start || '2026-08-02'; let guard = 0;
   while (d <= today && guard++ < 400) { out.push(by[d] || 0); d = addDays_(d, 1); }
   return { from: start || '2026-08-02', n: out };
+}
+
+/* ============================== v7.4: UPLOAD SLOTS, NO MORNING RULE ============================== */
+function slotTimes74_() { return String(setting_('upload_slots') || '10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,20:00').split(',').map(x => x.trim()).filter(Boolean); }
+/** The day's portal files against the slots: on time (−10 to +20 min), late (until 10 min before the next slot), missed, due, upcoming. */
+function slots74_(tid, date) {
+  const toM = t => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5)), now = now_(), nowM = date === today_() ? minutesOf_(now) : 24 * 60;
+  const files = read_('RegFiles').filter(x => x.tehsil_id === tid && String(x.uploaded_at).slice(0, 10) === date && x.note !== 'backlog').map(x => ({ at: String(x.uploaded_at), m: minutesOf_(x.uploaded_at), n: Number(x.new) || 0 })).sort((a, b) => a.m - b.m);
+  const ts = slotTimes74_(), used = {};
+  const out = ts.map((t, i) => { const s = toM(t), from = i ? s - 10 : 0, to = i < ts.length - 1 ? toM(ts[i + 1]) - 10 : 24 * 60;
+    const fs = files.filter((f, k) => !used[k] && f.m >= from && f.m < to); files.forEach((f, k) => { if (f.m >= from && f.m < to) used[k] = 1; });
+    let st; if (fs.length) st = fs[0].m <= s + 20 ? 'ok' : 'late'; else if (nowM < s - 10) st = 'up'; else if (nowM <= s + 20) st = 'due'; else if (nowM < to) st = 'over'; else st = 'miss';
+    return { t, st, at: fs.length ? fs[0].at.slice(11, 16) : '', n: fs.reduce((a, f) => a + f.n, 0), files: fs.length }; });
+  const nx = out.find(x => x.st === 'due' || x.st === 'over' || x.st === 'up');
+  return { list: out, next: nx ? nx.t : '', on_time: out.filter(x => x.st === 'ok').length, late: out.filter(x => x.st === 'late').length, missed: out.filter(x => x.st === 'miss').length,
+    done: out.filter(x => x.st === 'ok' || x.st === 'late').length, last: files.length ? files[files.length - 1].at.slice(11, 16) : '' };
+}
+function migrateV14_() {
+  if (!read_('Settings').some(r => r.key === 'upload_slots')) setSetting_('upload_slots', '10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,20:00');
+  // IDs the old morning rule moved to the previous day go back to the day their file was uploaded
+  const files = {}; read_('RegFiles').forEach(f => files[f.file_id] = f);
+  const fs = read_('Farmers'), touched = {};
+  fs.forEach(f => { if (!/ 23:59:00$/.test(String(f.seen_at)) || String(f.first_seen) < '2026-10-08') return;
+    const fid = String(f.files || '').split(',').filter(Boolean)[0], rf = files[fid]; if (!rf || !rf.uploaded_at) return;
+    const d = String(rf.uploaded_at).slice(0, 10); if (d === f.first_seen) return;
+    touched[f.tehsil_id + '|' + f.first_seen] = 1; touched[f.tehsil_id + '|' + d] = 1; f.first_seen = d; f.seen_at = String(rf.uploaded_at); });
+  if (Object.keys(touched).length) { writeAll_('Farmers', fs); DB.cache = {};
+    Object.keys(touched).forEach(k => { const [t, d] = k.split('|'); try { if (d < today_()) closeDay_(t, d); } catch (e) {} }); }
 }
 
 /* ============================== START FRESH ============================== */
