@@ -187,3 +187,167 @@
     t12
   };
 })();
+
+/* v7.6 · Report card: one plain sentence first, a grade for every village, the same pictures for the WhatsApp group.
+ * Shared by the public page and the app. Assar is always blue, Kastigarh always purple. */
+(function () {
+  const CSS = `
+.rc{--ink:#14201B;--mute:#5E6B65;--line:#E2E7E4;--card:#fff;--soft:#EEF1EE;--A:#1E7A46;--Ab:#E3F2E8;--B:#3D8C5C;--Bb:#EDF6EF;--C:#9A5C00;--Cb:#FCF0D9;--D:#B3261E;--Db:#FBE4E1;--S:#1E7A46;color:var(--ink);font-variant-numeric:tabular-nums}
+.rc *{box-sizing:border-box}
+.rc-when{font-size:12.5px;color:var(--mute)}
+.rc-head{font-size:clamp(20px,5.4vw,26px);line-height:1.3;font-weight:600;letter-spacing:-.01em;margin:4px 0 14px}
+.rc-head b{font-weight:700}.rc-red{color:var(--D)}
+.rc-vs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rc-team{background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--line);border-top:5px solid var(--tc,#5E6B65)}
+.rc-team .nm{font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--tc)}
+.rc-team .big{font-size:clamp(30px,8vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-top:4px}
+.rc-team small{display:block;font-size:12.5px;color:var(--mute);margin-top:2px}
+.rc-lead{display:inline-block;font-size:11px;font-weight:700;background:#FFE8A3;color:#6B4A00;border-radius:20px;padding:2px 9px;margin-top:6px}
+.rc-sec{font-size:12.5px;font-weight:700;color:var(--mute);margin:18px 0 8px;display:flex;justify-content:space-between;gap:8px}
+.rc-th{margin:8px 0}.rc-th .l{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:5px}.rc-th .tr{height:14px;background:var(--soft);border-radius:8px;overflow:hidden}.rc-th .tr i{display:block;height:100%;border-radius:8px;transition:width 1s ease}
+.rc-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:2px 12px}
+.rc-v{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;font:inherit;color:inherit}.rc-v:last-child{border-bottom:0}
+button.rc-v{cursor:pointer}
+.rc-g{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;flex:none}
+.rc-gA{background:#E3F2E8;color:#1E7A46}.rc-gB{background:#EDF6EF;color:#3D8C5C}.rc-gC{background:#FCF0D9;color:#9A5C00}.rc-gD{background:#FBE4E1;color:#B3261E}.rc-gS{background:#1E7A46;color:#fff;font-size:15px}.rc-g_{background:#EEF1EE;color:#5E6B65}
+.dk .rc-gA{background:#173D28;color:#7CC79A}.dk .rc-gB{background:#1A3324;color:#8FCFA8}.dk .rc-gC{background:#3A2B12;color:#F0B95A}.dk .rc-gD{background:#3A1F1C;color:#F2A69C}.dk .rc-g_{background:#1E2824;color:#9AA8A1}
+.rc-v .t{flex:1;min-width:0}.rc-v b{font-size:15px;display:block}.rc-v small{font-size:12.5px;color:var(--mute);display:block;overflow:hidden;text-overflow:ellipsis}
+.rc-v .n{text-align:right;font-weight:700;font-size:16px;white-space:nowrap}.rc-v .n small{font-weight:400;font-size:11.5px;display:inline}
+.rc-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:1px}
+.rc-key{display:flex;gap:8px 12px;flex-wrap:wrap;margin-top:10px}.rc-key span{font-size:12px;color:var(--mute);display:flex;align-items:center;gap:5px}.rc-key .rc-g{width:22px;height:22px;font-size:12px;border-radius:6px}
+.rc-strip{display:flex;gap:6px;justify-content:space-between;text-align:center}.rc-strip small{display:block;font-size:12px;color:var(--mute);margin-top:3px}
+.rc-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin-top:10px;background:var(--soft)}
+.rc-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}.rc-cal span{text-align:center;font-size:11px;padding:6px 0;border-radius:7px;background:var(--soft);color:var(--mute)}.rc-cal span.d{background:#1F5A3E;color:#fff}.rc-cal span.t{outline:2px solid #1F5A3E;background:#E8F1EB;color:#1F5A3E;font-weight:700}
+.rc-more{margin-top:10px;font-size:13px}
+.dk .rc{--ink:#E7ECE9;--mute:#9AA8A1;--line:#26302C;--card:#151D1A;--soft:#1E2824;--Ab:#173D28;--Bb:#1A3324;--Cb:#3A2B12;--Db:#3A1F1C;--A:#7CC79A;--B:#8FCFA8;--C:#F0B95A;--D:#F2A69C}
+.dk .rc-cal span.t{background:#1E2824;color:#7CC79A;outline-color:#7CC79A}.dk .rc-lead{background:#4A3B10;color:#FFE08A}
+`;
+  if (!document.getElementById('rc76css')) { const st = document.createElement('style'); st.id = 'rc76css'; st.textContent = CSS; document.head.appendChild(st); }
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = n => Number(n || 0).toLocaleString('en-IN');
+  const t12 = ts => { if (!ts) return ''; const h = Number(String(ts).slice(11, 13)), m = String(ts).slice(14, 16); return ((h % 12) || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM'); };
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], DAY = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dt = s => { const d = new Date(s + 'T12:00:00Z'); return { d: d.getUTCDate(), m: MON[d.getUTCMonth()], w: DAY[d.getUTCDay()] }; };
+  const dLong = s => { const x = dt(s); return `${x.w} ${x.d} ${x.m}`; };
+  const TC = { T_ASSAR: '#1F5A9E', T_KASTIGARH: '#8A3FA0' }, tc = id => TC[id] || '#4E6B5E';
+  const WORD = { S: 'finished', A: 'target met', B: 'on track', C: 'slow', D: 'far behind' };
+  const g = (x, cls) => `<span class="rc-g rc-g${x || '_'} ${cls || ''}">${x === 'S' ? '✓' : x || '–'}</span>`;
+  const key = () => `<div class="rc-key">${['A', 'B', 'C', 'D', 'S'].map(x => `<span>${g(x)}${WORD[x]}</span>`).join('')}</div>`;
+  const ORDER = 'SABCD';
+  function teams(c, d) { // c = d.camp
+    const ts = c.tehsils, lead = ts.length > 1 ? ts.slice().sort((a, b) => b.ids - a.ids)[0] : null, tie = ts.length > 1 && ts[0].ids === ts[1].ids;
+    return { ts, lead: tie ? null : lead };
+  }
+  function headline(c, d) {
+    const { ts, lead } = teams(c, d), all = ts.reduce((a, t) => a + t.ids, 0), tg = ts.reduce((a, t) => a + t.target, 0);
+    const name = t => `<span style="color:${tc(t.tehsil_id)}">${esc(t.name)}</span>`;
+    if (!all) return `No Farmer IDs counted yet today. The first portal file comes at 10 AM.`;
+    const s1 = ts.length > 1 ? `Today ${name(lead || ts[0])} has made <b>${fmt((lead || ts[0]).ids)}</b> Farmer IDs and ${name(ts.find(t => t !== (lead || ts[0])))} <b>${fmt(ts.find(t => t !== (lead || ts[0])).ids)}</b>.` : `Today ${name(ts[0])} has made <b>${fmt(ts[0].ids)}</b> Farmer IDs.`;
+    const behind = ts.filter(t => t.ids < t.target);
+    const s2 = !behind.length ? ' Every village target for today is met.' : behind.length === ts.length ? (ts.length > 1 ? ' Both are behind today’s target.' : ' Behind today’s target.') : ` ${name(behind[0])} is behind today’s target.`;
+    return s1 + s2;
+  }
+  function render(root, d, o) {
+    o = o || {}; const c = d && d.camp;
+    if (!c || !c.tehsils || !c.tehsils.length) { root.innerHTML = ''; return; }
+    const { ts, lead } = teams(c, d), dts = (d.tehsils || []);
+    const vs = []; ts.forEach(t => t.villages.forEach(v => vs.push(Object.assign({ tid: t.tehsil_id, tn: t.name }, v))));
+    vs.sort((a, b) => ORDER.indexOf(a.grade || 'D') - ORDER.indexOf(b.grade || 'D') || b.ids - a.ids);
+    const shown = o.all ? vs : vs.filter(v => v.grade !== 'S');
+    const fin = vs.filter(v => v.grade === 'S');
+    root.innerHTML = `<div class="rc">
+      <div class="rc-when">Farmer ID campaign · ${esc(dLong(c.date))} · day ${c.day_no} of ${c.days}${d.now ? ' · updated ' + esc(t12(d.now)) : ''}</div>
+      <div class="rc-head">${headline(c, d)}</div>
+      <div class="rc-vs" style="${ts.length === 1 ? 'grid-template-columns:1fr' : ''}">${ts.map(t => `<div class="rc-team" style="--tc:${tc(t.tehsil_id)}"><div class="nm">${esc(t.name.toUpperCase())}</div><div class="big">${fmt(t.ids)}</div><small>of ${fmt(t.target)} target today</small><small>${t.villages.length} villages${t.absent && o.staff ? ' · ' + t.absent + ' absent' : ''}</small>${lead && lead === t ? '<span class="rc-lead">★ Ahead today</span>' : ''}</div>`).join('')}</div>
+      <div class="rc-sec"><span>How much is done (since August)</span><span>${c.days_left ? c.days_left + ' day' + (c.days_left === 1 ? '' : 's') + ' left' : 'last day'}</span></div>
+      ${dts.filter(t => ts.some(x => x.tehsil_id === t.tehsil_id)).map(t => { const p = t.total ? Math.round(t.made * 100 / t.total) : 0;
+        return `<div class="rc-th"><div class="l"><b style="color:${tc(t.tehsil_id)}">${esc(t.name)}</b><span>${fmt(t.made)} of ${fmt(t.total)} farmers · <b>${p}%</b></span></div><div class="tr"><i style="width:${p}%;background:${tc(t.tehsil_id)}"></i></div></div>`; }).join('')}
+      <div class="rc-cal">${Array.from({ length: c.days }, (_, i) => { const x = new Date(c.from + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + i); const s = x.toISOString().slice(0, 10); return `<span class="${s < c.date ? 'd' : s === c.date ? 't' : ''}">${x.getUTCDate()}</span>`; }).join('')}</div>
+      <div class="rc-sec"><span>Village report card · today</span><span>grade</span></div>
+      <div class="rc-card">${shown.map(v => `<${o.onVillage ? 'button' : 'div'} class="rc-v" data-rcv="${esc(v.name)}">${g(v.grade)}<span class="t"><b>${ts.length > 1 ? `<i class="rc-dot" style="background:${tc(v.tid)}"></i>` : ''}${esc(v.name)}</b><small>${esc(v.reason)}${o.staff && v.why ? ' · ' + esc(v.why) : ''}</small></span><span class="n">${fmt(v.ids)}<small> /${fmt(v.target)}</small></span></${o.onVillage ? 'button' : 'div'}>`).join('') || '<div class="rc-v"><span class="t"><small>No village has a target today.</small></span></div>'}</div>
+      ${fin.length && !o.all ? `<div class="rc-more">${g('S')} <b>Finished:</b> ${esc(fin.map(v => v.name).join(', '))}</div>` : ''}
+      ${key()}</div>`;
+    if (o.onVillage) root.querySelectorAll('[data-rcv]').forEach(b => b.onclick = () => o.onVillage(b.dataset.rcv));
+  }
+
+  /* ---------- pictures for the WhatsApp group (PNG, 1080 wide) ---------- */
+  const F = 'Inter, "Segoe UI", Roboto, Arial, sans-serif';
+  const GC = { A: ['#E3F2E8', '#1E7A46'], B: ['#EDF6EF', '#3D8C5C'], C: ['#FCF0D9', '#9A5C00'], D: ['#FBE4E1', '#B3261E'], S: ['#1E7A46', '#FFFFFF'], '': ['#EEF1EE', '#5E6B65'] };
+  function cv(h) { const c = document.createElement('canvas'); c.width = 1080; c.height = h; const x = c.getContext('2d'); x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, 1080, h); x.textBaseline = 'alphabetic'; return [c, x]; }
+  function rr(x, X, Y, w, h, r, fill) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); x.fillStyle = fill; x.fill(); }
+  function tx(x, s, X, Y, size, color, weight, align) { x.font = `${weight || 400} ${size}px ${F}`; x.fillStyle = color || '#14201B'; x.textAlign = align || 'left'; x.fillText(s, X, Y); }
+  function wrap(x, s, X, Y, maxW, size, color, weight, lh) { x.font = `${weight || 400} ${size}px ${F}`; const words = String(s).split(' '); let line = '', y = Y;
+    words.forEach(w => { const t = line ? line + ' ' + w : w; if (x.measureText(t).width > maxW && line) { tx(x, line, X, y, size, color, weight); line = w; y += lh; } else line = t; }); if (line) tx(x, line, X, y, size, color, weight); return y; }
+  function chip(x, gr, X, Y, s) { const c = GC[gr] || GC['']; rr(x, X, Y, s, s, s * 0.28, c[0]); tx(x, gr === 'S' ? '✓' : gr || '–', X + s / 2, Y + s * 0.7, s * 0.52, c[1], 800, 'center'); }
+  function head(x, kicker, title, color) { tx(x, kicker.toUpperCase(), 60, 86, 26, '#5E6B65', 700); return wrap(x, title, 60, 146, 960, 50, color || '#14201B', 700, 60); }
+  function foot(x, h, left) { x.fillStyle = '#E2E7E4'; x.fillRect(0, h - 78, 1080, 2); tx(x, left, 60, h - 32, 24, '#5E6B65'); tx(x, 'Tehsil offices Assar & Kastigarh', 1020, h - 32, 24, '#5E6B65', 400, 'right'); }
+  function teamBox(x, t, X, Y, w, h, sub, bg) { rr(x, X, Y, w, h, 24, bg); x.fillStyle = tc(t.tehsil_id); rr(x, X, Y, w, 10, 5, tc(t.tehsil_id)); tx(x, t.name.toUpperCase(), X + 28, Y + 56, 28, tc(t.tehsil_id), 700); tx(x, fmt(t.ids), X + 28, Y + 136, 78, '#14201B', 700); if (sub) tx(x, sub, X + 28, Y + 180, 26, '#5E6B65'); }
+  function trim(cn, y, left) { const h = Math.max(760, Math.ceil(y + 130)); if (h >= cn.height) { foot(cn.getContext('2d'), cn.height, left); return cn; }
+    const [c2, x2] = cv(h); x2.drawImage(cn, 0, 0, 1080, h - 80, 0, 0, 1080, h - 80); foot(x2, h, left); return c2; }
+  function fitTx(x, s, X, Y, size, color, weight, maxW) { let z = size; x.font = `${weight || 400} ${z}px ${F}`; while (z > 16 && x.measureText(s).width > maxW) { z -= 1; x.font = `${weight || 400} ${z}px ${F}`; } tx(x, s, X, Y, z, color, weight); }
+  const tint = id => id === 'T_ASSAR' ? '#F1F5FB' : id === 'T_KASTIGARH' ? '#F7F1F9' : '#F3F5F3';
+  function slot(d) {
+    const c = d.camp, ts = c.tehsils, vs = [];
+    ts.forEach(t => t.villages.forEach(v => vs.push(Object.assign({ tid: t.tehsil_id }, v))));
+    const live = vs.filter(v => v.grade !== 'S').sort((a, b) => b.ids - a.ids), fin = vs.filter(v => v.grade === 'S');
+    const h = 560 + live.length * 50 + (fin.length ? 50 : 0) + 100;
+    const [cn, x] = cv(h), lead = ts.length > 1 ? ts.slice().sort((a, b) => b.ids - a.ids) : ts;
+    const asOn = d.now ? t12(d.now) : '', when = `${dt(c.date).d} ${dt(c.date).m}`;
+    const title = ts.length > 1 ? (lead[0].ids === lead[1].ids ? `Level today, ${fmt(lead[0].ids)} each` : `${lead[0].name} leads today, ${fmt(lead[0].ids)} to ${fmt(lead[1].ids)}`) : `${ts[0].name}: ${fmt(ts[0].ids)} Farmer IDs today`;
+    let y = head(x, `Farmer ID · ${when} · ${asOn} update`, title, ts.length > 1 && lead[0].ids !== lead[1].ids ? tc(lead[0].tehsil_id) : null) + 40;
+    const w = ts.length > 1 ? 470 : 960; ts.forEach((t, i) => { const dt0 = (d.tehsils || []).find(z => z.tehsil_id === t.tehsil_id); teamBox(x, t, 60 + i * 490, y, w, 210, `of ${fmt(t.target)} target${dt0 && dt0.last_n ? ' · +' + fmt(dt0.last_n) + ' in the last file' : ''}`, tint(t.tehsil_id)); });
+    y += 270; tx(x, 'EVERY VILLAGE TODAY · TARGET 200 (OR WHAT IS LEFT)', 60, y, 24, '#5E6B65', 700); y += 26;
+    const mx = Math.max(200, ...live.map(v => v.ids));
+    live.forEach(v => { y += 50; tx(x, v.name, 60, y, 28, tc(v.tid), 600); x.globalAlpha = v.grade === 'A' || v.grade === 'B' ? 1 : 0.45; rr(x, 300, y - 24, Math.max(8, 520 * v.ids / mx), 26, 7, tc(v.tid)); x.globalAlpha = 1;
+      tx(x, fmt(v.ids), 930, y, 28, '#14201B', 700, 'right'); chip(x, v.grade, 960, y - 32, 40); });
+    if (fin.length) { y += 50; tx(x, '✓ Finished: ' + fin.map(v => v.name).join(', '), 60, y, 24, '#1E7A46', 600); }
+    const nx = d.tehsils && d.tehsils[0] && d.tehsils[0].next_slot; foot(x, h, nx ? 'Next update ' + nx : 'Updated ' + asOn);
+    return cn;
+  }
+  function close(d) {
+    const c = d.camp, ts = c.tehsils, h = 1350, [cn, x] = cv(h), all = ts.reduce((a, t) => a + t.ids, 0), lead = ts.slice().sort((a, b) => b.ids - a.ids);
+    const title = `${fmt(all)} Farmer IDs today.` + (ts.length > 1 && lead[0].ids !== lead[1].ids ? ` ${lead[0].name} won the day.` : '');
+    let y = head(x, `Farmer ID · day ${c.day_no} of ${c.days} · ${dLong(c.date)}`, title) + 40;
+    ts.forEach((t, i) => { const dt0 = (d.tehsils || []).find(z => z.tehsil_id === t.tehsil_id) || {}, p = dt0.total ? Math.round(dt0.made * 100 / dt0.total) : 0, X = 60 + i * 490, w = ts.length > 1 ? 470 : 960;
+      rr(x, X, y, w, 170, 22, '#F5F6F3'); tx(x, t.name, X + 26, y + 48, 28, tc(t.tehsil_id), 700); tx(x, fmt(t.ids), X + 26, y + 112, 60, '#14201B', 700); tx(x, `${p}% done · ${c.days_left} day${c.days_left === 1 ? '' : 's'} left`, X + 26, y + 152, 24, '#5E6B65'); });
+    y += 200;
+    const stars = ts.map(t => t.star).filter(Boolean).sort((a, b) => b.ids - a.ids), star = stars[0];
+    const bests = ts.map(t => t.best).filter(Boolean).sort((a, b) => b.ids / Math.max(1, b.villages.length) - a.ids / Math.max(1, a.villages.length)), best = bests[0];
+    rr(x, 60, y, 960, star && best ? 270 : 170, 24, '#FFF6DB');
+    if (star) { tx(x, '★ Village of the day', 90, y + 50, 26, '#6B4A00', 700); tx(x, `${star.name} · ${fmt(star.ids)} IDs`, 90, y + 98, 36, '#14201B', 700); wrap(x, star.officials.join(', '), 90, y + 136, 900, 22, '#5E6B65', 400, 28); }
+    if (best) { const by = y + (star ? 190 : 50); tx(x, '★ Official of the day', 90, by, 26, '#6B4A00', 700); tx(x, `${best.name}, ${best.designation} · ${best.villages.join(', ')}`, 90, by + 44, 28, '#14201B', 600); }
+    y += (star && best ? 270 : 170) + 50;
+    tx(x, 'FINAL GRADES', 60, y, 24, '#5E6B65', 700); y += 24;
+    const G = { S: 0, A: 0, B: 0, C: 0, D: 0 }; ts.forEach(t => Object.keys(G).forEach(k => G[k] += (t.grades || {})[k] || 0));
+    ['S', 'A', 'B', 'C', 'D'].forEach((k, i) => { const X = 60 + i * 196; chip(x, k, X + 60, y + 10, 72); tx(x, String(G[k]), X + 96, y + 124, 30, '#14201B', 700, 'center'); tx(x, WORD[k], X + 96, y + 158, 22, '#5E6B65', 400, 'center'); });
+    y += 220;
+    const need = ts.reduce((a, t) => a + t.villages.filter(v => v.grade !== 'S').reduce((b, v) => b + v.target, 0), 0), nv = ts.reduce((a, t) => a + t.villages.filter(v => v.grade !== 'S').length, 0);
+    const low = ts.reduce((a, t) => a + t.villages.filter(v => v.grade === 'C' || v.grade === 'D').length, 0);
+    if (c.days_left > 0) y = wrap(x, `Tomorrow: about ${fmt(need)} Farmer IDs needed across ${nv} villages. ${low ? low + ' village' + (low === 1 ? ' was' : 's were') + ' slow today and will be watched from 10 AM.' : ''}`, 60, y, 960, 28, '#14201B', 400, 38);
+    else y = wrap(x, 'Last day of the campaign.', 60, y, 960, 28, '#14201B', 400, 38);
+    return trim(cn, y, (c.tehsils.every(t => t.final) ? 'Final for ' : 'As at ' + (d.now ? t12(d.now) : '') + ', ') + `${dt(c.date).d} ${dt(c.date).m}`);
+  }
+  function week(d) {
+    const c = d.camp, ts = c.tehsils, h = 1350, [cn, x] = cv(h), done = c.day_no - (ts.every(t => t.final) ? 0 : 1);
+    let y = head(x, `Door-to-door campaign · ${dt(c.from).d} to ${dt(c.to).d} ${dt(c.to).m}`, c.days_left > 0 ? `${done} day${done === 1 ? '' : 's'} done, ${c.days - done} to go` : 'Campaign week complete') + 50;
+    const cw = 108, X0 = 216;
+    (ts[0].week || []).forEach((w, i) => { const q = dt(w.date); tx(x, q.w.slice(0, 3) + ' ' + q.d, X0 + i * (cw + 8) + cw / 2, y, 22, '#5E6B65', 600, 'center'); });
+    y += 18;
+    ts.forEach(t => { fitTx(x, t.name, 60, y + 60, 28, tc(t.tehsil_id), 700, 145);
+      (t.week || []).forEach((w, i) => { const X = X0 + i * (cw + 8);
+        if (w.ids === null) { x.setLineDash([8, 6]); x.strokeStyle = '#C9D0CC'; x.lineWidth = 2; x.strokeRect(X + 1, y + 1, cw - 2, 96); x.setLineDash([]); return; }
+        rr(x, X, y, cw, 98, 14, tint(t.tehsil_id)); tx(x, fmt(w.ids), X + cw / 2, y + 52, 30, '#14201B', 700, 'center'); tx(x, w.grade ? 'grade ' + w.grade : 'today', X + cw / 2, y + 82, 20, '#5E6B65', 400, 'center'); });
+      y += 118; });
+    y += 40; tx(x, 'HOW MUCH IS DONE', 60, y, 24, '#5E6B65', 700); y += 20;
+    const lines = [];
+    ts.forEach(t => { const dt0 = (d.tehsils || []).find(z => z.tehsil_id === t.tehsil_id) || {}, p = dt0.total ? Math.round(dt0.made * 100 / dt0.total) : 0;
+      y += 50; tx(x, t.name, 60, y, 28, tc(t.tehsil_id), 700); tx(x, `${p}%${dt0.needed ? ' → needs ' + fmt(dt0.needed) + ' a day to finish' : ''}`, 1020, y, 26, '#14201B', 400, 'right');
+      y += 18; rr(x, 60, y, 960, 26, 13, '#EEF1EE'); rr(x, 60, y, Math.max(26, 960 * p / 100), 26, 13, tc(t.tehsil_id)); y += 30;
+      const past = (t.week || []).filter(w => w.ids !== null && w.grade), avg = past.length ? past.reduce((a, w) => a + w.ids, 0) / past.length : 0, left = Math.max(0, (dt0.total || 0) - (dt0.made || 0));
+      if (avg && left) { const days = Math.ceil(left / avg), fin = new Date(c.date + 'T12:00:00Z'); fin.setUTCDate(fin.getUTCDate() + days); const ok = fin.toISOString().slice(0, 10) <= c.to;
+        lines.push(ok ? `At this week's pace ${t.name} finishes by ${fin.getUTCDate()} ${MON[fin.getUTCMonth()]}.` : `${t.name} needs about ${fmt(Math.max(0, (dt0.needed || 0) - Math.round(avg)))} more a day than this week's pace.`); } });
+    y += 60; lines.forEach(l => { y = wrap(x, l, 60, y, 960, 28, '#14201B', 400, 38) + 44; });
+    return trim(cn, y, `${dLong(c.date)}${d.now ? ', ' + t12(d.now) : ''}`);
+  }
+  window.RC = { render, headline, picture: (kind, d) => ({ slot, close, week })[kind](d), grade: g, tc, WORD };
+})();
