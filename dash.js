@@ -461,3 +461,237 @@ button.rc-v{cursor:pointer}
   }
   window.RC.full = full;
 })();
+
+/* ============ v8.0 · Today: one page for the public and the office. Plain words, three colours, Assar blue, Kastigarh purple. ============ */
+(function () {
+  const CSS = `
+.t8{--ink:#0F1B2D;--mute:#5B6676;--line:#E1E6EE;--card:#fff;--g:#1E7A46;--gb:#E2F3E8;--y:#9A6400;--yb:#FFF1D1;--r:#C0352B;--rb:#FDE3E0;color:var(--ink);font-variant-numeric:tabular-nums;font-size:15px}
+.t8 *{box-sizing:border-box}
+.t8-upd{font-size:13.5px;color:var(--mute);display:flex;align-items:center;gap:6px;flex-wrap:wrap}.t8-upd i{width:8px;height:8px;border-radius:50%;background:var(--g)}.t8-upd.old{color:#8A5A00}.t8-upd.old i{background:#E0A43A}
+.t8-hl{font-size:clamp(20px,5.6vw,26px);font-weight:700;line-height:1.3;margin:6px 0 14px;letter-spacing:-.01em}
+.t8-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px}
+.t8-sec{font-size:13px;font-weight:800;color:var(--mute);margin:16px 0 8px;text-transform:uppercase;letter-spacing:.04em}
+.t8-h2h{width:100%;border-collapse:separate;border-spacing:0}
+.t8-h2h th{font-size:13px;padding:9px 6px;color:#fff;font-weight:800;letter-spacing:.04em}.t8-h2h th.as{background:#1F5A9E;border-radius:10px 0 0 0}.t8-h2h th.ka{background:#7B3FA0;border-radius:0 10px 0 0}.t8-h2h th.m{background:none}
+.t8-h2h td{padding:10px 6px;border-bottom:1px solid var(--line);text-align:center;font-size:15px}.t8-h2h tr:last-child td{border-bottom:0}.t8-h2h td.m{color:var(--mute);font-size:13px}.t8-h2h td b{font-size:21px}
+.t8-h2h td.win b{color:var(--g)}.t8-h2h td.bad b{color:var(--r)}
+.t8-lead{display:inline-block;font-size:11.5px;font-weight:800;background:#FFE8A3;color:#6B4A00;border-radius:20px;padding:2px 8px;margin-left:4px;vertical-align:2px}
+.t8-race .l{display:flex;justify-content:space-between;font-size:14px;margin-top:8px}.t8-race .trk{position:relative;height:30px;border-radius:15px;margin:4px 0 2px;background:repeating-linear-gradient(90deg,#EEF1F5 0 20px,#E6EAF0 20px 40px)}
+.t8-race .fill{position:absolute;left:0;top:0;bottom:0;border-radius:15px;opacity:.2}.t8-race .run{position:absolute;top:0;width:30px;height:30px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transform:translateX(-50%);transition:left 1.2s ease;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.t8-race .exp{position:absolute;top:-4px;bottom:-4px;border-left:2px dashed var(--ink)}.t8-race .fl{position:absolute;right:6px;top:4px;font-size:16px}
+.t8-band{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#fff;padding:11px 14px;border-radius:14px;font-weight:800;letter-spacing:.04em;font-size:16px;margin:22px 0 8px}
+.t8-band small{font-weight:600;letter-spacing:0;font-size:13px;opacity:.9}
+.t8-file{font-size:13.5px;color:var(--mute);margin:0 0 10px}.t8-file.late{color:var(--r);font-weight:700}
+.t8-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.t8-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+@media (min-width:520px){.t8-tiles{grid-template-columns:repeat(4,1fr)}}
+.t8-tl{border-radius:13px;padding:9px 9px 8px;min-height:74px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;border:0;font:inherit;cursor:pointer;color:inherit}
+.t8-tl b{font-size:13.5px;line-height:1.15}.t8-tl .n{font-size:22px;font-weight:800;line-height:1.1}.t8-tl .n small{font-size:11.5px;font-weight:700;opacity:.8}.t8-tl .w{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.t8-tl.done{background:#1E7A46;color:#fff}.t8-tl.ok{background:var(--gb);color:#145A33}.t8-tl.slow{background:var(--yb);color:#7A5000}.t8-tl.behind{background:var(--rb);color:#8E2018}.t8-tl.wait{background:#EEF1F5;color:#5B6676}
+.t8-fin{font-size:14px;color:var(--g);font-weight:700;margin-top:8px}
+.t8-key{display:flex;gap:6px 12px;flex-wrap:wrap;font-size:12.5px;color:var(--mute);margin-top:10px}.t8-key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.t8-p{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}.t8-p:last-child{border-bottom:0}.t8-p .t{flex:1;min-width:0}.t8-p b{font-size:15px;display:block}.t8-p small{font-size:13px;color:var(--mute);display:block}
+.t8-call{width:42px;height:42px;border-radius:12px;border:2px solid var(--g);display:flex;align-items:center;justify-content:center;color:var(--g);text-decoration:none;flex:none;font-size:18px}
+.t8-hr{font-size:14px;margin-bottom:6px}.t8-hr b{font-size:16px}
+.t8-bars{display:flex;align-items:flex-end;gap:5px;height:70px}.t8-bars span{flex:1;position:relative;height:100%}.t8-bars i{position:absolute;bottom:0;border-radius:4px 4px 0 0}.t8-bars .y{left:0;right:0;background:#E1E6EE}.t8-bars .t{left:22%;right:22%}
+.t8-bx{display:flex;gap:5px;font-size:11px;color:var(--mute);margin-top:3px}.t8-bx span{flex:1;text-align:center}
+.t8 details{margin-top:12px}.t8 details>summary{cursor:pointer;font-weight:700;font-size:15px;padding:10px 0;color:#0F1B2D;list-style:none}.t8 details>summary::before{content:'▸ ';color:var(--mute)}.t8 details[open]>summary::before{content:'▾ '}
+.t8-tbl{width:100%;border-collapse:collapse;font-size:14px}.t8-tbl th{text-align:left;font-size:12px;color:var(--mute);padding:7px 8px;background:#F4F6F9}.t8-tbl td{padding:8px;border-top:1px solid var(--line);vertical-align:top}
+.t8-rb{display:grid;grid-template-columns:minmax(110px,1.3fr) 2fr 44px;gap:8px;align-items:center;font-size:14px;margin:6px 0}.t8-rb .tr{height:12px;background:#EEF1F5;border-radius:6px;overflow:hidden}.t8-rb .tr i{display:block;height:100%}.t8-rb b{text-align:right}
+.t8-share{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.t8-btn{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;padding:14px;font-weight:700;font-size:15px;background:#0F1B2D;color:#fff;border:0;cursor:pointer;font-family:inherit;text-decoration:none}.t8-btn.o{background:#fff;color:#0F1B2D;border:2px solid #0F1B2D}.t8-btn.g{background:#1E7A46}
+@media (min-width:980px){.t8-wrap{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}.t8-bands{display:grid;grid-template-columns:1fr 1fr;gap:16px}.t8-bands .t8-band{margin-top:0}}
+.t8-st{border-radius:16px;padding:14px;display:flex;gap:14px;align-items:center}.t8-st .n{font-size:40px;font-weight:800;line-height:1}.t8-st b{font-size:17px}
+.t8-pn{font-size:12px;font-weight:800;color:var(--mute);letter-spacing:.05em;text-transform:uppercase;margin:12px 0 2px}
+`;
+  if (!document.getElementById('t8css')) { const st = document.createElement('style'); st.id = 't8css'; st.textContent = CSS; document.head.appendChild(st); }
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = n => Number(n || 0).toLocaleString('en-IN');
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dd = s => { const d = new Date(String(s).slice(0, 10) + 'T12:00:00Z'); return d.getUTCDate() + ' ' + MON[d.getUTCMonth()]; };
+  const dw = s => { const d = new Date(String(s).slice(0, 10) + 'T12:00:00Z'); return DAY[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + MON[d.getUTCMonth()]; };
+  const t12 = ts => { if (!ts) return ''; const s = String(ts), h = Number(s.length > 8 ? s.slice(11, 13) : s.slice(0, 2)), m = s.length > 8 ? s.slice(14, 16) : s.slice(3, 5); return ((h % 12) || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM'); };
+  const hr = t => { const h = Number(String(t).slice(0, 2)); return ((h % 12) || 12) + ' ' + (h < 12 ? 'AM' : 'PM'); };
+  const TC = { T_ASSAR: '#1F5A9E', T_KASTIGARH: '#7B3FA0' }, tc = id => TC[id] || '#3E5C50';
+  const ST = { S: 'fin', A: 'done', B: 'ok', C: 'slow', D: 'behind', '': 'wait' };
+  const WORD = { done: 'Done', ok: 'On track', slow: 'Slow', behind: 'Behind', wait: 'Waiting', fin: 'Finished' };
+  const ORD = ['behind', 'slow', 'ok', 'done', 'wait', 'fin'];
+  const minsAgo = ts => { if (!ts) return 1e9; const t = Date.parse(String(ts).replace(' ', 'T') + '+05:30'); return Math.round((Date.now() - t) / 60000); };
+
+  function model(d, c) {
+    const camp = d && d.camp, F = (d && d.full) || [];
+    if (!camp) return null;
+    const ts = camp.tehsils.map(t => {
+      const dt = (d.tehsils || []).find(x => x.tehsil_id === t.tehsil_id) || {}, f = F.find(x => x.tehsil_id === t.tehsil_id) || { villages: [], why: [], notices: [], slots: { list: [] } };
+      const off = c && c.tehsils ? c.tehsils.find(x => x.tehsil_id === t.tehsil_id) : null;
+      const vs = t.villages.map(v => { const fv = f.villages.find(x => x.name === v.name) || {}, ov = off ? off.villages.find(x => x.name === v.name) : null;
+        return Object.assign({}, fv, { vid: v.village_id || fv.village_id, tid: t.tehsil_id, name: v.name, ids: v.ids, target: v.target, state: t.waiting ? 'wait' : ST[v.grade] || 'wait', reason: v.reason, why: v.why, patwari: v.patwari || fv.patwari,
+          officials: ov ? ov.officials : (v.officials || []), absent: v.absent || 0 }); });
+      const live = vs.filter(v => v.state !== 'fin').sort((a, b) => ORD.indexOf(a.state) - ORD.indexOf(b.state) || a.ids / (a.target || 1) - b.ids / (b.target || 1));
+      const absent = (t.absent_list || []), dep = t.deployed || 0, unm = t.unmarked || 0;
+      const sl = (f.slots && f.slots.list) || [], late = sl.find(x => x.st === 'over'), lateMin = late ? Math.max(0, Math.round((Date.now() - Date.parse((d.today || camp.date) + 'T' + late.t + ':00+05:30')) / 60000)) : 0;
+      return { tid: t.tehsil_id, name: t.name, col: tc(t.tehsil_id), ids: t.ids, target: t.target, waiting: t.waiting, made: dt.made || 0, total: dt.total || 0, pct: dt.total ? Math.round(dt.made * 100 / dt.total) : 0,
+        as_on: dt.as_on, needed: dt.needed, villages: live, finished: vs.filter(v => v.state === 'fin'), all: vs, behind: vs.filter(v => v.state === 'behind').length, slow: vs.filter(v => v.state === 'slow').length,
+        absent, deployed: dep, unmarked: unm, present: Math.max(0, dep - unm - absent.length), slots: sl, slots_y: (f.slots_y && f.slots_y.list) || [], late, lateMin, why: f.why || [], notices: f.notices || [], pending: f.pending || 0,
+        star: t.star, best: t.best, grades: t.grades, final: t.final };
+    });
+    const lastFile = ts.map(t => t.as_on).filter(Boolean).sort().pop();
+    return { camp, ts, lastFile, date: camp.date, now: d.now, expected: d.expected_pct || 0, deadline: camp.to };
+  }
+  const tileHtml = (v, o) => `<button class="t8-tl ${v.state}" data-v8="${esc(v.vid)}" data-t8="${esc(v.tid)}" ${o && o.edge ? `style="box-shadow:inset 4px 0 0 ${tc(v.tid)}"` : ''}><b>${esc(v.name)}</b><span class="n">${v.state === 'wait' ? '–' : fmt(v.ids)}${v.state !== 'wait' ? `<small>/${fmt(v.target)}</small>` : ''}</span><span class="w">${WORD[v.state]}</span></button>`;
+  function headline(m) {
+    const ts = m.ts, nm = t => `<span style="color:${t.col}">${esc(t.name)}</span>`;
+    if (ts.every(t => t.waiting)) return 'Waiting for today’s first portal file (10 AM).';
+    const s = ts.slice().sort((a, b) => b.ids - a.ids), beh = ts.filter(t => t.ids < t.target);
+    return `Today ${s.map(t => nm(t) + ' ' + fmt(t.ids)).join(', ')}. ` + (!beh.length ? 'Every target met.' : beh.length === ts.length ? (ts.length > 1 ? 'Both behind target.' : 'Behind target.') : `${nm(beh[0])} is behind target.`);
+  }
+  function h2h(m) {
+    const [a, b] = m.ts; if (!b) return '';
+    const row = (lab, x, y, hi, fmtF) => { const f = fmtF || fmt; const wa = hi === 'high' ? x > y : hi === 'low' ? x < y : false, wb = hi === 'high' ? y > x : hi === 'low' ? y < x : false, ba = hi === 'low' && x > y && x > 0, bb = hi === 'low' && y > x && y > 0;
+      return `<tr><td class="${hi === 'high' && wa ? 'win' : ba ? 'bad' : ''}"><b>${f(x)}</b></td><td class="m">${lab}</td><td class="${hi === 'high' && wb ? 'win' : bb ? 'bad' : ''}"><b>${f(y)}</b></td></tr>`; };
+    const lead = a.ids === b.ids ? null : a.ids > b.ids ? 'a' : 'b';
+    return `<div class="t8-card" style="padding:6px"><table class="t8-h2h"><tr><th class="as" style="background:${a.col}">${esc(a.name.toUpperCase())}${lead === 'a' ? ' <span class="t8-lead">leads</span>' : ''}</th><th class="m"></th><th class="ka" style="background:${b.col}">${esc(b.name.toUpperCase())}${lead === 'b' ? ' <span class="t8-lead">leads</span>' : ''}</th></tr>
+      ${row('IDs today', a.ids, b.ids, 'high')}${row('target today', a.target, b.target, '')}${row('done since Aug', a.pct, b.pct, 'high', x => x + '%')}${row('villages behind', a.behind, b.behind, 'low')}${row('absent', a.absent.length, b.absent.length, 'low')}</table></div>`;
+  }
+  function race(m) {
+    const ex = Math.min(100, m.expected || 0);
+    return `<div class="t8-card t8-race">${m.ts.map(t => `<div class="l"><b style="color:${t.col}">${esc(t.name)}</b><b>${t.pct}%</b></div><div class="trk"><div class="fill" style="width:${t.pct}%;background:${t.col}"></div>${ex ? `<div class="exp" style="left:${ex}%"></div>` : ''}<span class="fl">🏁</span><div class="run" style="left:${Math.max(4, Math.min(96, t.pct))}%;background:${t.col}">🏃</div></div>`).join('')}
+      <div style="font-size:12.5px;color:#5B6676;margin-top:6px">% of farmers with a Farmer ID since August. ${ex ? `Dashed line: where both should be today (${Math.round(ex)}%).` : ''} Finish: ${dd(m.deadline)}.</div></div>`;
+  }
+  function gauge(t) {
+    const p = t.target ? Math.min(1, t.ids / t.target) : 0, a = Math.PI * (1 - p), x = 60 + 44 * Math.cos(a), y = 60 - 44 * Math.sin(a);
+    return `<div class="t8-card" style="padding:9px"><div style="font-size:12.5px;font-weight:800;color:#5B6676">TODAY VS TARGET</div><svg viewBox="0 0 120 70" width="100%" aria-hidden="true"><path d="M16 60 A44 44 0 0 1 104 60" stroke="#E6EAF0" stroke-width="12" fill="none" stroke-linecap="round"/>${p > 0 ? `<path d="M16 60 A44 44 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" stroke="${t.col}" stroke-width="12" fill="none" stroke-linecap="round"/>` : ''}<line x1="60" y1="60" x2="${(60 + 36 * Math.cos(a)).toFixed(1)}" y2="${(60 - 36 * Math.sin(a)).toFixed(1)}" stroke="#0F1B2D" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="60" r="5" fill="#0F1B2D"/></svg>
+      <div style="text-align:center;margin-top:-4px"><b style="font-size:22px">${fmt(t.ids)}</b> <span style="font-size:13px;color:#5B6676">of ${fmt(t.target)}</span></div></div>`;
+  }
+  function ring(t) {
+    const tot = Math.max(1, t.deployed), C = 2 * Math.PI * 30; let off = 0;
+    const seg = (n, col) => { if (!n) return ''; const l = n / tot * C, s = `<circle r="30" cx="40" cy="40" fill="none" stroke="${col}" stroke-width="11" stroke-dasharray="${l.toFixed(1)} ${(C - l).toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}" transform="rotate(-90 40 40)"/>`; off += l; return s; };
+    return `<div class="t8-card" style="padding:9px"><div style="font-size:12.5px;font-weight:800;color:#5B6676">ATTENDANCE</div><svg viewBox="0 0 80 80" width="84" style="display:block;margin:4px auto" aria-hidden="true"><circle r="30" cx="40" cy="40" fill="none" stroke="#E6EAF0" stroke-width="11"/>${seg(t.present, '#1E7A46')}${seg(t.absent.length, '#C0352B')}<text x="40" y="45" text-anchor="middle" font-size="14" font-weight="800" fill="#0F1B2D">${t.present}/${t.deployed}</text></svg>
+      <div style="font-size:12px;text-align:center;color:#5B6676"><b style="color:#1E7A46">${t.present}</b> present · <b style="color:#C0352B">${t.absent.length}</b> absent · ${t.unmarked} not marked</div></div>`;
+  }
+  function behind(t, o) {
+    const ppl = {}, mob = {};
+    t.absent.forEach(a => ppl[a.name] = { name: a.name, d: a.designation, txt: `${a.village} · absent`, red: 1 });
+    t.villages.filter(v => v.state === 'behind' || v.state === 'slow').forEach(v => (v.officials || []).forEach(x => { if (x.mobile) mob[x.name] = x.mobile;
+      const p = ppl[x.name] = ppl[x.name] || { name: x.name, d: x.designation, txt: '', vs: [] }; if (p.vs) p.vs.push(v.name + ' ' + v.ids + '/' + v.target); }));
+    const list = Object.keys(ppl).map(k => ppl[k]).map(p => Object.assign(p, { txt: p.txt || (p.vs || []).join(', ') })).sort((a, b) => (b.red || 0) - (a.red || 0));
+    if (!list.length) return '';
+    const sh = list.slice(0, 8);
+    return `<div class="t8-sec">Who is behind · ${esc(t.name)}</div><div class="t8-card" style="padding:2px 12px">${sh.map(p => `<div class="t8-p"><span class="t"><b>${esc(p.name)}</b><small>${esc(p.d || '')} · ${p.red ? `<b style="color:#C0352B;display:inline;font-size:13px">${esc(p.txt)}</b>` : esc(p.txt)}</small></span>${o.office && mob[p.name] ? `<a class="t8-call" href="tel:${esc(mob[p.name])}" aria-label="Call">✆</a>` : ''}</div>`).join('')}${list.length > 8 ? `<div class="t8-p"><small>and ${list.length - 8} more</small></div>` : ''}</div>`;
+  }
+  function hours(t) {
+    const cum = l => { let s = 0; return l.map(x => { s += Number(x.n) || 0; return x.at || x.st === 'ok' || x.st === 'late' ? s : null; }); };
+    const ct = cum(t.slots), cy = (() => { let s = 0; return t.slots_y.map(x => { s += Number(x.n) || 0; return s; }); })();
+    const last = ct.reduce((a, x, i) => x !== null ? i : a, -1); if (last < 0) return '';
+    const mx = Math.max(1, ...cy, ...ct.filter(x => x !== null)), lab = t.slots[last] ? hr(t.slots[last].t) : '';
+    return `<div class="t8-sec">Hour by hour · ${esc(t.name)}</div><div class="t8-card"><div class="t8-hr">By ${lab}: today <b style="color:${t.col}">${fmt(ct[last])}</b> · yesterday by ${lab} <b>${fmt(cy[last] || 0)}</b></div>
+      <div class="t8-bars">${t.slots.map((x, i) => `<span><i class="y" style="height:${(cy[i] || 0) / mx * 100}%"></i>${ct[i] !== null ? `<i class="t" style="height:${ct[i] / mx * 100}%;background:${t.col}"></i>` : ''}</span>`).join('')}</div><div class="t8-bx">${t.slots.map(x => `<span>${hr(x.t).replace(' AM', '').replace(' PM', '')}</span>`).join('')}</div>
+      <div class="t8-key"><span><i style="background:${t.col}"></i>today, running total</span><span><i style="background:#E1E6EE"></i>yesterday</span></div></div>`;
+  }
+  const key = () => `<div class="t8-key"><span><i style="background:#1E7A46"></i>Done</span><span><i style="background:#E2F3E8;border:1px solid #BFD9C8"></i>On track</span><span><i style="background:#FFF1D1;border:1px solid #EBD39A"></i>Slow</span><span><i style="background:#FDE3E0;border:1px solid #EDB9B3"></i>Behind</span><span><i style="background:#EEF1F5;border:1px solid #D5DBE3"></i>Waiting for the first file</span></div>`;
+  function band(t, o) {
+    const fileLine = t.late ? `<div class="t8-file late">⚠ ${hr(t.late.t)} file late by ${t.lateMin} min</div>` : `<div class="t8-file">${t.as_on ? 'Figures from the ' + t12(t.as_on) + ' file' : 'No file yet today'}</div>`;
+    return `<div class="t8-tband"><div class="t8-band" style="background:${t.col}">${esc(t.name.toUpperCase())}<small>${fmt(t.ids)} / ${fmt(t.target)} today</small></div>${fileLine}
+      <div class="t8-two">${gauge(t)}${ring(t)}</div>
+      <div class="t8-tiles">${t.villages.map(v => tileHtml(v)).join('')}</div>${t.finished.length ? `<div class="t8-fin">✓ Finished: ${esc(t.finished.map(v => v.name).join(', '))}</div>` : ''}
+      ${behind(t, o)}${hours(t)}</div>`;
+  }
+  function extras(m) {
+    const nots = m.ts.map(t => `<div style="font-weight:800;color:${t.col};margin:10px 0 4px">${esc(t.name)}</div>` + (t.notices.length ? `<table class="t8-tbl"><tr><th>For</th><th>Official</th><th>Why</th></tr>${t.notices.slice(0, 40).map(n => `<tr><td>${dd(n.date)}</td><td><b>${esc(n.name)}</b><br><small style="color:#5B6676">${esc(n.designation)}</small></td><td>${esc(String(n.kind).split('+').map(k => ({ IDS: 'Village below target', ABS: 'Absent', SORT: 'Checking not done' })[k] || k).join(', '))}${n.repeat ? ' · second notice' : ''}</td></tr>`).join('')}</table>` : '<p style="color:#5B6676;margin:4px 0">None.</p>')).join('');
+    const why = m.ts.map(t => { const mx = Math.max(1, ...t.why.map(w => w.n)); return `<div style="font-weight:800;color:${t.col};margin:10px 0 4px">${esc(t.name)} · ${fmt(t.pending)} waiting for approval on the portal</div>` + t.why.slice(0, 10).map(w => `<div class="t8-rb"><span>${esc(w.label)}</span><span class="tr"><i style="width:${Math.round(w.n * 100 / mx)}%;background:${w.tier === 'A' ? '#9AA5B1' : t.col}"></i></span><b>${fmt(w.n)}</b></div>`).join(''); }).join('') + '<p style="font-size:12.5px;color:#5B6676">Grey: cannot get an ID (dead, land sold, duplicate…). Coloured: can get one once the problem is cleared.</p>';
+    return `<details><summary>Show-cause notices</summary>${nots}</details><details><summary>Why farmers are left</summary>${why}</details>`;
+  }
+  function today(root, d, o) {
+    o = o || {}; const m = model(d, o.c76);
+    if (!m) { root.innerHTML = '<div class="t8"><div class="t8-hl">Loading the latest figures…</div></div>'; return; }
+    const ago = minsAgo(m.lastFile), old = ago > 90 && ago < 1e8;
+    root.innerHTML = `<div class="t8"><div class="t8-upd ${old ? 'old' : ''}"><i></i>${!m.lastFile ? 'No portal file yet today' : old ? 'No new file since ' + t12(m.lastFile) : 'Updated ' + (ago < 1 ? 'just now' : ago + ' min ago') + ' · ' + t12(m.lastFile) + ' file'} · ${dw(m.date)} · day ${m.camp.day_no} of the campaign${m.camp.days_left ? ' · ' + m.camp.days_left + ' day' + (m.camp.days_left === 1 ? '' : 's') + ' to ' + dd(m.deadline) : ''}</div>
+      ${o.top || ''}<div class="t8-wrap"><div><div class="t8-hl">${headline(m)}</div>${h2h(m)}<div class="t8-sec">Race to 100% · finish ${dd(m.deadline)}</div>${race(m)}${o.left || ''}</div>
+      <div class="t8-bands">${m.ts.map(t => band(t, o)).join('')}</div></div>${key()}${o.extras === false ? '' : extras(m)}${o.bottom || ''}</div>`;
+    root.querySelectorAll('[data-v8]').forEach(b => b.onclick = () => o.onVillage ? o.onVillage(b.dataset.v8, b.dataset.t8) : village(root, d, b.dataset.v8, Object.assign({}, o, { back: () => today(root, d, o) })));
+    requestAnimationFrame(() => root.querySelectorAll('.t8-race .run').forEach(r => { const l = r.style.left; r.style.left = '4%'; requestAnimationFrame(() => setTimeout(() => r.style.left = l, 30)); }));
+  }
+  function findV(d, vid, c) { const m = model(d, c); if (!m) return null; for (const t of m.ts) { const v = t.all.find(x => String(x.vid) === String(vid)); if (v) return { m, t, v }; } return null; }
+  function village(root, d, vid, o) {
+    o = o || {}; const f = findV(d, vid, o.c76); if (!f) { root.innerHTML = '<div class="t8"><p>Village not found.</p></div>'; return; }
+    const { t, v } = f, S2 = { done: ['#1E7A46', '#fff'], ok: ['#E2F3E8', '#145A33'], slow: ['#FFF1D1', '#7A5000'], behind: ['#FDE3E0', '#8E2018'], wait: ['#EEF1F5', '#5B6676'], fin: ['#1E7A46', '#fff'] }[v.state];
+    const ps = {}; (v.officials || []).forEach(x => (ps[x.panchayat || '–'] = ps[x.panchayat || '–'] || []).push(x));
+    const ed = !!o.edit;
+    root.innerHTML = `<div class="t8">${o.back && !o.noBack ? '<button class="t8-btn o" id="bk8" style="width:auto;padding:9px 14px;margin-bottom:10px">← Back</button>' : ''}
+      <div style="font-size:24px;font-weight:800">${esc(v.name)}</div><div style="color:#5B6676;font-size:14px;margin-bottom:10px"><span style="color:${t.col};font-weight:700">${esc(t.name)}</span> · Patwari ${esc(v.patwari || '–')}</div>
+      <div class="t8-st" style="background:${S2[0]};color:${S2[1]}"><span class="n">${v.state === 'wait' ? '–' : v.state === 'fin' ? '✓' : fmt(v.ids)}</span><span><b>${WORD[v.state]}</b><br><span style="font-size:14px">${v.state === 'fin' ? 'No farmer left who can get an ID' : v.state === 'wait' ? 'Waiting for today’s first file' : 'of ' + fmt(v.target) + ' today · ' + esc(v.reason || '')}</span></span></div>
+      <div class="t8-two" style="margin-top:10px"><div class="t8-card"><div style="font-size:13px;color:#5B6676">Done since August</div><div style="font-size:26px;font-weight:800">${v.pct || 0}%</div><div style="font-size:13px;color:#5B6676">${fmt(v.made)} of ${fmt(v.total)} farmers</div></div>
+        <div class="t8-card"><div style="font-size:13px;color:#5B6676">Farmers left</div><div style="font-size:26px;font-weight:800">${fmt(v.left)}</div><div style="font-size:13px;color:#5B6676">${fmt(v.cannot)} cannot get ID · ${fmt(v.notsorted)} not checked</div></div></div>
+      <div class="t8-sec">${ed ? 'Attendance today · tap P or A' : 'People working here today'}</div><div class="t8-card" style="padding:4px 12px">${Object.keys(ps).map(p => `<div class="t8-pn">Panchayat ${esc(p)}</div>${ps[p].map(x => `<div class="t8-p"><span class="t"><b>${esc(x.name)}</b><small>${esc(x.designation)} · ${esc(x.department)}${!ed ? (x.att === 'A' ? ' · <b style="color:#C0352B;display:inline;font-size:13px">absent</b>' : x.att === 'P' ? ' · present' : ' · not marked') : ''}</small></span>
+        ${ed ? `<span class="pa8"><button class="${x.att === 'P' ? 'on P' : ''}" data-att8="P" data-k="${esc(x.key)}">P</button><button class="${x.att === 'A' ? 'on A' : ''}" data-att8="A" data-k="${esc(x.key)}">A</button></span>` : ''}${o.office && x.mobile ? `<a class="t8-call" href="tel:${esc(x.mobile)}" aria-label="Call">✆</a>` : ''}${ed ? `<button class="x8" data-end8="${esc(x.post_id)}" aria-label="Remove">✕</button>` : ''}</div>`).join('')}`).join('') || '<p style="color:#5B6676">Nobody deployed.</p>'}</div>
+      ${ed ? '<button class="t8-btn o" id="add8" style="width:100%;margin-top:10px">＋ Add a person</button>' : ''}
+      ${(v.blocks || []).length ? `<div class="t8-sec">Why farmers are left</div><div class="t8-card">${v.blocks.map(b => `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14.5px"><span>${esc(b.label)}</span><b>${fmt(b.n)}</b></div>`).join('')}</div>` : ''}
+      ${v.sat_date || v.locked_on ? `<div class="t8-sec">Certificate</div><div class="t8-card" style="font-size:14.5px">${v.sat_date ? '✓ Saturation certificate ' + dd(v.sat_date) : ''}${v.sat_sent ? '<br>✓ Sent to the DC office ' + dd(v.sat_sent) : ''}${v.locked_on ? '<br>✓ Jamabandi locked ' + dd(v.locked_on) : ''}</div>` : ''}
+      ${o.bottom || ''}</div>`;
+    const bk = root.querySelector('#bk8'); if (bk) bk.onclick = o.back;
+    if (o.bind) o.bind(root, v, t);
+  }
+
+  /* ---------- pictures for the group ---------- */
+  const F = 'Inter, "Segoe UI", Roboto, Arial, sans-serif';
+  const PC = { done: ['#1E7A46', '#FFFFFF'], ok: ['#E2F3E8', '#145A33'], slow: ['#FFF1D1', '#7A5000'], behind: ['#FDE3E0', '#8E2018'], wait: ['#EEF1F5', '#5B6676'], fin: ['#1E7A46', '#FFFFFF'] };
+  function cv(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.fillStyle = '#F3F5F8'; x.fillRect(0, 0, w, h); return [c, x]; }
+  function rr(x, X, Y, w, h, r, fill) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); x.fillStyle = fill; x.fill(); }
+  function tx(x, s, X, Y, size, color, weight, align) { x.font = `${weight || 400} ${size}px ${F}`; x.fillStyle = color || '#0F1B2D'; x.textAlign = align || 'left'; x.fillText(String(s), X, Y); }
+  function fit(x, s, X, Y, size, color, weight, maxW, align) { let z = size; x.font = `${weight || 400} ${z}px ${F}`; while (z > 12 && x.measureText(s).width > maxW) { z--; x.font = `${weight || 400} ${z}px ${F}`; } tx(x, s, X, Y, z, color, weight, align); }
+  function picture(d, shape, close) {
+    const m = model(d); if (!m) return null;
+    const W = 1080, H = shape === 'story' ? 1920 : 1350, [c, x] = cv(W, H), ts = m.ts;
+    const s = ts.slice().sort((a, b) => b.ids - a.ids), all = ts.reduce((a, t) => a + t.ids, 0);
+    rr(x, 0, 0, W, 150, 0, '#0F1B2D'); tx(x, `FARMER ID · ${dw(m.date).toUpperCase()} · ${close ? 'DAY CLOSE' : t12(m.lastFile || m.now).toUpperCase()}`, 60, 62, 28, '#AFC0D6', 700);
+    const title = close ? `${fmt(all)} Farmer IDs today${ts.length > 1 && s[0].ids !== s[1].ids ? '. ' + s[0].name + ' won the day.' : '.'}` : ts.length > 1 ? (s[0].ids === s[1].ids ? `Level today: ${fmt(s[0].ids)} each` : `${s[0].name} leads, ${fmt(s[0].ids)} to ${fmt(s[1].ids)}`) : `${ts[0].name}: ${fmt(ts[0].ids)} today`;
+    fit(x, title, 60, 120, 46, '#FFFFFF', 800, 960);
+    let y = 190;
+    // head-to-head
+    const cw = ts.length > 1 ? 470 : 960;
+    ts.forEach((t, i) => { const X = 60 + i * 490; rr(x, X, y, cw, 300, 26, '#FFFFFF'); rr(x, X, y, cw, 62, 26, t.col); x.fillStyle = t.col; x.fillRect(X, y + 30, cw, 32);
+      tx(x, t.name.toUpperCase(), X + 28, y + 44, 30, '#FFFFFF', 800);
+      tx(x, fmt(t.ids), X + 28, y + 150, 84, '#0F1B2D', 800); tx(x, `of ${fmt(t.target)} today`, X + 30, y + 192, 28, '#5B6676', 500);
+      tx(x, `${t.pct}% done since Aug`, X + 30, y + 236, 28, '#0F1B2D', 700);
+      tx(x, `${t.behind} behind · ${t.absent.length} absent`, X + 30, y + 276, 28, t.behind || t.absent.length ? '#C0352B' : '#1E7A46', 700); });
+    y += 330;
+    if (close) { const st = ts.map(t => t.star).filter(Boolean).sort((a, b) => b.ids - a.ids)[0], be = ts.map(t => t.best).filter(Boolean)[0];
+      if (st || be) { rr(x, 60, y, 960, be && st ? 150 : 90, 22, '#FFF4D6'); if (st) tx(x, `⭐ Village of the day: ${st.name} · ${fmt(st.ids)}`, 90, y + 56, 32, '#5A3E00', 800); if (be) fit(x, `⭐ Official of the day: ${be.name}, ${be.designation}`, 90, y + (st ? 116 : 56), 30, '#5A3E00', 700, 900); y += (be && st ? 150 : 90) + 30; } }
+    if (shape === 'story') { tx(x, 'RACE TO 100%', 60, y + 20, 26, '#5B6676', 800); y += 40; ts.forEach(t => { fit(x, t.name, 60, y + 32, 28, t.col, 800, 250); tx(x, t.pct + '%', 380, y + 32, 28, '#0F1B2D', 800, 'right'); rr(x, 400, y + 8, 620, 34, 17, '#E6EAF0'); rr(x, 400, y + 8, Math.max(34, 620 * t.pct / 100), 34, 17, t.col); y += 56; }); y += 20; }
+    // tiles
+    const vs = []; ts.forEach(t => t.villages.forEach(v => vs.push(v))); const fin = []; ts.forEach(t => t.finished.forEach(v => fin.push(v.name)));
+    const cols = shape === 'story' ? 3 : 4, gap = 14, tw = (960 - gap * (cols - 1)) / cols, th = shape === 'story' ? 150 : 128;
+    tx(x, close ? 'EVERY VILLAGE · FINAL' : 'EVERY VILLAGE TODAY', 60, y + 20, 26, '#5B6676', 800); y += 40;
+    const rows = Math.ceil(vs.length / cols), avail = H - 120 - y - (fin.length ? 50 : 0), th2 = Math.min(th, (avail - gap * (rows - 1)) / Math.max(1, rows));
+    vs.forEach((v, i) => { const X = 60 + (i % cols) * (tw + gap), Y = y + Math.floor(i / cols) * (th2 + gap), p = PC[v.state];
+      rr(x, X, Y, tw, th2, 18, p[0]); rr(x, X, Y, 10, th2, 5, v.tid ? tc(v.tid) : '#999');
+      fit(x, v.name, X + 24, Y + th2 * 0.3, 26, p[1], 700, tw - 34); tx(x, v.state === 'wait' ? '–' : fmt(v.ids), X + 24, Y + th2 * 0.68, th2 * 0.32, p[1], 800);
+      if (v.state !== 'wait') { x.font = `800 ${th2 * 0.32}px ${F}`; const w0 = x.measureText(v.state === 'wait' ? '–' : fmt(v.ids)).width; tx(x, '/' + fmt(v.target), X + 28 + w0, Y + th2 * 0.68, 20, p[1], 600); }
+      tx(x, WORD[v.state].toUpperCase(), X + 24, Y + th2 - 14, 18, p[1], 800); });
+    y += rows * (th2 + gap);
+    if (fin.length) fit(x, '✓ Finished: ' + fin.join(', '), 60, y + 30, 26, '#1E7A46', 700, 960);
+    // key + footer
+    if (shape !== 'story') { const Hn = Math.max(900, Math.ceil(y + (fin.length ? 60 : 20) + 130)); if (Hn < H) { const [c2, x2] = cv(W, Hn); x2.drawImage(c, 0, 0); return foot80(c2, x2, Hn, close, d); } }
+    return foot80(c, x, H, close, d);
+  }
+  function foot80(c, x, H, close, d) {
+    let kx = 60; [['Done', '#1E7A46'], ['On track', '#BFE3CC'], ['Slow', '#F6D88E'], ['Behind', '#F2B8B0']].forEach(([w, col]) => { rr(x, kx, H - 98, 24, 24, 6, col); tx(x, w, kx + 32, H - 78, 22, '#5B6676', 600); x.font = `600 22px ${F}`; kx += 32 + x.measureText(w).width + 28; });
+    const nx = (d.tehsils || [])[0] && d.tehsils[0].next_slot;
+    tx(x, close ? 'IDs made tonight count in tomorrow’s first file' : nx ? 'Next update ' + hr(nx) : '', 60, H - 36, 24, '#5B6676', 500);
+    tx(x, 'Tehsil offices Assar & Kastigarh', 1020, H - 36, 24, '#5B6676', 500, 'right');
+    return c;
+  }
+  function message(d, close, link) {
+    const m = model(d); if (!m) return '';
+    const ts = m.ts, L = [], vs = []; ts.forEach(t => t.villages.forEach(v => vs.push(v)));
+    L.push(close ? `*Farmer ID · Day close · ${dw(m.date)}*` : `*Farmer ID · ${t12(m.lastFile || m.now)} · ${dw(m.date)}*`);
+    L.push(ts.map(t => `${t.name} *${fmt(t.ids)}*`).join(' · '));
+    const bh = vs.filter(v => v.state === 'behind'), sl = vs.filter(v => v.state === 'slow');
+    if (bh.length) L.push('🔴 Behind: ' + bh.map(v => v.name + ' ' + v.ids).join(', '));
+    if (sl.length) L.push('🟡 Slow: ' + sl.map(v => v.name + ' ' + v.ids).join(', '));
+    const ab = ts.reduce((a, t) => a.concat(t.absent.map(x => x.name)), []); if (ab.length) L.push('🚫 Absent: ' + ab.join(', '));
+    if (close) { const st = ts.map(t => t.star).filter(Boolean).sort((a, b) => b.ids - a.ids)[0]; if (st) L.push('⭐ Village of the day: ' + st.name + ' ' + st.ids); if (bh.length + sl.length || ab.length) L.push('_Show-cause notices tomorrow morning._'); }
+    if (link) L.push('Full details: ' + link);
+    return L.join('\n');
+  }
+  window.T8 = { today, village, picture, message, model, t12, dw, dd, tc, WORD };
+})();

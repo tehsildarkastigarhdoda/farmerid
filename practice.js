@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '7.7.0';
+const APP_VERSION = '8.0.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -170,7 +170,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '16';
+const SCHEMA_VERSION = '17';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -270,7 +270,7 @@ const ACTIONS = {
   mutList: mutList_, mutSave: mutSave_, satList: satList_, satSave: satSave_, jklrGet: jklrGet_, jklrSave: jklrSave_, annexB: annexB_,
   scnList: scnList_, scnExempt: scnExempt_, scnIssue: scnIssue_, live73: live73_, sorterSave: sorterSave_, sorters: sorters_, helperSave: helperSave_,
   mutCounts: mutCounts_, mutCountsSave: mutCountsSave_, dcReport: dcReport_, satReasons: satReasons_, save73: save73_, get73: get73_,
-  auditList: auditList_, camp76: camp76Get_, people76: people76Get_, postAdd: postAdd_, postEnd: postEnd_, attSave: attSave_, staffing: staffing_, staffingSave: staffingSave_, designationsSave: designationsSave_, setPrefs: setPrefs_, weekTop: weekTop_, official: official_
+  auditList: auditList_, leftList: leftList_, camp76: camp76Get_, people76: people76Get_, postAdd: postAdd_, postEnd: postEnd_, attSave: attSave_, staffing: staffing_, staffingSave: staffingSave_, designationsSave: designationsSave_, setPrefs: setPrefs_, weekTop: weekTop_, official: official_
 };
 
 const WRITE_ACTIONS = ['postAdd', 'postEnd', 'attSave', 'scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'userVillages', 'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'pinRequest', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkApply', 'pmkSave', 'portalDown', 'savePH', 'changePin', 'transferVillages', 'markSheetDone', 'startFresh', 'saveSummary', 'saveBucketing', 'saveText', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'resetPractice', 'deleteUser', 'saveVillageAll', 'logout', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply',
@@ -370,6 +370,7 @@ function migrate_() {
     if (Number(ver) < 13) migrateV13_();
     if (Number(ver) < 14) migrateV14_();
     if (Number(ver) < 16) migrateV16_();
+    if (Number(ver) < 17) migrateV17_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -4405,7 +4406,7 @@ function auditList_(req, u) {
 const DEPTS76 = ['Revenue', 'RDD', 'Agriculture', 'Horticulture', 'DYSSO', 'Other'];
 const campFrom_ = () => String(setting_('camp_from') || '2026-10-11');
 const campTo_ = () => String(setting_('camp_to') || '2026-10-17');
-const campOn_ = d => d >= campFrom_() && d <= campTo_();
+const campOn_ = d => d >= campFrom_();
 const mob10_ = m => String(m || '').replace(/\D/g, '').slice(-10);
 const norm76_ = s => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
 const V_ALIAS76 = { kharonti: 'khuranti', ganota: 'ganotha', bulandpur: 'bulandpur', topneel: 'topneel', karmail: 'kurmail' };
@@ -4501,7 +4502,7 @@ const GRADE_WORD76 = { S: 'Finished', A: 'Target met', B: 'On track', C: 'Slow',
 
 /** One tehsil, one day: every village with its grade, people, attendance. Past days come from the day-close record. */
 function camp76_(tid, date) {
-  const today = today_(), live = date >= today, frac = dayFrac76_(date);
+  const today = today_(), live = date >= today, firstFile = !live || read_('RegFiles').some(x => x.tehsil_id === tid && String(x.uploaded_at).slice(0, 10) === today && x.note !== 'Built in'), frac = firstFile ? dayFrac76_(date) : 0;
   const vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v);
   const users = {}; read_('Users').forEach(x => users[x.user_id] = x);
   const phs = read_('PHs').filter(p => p.tehsil_id === tid), pool = poolByVillage_(tid);
@@ -4539,7 +4540,7 @@ function camp76_(tid, date) {
   const star = ranked[0] ? { name: ranked[0].name, ids: ranked[0].ids, officials: ranked[0].officials.filter(o => o.att !== 'A').map(o => o.name) } : null;
   const per = {}; villages.forEach(v => v.officials.forEach(o => { if (o.att === 'A' || !v.target) return; const p = per[o.key] = per[o.key] || { name: o.name, designation: o.designation, ids: 0, target: 0, villages: [] }; p.ids += v.ids; p.target += v.target; p.villages.push(v.name); }));
   const best = Object.keys(per).map(k => per[k]).sort((a, b) => b.ids / b.target - a.ids / a.target || b.ids - a.ids)[0] || null;
-  return { tehsil_id: tid, name: tehsilName_(tid), date, live, final: !live || nowHM >= '20:00', frac, ids: villages.reduce((a, v) => a + v.ids, 0), target: villages.reduce((a, v) => a + v.target, 0),
+  return { tehsil_id: tid, name: tehsilName_(tid), date, live, waiting: !frac, final: !live || nowHM >= '20:00', frac, ids: villages.reduce((a, v) => a + v.ids, 0), target: villages.reduce((a, v) => a + v.target, 0),
     grades, villages, absent, unmarked: unmarked.length, deployed: Object.keys(seen).length, star, best: best ? { name: best.name, designation: best.designation, ids: best.ids, villages: best.villages } : null };
 }
 const hm12_ = hm => { let h = Number(hm.slice(0, 2)); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + hm.slice(3, 5) + ' ' + ap; };
@@ -4547,7 +4548,8 @@ const ord_ = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n
 function tehsilGrade76_(ids, target) { if (!target) return 'S'; const r = ids / target; return r >= 1 ? 'A' : r >= 0.75 ? 'B' : r >= 0.5 ? 'C' : 'D'; }
 function week76_(tid) {
   const out = [], today = today_(); let d = campFrom_(), g = 0;
-  while (d <= campTo_() && g++ < 40) {
+  const end = campTo_() > today ? campTo_() : today;
+  while (d <= end && g++ < 40) {
     if (d > today) out.push({ date: d, ids: null, grade: '' });
     else if (d === today) { const c = camp76_(tid, d); out.push({ date: d, ids: c.ids, target: c.target, grade: c.final ? tehsilGrade76_(c.ids, c.target) : '' }); }
     else { const sn = read_('Snapshots').find(x => x.tehsil_id === tid && x.village_id === 'CLOSE' && x.date === d); let x = {}; try { x = sn ? JSON.parse(sn.data) : {}; } catch (e) {}
@@ -4640,8 +4642,6 @@ function scnCamp76_(L, u) {
       const c = it.camp = it.camp || { villages: [], absent: false, absent_villages: [], department: o.department };
       if (short) c.villages.push({ village_id: v.village_id, name: v.name, panchayat: o.panchayat, ids: v.ids, target: v.target, grade: v.grade });
       if (o.att === 'A') { c.absent = true; if (c.absent_villages.indexOf(v.name) < 0) c.absent_villages.push(v.name + (o.panchayat ? ' (' + o.panchayat + ')' : '')); } } });
-    if (short && v.incharge && !v.officials.some(o => o.key === v.incharge.user_id)) { const it = get(v.incharge.user_id, v.incharge.name, v.incharge.designation, 'Revenue', '');
-      const c = it.camp = it.camp || { villages: [], absent: false, absent_villages: [], department: 'Revenue' }; c.villages.push({ village_id: v.village_id, name: v.name, panchayat: 'In-charge', ids: v.ids, target: v.target, grade: v.grade }); }
     if (short && !v.officials.length && v.patwari && !items[v.patwari.user_id]) { const it = get(v.patwari.user_id, v.patwari.name, 'Patwari', 'Revenue', '');
       const c = it.camp = it.camp || { villages: [], absent: false, absent_villages: [], department: 'Revenue' }; c.villages.push({ village_id: v.village_id, name: v.name, panchayat: '', ids: v.ids, target: v.target, grade: v.grade }); }
   });
@@ -4664,10 +4664,10 @@ function scnList_(req, u) {
 function dashCamp76_() {
   const today = today_(), from = campFrom_(), to = campTo_();
   if (today < from) return null;
-  const date = today > to ? to : today;
-  return { from, to, date, day_no: daysBetween_(from, date) + 1, days: daysBetween_(from, to) + 1, days_left: Math.max(0, daysBetween_(today, to) + (today <= to ? 1 : 0) - 1),
+  const date = today;
+  return { from, to, date, day_no: daysBetween_(from, date) + 1, days: Math.max(daysBetween_(from, to), daysBetween_(from, date)) + 1, days_left: Math.max(0, daysBetween_(today, to) + (today <= to ? 1 : 0) - 1),
     tehsils: read_('Tehsils').filter(t => t.active === 'Y').map(t => { const c = camp76_(t.tehsil_id, date);
-      return { tehsil_id: t.tehsil_id, name: t.name, ids: c.ids, target: c.target, grades: c.grades, final: c.final, star: c.star, best: c.best,
+      return { tehsil_id: t.tehsil_id, name: t.name, ids: c.ids, target: c.target, grades: c.grades, final: c.final, waiting: c.waiting, star: c.star, best: c.best,
         villages: c.villages.map(v => ({ village_id: v.village_id, name: v.name, ids: v.ids, target: v.target, grade: v.grade, reason: v.reason, why: v.why, absent: v.officials.filter(o => o.att === 'A').length, patwari: v.patwari ? v.patwari.name : '',
           officials: v.officials.map(o => ({ name: o.name, designation: o.designation, department: o.department, panchayat: o.panchayat, att: o.att })) })),
         absent_list: c.absent.map(a => ({ name: a.name, designation: a.designation, village: a.village })), unmarked: c.unmarked, deployed: c.deployed,
@@ -4707,8 +4707,39 @@ function dashFull77_() {
     return { tehsil_id: tid, name: t.name, villages,
       why: Object.keys(why).map(k => ({ tier: k.split('|')[0], label: k.split('|')[1], n: why[k] })).sort((a, b) => b.n - a.n),
       sorting: sd.list.map(x => ({ name: x.name, left: x.left, due: x.due, villages: x.villages.map(v => v.name + ' ' + v.left) })),
-      pending: st.totals ? Number(st.totals.reg_pending) || 0 : 0, slots: slots74_(tid, today), notices };
+      pending: st.totals ? Number(st.totals.reg_pending) || 0 : 0, slots: slots74_(tid, today), slots_y: slots74_(tid, addDays_(today, -1)), notices };
   });
+}
+
+/* ============================== v8.0: ONE SYSTEM, OFFICE ONLY, PLAIN WORDS ==============================
+ * Accountability = who is deployed where. Field logins off except Patwaris (checking landholders, dead owners)
+ * and the two BCGs who monitor both tehsils. The campaign runs until every village is finished.
+ */
+const MONITORS80 = [['Mirza Aslam Begh', 'BCG', '6005203380', 'T_KASTIGARH'], ['Irshad Hussain', 'BCG Assar', '9797320545', 'T_ASSAR']];
+function migrateV17_() {
+  const us = read_('Users'), all = read_('Tehsils').filter(t => t.active === 'Y').map(t => t.tehsil_id).join(','), off = [];
+  MONITORS80.forEach(([name, des, mob, tid]) => {
+    let x = us.find(u => u.active !== 'DEL' && mob10_(u.mobile) === mob) || us.find(u => u.active !== 'DEL' && norm76_(u.name) === norm76_(name));
+    if (!x) { const id = 'U' + Utilities.getUuid().replace(/-/g, '').slice(0, 10); x = { user_id: id, name, designation: des, mobile: mob, tehsil_id: tid, role: 'NT', pin_hash: hash_(id, setting_('default_pin')), active: 'Y', created_at: now_(), updated_at: now_(), tehsils: all, backup: '' }; us.push(x); }
+    else Object.assign(x, { role: 'NT', tehsils: all, active: 'Y', updated_at: now_(), mobile: x.mobile || mob });
+  });
+  us.forEach(u => { if (u.active === 'Y' && u.role === 'OPERATOR' && !/patwari/i.test(u.designation || '') && u.designation !== 'Sorting helper') { u.active = 'N'; u.updated_at = now_(); off.push(u.name + ' (' + u.designation + ')'); } });
+  writeAll_('Users', us);
+  setSetting_('v80_off', off.join(', '));
+}
+/** Farmers left, village-wise: every landholder with status and reason in plain words. No Aadhaar, no mobile. */
+function leftList_(req, u) {
+  if (['ADMIN', 'NT', 'DA'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const ts = userTehsils_(u), want = (req.tehsil_id ? [req.tehsil_id] : ts).filter(t => ts.indexOf(t) >= 0);
+  const reasons = {}; read_('Reasons').forEach(r => reasons[r.code] = r);
+  const un = {}; read_('Users').forEach(x => un[x.user_id] = x.name);
+  const vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v);
+  const out = {};
+  read_('Buckets').forEach(b => { if (want.indexOf(b.tehsil_id) < 0) return; const v = vm[b.village_id]; if (!v || v.practice === 'Y' || v.active !== 'Y') return;
+    const r = reasons[b.reason_code] || {}, st = b.status === 'CLAIMED' ? 'Has Farmer ID' : b.status === 'NOT_SURVEYED' ? 'Not checked yet' : r.tier === 'A' ? 'Cannot get ID' : 'Can get ID';
+    (out[b.village_id] = out[b.village_id] || { village: v.name, tehsil: tehsilName_(b.tehsil_id), rows: [] }).rows.push([b.name || '', b.parentage || '', String(b.khasras || ''), st, b.status === 'REASON' ? (r.report_label || r.label || b.reason_code) : '', un[b.surveyed_by] || un[b.updated_by] || '', String(b.surveyed_date || b.updated_at || '').slice(0, 10)]); });
+  const kh = s => { const m = String(s).match(/\d+/); return m ? Number(m[0]) : 1e9; };
+  return { villages: Object.keys(out).map(k => Object.assign(out[k], { rows: out[k].rows.sort((a, b) => kh(a[2]) - kh(b[2]) || a[1].localeCompare(b[1]) || a[0].localeCompare(b[0])) })).sort((a, b) => a.tehsil.localeCompare(b.tehsil) || a.village.localeCompare(b.village)) };
 }
 
 /* ======================= end of server code ======================= */
@@ -4783,10 +4814,26 @@ function dashFull77_() {
     const PP = X.read_('People'), key = n => { const p = PP.find(x => x.name === n); return p ? (p.user_id || 'P:' + p.person_id) : ''; };
     X.writeAll_('Attend', [{ date: day(0), tehsil_id: 'T_ASSAR', key: key('Ajay Kumar'), status: 'P', note: '', by: 'seed', at: '' }, { date: day(0), tehsil_id: 'T_ASSAR', key: key('Bashir Ahmed'), status: 'A', note: 'No photo', by: 'seed', at: '' },
       { date: day(0), tehsil_id: 'T_ASSAR', key: key('Sunita Devi'), status: 'P', note: '', by: 'seed', at: '' }]);
+    // v8.0: a second tehsil, the BCG who monitors both, and the Tehsildar
+    X.writeAll_('Tehsils', X.read_('Tehsils').map(t => Object.assign(t, t.tehsil_id === 'T_KASTIGARH' ? { name: 'Second Tehsil', active: 'Y' } : {})));
+    const V2 = [['9005', 'Nai Basti', 80], ['9006', 'Pahari Tola', 60]], rows2 = [];
+    V2.forEach(v => { for (let i = 0; i < v[2]; i++) rows2.push([v[0] + String(i + 1).padStart(4, '0'), v[0], v[1], String(100 + Math.floor(rnd() * 900)) + '/1', pick(FIRST) + ' ' + pick(SUR), pick(FATHER)]); });
+    must({ action: 'uploadApply', token: at, rows: rows2, file_ts: String(Date.now() - 86400000 * 3), tehsil_id: 'T_KASTIGARH' });
+    X.writeAll_('Villages', X.read_('Villages').map(v => ['9005', '9006'].includes(v.village_id) ? Object.assign(v, { portal_total: v.village_id === '9005' ? '80' : '60', portal_as_on: day(-1) }) : v));
+    U.Imran = must({ action: 'saveUser', token: at, name: 'Imran', designation: 'Patwari', role: 'OPERATOR', tehsil_id: 'T_KASTIGARH', mobile: '9000000030' }).user;
+    U.Aslam = must({ action: 'saveUser', token: at, name: 'Aslam', designation: 'BCG', tehsil_id: 'T_ASSAR', tehsils: 'T_ASSAR,T_KASTIGARH', monitor: true, mobile: '9000000031' }).user;
+    U.Tehsildar = admin;
+    X.writeAll_('Users', X.read_('Users').map(u => Object.assign(u, { pin_changed: 'Y', pin_hash: X.hash_(u.user_id, '1234') }, u.name === 'Sunil' ? { tehsils: 'T_ASSAR,T_KASTIGARH' } : {})));
+    must({ action: 'savePH', token: at, tehsil_id: 'T_KASTIGARH', name: 'PH Nai Basti', patwari_user_id: U.Imran.user_id, village_ids: ['9005', '9006'] });
+    const bs2 = X.read_('Buckets').filter(b => b.village_id === '9005' || b.village_id === '9006');
+    must({ action: 'regApply', token: at, rows: bs2.filter((b, i) => i % 3 === 0).map(b => regRow(b, false)), file_ts: String(Date.now()), confirm: 1 });
+    [['9005', 'Nai Basti', [{ user_id: U.Imran.user_id }, { name: 'Rakesh Kumar', designation: 'GRS', department: 'RDD', mobile: '9000000108' }]], ['9006', 'Pahari Tola', [{ name: 'Nusrat Begum', designation: 'PAA', department: 'RDD', mobile: '9000000109' }, { name: 'Vijay Thakur', designation: 'AEA', department: 'Agriculture', mobile: '9000000110' }]]]
+      .forEach(([vid, pn, ps]) => ps.forEach(p => { const b = Object.assign({ action: 'postAdd', token: at, village_id: vid, panchayat: pn }, p); if (!b.user_id) delete b.user_id; must(b); }));
+    X.writeAll_('Posting', X.read_('Posting').map(r => Object.assign(r, { from: day(-3) })));
     reg.U = U;
   }
   seed();
-  const ROLE_USER = { OPERATOR: 'Deepak', PATWARI: 'Mohan', DA: 'Ravi', NT: 'Sunil' };
+  const ROLE_USER = { OPERATOR: 'Deepak', PATWARI: 'Mohan', DA: 'Ravi', NT: 'Sunil', ADMIN: 'Tehsildar', BCG: 'Aslam' };
   window.PRAC = {
     call,
     start: k => must({ action: 'login', user_id: reg.U[ROLE_USER[k] || 'Deepak'].user_id, pin: '1234' }),

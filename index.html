@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Farmer ID Dashboard · Tehsil Assar &amp; Kastigarh</title>
 <meta name="description" content="Live progress of Farmer ID creation in Tehsil Assar and Tehsil Kastigarh, District Doda.">
-<meta name="theme-color" content="#FFFFFF"><script>(function(){var p="auto";try{p=localStorage.getItem("fid-theme")||"auto"}catch(e){}var q=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");function a(){var d=p==="dark"||(p==="auto"&&q&&q.matches);document.documentElement.classList.toggle("dk",!!d)}a();if(q&&q.addEventListener)q.addEventListener("change",a)})();</script>
+<meta name="theme-color" content="#FFFFFF">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Farmer ID Dashboard">
 <meta property="og:description" content="Tehsil Assar &amp; Kastigarh, District Doda · live progress of Farmer ID creation">
@@ -34,7 +34,7 @@ footer .cr{margin-top:6px;color:#55635B;font-weight:600}
 .err{background:#FDECEA;color:#B42318;border-radius:12px;padding:10px 14px;font-weight:700;margin-bottom:12px}
 @media (max-width:420px){.top .nm b{font-size:16.5px}.login{padding:9px 12px}}
 </style>
-<style>.ch76{margin-top:26px}.ch76>summary{cursor:pointer;font-weight:600;font-size:15px;padding:10px 0;color:#1F5A3E}.dk .ch76>summary{color:#7CC79A}#rc{margin-bottom:6px}</style></head>
+<style>.ch76{margin-top:26px}.ch76>summary{cursor:pointer;font-weight:600;font-size:15px;padding:10px 0;color:#1F5A3E}.dk .ch76>summary{color:#7CC79A}#rc{margin-bottom:6px}</style><style>#upd{display:none!important}</style></head>
 <body class="pub">
 <header class="top"><div class="in"><img src="logo.svg" alt=""><div class="nm"><b>Farmer ID Dashboard</b><small>Tehsil Assar &amp; Kastigarh · District Doda</small></div><a class="login" href="app.html">Log in</a></div></header>
 <main><div class="upd" id="upd"></div><div id="msg"></div><div id="rc"></div><div id="dash" hidden></div></main>
@@ -57,7 +57,13 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
   } catch (e) {}
   const root = document.getElementById('dash'), upd = document.getElementById('upd'), msg = document.getElementById('msg');
   let last = null; try { last = JSON.parse(localStorage.getItem('d7:last') || 'null'); } catch (e) {}
-  const draw = d => { last = d; RC.full(document.getElementById('rc'), d, {}); upd.innerHTML = `<span>Updated ${DASH.t12(d.now)} · updates by itself</span><button id="rf">Refresh</button>`; document.getElementById('rf').onclick = load; };
+  const draw = d => { last = d; const isClose = String(d.now || '').slice(11, 13) >= '20';
+    T8.today(document.getElementById('rc'), d, { bottom: '<div class="t8-share"><button class="t8-btn" id="sp8">📷 Share picture</button><button class="t8-btn o" id="sl8">🔗 Share this page</button></div><div style="margin-top:10px"><button class="t8-btn o" id="ss8" style="width:100%">Tall picture for WhatsApp Status</button></div>' });
+    const page = location.origin + location.pathname.replace(/index\.html$/, '');
+    const shp = shape => { const c = T8.picture(d, shape, isClose); c.toBlob(async b => { const f = new File([b], 'Farmer ID ' + (isClose ? 'day close' : 'update') + '.png', { type: 'image/png' }), text = T8.message(d, isClose, page);
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text }); } catch (e) {} } else { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); } }, 'image/png'); };
+    document.getElementById('sp8').onclick = () => shp('square'); document.getElementById('ss8').onclick = () => shp('story');
+    document.getElementById('sl8').onclick = async () => { if (navigator.share) { try { await navigator.share({ title: 'Farmer ID · Assar & Kastigarh', text: 'Farmer ID live status', url: page }); } catch (e) {} } else { try { await navigator.clipboard.writeText(page); alert('Link copied'); } catch (e) {} } }; upd.innerHTML = `<span>Updated ${DASH.t12(d.now)} · updates by itself</span><button id="rf">Refresh</button>`; document.getElementById('rf').onclick = load; };
   if (last) draw(last); else root.innerHTML = '';
   async function load() {
     try {
