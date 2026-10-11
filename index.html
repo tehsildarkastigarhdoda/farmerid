@@ -37,7 +37,7 @@ footer .cr{margin-top:6px;color:#55635B;font-weight:600}
 <style>.ch76{margin-top:26px}.ch76>summary{cursor:pointer;font-weight:600;font-size:15px;padding:10px 0;color:#1F5A3E}.dk .ch76>summary{color:#7CC79A}#rc{margin-bottom:6px}</style></head>
 <body class="pub">
 <header class="top"><div class="in"><img src="logo.svg" alt=""><div class="nm"><b>Farmer ID Dashboard</b><small>Tehsil Assar &amp; Kastigarh · District Doda</small></div><a class="login" href="app.html">Log in</a></div></header>
-<main><div class="upd" id="upd"></div><div id="msg"></div><div id="rc"></div><details id="ch76" class="ch76"><summary>Charts since August</summary><div id="dash"></div></details></main>
+<main><div class="upd" id="upd"></div><div id="msg"></div><div id="rc"></div><div id="dash" hidden></div></main>
 <footer>Figures are compiled from the Agristack portal files uploaded by the Tehsil offices and are indicative. The portal remains the official record.
 <div class="cr">Designed and developed by Pushpak Saroop, JKAS, Tehsildar Kastigarh.</div></footer>
 <script src="dash.js"></script>
@@ -57,8 +57,8 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
   } catch (e) {}
   const root = document.getElementById('dash'), upd = document.getElementById('upd'), msg = document.getElementById('msg');
   let last = null; try { last = JSON.parse(localStorage.getItem('d7:last') || 'null'); } catch (e) {}
-  const det = document.getElementById('ch76'); if (innerWidth >= 760) det.open = true; det.addEventListener('toggle', () => { if (det.open && last) DASH.render(root, last, {}); }); const draw = d => { last = d; RC.render(document.getElementById('rc'), d, {}); DASH.render(root, d, {}); upd.innerHTML = `<span>Updated ${DASH.t12(d.now)} · updates by itself</span><button id="rf">Refresh</button>`; document.getElementById('rf').onclick = load; };
-  if (last) draw(last); else DASH.render(root, null);
+  const draw = d => { last = d; RC.full(document.getElementById('rc'), d, {}); upd.innerHTML = `<span>Updated ${DASH.t12(d.now)} · updates by itself</span><button id="rf">Refresh</button>`; document.getElementById('rf').onclick = load; };
+  if (last) draw(last); else root.innerHTML = '';
   async function load() {
     try {
       const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'dash' }) }); const d = await r.json();

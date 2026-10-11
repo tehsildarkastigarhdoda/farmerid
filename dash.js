@@ -351,3 +351,113 @@ button.rc-v{cursor:pointer}
   }
   window.RC = { render, headline, picture: (kind, d) => ({ slot, close, week })[kind](d), grade: g, tc, WORD };
 })();
+
+/* v7.7 · The full dashboard: everything, in plain words, for anyone who opens the link. */
+(function () {
+  const CSS = `
+.fd{color:var(--ink,#14201B);font-variant-numeric:tabular-nums}
+.fd-nav{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;padding:8px 0 10px;margin:0 0 6px;background:inherit;scrollbar-width:none}
+.fd-nav::-webkit-scrollbar{display:none}
+.fd-nav a{flex:none;font-size:13px;font-weight:600;padding:7px 12px;border-radius:20px;background:#fff;border:1px solid #DCE3DF;color:#1F5A3E;text-decoration:none}
+.fd-sec{scroll-margin-top:64px;margin-top:30px}
+.fd-h{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0 0 4px}
+.fd-sub{font-size:13.5px;color:#5E6B65;margin:0 0 12px;line-height:1.45}
+.fd-th{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin:16px 0 8px}
+.fd-th i{width:10px;height:10px;border-radius:50%}
+.fd-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:720px){.fd-grid{grid-template-columns:1fr 1fr}}
+@media (min-width:1100px){.fd-grid{grid-template-columns:1fr 1fr 1fr}}
+.fd-card{background:#fff;border:1px solid #E2E7E4;border-radius:14px;padding:14px}
+.fd-vt{display:flex;align-items:center;gap:10px}.fd-vt b{font-size:16px;flex:1;min-width:0}.fd-vt .td{font-size:13px;color:#5E6B65;white-space:nowrap}.fd-vt .td b{font-size:16px;color:#14201B}
+.fd-bar{height:10px;background:#EEF1EE;border-radius:6px;overflow:hidden;margin:10px 0 4px}.fd-bar i{display:block;height:100%;border-radius:6px}
+.fd-pct{display:flex;justify-content:space-between;font-size:12.5px;color:#5E6B65}.fd-pct b{color:#14201B}
+.fd-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.fd-facts span{background:#F4F6F4;border-radius:9px;padding:6px 4px;text-align:center;font-size:11px;color:#5E6B65;line-height:1.2}.fd-facts b{display:block;font-size:16px;color:#14201B}
+.fd-facts .w b{color:#9A5C00}.fd-facts .r b{color:#B3261E}
+.fd-ppl{font-size:12.5px;color:#5E6B65;margin-top:8px;line-height:1.5}
+.fd-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.fd-tag{font-size:11.5px;font-weight:600;border-radius:20px;padding:3px 9px;background:#EEF1EE;color:#5E6B65}.fd-tag.g{background:#E3F2E8;color:#1E7A46}.fd-tag.a{background:#FCF0D9;color:#9A5C00}.fd-tag.r{background:#FBE4E1;color:#B3261E}
+.fd-why{font-size:12.5px;margin-top:8px;color:#14201B}.fd-why span{color:#5E6B65}
+.fd-kv{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}.fd-kv span{background:#fff;border:1px solid #E2E7E4;border-radius:10px;padding:8px 12px;font-size:13px;color:#5E6B65}.fd-kv b{font-size:18px;color:#14201B;margin-right:4px}.fd-kv .r b{color:#B3261E}.fd-kv .a b{color:#9A5C00}.fd-kv .g b{color:#1E7A46}
+.fd-pv{margin-bottom:10px}.fd-pv .vn{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;margin-bottom:6px}
+.fd-pn{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#5E6B65;margin:8px 0 4px}
+.fd-o{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13.5px}.fd-o .d{width:10px;height:10px;border-radius:50%;flex:none;background:#C9D0CC}.fd-o .d.P{background:#1E7A46}.fd-o .d.A{background:#B3261E}
+.fd-o small{color:#5E6B65}
+.fd-abs{background:#FBE4E1;border-radius:12px;padding:10px 12px;font-size:13.5px;margin:6px 0 10px}.fd-abs b{color:#B3261E}
+.fd-hm{overflow-x:auto}.fd-hm table{border-collapse:separate;border-spacing:3px;font-size:12px;min-width:100%}
+.fd-hm th{font-weight:600;color:#5E6B65;font-size:11px;padding:2px 4px;text-align:center}.fd-hm th:first-child{text-align:left}
+.fd-hm td{text-align:center;border-radius:6px;padding:7px 4px;font-weight:700;min-width:40px}.fd-hm td:first-child{text-align:left;font-weight:600;background:none;white-space:nowrap;padding-right:8px}
+.fd-hm .c0{background:transparent;border:1px dashed #D3D9D5;color:transparent}.fd-hm .cA{background:#1E7A46;color:#fff}.fd-hm .cB{background:#B9DCC5}.fd-hm .cC{background:#F4D79B}.fd-hm .cD{background:#F3C3BE}.fd-hm .cT{outline:2px solid #14201B}
+.fd-tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid #E2E7E4;border-radius:12px;overflow:hidden}
+.fd-tbl th{text-align:left;font-size:11.5px;color:#5E6B65;font-weight:600;padding:8px 10px;background:#F4F6F4}.fd-tbl td{padding:8px 10px;border-top:1px solid #EEF1EE;vertical-align:top}
+.fd-rb{display:grid;grid-template-columns:minmax(120px,1.4fr) 2fr 48px;gap:8px;align-items:center;font-size:13px;margin:6px 0}.fd-rb .tr{height:12px;background:#EEF1EE;border-radius:6px;overflow:hidden}.fd-rb .tr i{display:block;height:100%}.fd-rb b{text-align:right}
+.fd-sl{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 12px}.fd-sl span{font-size:12px;font-weight:600;border-radius:8px;padding:6px 9px;background:#EEF1EE;color:#5E6B65}
+.fd-sl .ok{background:#E3F2E8;color:#1E7A46}.fd-sl .late{background:#FCF0D9;color:#9A5C00}.fd-sl .miss{background:#FBE4E1;color:#B3261E}.fd-sl .due{outline:2px solid #1F5A3E;background:#fff;color:#1F5A3E}
+.dk .fd{--ink:#E7ECE9;color:#E7ECE9}.dk .fd-card,.dk .fd-nav a,.dk .fd-kv span,.dk .fd-tbl{background:#151D1A;border-color:#26302C}.dk .fd-nav a{color:#7CC79A}.dk .fd-facts span,.dk .fd-tbl th{background:#1E2824}
+.dk .fd-facts b,.dk .fd-vt .td b,.dk .fd-kv b,.dk .fd-pct b,.dk .fd-why{color:#E7ECE9}.dk .fd-sub,.dk .fd-ppl,.dk .fd-o small,.dk .fd-pct,.dk .fd-vt .td{color:#9AA8A1}.dk .fd-tbl td{border-color:#26302C}.dk .fd-abs{background:#3A1F1C}
+.dk .fd-bar,.dk .fd-rb .tr{background:#1E2824}
+.dk .fd-tag{background:#1E2824;color:#9AA8A1}.dk .fd-tag.g{background:#173D28;color:#7CC79A}.dk .fd-tag.a{background:#3A2B12;color:#F0B95A}.dk .fd-tag.r{background:#3A1F1C;color:#F2A69C}.dk .fd-sl span{background:#1E2824}.dk .fd-sl .ok{background:#173D28;color:#7CC79A}.dk .fd-sl .late{background:#3A2B12;color:#F0B95A}.dk .fd-sl .miss{background:#3A1F1C;color:#F2A69C}
+`;
+  if (!document.getElementById('fd77css')) { const st = document.createElement('style'); st.id = 'fd77css'; st.textContent = CSS; document.head.appendChild(st); }
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = n => Number(n || 0).toLocaleString('en-IN');
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dd = s => { const d = new Date(s + 'T12:00:00Z'); return d.getUTCDate() + ' ' + MON[d.getUTCMonth()]; };
+  const KIND = k => String(k || '').split('+').map(x => ({ IDS: 'IDs below target', ABS: 'Absent', SORT: 'Sorting not done' })[x] || x).join(', ');
+  const SL = { ok: 'on time', late: 'late', miss: 'missed', due: 'due now', over: 'missed', up: 'coming' };
+  function full(root, d, o) {
+    o = o || {};
+    if (!d || !d.tehsils) { root.innerHTML = ''; return; }
+    const c = d.camp, F = d.full || [], ts = (c ? c.tehsils : []), tcol = id => RC.tc(id);
+    const cv = {}; ts.forEach(t => t.villages.forEach(v => cv[t.tehsil_id + '|' + v.name] = v));
+    const days = []; if (c) { let x = c.from; for (let i = 0; i < c.days; i++) { days.push(x); const y = new Date(x + 'T12:00:00Z'); y.setUTCDate(y.getUTCDate() + 1); x = y.toISOString().slice(0, 10); } }
+    const S = [['today', 'Today'], ['villages', 'Villages'], ['officials', 'Officials'], ['week', 'Day by day'], ['notices', 'Notices'], ['problems', 'Why farmers are left'], ['files', 'Portal files'], ['charts', 'Since August']];
+    const sec = (id, h, sub, body) => `<section class="fd-sec" id="fd-${id}"><h2 class="fd-h">${h}</h2>${sub ? `<p class="fd-sub">${sub}</p>` : ''}${body}</section>`;
+    const tHead = t => `<div class="fd-th"><i style="background:${tcol(t.tehsil_id)}"></i><span style="color:${tcol(t.tehsil_id)}">Tehsil ${esc(t.name)}</span></div>`;
+    // villages
+    const villages = F.map(t => tHead(t) + `<div class="fd-grid">${t.villages.map(v => { const k = cv[t.tehsil_id + '|' + v.name] || {};
+      const tags = [v.sat_date ? `<span class="fd-tag g">Saturation certificate ${dd(v.sat_date)}</span>` : '', v.sat_sent ? `<span class="fd-tag g">Sent to DC ${dd(v.sat_sent)}</span>` : '', v.locked_on ? `<span class="fd-tag g">Jamabandi locked ${dd(v.locked_on)}</span>` : '',
+        k.absent ? `<span class="fd-tag r">${k.absent} absent today</span>` : '', v.mut && v.mut.pending ? `<span class="fd-tag a">${v.mut.pending} inheritance mutations pending</span>` : ''].join('');
+      return `<div class="fd-card"><div class="fd-vt">${RC.grade(k.grade || '')}<b>${esc(v.name)}</b><span class="td">today <b>${fmt(k.ids || 0)}</b>${k.target ? ' / ' + fmt(k.target) : ''}</span></div>
+        <div class="fd-bar"><i style="width:${v.pct}%;background:${tcol(t.tehsil_id)}"></i></div><div class="fd-pct"><span><b>${fmt(v.made)}</b> of ${fmt(v.total)} farmers have a Farmer ID</span><b>${v.pct}%</b></div>
+        <div class="fd-facts"><span><b>${fmt(v.left)}</b>still to do</span><span class="${v.cannot ? 'w' : ''}"><b>${fmt(v.cannot)}</b>cannot get an ID</span><span class="${v.notsorted ? 'r' : ''}"><b>${fmt(v.notsorted)}</b>not checked yet</span><span><b>${fmt(v.pending)}</b>awaiting approval</span></div>
+        ${v.blocks.length ? `<div class="fd-why"><span>Main hold-up:</span> ${esc(v.blocks.map(b => b.label + ' (' + b.n + ')').join(', '))}</div>` : ''}
+        <div class="fd-ppl">${k.reason ? esc(k.reason) + '<br>' : ''}Patwari: ${esc(v.patwari || '–')}${v.incharge ? ' · In-charge: ' + esc(v.incharge) : ''}</div>${tags ? `<div class="fd-tags">${tags}</div>` : ''}</div>`; }).join('')}</div>`).join('');
+    // officials
+    const officials = ts.map(t => { const pres = t.deployed - t.unmarked - (t.absent_list || []).length;
+      return tHead(t) + `<div class="fd-kv"><span><b>${t.deployed}</b>deployed</span><span class="g"><b>${pres}</b>present</span><span class="r"><b>${(t.absent_list || []).length}</b>absent</span><span class="a"><b>${t.unmarked}</b>not marked yet</span></div>
+        ${(t.absent_list || []).length ? `<div class="fd-abs"><b>Absent today:</b> ${esc(t.absent_list.map(a => a.name + ' (' + a.designation + ', ' + a.village + ')').join('; '))}</div>` : ''}
+        <div class="fd-grid">${t.villages.filter(v => (v.officials || []).length).map(v => { const ps = {}; v.officials.forEach(x => (ps[x.panchayat || '–'] = ps[x.panchayat || '–'] || []).push(x));
+          return `<div class="fd-card fd-pv"><div class="vn">${RC.grade(v.grade)}${esc(v.name)} <span style="font-weight:400;color:#5E6B65;font-size:12.5px">Patwari ${esc(v.patwari || '–')}</span></div>${Object.keys(ps).map(p => `<div class="fd-pn">Panchayat ${esc(p)}</div>${ps[p].map(x => `<div class="fd-o"><i class="d ${x.att}"></i><span>${esc(x.name)} <small>· ${esc(x.designation)} · ${esc(x.department)}${x.att === 'A' ? ' · <b style="color:#B3261E">absent</b>' : x.att === 'P' ? ' · present' : ''}</small></span></div>`).join('')}`).join('')}</div>`; }).join('')}</div>`; }).join('')
+      + `<p class="fd-sub" style="margin-top:8px">● green present · ● red absent · ● grey not marked yet. Attendance is marked by the office from the geotagged photographs.</p>`;
+    // day by day
+    const today = c ? c.date : '';
+    const week = F.map(t => tHead(t) + `<div class="fd-hm"><table><tr><th></th>${days.map(x => `<th>${dd(x)}</th>`).join('')}</tr>${t.villages.map(v => { const k = cv[t.tehsil_id + '|' + v.name] || {}, tg = k.target || 200;
+      return `<tr><td>${esc(v.name)}</td>${days.map(x => { const n = x === today ? k.ids : v.week[x]; if (n === undefined || n === null || x > today) return '<td class="c0">·</td>'; const r = n / tg; return `<td class="${r >= 1 ? 'cA' : r >= .75 ? 'cB' : r >= .5 ? 'cC' : 'cD'} ${x === today ? 'cT' : ''}">${fmt(n)}</td>`; }).join('')}</tr>`; }).join('')}</table></div>`).join('')
+      + `<p class="fd-sub" style="margin-top:8px">Farmer IDs made in each village each day. Dark green = 200 or more (or all that was left) · light green = at least 3/4 · yellow = at least half · pink = less than half. Today is outlined.</p>`;
+    // notices
+    const nots = F.map(t => tHead(t) + (t.notices.length ? `<table class="fd-tbl"><tr><th>For</th><th>Official</th><th>Why</th><th>Issued</th></tr>${t.notices.map(n => `<tr><td>${dd(n.date)}</td><td><b>${esc(n.name)}</b><br><small style="color:#5E6B65">${esc(n.designation)}</small></td><td>${esc(KIND(n.kind))}${n.repeat ? ' <span class="fd-tag r">second notice · reported to DC</span>' : ''}</td><td>${n.issued_on ? dd(n.issued_on) : '–'}</td></tr>`).join('')}</table>` : '<p class="fd-sub">No show-cause notice issued.</p>')).join('');
+    // problems
+    const probs = F.map(t => { const mx = Math.max(1, ...t.why.map(w => w.n)); const mut = t.villages.reduce((a, v) => { if (v.mut) { a.p += v.mut.pending; a.at += v.mut.attested; a.b += v.mut.backlog; a.g += v.mut.agristack; } return a; }, { p: 0, at: 0, b: 0, g: 0 });
+      return tHead(t) + `<div class="fd-kv"><span class="a"><b>${fmt(t.pending)}</b>Farmer IDs waiting for the Tehsildar's approval on the portal</span><span><b>${fmt(t.villages.reduce((a, v) => a + v.notsorted, 0))}</b>landholders not checked yet</span><span><b>${fmt(t.villages.reduce((a, v) => a + v.cannot, 0))}</b>cannot get an ID</span></div>
+        <div class="fd-card">${t.why.length ? t.why.map(w => `<div class="fd-rb"><span>${esc(w.label)}</span><span class="tr"><i style="width:${Math.round(w.n * 100 / mx)}%;background:${w.tier === 'A' ? '#9AA59F' : tcol(t.tehsil_id)}"></i></span><b>${fmt(w.n)}</b></div>`).join('') : '<p class="fd-sub">Nothing recorded.</p>'}
+        <p class="fd-sub" style="margin:8px 0 0">Grey bars: these landholders cannot get a Farmer ID (dead, land sold, duplicate and similar). Coloured bars: they can, once the hold-up is cleared.</p></div>
+        ${t.sorting.some(x => x.left) ? `<div class="fd-card" style="margin-top:10px"><b style="font-size:14px">Landholders the Patwari has not checked yet</b>${t.sorting.filter(x => x.left).map(x => `<div class="fd-o"><span><b>${esc(x.name)}</b> (Patwari) · ${fmt(x.left)} left${x.due ? ` · <b style="color:#B3261E">${fmt(x.due)} overdue</b>` : ''}<br><small>${esc(x.villages.join(', '))}</small></span></div>`).join('')}</div>` : ''}
+        ${mut.p + mut.at + mut.b + mut.g ? `<div class="fd-kv" style="margin-top:10px"><span><b>${mut.p}</b>inheritance mutations pending</span><span><b>${mut.at}</b>attested</span><span><b>${mut.b}</b>in the backlog module</span><span><b>${mut.g}</b>uploaded on AgriStack</span></div>` : ''}`; }).join('');
+    // files
+    const files = F.map(t => { const s = t.slots || { list: [] }; return tHead(t) + `<div class="fd-sl">${s.list.map(x => `<span class="${x.st === 'over' ? 'miss' : x.st}">${String(x.t).slice(0, 5)} · ${SL[x.st] || x.st}${x.n ? ' · ' + x.n + ' IDs' : ''}</span>`).join('')}</div>`; }).join('')
+      + `<p class="fd-sub">The office downloads the registered-farmer file from the AgriStack portal at 10, 11, 12, 1, 2, 3, 4, 5 and 8 PM and uploads it here. On time = within 20 minutes of the hour.</p>`;
+    root.innerHTML = `<div class="fd"><nav class="fd-nav">${S.map(([k, l]) => `<a href="#fd-${k}">${l}</a>`).join('')}</nav>
+      <section class="fd-sec" id="fd-today" style="margin-top:6px"><div id="fd-rc"></div></section>
+      ${sec('villages', 'Every village', 'Sorted slowest first. "Still to do" = farmers who can still get an ID. "Not checked yet" = landholders the Patwari has not looked at.', villages)}
+      ${c ? sec('officials', 'Who is working where today', 'Every official deployed in the door-to-door campaign, panchayat by panchayat.', officials) : ''}
+      ${c ? sec('week', 'Day by day', `Campaign ${dd(c.from)} to ${dd(c.to)}.`, week) : ''}
+      ${sec('notices', 'Show-cause notices', 'Issued for missing the daily target, absence from the camp, or sorting not done.', nots)}
+      ${sec('problems', 'Why farmers are still left', 'What is holding up the remaining farmers, tehsil by tehsil.', probs)}
+      ${sec('files', 'Portal files today', '', files)}
+      <section class="fd-sec" id="fd-charts"><h2 class="fd-h">Since August</h2><div id="fd-dash"></div></section></div>`;
+    RC.render(root.querySelector('#fd-rc'), d, { staff: true, all: false });
+    if (window.DASH) DASH.render(root.querySelector('#fd-dash'), d, Object.assign({ noPop: !!o.noPop }, o.dash || {}));
+    root.querySelectorAll('.fd-nav a').forEach(a => a.onclick = e => { e.preventDefault(); const el = root.querySelector(a.getAttribute('href')); if (el) el.scrollIntoView({ behavior: 'smooth' }); });
+  }
+  window.RC.full = full;
+})();

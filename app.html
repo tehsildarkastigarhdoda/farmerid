@@ -795,6 +795,22 @@ html.dk .nd76r{background:#3A1F1C}html.dk .nd76r.ok{background:#173D28}
 html.dk .vd76,html.dk .kv76 span,html.dk .pa76 button{background:#151D1A;border-color:#26302C}
 html.dk .pic76{background:#1E2824}
 
+/* ---------- v7.7 ---------- */
+#bar .hb7.lo77{width:auto!important;padding:0 12px 0 10px;gap:6px;color:#B3261E!important;border-color:#F0C2BC!important;font-weight:600;font-size:13.5px}
+#bar .hb7.lo77 span{white-space:nowrap}
+html.dk #bar .hb7.lo77{color:#F2A69C!important;border-color:#5A2A25!important}
+@media (max-width:430px){#bar #act7{display:none!important}#bar .hb7.lo77{padding:0 9px}}
+@media (max-width:360px){#bar .hb7.lo77 span{display:none}}
+.steps77{display:flex;flex-direction:column;gap:10px;margin:6px 0 4px}
+.st77{display:flex;align-items:center;gap:12px;background:var(--card,#fff);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.st77 .no{width:34px;height:34px;border-radius:50%;background:#1F5A3E;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;font-size:16px}
+.st77.done .no{background:#E3F2E8;color:#1E7A46}
+.st77 .tx{flex:1;min-width:0}.st77 b{display:block;font-size:15.5px}.st77 small{display:block;color:var(--mute);font-size:12.5px;margin-top:1px}
+.st77 .btn{width:auto!important;margin:0!important;padding:10px 16px;flex:none}
+.st77.big{border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:-10px;border-bottom:0}
+.steps77 .drop7{border-top-left-radius:0;border-top-right-radius:0;margin:0}
+html.dk .st77{background:#151D1A;border-color:#26302C}html.dk .st77.done .no{background:#173D28;color:#7CC79A}
+
 [hidden]{display:none!important}
 #title::before{content:'';float:left;width:30px;height:30px;margin:3px 9px 0 0;background:url(logo.svg) center/contain no-repeat;border-radius:7px}
 
@@ -812,7 +828,7 @@ html.dk .pic76{background:#1E2824}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '7.6.0';
+const APP_V = '7.7.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -7890,7 +7906,7 @@ function place76(main, html, opt) {
 const _home76 = VIEWS.home;
 VIEWS.home = async function () {
   await _home76(); const u = me(); if (!u) return;
-  const kind = isField() ? (isHelperMe() ? '' : 'field') : u.role === 'DA' ? 'da' : 'office';
+  const kind = isField() ? (isHelperMe() ? '' : 'field') : u.role === 'DA' ? '' : 'office';
   if (!kind) return;
   const draw = () => { const c = S.c76; if (!c || !current() || current().name !== 'home') return; let cc = c;
     if (kind === 'da') { const tid = curT(); cc = Object.assign({}, c, { tehsils: c.tehsils.filter(t => t.tehsil_id === tid) }); }
@@ -8041,6 +8057,146 @@ scnBody = function (L, x) {
   cp.forEach((t, i) => out.push(WP(`${i + 1}.  ${t}`, { ind: 720, hang: 360, jc: 'left', after: 40 })));
   return out.join('');
 };
+
+/* ======================= v7.7 · plain and complete: Log out in words, a 4-step DA home, the full dashboard, one-tap group update ======================= */
+
+/* ---------- Log out: a labelled button on every screen ---------- */
+const _sh77 = setHeader;
+setHeader = function (t) {
+  const out = _sh77(t), b = $('#me7');
+  if (b && !b.classList.contains('lo77')) {
+    b.classList.add('lo77'); b.setAttribute('aria-label', 'Log out');
+    b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg><span>Log out</span>';
+    b.onclick = () => { if (S.practice) { location.href = appUrl(); return; } if (confirm(`Log out ${me() ? me().name : ''}?`)) logout(); };
+  }
+  if (b && S.practice) { const s = b.querySelector('span'); if (s) s.textContent = 'Exit'; }
+  return out;
+};
+
+/* ---------- the group update: picture + message together ---------- */
+const E77 = { S: '✅', A: '🟢', B: '🔵', C: '🟡', D: '🔴' };
+function msg77(d, kind) {
+  const c = d && d.camp; if (!c) return null;
+  const ts = c.tehsils, all = ts.reduce((a, t) => a + t.ids, 0), when = t12(d.now || nowIST()), day = dateLong(c.date).replace(/\s*\d{4}$/, '');
+  const vs = []; ts.forEach(t => t.villages.forEach(v => vs.push(Object.assign({ tn: t.name }, v))));
+  const grp = g => vs.filter(v => v.grade === g).sort((a, b) => b.ids - a.ids);
+  const line = (g, w, withT) => { const l = grp(g); return l.length ? `${E77[g]} *${w}:* ` + l.map(v => v.name + ' ' + v.ids + (withT ? '/' + v.target : '')).join(', ') : ''; };
+  const lead = ts.length > 1 ? ts.slice().sort((a, b) => b.ids - a.ids) : ts;
+  const L = [];
+  if (kind === 'close') {
+    L.push(`*Farmer ID · Day close · day ${c.day_no} of ${c.days} · ${day}*`);
+    L.push(`Today: ${ts.map(t => `${t.name} *${fmtN(t.ids)}*`).join(' · ')}${ts.length > 1 && lead[0].ids !== lead[1].ids ? ` → *${lead[0].name} won the day*` : ''}`);
+    const dt = d.tehsils || []; L.push('Till date: ' + dt.map(t => `${t.name} ${t.total ? Math.round(t.made * 100 / t.total) : 0}%`).join(' · ') + (c.days_left ? ` · ${c.days_left} day${c.days_left === 1 ? '' : 's'} left` : ''));
+    const st = ts.map(t => t.star).filter(Boolean).sort((a, b) => b.ids - a.ids)[0], be = ts.map(t => t.best).filter(Boolean)[0];
+    if (st) L.push('', `⭐ Village of the day: *${st.name}* ${st.ids} (${st.officials.join(', ')})`);
+    if (be) L.push(`⭐ Official of the day: *${be.name}*, ${be.designation}`);
+    const G = { S: 0, A: 0, B: 0, C: 0, D: 0 }; ts.forEach(t => Object.keys(G).forEach(k => G[k] += t.grades[k] || 0));
+    L.push('', `Grades: ${['S', 'A', 'B', 'C', 'D'].map(k => E77[k] + G[k]).join('  ')}`);
+    const bad = vs.filter(v => v.grade === 'C' || v.grade === 'D'); if (bad.length) L.push(`Below 3/4 of target (notices tomorrow): ${bad.map(v => v.name + ' ' + v.ids + '/' + v.target).join(', ')}`);
+  } else {
+    L.push(`*Farmer ID · ${when} update · ${day}*`);
+    L.push(ts.map(t => `${t.name} *${fmtN(t.ids)}*`).join(' · ') + ` = *${fmtN(all)}* today`);
+    L.push('', ...[line('A', 'Target met'), line('B', 'On track'), line('C', 'Slow', true), line('D', 'Far behind', true), line('S', 'Finished')].filter(Boolean));
+  }
+  const abs = ts.reduce((a, t) => a.concat((t.absent_list || []).map(x => `${x.name} (${x.village})`)), []);
+  if (abs.length) L.push('', `🚫 Absent: ${abs.join(', ')}`);
+  const nx = d.tehsils && d.tehsils[0] && d.tehsils[0].next_slot;
+  L.push('', kind === 'close' ? '_IDs made tonight count for today in tomorrow’s first file._' : (nx ? `Next update ${hm12(nx)} ${nx >= '12:00' ? 'PM' : 'AM'}` : ''), 'Full dashboard: ' + appUrl().replace(/^https?:\/\//, '').replace(/app\.html$/, ''));
+  return L.filter((x, i, a) => !(x === '' && a[i - 1] === '')).join('\n').trim();
+}
+async function send77(kind) {
+  const d = await loadDash(true); if (!d || !d.camp) return false;
+  const k = kind === 'close' ? 'close' : 'slot', cnv = RC.picture(k, d), text = msg77(d, kind === 'close' ? 'close' : 'hour');
+  const name = `Farmer ID ${k === 'close' ? 'day close' : 'update'} ${todayIST()} ${t12(d.now).replace(':', '.')}.png`;
+  simpleSheet(kind === 'close' ? 'Day close · send to the group' : 'Send to the group', `<div class="pic76" style="padding:6px"><img id="im" alt="" style="max-height:46vh"></div>
+    <button class="btn btn-primary" id="sh" style="margin-top:10px">Share picture and message to WhatsApp</button>
+    <div class="row2"><button class="btn" id="cp">Copy the message</button><button class="btn" id="sv">Save the picture</button></div>
+    <div class="box"><pre class="wamsg">${esc(text)}</pre></div>`, r => {
+    $('#im', r).src = cnv.toDataURL('image/png');
+    const blob = () => new Promise(res => cnv.toBlob(res, 'image/png'));
+    $('#sh', r).onclick = async () => { const b = await blob(), f = new File([b], name, { type: 'image/png' }); await copyText(text);
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text }); kput('sent:' + kind + ':' + todayIST(), nowIST()); return; } catch (e) { if (e.name === 'AbortError') return; } }
+      addFile(b, name, 'Picture saved. The message is copied: paste it with the picture.'); };
+    $('#cp', r).onclick = async () => (await copyText(text)) ? toast('Message copied') : fail('Could not copy.');
+    $('#sv', r).onclick = async () => addFile(await blob(), name, 'Picture ready');
+  });
+  return true;
+}
+const _msgSheet77 = messageSheet;
+messageSheet = function (title, text, kind) {
+  if ((kind === 'hour' || kind === 'close') && window.RC) { send77(kind).then(ok => { if (!ok) _msgSheet77(title, text, kind); }); return; }
+  return _msgSheet77(title, text, kind);
+};
+bindTop76 = function (main) {
+  on(main, '[data-g76]', 'click', el => el.dataset.g76 === 'pics76' ? send77(hm() >= '19:30' ? 'close' : 'hour') : go(el.dataset.g76, {}));
+  on(main, '[data-v76]', 'click', el => go('dep76', { vid: el.dataset.v76 }));
+};
+
+/* ---------- Dealing Assistant: four steps, nothing else in the way ---------- */
+daHome73 = async function (main) {
+  const u = me(), tid = curT(), today = todayIST();
+  if (!S.dash) S.dash = await kget('dash'); if (!S.live73) S.live73 = await kget('live73'); if (!S.c76) S.c76 = await kget('c76');
+  const t = lt(tid), s = t && t.slots, c = S.c76 && S.c76.tehsils && S.c76.tehsils.find(x => x.tehsil_id === tid), scn = S.scn73 && S.scn73[tid];
+  const nScn = scn && scn.items ? scn.items.filter(x => !x.exempt && !x.issued_on).length : null, late = hm() >= '19:30';
+  const unm = c ? c.unmarked : null, absN = c ? c.absent.length : 0;
+  const step = (n, done, title, sub, btn, id) => `<div class="st77 ${done ? 'done' : ''}"><span class="no">${done ? '✓' : n}</span><span class="tx"><b>${title}</b><small>${sub}</small></span>${btn ? `<button class="btn ${done ? '' : 'btn-primary'}" id="${id}">${btn}</button>` : ''}</div>`;
+  const lastUp = s && s.last, fileDone = s && s.list.some(z => z.at && z.t <= hm() && (z.st === 'ok' || z.st === 'late') && hm() < addMin77(z.t, 60));
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Today, ${esc(dateLong(today))}</h1><small class="hint">${esc(u.name)} · ${esc(tehsilName(tid))}</small></div>${tehSeg()}</div>
+    ${closedHtml()}${noticesHtml()}
+    <div class="steps77">
+      <div class="st77 big ${fileDone ? 'done' : ''}"><span class="no">${fileDone ? '✓' : 1}</span><span class="tx"><b>Drop the portal file</b><small>${s ? slotNext(s) : 'Download "Registered farmers" from the portal (default dates) and drop it here'}${lastUp ? ' · last file ' + esc(hm12(lastUp)) : ''}</small></span></div>
+      ${dropHtml()}
+      ${step(2, false, late ? 'Send the day-close update' : 'Send the update to the group', 'Picture and message together, one tap', 'Send', 'snd')}
+      ${step(3, unm === 0, 'Mark attendance', unm === null ? 'Present / Absent from the geotagged photos' : unm ? `${unm} of ${c.deployed} not marked yet${absN ? ' · ' + absN + ' absent' : ''}` : `All ${c.deployed} marked${absN ? ' · ' + absN + ' absent' : ''}`, unm ? 'Mark' : 'Open', 'att')}
+      ${step(4, nScn === 0, 'Show-cause notices for yesterday', nScn === null ? 'One Word file for the Tehsildar' : nScn ? `${nScn} to make and issue` : 'Done for yesterday', nScn ? 'Make' : 'Open', 'scn')}
+      ${hm() >= '16:30' ? step(5, false, 'DC report', 'Type the figures into the DC sheet', 'Open', 'dcr') : ''}
+    </div>
+    <div class="row2" style="margin:12px 0"><button class="btn" id="fd">Full dashboard</button><button class="btn" id="dep">Who works where</button></div>
+    <div id="vil77"></div>
+    <details class="old76"><summary>Other work (morning report, JKLR, R5, sorting, matching, PIN requests)</summary><div id="oth77"></div></details>
+    </section>`;
+  bindTehSeg(main); bindDrop(main); bindNotices(main);
+  b2('snd', () => send77(late ? 'close' : 'hour')); b2('att', () => go('dep76', {})); b2('scn', () => go('scn73', {})); b2('dcr', () => go('dcr73', {})); b2('fd', () => go('full77', {})); b2('dep', () => go('dep76', {}));
+  const vil = () => { const cc = S.c76 && S.c76.tehsils.find(x => x.tehsil_id === tid), el = $('#vil77'); if (!el || !cc) return;
+    el.innerHTML = `<div class="rc"><div class="rc-sec"><span>${esc(cc.name)} villages today · worst first</span><span>${fmtN(cc.ids)} / ${fmtN(cc.target)}</span></div><div class="rc-card">${cc.villages.map(v => `<button class="rc-v" data-v76="${esc(v.village_id)}">${RC.grade(v.grade)}<span class="t"><b>${esc(v.name)}</b><small>${esc(v.why ? v.why + ' · ' + v.reason : v.reason)}</small></span><span class="n">${fmtN(v.ids)}<small> /${fmtN(v.target)}</small></span></button>`).join('')}</div></div>`;
+    on(el, '[data-v76]', 'click', b => go('dep76', { vid: b.dataset.v76 })); };
+  vil();
+  const oth = $('#oth77'); if (oth) { const pins = ((ckNow() || {}).tehsils || []).find(x => x.tehsil_id === tid), pr = pins ? pins.pin_requests || [] : [], pt = pt7(tid);
+    oth.innerHTML = `<div class="card7" style="padding:0">${[['morning', 'Morning report (PDF)'], ['close', 'Day-close message (text only)'], ['jk', 'JKLR figures (for R1)'], ['r5c73', 'Inheritance mutations (R5)'], ['muts', 'Dead owners, person by person'], ['sort73', 'Who sorts which village'], ['match', 'Match desk' + (pt && pt.unmatched ? ' · ' + pt.unmatched : '')], ['users', 'Staff and In-charges'], ['status', 'Saturation certificates']].concat(pr.length ? [['pins', 'PIN reset requests · ' + pr.length]] : [])
+      .map(([k, l]) => `<div class="nr72"><span>${esc(l)}</span><button class="ab" data-o77="${k}">Open</button></div>`).join('')}</div>`;
+    on(oth, '[data-o77]', 'click', el => { const k = el.dataset.o77;
+      if (k === 'morning') return reportGo('morning', tid); if (k === 'close') return _msgSheet77('Day close', msgClose(S.pulse || { tehsils: [] }, tid), '');
+      if (k === 'jk') return busy(el, '…', async () => jklrSheet(tid, await api('jklrGet', { tehsil_id: tid }))); if (k === 'pins') return pinApproveSheet(pr); go(k, {}); }); }
+  const was = [S.live73, S.c76, scn];
+  const rr = await Promise.all([loadLive(false), loadC76(false), hm() >= '09:00' ? loadScn(tid, false) : scn, loadDash(false), loadPulse(false)]);
+  if (rr.slice(0, 3).some((x, i) => x !== was[i]) && current() && current().name === 'home' && !SHEET) render();
+};
+const addMin77 = (hhmm, m) => { const x = Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5)) + m; return String(Math.floor(x / 60)).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); };
+
+/* ---------- the full dashboard inside the app (same as the public link) ---------- */
+VIEWS.full77 = async function (a) {
+  setHeader('Full dashboard'); document.body.classList.add('wide');
+  const main = $('#view'); main.innerHTML = '<section class="pad"><div id="fd77"></div></section>';
+  const draw = () => { const el = $('#fd77'); if (el && S.dash) RC.full(el, S.dash, { noPop: true, dash: { order: myTehsils() } }); };
+  draw(); await loadDash(true); if (current() && current().args === a) draw();
+};
+/* office homes: the full dashboard one tap away */
+const _home77 = VIEWS.home;
+VIEWS.home = async function () {
+  await _home77();
+  const u = me(); if (!u || isField() || u.role === 'DA') return;
+  const row = $('#view .top76 .row2'); if (row && !$('#fd77b')) { const b = document.createElement('button'); b.className = 'btn'; b.id = 'fd77b'; b.textContent = 'Full dashboard'; b.onclick = () => go('full77', {}); row.appendChild(b); }
+};
+const _more77 = VIEWS.more;
+VIEWS.more = async function () {
+  await _more77(); const box = $('#view .card7 .list'); if (!box || $('#fd77r')) return;
+  const b = document.createElement('button'); b.className = 'row'; b.id = 'fd77r'; b.innerHTML = '<span class="rt"><b>Full dashboard</b><small>Everything: villages, officials, attendance, notices, hold-ups</small></span>'; b.onclick = () => go('full77', {}); box.prepend(b);
+};
+
+/* hourly / day-close text (used where a text-only message is wanted) */
+const _mh77 = msgHourly, _mc77 = msgClose;
+msgHourly = function (P, tid) { const m = S.dash && S.dash.camp ? msg77(S.dash, 'hour') : null; return m || _mh77(P, tid); };
+msgClose = function (P, tid) { const m = S.dash && S.dash.camp ? msg77(S.dash, 'close') : null; return m || _mc77(P, tid); };
 
 Object.assign(HELP, {
   status: ['Villages', 'Today: each village against its target, with its In-charge and Patwari. Green = met, amber = on pace, red = behind.', 'Till date: by Patwar Halqa. Tap a village for its page.'],
