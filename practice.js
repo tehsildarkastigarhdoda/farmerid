@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '7.4.0';
+const APP_VERSION = '7.5.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -77,6 +77,7 @@ const SCHEMA = {
   Jklr:        ['date', 'tehsil_id', 'data', 'by', 'at'],
   Exempt:      ['date', 'tehsil_id', 'user_id', 'reason', 'by', 'at'],
   Scn:         ['date', 'tehsil_id', 'user_id', 'kind', 'ids', 'target', 'unsorted', 'issued_on', 'by', 'at', 'repeat'],
+  Audit:       ['ts', 'user_id', 'tehsil_id', 'action', 'target', 'detail'],
   MutCounts:   ['village_id', 'tehsil_id', 'pending', 'attested', 'backlog', 'agristack', 'by', 'at'],
   Sessions:    ['token', 'user_id', 'created', 'expires'],
   Farmers:     ['farmer_id', 'enrollment_no', 'village_id', 'tehsil_id', 'name', 'gender', 'age', 'category', 'status', 'inserted_by', 'mobile', 'aadhaar',
@@ -166,7 +167,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '14';
+const SCHEMA_VERSION = '15';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -266,7 +267,7 @@ const ACTIONS = {
   mutList: mutList_, mutSave: mutSave_, satList: satList_, satSave: satSave_, jklrGet: jklrGet_, jklrSave: jklrSave_, annexB: annexB_,
   scnList: scnList_, scnExempt: scnExempt_, scnIssue: scnIssue_, live73: live73_, sorterSave: sorterSave_, sorters: sorters_, helperSave: helperSave_,
   mutCounts: mutCounts_, mutCountsSave: mutCountsSave_, dcReport: dcReport_, satReasons: satReasons_, save73: save73_, get73: get73_,
-  staffing: staffing_, staffingSave: staffingSave_, designationsSave: designationsSave_, setPrefs: setPrefs_, weekTop: weekTop_, official: official_
+  auditList: auditList_, staffing: staffing_, staffingSave: staffingSave_, designationsSave: designationsSave_, setPrefs: setPrefs_, weekTop: weekTop_, official: official_
 };
 
 const WRITE_ACTIONS = ['scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'userVillages', 'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'pinRequest', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkApply', 'pmkSave', 'portalDown', 'savePH', 'changePin', 'transferVillages', 'markSheetDone', 'startFresh', 'saveSummary', 'saveBucketing', 'saveText', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'resetPractice', 'deleteUser', 'saveVillageAll', 'logout', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply',
@@ -284,6 +285,7 @@ function route2_(req) {
   const a = req.action;
   const isWrite = WRITE_ACTIONS.indexOf(a) >= 0;
   const cache = CacheService.getScriptCache();
+  let actor = null;
   const run = () => {
     if (PUBLIC_ACTIONS[a]) return PUBLIC_ACTIONS[a](req);
     if (!ACTIONS[a]) throw new Error('Unknown action.');
@@ -295,6 +297,7 @@ function route2_(req) {
     if (String(user.last_seen).slice(0, 10) !== today_()) { try { user.last_seen = now_(); writeRows_('Users', [user]); } catch (e) {} }
     if (req.as && user.role === 'ADMIN') { if (isWrite) throw new Error('View only: you are looking at the app as another person.'); const t = read_('Users').find(x => x.user_id === req.as && x.active !== 'DEL'); if (t) user = t; }
     if (isWrite && user.role !== 'ADMIN' && setting_('campaign_closed') === 'Y' && OPEN_WHEN_CLOSED.indexOf(a) < 0) throw new Error('The campaign is closed. Entries can no longer be changed.');
+    actor = user;
     return ACTIONS[a](req, user);
   };
   if (!isWrite) return run();
@@ -304,6 +307,7 @@ function route2_(req) {
     // The same request sent twice (double tap, or a retry after a lost reply) is answered from memory, not done again.
     if (req.req_id) { const hit = cache.get('rq:' + req.req_id); if (hit) return JSON.parse(hit); }
     const out = run();
+    audit_(a, req, actor, out);
     if ((PUBLIC_ACTIONS[a] === undefined || a === 'pinRequest') && NO_DV.indexOf(a) < 0) cache.put('dv', String(Date.now()), 21600);
     if (UV_ACTIONS.indexOf(a) >= 0) cache.put('uv', String(Date.now()), 21600);
     if (req.req_id) { try { const s = JSON.stringify(out); if (s.length < 90000) cache.put('rq:' + req.req_id, s, 21600); } catch (e) {} }
@@ -1197,7 +1201,7 @@ function uploadApply_(req, u) {
   Object.keys(groups).forEach(lgd => {
     const g = groups[lgd], t = uploadTarget_(req, u, g);
     const m = mergeVillage_(t.v, g, all, req.file_ts, u, true, logs);
-    out.push({ lgd: lgd, name: t.v.name || g.name, counts: m.counts, warnings: m.warnings, blocked: m.blocked });
+    out.push({ lgd: lgd, name: t.v.name || g.name, tehsil_id: t.v.tehsil_id || '', counts: m.counts, warnings: m.warnings, blocked: m.blocked });
     if (m.blocked) return;
     const v = t.v;
     if (!v.first_upload_date) v.first_upload_date = today;
@@ -1922,7 +1926,7 @@ function register_(req, u) {
 
 /** req: {tehsil_id, as_on, source, rows:[{lgd, name, total, claimed}]} — portal village summary figures (typed or read from the PDF). */
 function saveSummary_(req, u) {
-  const tid = u.role === 'ADMIN' ? req.tehsil_id : u.tehsil_id; mustManage_(u, tid);
+  const tid = req.tehsil_id && canUpload_(u, req.tehsil_id) ? req.tehsil_id : u.tehsil_id; if (!canUpload_(u, tid)) throw new Error('Not allowed.');
   const asOn = req.as_on || today_(), now = now_();
   const villages = read_('Villages'), hist = read_('SummaryHistory'), touched = [], created = [], hrows = [], skipped = [];
   (req.rows || []).forEach(r => {
@@ -1954,7 +1958,7 @@ function saveBucketing_(req, u) {
 
 /** Keeps a copy of every uploaded portal file in Drive: FarmerID Portal Files / tehsil / kind. */
 function archiveFile_(req, u) {
-  const tid = u.role === 'ADMIN' ? (req.tehsil_id || 'T_ASSAR') : u.tehsil_id; mustManage_(u, tid);
+  const tid = req.tehsil_id && canUpload_(u, req.tehsil_id) ? req.tehsil_id : (u.role === 'ADMIN' ? 'T_ASSAR' : u.tehsil_id); if (!canUpload_(u, tid)) throw new Error('Not allowed.');
   const tn = (read_('Tehsils').find(t => t.tehsil_id === tid) || {}).name || tid;
   const sub = { reg: 'Registered farmers lists', buckets: 'Unclaimed buckets lists', pmk: 'PM Kisan list', dcsheet: 'DC sheet rows', summary: 'Daily summaries', weekly: 'Weekly Excel' }[req.kind] || 'Other files';
   const f = driveFolder_(['Tehsil ' + tn, sub]);
@@ -2139,15 +2143,17 @@ function migrateV6_() {
 /* ============================== PATWAR HALQAS AND STATUS ============================== */
 
 function villageNums_(v, ex) {
-  const can = v.tier_c, stuck = v.tier_b, cannot = v.tier_a, gen = v.claimed, total = v.total, rep2 = v.reported || 0, e = ex || {};
+  let can = v.tier_c, stuck = v.tier_b, cannot = v.tier_a; const gen = v.claimed, total = v.total, rep2 = v.reported || 0, e = ex || {};
+  const overlap = Math.max(0, gen + rep2 + can + stuck + cannot - total); let x0 = overlap;
+  const cut = n => { const d = Math.min(n, x0); x0 -= d; return n - d; }; can = cut(can); stuck = cut(stuck); cannot = cut(cannot);
   const notsorted = Math.max(0, total - gen - rep2 - can - stuck - cannot);
   return { village_id: v.village_id, name: v.name, total: total, generated: gen, reported: rep2, registered_here: v.registered_here || 0, pending: v.reg_pending || 0,
-    can: can, stuck: stuck, cannot: cannot, notsorted: notsorted, by_code: v.by_code, bucketed: total > 0 || v.list_received, partial: v.partial,
+    can: can, stuck: stuck, cannot: cannot, notsorted: notsorted, overlap: overlap, by_code: v.by_code, bucketed: total > 0 || v.list_received, partial: v.partial,
     today: e.today || 0, yday: e.yday || 0, to_link: e.to_link || 0, possible: (v.by_code || {}).C03 || 0, ready: (v.by_code || {}).C01 || 0,
     last_id: e.last_id || '', last_sort: e.last_sort || '', pmk: e.pmk || 0, pmk_id: e.pmk_id || 0, target: 0, checked: e.checked || 0, women_left: e.women || 0 };
 }
 function sumNums_(list) {
-  const t = { total: 0, generated: 0, reported: 0, registered_here: 0, pending: 0, can: 0, stuck: 0, cannot: 0, notsorted: 0, today: 0, yday: 0, to_link: 0, possible: 0, ready: 0, pmk: 0, pmk_id: 0, target: 0, checked: 0, women_left: 0, by_code: {} };
+  const t = { total: 0, generated: 0, reported: 0, registered_here: 0, pending: 0, can: 0, stuck: 0, cannot: 0, notsorted: 0, overlap: 0, today: 0, yday: 0, to_link: 0, possible: 0, ready: 0, pmk: 0, pmk_id: 0, target: 0, checked: 0, women_left: 0, by_code: {} };
   list.forEach(x => { Object.keys(t).forEach(k => { if (k !== 'by_code') t[k] += x[k] || 0; });
     Object.keys(x.by_code || {}).forEach(k => t.by_code[k] = (t.by_code[k] || 0) + x.by_code[k]); });
   return t;
@@ -3422,7 +3428,7 @@ function migrateV9_() { ['campaign_closed', 'practice_keep'].forEach(k => { if (
  * Officials only make Farmer IDs on the portal. The Dealing Assistant drops the day's portal export (cumulative) every hour;
  * each upload shows the IDs that appeared since the last one, credited to the official deployed in that village.
  */
-function canUpload_(u, tid) { return canManage_(u, tid) || ((u.backup === 'Y' || u.role === 'NT') && userTehsils_(u).indexOf(tid) >= 0); }
+function canUpload_(u, tid) { return canManage_(u, tid) || ((u.backup === 'Y' || u.role === 'NT' || u.role === 'DA') && userTehsils_(u).indexOf(tid) >= 0); }
 function sortVillageIds_(u) {
   if (!isField_(u)) return [];
   const a = isHelper_(u) ? [] : phVillageIds_(u); sorterVillageIds_(u).forEach(v => { if (a.indexOf(v) < 0) a.push(v); });
@@ -4346,6 +4352,41 @@ function nightlyJob() {
   const old = logs.filter(l => String(l.ts).slice(0, 10) < cutoff);
   if (old.length) { append_('LogArchive', old.map(l => { const o = Object.assign({}, l); delete o._row; return o; })); writeAll_('Log', logs.filter(l => String(l.ts).slice(0, 10) >= cutoff)); }
   checkSharing_();
+}
+
+/* ============================== v7.5: change log (Phase A) ============================== */
+/** Writes that are not logged: too frequent, or only about the person's own phone. */
+const AUDIT_SKIP = ['saveBuckets', 'pmkSave', 'setPrefs', 'setZoom', 'noticeRead', 'logError', 'errorLog', 'supLog', 'picksSave', 'boardKey', 'login', 'changePin', 'regConfirm', 'regNone', 'regUnlink', 'practiceKeep'];
+function audit_(a, req, u, out) {
+  if (!u || AUDIT_SKIP.indexOf(a) >= 0) return;
+  try {
+    const users = read_('Users'), tu = req.user_id ? users.find(x => x.user_id === req.user_id) : null;
+    const v = req.village_id ? read_('Villages').find(x => x.village_id === String(req.village_id)) : null;
+    const tn = id => (read_('Tehsils').find(t => t.tehsil_id === id) || {}).name || id;
+    const ov = out && Array.isArray(out.villages) && out.villages[0] ? out.villages[0] : null;
+    const tid = req.tehsil_id || (v && v.tehsil_id) || (tu && tu.tehsil_id) || (ov && ov.tehsil_id) || u.tehsil_id || '';
+    const d = [];
+    if (tu) d.push('person: ' + tu.name); else if (req.user_id) d.push('person: ' + req.user_id);
+    if (!tu && req.name && ['saveUser', 'helperSave'].indexOf(a) >= 0) d.push('person: ' + req.name);
+    if (v) d.push('village: ' + v.name); else if (req.village_id) d.push('village: ' + req.village_id);
+    if (req.tehsil_id) d.push('tehsil: ' + tn(req.tehsil_id));
+    ['date', 'file_name', 'designation', 'role', 'kind'].forEach(k => { if (req[k] !== undefined && req[k] !== '' && typeof req[k] !== 'object') d.push(k.replace('_', ' ') + ': ' + req[k]); });
+    if (Array.isArray(req.rows)) d.push('rows: ' + req.rows.length);
+    append_('Audit', [{ ts: now_(), user_id: u.user_id, tehsil_id: tid, action: a, target: tu ? tu.name : (v ? v.name : (req.name && a === 'saveUser' ? String(req.name) : '')), detail: d.join(' · ').slice(0, 200) }]);
+  } catch (e) {}
+}
+/** Change log: Admin sees all; the Naib Tehsildar and Dealing Assistant see their own tehsils. */
+function auditList_(req, u) {
+  if (['ADMIN', 'NT', 'DA'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const date = req.date || today_(), mine = userTehsils_(u);
+  const un = {}; read_('Users').forEach(x => un[x.user_id] = x.name);
+  let rows = read_('Audit').filter(r => String(r.ts).slice(0, 10) === date && (u.role === 'ADMIN' || mine.indexOf(r.tehsil_id) >= 0 || r.user_id === u.user_id));
+  const actions = {}, people = {}; rows.forEach(r => { actions[r.action] = 1; people[r.user_id] = un[r.user_id] || r.user_id; });
+  if (req.act) rows = rows.filter(r => r.action === req.act);
+  if (req.by) rows = rows.filter(r => r.user_id === req.by);
+  rows.sort((x, y) => x.ts < y.ts ? 1 : -1);
+  return { date: date, total: rows.length, rows: rows.slice(0, 300).map(r => ({ ts: r.ts, by: un[r.user_id] || r.user_id, user_id: r.user_id, tehsil_id: r.tehsil_id, action: r.action, target: r.target, detail: r.detail })),
+    actions: Object.keys(actions).sort(), people: Object.keys(people).map(k => ({ user_id: k, name: people[k] })).sort((x, y) => x.name.localeCompare(y.name)) };
 }
 
 /* ======================= end of server code ======================= */
