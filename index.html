@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://tehsildarkastigarhdoda.github.io/farmerid/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com"><link rel="preload" href="dash.js" as="script">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -36,7 +37,7 @@ footer .cr{margin-top:6px;color:#55635B;font-weight:600}
 </style>
 <style>.ch76{margin-top:26px}.ch76>summary{cursor:pointer;font-weight:600;font-size:15px;padding:10px 0;color:#1F5A3E}.dk .ch76>summary{color:#7CC79A}#rc{margin-bottom:6px}</style><style>#upd{display:none!important}</style></head>
 <body class="pub">
-<header class="top"><div class="in"><img src="logo.svg" alt=""><div class="nm"><b>Farmer ID Dashboard</b><small>Tehsil Assar &amp; Kastigarh · District Doda</small></div><a class="login" href="app.html">Log in</a></div></header>
+<header class="top"><div class="in"><img src="logo.svg" alt=""><div class="nm"><b>Farmer ID Dashboard</b><small>Tehsil Assar &amp; Kastigarh · District Doda</small></div><a class="login" href="app.html">Admin login</a></div></header>
 <main><div class="upd" id="upd"></div><div id="msg"></div><div id="rc"></div><div id="dash" hidden></div></main>
 <footer>Figures are compiled from the Agristack portal files uploaded by the Tehsil offices and are indicative. The portal remains the official record.
 <div class="cr">Designed and developed by Pushpak Saroop, JKAS, Tehsildar Kastigarh.</div></footer>
@@ -52,16 +53,15 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
     if (has) {
       const s = await new Promise(res => { const r = indexedDB.open('farmerid', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv');
         r.onsuccess = () => { try { const g = r.result.transaction('kv').objectStore('kv').get('session'); g.onsuccess = () => { res(g.result); r.result.close(); }; g.onerror = () => res(null); } catch (e) { res(null); } }; r.onerror = () => res(null); });
-      if (s && s.token && !q.has('public')) { location.replace('app.html'); return; }
     }
   } catch (e) {}
   const root = document.getElementById('dash'), upd = document.getElementById('upd'), msg = document.getElementById('msg');
   let last = null; try { last = JSON.parse(localStorage.getItem('d7:last') || 'null'); } catch (e) {}
   const draw = d => { last = d; const isClose = String(d.now || '').slice(11, 13) >= '20';
-    T8.today(document.getElementById('rc'), d, { bottom: '<div class="t8-share"><button class="t8-btn" id="sp8">📷 Share picture</button><button class="t8-btn o" id="sl8">🔗 Share this page</button></div><div style="margin-top:10px"><button class="t8-btn o" id="ss8" style="width:100%">Tall picture for WhatsApp Status</button></div>' });
+    T8.today(document.getElementById('rc'), d, { openCamps: true, bottom: '<div class="t8-share"><button class="t8-btn" id="sp8">📷 Share picture</button><button class="t8-btn o" id="sl8">🔗 Share this page</button></div><div style="margin-top:10px"><button class="t8-btn o" id="ss8" style="width:100%">Tall picture for WhatsApp Status</button></div>' });
     const page = location.origin + location.pathname.replace(/index\.html$/, '');
-    const shp = shape => { const c = T8.picture(d, shape, isClose); c.toBlob(async b => { const f = new File([b], 'Farmer ID ' + (isClose ? 'day close' : 'update') + '.png', { type: 'image/png' }), text = T8.message(d, isClose, page);
-      if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text }); } catch (e) {} } else { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); } }, 'image/png'); };
+    const shp = shape => { const c = T8.picture(d, shape, isClose); c.toBlob(async b => { const f = new File([b], 'Farmer ID ' + (isClose ? 'day close' : 'update') + '.jpg', { type: 'image/jpeg' }), text = T8.message(d, isClose, page);
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text }); } catch (e) {} } else { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); } }, 'image/jpeg', 0.9); };
     document.getElementById('sp8').onclick = () => shp('square'); document.getElementById('ss8').onclick = () => shp('story');
     document.getElementById('sl8').onclick = async () => { if (navigator.share) { try { await navigator.share({ title: 'Farmer ID · Assar & Kastigarh', text: 'Farmer ID live status', url: page }); } catch (e) {} } else { try { await navigator.clipboard.writeText(page); alert('Link copied'); } catch (e) {} } }; upd.innerHTML = `<span>Updated ${DASH.t12(d.now)} · updates by itself</span><button id="rf">Refresh</button>`; document.getElementById('rf').onclick = load; };
   if (last) draw(last); else root.innerHTML = '';

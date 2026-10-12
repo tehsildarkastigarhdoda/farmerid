@@ -850,6 +850,26 @@ body{background:#F3F5F8!important}
 .dd80{padding:12px 14px;margin-bottom:8px}.dd80 b{font-size:16px}
 #task7{display:none!important}
 
+/* ---------- v8.1 ---------- */
+.pa8 button.on.L{background:#5B6676;color:#fff}.pa81 button{width:42px}
+.dot80.pd{background:#8FCBA5}.dot80.start{background:#9BBCE6}.dot80.none{background:#C8D0DB}.dot80.off{background:#fff;border:2px dashed #C8D0DB}
+.pl81h{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid #E1E6EE;border-radius:16px;padding:12px 14px;margin:8px 0}.pl81h b{font-size:17px;display:block}.pl81h small{color:#5B6676;font-size:13px}
+.warn81{background:#FFF6E0;border:1px solid #EBD39A;border-radius:16px;padding:12px 14px;font-size:14.5px;line-height:1.55;margin:8px 0}.warn81>b{display:block;color:#7A5000;margin-bottom:4px}
+.free81{background:#E2F3E8;border:1px solid #BFD9C8;border-radius:16px;padding:12px 14px;margin:8px 0;font-size:14.5px}.free81>b{display:block;color:#145A33;margin-bottom:6px}.free81>small{display:block;color:#145A33;margin-top:6px}
+.fr81{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0}.fr81 small{color:#5B6676}
+.act81{display:grid;gap:8px;margin:10px 0 4px}.act81 .big80{margin-top:0;font-size:16px;padding:15px}.act81 .big80:disabled{opacity:.45}
+.v81{padding:12px;margin-bottom:10px}.v81.off{opacity:.6}.vh81{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.vh81 b{font-size:17px;display:block}.vh81 small{color:#5B6676;font-size:13px}
+.tag81{font-size:12px;font-weight:800;background:#EEF1F5;color:#5B6676;border-radius:20px;padding:4px 10px;white-space:nowrap}
+.pp81{border-top:1px solid #EEF1F5;margin-top:8px;padding-top:8px}
+.cp81{display:block;width:100%;text-align:left;background:#F4F7FB;border:1px solid #E1E6EE;border-radius:12px;padding:9px 11px;font:inherit;font-size:14.5px;color:#0F1B2D;cursor:pointer}.cp81 small{display:block;color:#5B6676;font-size:13px;margin-top:2px}.cp81.miss{background:#FDE3E0;border-color:#F0B4AD;color:#8E2018}.cp81:disabled{cursor:default}
+.of81{display:flex;align-items:center;gap:6px;padding:7px 0 0}.of81 .t{flex:1;min-width:0}.of81 b{font-size:15px;display:block}.of81 small{font-size:12.5px;color:#5B6676;overflow-wrap:anywhere}
+.att81s{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.att81s span{background:#fff;border:1px solid #E1E6EE;border-radius:12px;padding:8px 4px;text-align:center;font-size:12px;color:#5B6676}.att81s b{display:block;font-size:22px;color:#0F1B2D}.att81s .g b{color:#1E7A46}.att81s .r b{color:#C0352B}
+.st81{font-size:12.5px;font-weight:800;border-radius:20px;padding:4px 10px;flex:none}.st81.P{background:#E2F3E8;color:#145A33}.st81.A{background:#FDE3E0;color:#8E2018}.st81.L{background:#EEF1F5;color:#5B6676}.st81.u{background:#FFF6E0;color:#7A5000}
+.dp81{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.dp81 .btn{width:auto;flex:1 1 140px;margin:0}
+.ln81{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;padding:3px 0;color:#5B6676}
+.sm81{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}.sm81 .btn{width:auto;flex:1 1 120px;margin:0;font-size:14px;padding:10px}
+.mt81{display:flex;align-items:center;gap:8px;padding:9px 12px;border-top:1px solid #EEF1F5}.mt81:first-child{border-top:0}.mt81 .t{flex:1;min-width:0}.mt81 b{display:block}.mt81 small{color:#5B6676}.mt81 .input{width:96px;flex:none;margin:0}.mt81 .df{width:58px;text-align:right;font-weight:800}.mt81 .df.ok{color:#1E7A46}.mt81 .df.bad{color:#C0352B}
+
 [hidden]{display:none!important}
 #title::before{content:'';float:left;width:30px;height:30px;margin:3px 9px 0 0;background:url(logo.svg) center/contain no-repeat;border-radius:7px}
 
@@ -867,7 +887,7 @@ body{background:#F3F5F8!important}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '8.0.0';
+const APP_V = '8.1.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -1171,7 +1191,7 @@ function canEditV(vid) {
 }
 
 class NetError extends Error {}
-const WRITE_API = ['scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
+const WRITE_API = ['placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply', 'saveUser', 'resetPin', 'saveVillage', 'saveAssignments',
   'saveReason', 'saveSettings', 'saveTehsil', 'deleteUser', 'saveVillageAll', 'resetPractice', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'changePin', 'transferVillages', 'markSheetDone',
   'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'userVillages', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkSave', 'pmkApply', 'portalDown', 'savePH', 'startFresh'];
 async function api(action, payload, timeout) {
@@ -8038,10 +8058,10 @@ VIEWS.pics76 = async function (a) {
         : `<p class="err">${d ? 'The server is on an older version or the campaign has not started.' : 'Loading…'}</p>`}</section>`;
     on(main, '[data-k]', 'click', el => { a.kind = el.dataset.k; draw(); });
     if (!ok) return;
-    const cnv = RC.picture(a.kind, d); $('#im').src = cnv.toDataURL('image/png');
-    const name = `Farmer ID ${({ slot: 'update', close: 'day close', week: 'campaign week' })[a.kind]} ${todayIST()} ${t12(d.now).replace(':', '.')}.png`;
-    const blob = () => new Promise(res => cnv.toBlob(res, 'image/png'));
-    $('#sh').onclick = async () => { const b = await blob(), f = new File([b], name, { type: 'image/png' });
+    const cnv = RC.picture(a.kind, d); $('#im').src = cnv.toDataURL('image/jpeg', 0.88);
+    const name = `Farmer ID ${({ slot: 'update', close: 'day close', week: 'campaign week' })[a.kind]} ${todayIST()} ${t12(d.now).replace(':', '.')}.jpg`;
+    const blob = () => new Promise(res => cnv.toBlob(res, 'image/jpeg', 0.9));
+    $('#sh').onclick = async () => { const b = await blob(), f = new File([b], name, { type: 'image/jpeg' });
       if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text: RC.headline(d.camp, d).replace(/<[^>]+>/g, '') }); return; } catch (e) { if (e.name === 'AbortError') return; } }
       addFile(b, name, 'Picture ready: share it from here'); };
     $('#dl').onclick = async () => addFile(await blob(), name, 'Picture ready');
@@ -8146,14 +8166,14 @@ function msg77(d, kind) {
 async function send77(kind) {
   const d = await loadDash(true); if (!d || !d.camp) return false;
   const k = kind === 'close' ? 'close' : 'slot', cnv = RC.picture(k, d), text = msg77(d, kind === 'close' ? 'close' : 'hour');
-  const name = `Farmer ID ${k === 'close' ? 'day close' : 'update'} ${todayIST()} ${t12(d.now).replace(':', '.')}.png`;
+  const name = `Farmer ID ${k === 'close' ? 'day close' : 'update'} ${todayIST()} ${t12(d.now).replace(':', '.')}.jpg`;
   simpleSheet(kind === 'close' ? 'Day close · send to the group' : 'Send to the group', `<div class="pic76" style="padding:6px"><img id="im" alt="" style="max-height:46vh"></div>
     <button class="btn btn-primary" id="sh" style="margin-top:10px">Share picture and message to WhatsApp</button>
     <div class="row2"><button class="btn" id="cp">Copy the message</button><button class="btn" id="sv">Save the picture</button></div>
     <div class="box"><pre class="wamsg">${esc(text)}</pre></div>`, r => {
-    $('#im', r).src = cnv.toDataURL('image/png');
-    const blob = () => new Promise(res => cnv.toBlob(res, 'image/png'));
-    $('#sh', r).onclick = async () => { const b = await blob(), f = new File([b], name, { type: 'image/png' }); await copyText(text);
+    $('#im', r).src = cnv.toDataURL('image/jpeg', 0.88);
+    const blob = () => new Promise(res => cnv.toBlob(res, 'image/jpeg', 0.9));
+    $('#sh', r).onclick = async () => { const b = await blob(), f = new File([b], name, { type: 'image/jpeg' }); await copyText(text);
       if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text }); kput('sent:' + kind + ':' + todayIST(), nowIST()); return; } catch (e) { if (e.name === 'AbortError') return; } }
       addFile(b, name, 'Picture saved. The message is copied: paste it with the picture.'); };
     $('#cp', r).onclick = async () => (await copyText(text)) ? toast('Message copied') : fail('Could not copy.');
@@ -8296,16 +8316,16 @@ const link80 = () => appUrl().replace(/app\.html$/, '');
 async function send80(close) {
   close = close === undefined ? hm() >= '19:30' : close;
   const d = await loadDash(true); if (!d || !d.camp) return fail('The latest figures could not be loaded. Check the internet.');
-  let shape = 'square'; const text = T8.message(d, close, link80()), name = () => `Farmer ID ${close ? 'day close' : 'update'} ${todayIST()} ${shape}.png`;
+  let shape = 'square'; const text = T8.message(d, close, link80()), name = () => `Farmer ID ${close ? 'day close' : 'update'} ${todayIST()} ${shape}.jpg`;
   simpleSheet(close ? 'Day-close update' : 'Send the update', `<div class="seg7" id="sh8" style="margin-bottom:10px"><button class="on" data-s="square">For the group</button><button data-s="story">For WhatsApp Status</button></div>
     <div class="pic76" style="padding:6px"><img id="im8" alt="" style="max-height:48vh"></div>
     <button class="btn btn-primary" id="go8" style="margin-top:10px">Share picture + message</button>
     <div class="row2"><button class="btn" id="cp8">Copy the message</button><button class="btn" id="sv8">Save the picture</button></div>
     <div class="box"><pre class="wamsg">${esc(text)}</pre></div>`, r => {
-    let cnv = null; const draw = () => { cnv = T8.picture(d, shape, close); $('#im8', r).src = cnv.toDataURL('image/png'); }; draw();
+    let cnv = null; const draw = () => { cnv = T8.picture(d, shape, close); $('#im8', r).src = cnv.toDataURL('image/jpeg', 0.88); }; draw();
     on(r, '[data-s]', 'click', el => { shape = el.dataset.s; r.querySelectorAll('[data-s]').forEach(b => b.classList.toggle('on', b === el)); draw(); });
-    const blob = () => new Promise(res => cnv.toBlob(res, 'image/png'));
-    $('#go8', r).onclick = async () => { const b = await blob(), f = new File([b], name(), { type: 'image/png' }); await copyText(text); pracMark('wa:hour');
+    const blob = () => new Promise(res => cnv.toBlob(res, 'image/jpeg', 0.9));
+    $('#go8', r).onclick = async () => { const b = await blob(), f = new File([b], name(), { type: 'image/jpeg' }); await copyText(text); pracMark('wa:hour');
       try { await stamp(close ? 'close' : 'hour', curT()); } catch (e) {}
       if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text }); return; } catch (e) { if (e.name === 'AbortError') return; } }
       addFile(b, name(), 'The message is copied: paste it with the picture'); };
@@ -8396,12 +8416,12 @@ VIEWS.village8 = async function (a) {
   const draw = () => { const f = S.dash ? (T8.model(S.dash, S.c76) || { ts: [] }).ts.reduce((x, t) => x.concat(t.all), []).find(v => String(v.vid) === String(a.vid)) : null;
     setHeader(f ? f.name : 'Village');
     main.innerHTML = '<section class="pad"><div id="v80"></div></section>';
-    T8.village($('#v80'), S.dash, a.vid, { office: OFFICE8(), edit: canEdit8(), c76: S.c76, noBack: true,
+    T8.village($('#v80'), S.dash, a.vid, { office: OFFICE8(), edit: canEdit8(), att: ['DA', 'ADMIN'].includes(role()) && !S.viewAs, c76: S.c76, noBack: true,
       bottom: role() === 'DA' && f && f.state === 'fin' && !f.sat_date ? '<button class="t8-btn g" id="sat8" style="width:100%;margin-top:14px">Make the saturation certificate</button>' : '',
       bind: (root, v, t) => {
         let q = {}, qt = null;
         on(root, '[data-att8]', 'click', el => { const k = el.dataset.k, stt = el.classList.contains('on') ? '' : el.dataset.att8;
-          root.querySelectorAll(`[data-k="${CSS.escape(k)}"]`).forEach(b => { b.classList.toggle('on', b.dataset.att8 === stt); b.classList.toggle('P', b.dataset.att8 === 'P' && stt === 'P'); b.classList.toggle('A', b.dataset.att8 === 'A' && stt === 'A'); });
+          root.querySelectorAll(`[data-k="${CSS.escape(k)}"]`).forEach(b => { b.classList.toggle('on', b.dataset.att8 === stt); b.classList.toggle('P', b.dataset.att8 === 'P' && stt === 'P'); b.classList.toggle('A', b.dataset.att8 === 'A' && stt === 'A'); b.classList.toggle('L', b.dataset.att8 === 'L' && stt === 'L'); });
           q[k] = stt; clearTimeout(qt); qt = setTimeout(async () => { const items = Object.keys(q).map(key => ({ key, status: q[key] })); q = {};
             try { await api('attSave', { tehsil_id: t.tid, date: todayIST(), items }); toast('Attendance saved'); S.c76 = null; await load80(true); } catch (e) { fail(e.message); } }, 600); });
         on(root, '[data-end8]', 'click', el => { const o = (v.officials || []).find(x => x.post_id === el.dataset.end8); if (o) endSheet76(Object.assign({ vn: v.name }, o), t.tid, { date: todayIST() }, async () => { await load80(true); draw(); }); });
@@ -8583,6 +8603,415 @@ Object.assign(PRAC_TASKS, {
   DA: [['regApply', 'Get the sample portal file (below), then drop it on Today'], ['wa:hour', 'Step 2: Send the update'], ['attSave', 'Step 3: mark attendance'], ['view:scn73', 'Step 4: notices']],
   PATWARI: [['saveBuckets', 'Check landholders: answer one name'], ['mutSave', 'Dead owners: tick a step']]
 });
+
+/* ======================= v8.1 · daily camp orders + public notice, one-tap attendance, notices by department ======================= */
+const DA81 = () => ['DA', 'ADMIN'].includes(role()) && !S.viewAs;
+const tmr81 = () => addDaysJS(todayIST(), 1);
+const DW81 = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], MO81 = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const UDW81 = ['اتوار', 'پیر', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'], UMO81 = ['جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون', 'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'];
+const dLong81 = d => { const x = new Date(d + 'T12:00:00Z'); return `${DW81[x.getUTCDay()]}, ${x.getUTCDate()} ${MO81[x.getUTCMonth()]} ${x.getUTCFullYear()}`; };
+const dU81 = d => { const x = new Date(d + 'T12:00:00Z'); return `${UDW81[x.getUTCDay()]}، ${x.getUTCDate()} ${UMO81[x.getUTCMonth()]} ${x.getUTCFullYear()}`; };
+const dDot81 = d => d ? d.split('-').reverse().join('.') : '';
+
+/* ---------- remember the last portal file (for Undo) and the login time (auto log out) ---------- */
+{ const _api81 = api;
+  api = async function (action, payload, timeout) {
+    const r = await _api81(action, payload, timeout);
+    try { if (action === 'regApply' && r && r.file_ids) { S.lastUp = { ids: r.file_ids, at: Date.now() }; kput('lastUp', S.lastUp); }
+      if (action === 'login' && r && r.token) localStorage.setItem('fid-login-at', String(Date.now())); } catch (e) {}
+    return r;
+  }; }
+setInterval(() => {
+  if (!S.session || S.practice) return;
+  let la = 0; try { la = Number(localStorage.getItem('fid-login-at') || 0); if (!la) { la = Date.now(); localStorage.setItem('fid-login-at', String(la)); } } catch (e) { return; }
+  const h = hm(), laDay = new Date(la + 19800000).toISOString().slice(0, 10), laHm = new Date(la + 19800000).toISOString().slice(11, 16);
+  if (Date.now() - la > 12 * 3600000 || (h >= '23:00' && (laDay < todayIST() || laHm < '23:00'))) {
+    try { localStorage.removeItem('fid-login-at'); } catch (e) {}
+    if (S.queue.length) return; toast('Logged out for safety (end of the day). Log in again with your PIN.', 'info', 8000); logout();
+  }
+}, 60000);
+
+/* ---------- small Word helpers (Urdu right-to-left, shading, boxes) ---------- */
+const X81 = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function R81(t, o) { o = o || {}; const f = o.rtl ? '<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>' : '';
+  return `<w:r><w:rPr>${f}${o.b ? '<w:b/><w:bCs/>' : ''}${o.i ? '<w:i/>' : ''}${o.u ? '<w:u w:val="single"/>' : ''}${o.col ? `<w:color w:val="${o.col}"/>` : ''}${o.sz ? `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>` : ''}${o.rtl ? '<w:rtl/>' : ''}</w:rPr><w:t xml:space="preserve">${X81(t)}</w:t></w:r>`; }
+function P81(runs, o) { o = o || {}; const r = (Array.isArray(runs) ? runs : [runs]).map(x => typeof x === 'string' ? (x.indexOf('<w:r>') === 0 ? x : R81(x, o.rtl ? { rtl: 1, sz: o.sz, b: o.b } : { sz: o.sz, b: o.b })) : R81(x[0], Object.assign({ rtl: o.rtl, sz: o.sz }, x[1]))).join('');
+  const bd = o.box ? `<w:pBdr>${['top', 'left', 'bottom', 'right'].map(k => `<w:${k} w:val="single" w:sz="${o.box}" w:space="4" w:color="000000"/>`).join('')}</w:pBdr>` : '';
+  return `<w:p><w:pPr>${o.keep ? '<w:keepNext/>' : ''}${o.brk ? '<w:pageBreakBefore/>' : ''}${bd}${o.shade ? `<w:shd w:val="clear" w:color="auto" w:fill="${o.shade}"/>` : ''}${o.tabs ? '<w:tabs><w:tab w:val="right" w:pos="9900"/></w:tabs>' : ''}<w:spacing w:before="${o.before || 0}" w:after="${o.after == null ? 80 : o.after}" w:line="${o.line || 252}" w:lineRule="auto"/>${o.ind ? `<w:ind w:left="${o.ind}" w:hanging="${o.hang || 0}"/>` : ''}${o.rtl ? '<w:bidi/>' : ''}<w:jc w:val="${o.jc || (o.rtl ? 'right' : 'both')}"/></w:pPr>${r}</w:p>`; }
+function C81(paras, w, o) { o = o || {}; return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${o.shade ? `<w:shd w:val="clear" w:color="auto" w:fill="${o.shade}"/>` : ''}${o.span ? `<w:gridSpan w:val="${o.span}"/>` : ''}<w:vAlign w:val="${o.v || 'top'}"/></w:tcPr>${(Array.isArray(paras) ? paras : [paras]).join('') || P81('', { after: 0 })}</w:tc>`; }
+function T81(rows, widths, o) { o = o || {}; const bd = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(k => `<w:${k} w:val="single" w:sz="${o.sz || 6}" w:space="0" w:color="000000"/>`).join('');
+  return `<w:tbl><w:tblPr><w:tblW w:w="${widths.reduce((a, b) => a + b, 0)}" w:type="dxa"/><w:jc w:val="center"/><w:tblBorders>${bd}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="40" w:type="dxa"/><w:left w:w="80" w:type="dxa"/><w:bottom w:w="40" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${rows.map(r => `<w:tr>${r.head ? '<w:trPr><w:tblHeader/><w:cantSplit/></w:trPr>' : '<w:trPr><w:cantSplit/></w:trPr>'}${r.cells.join('')}</w:tr>`).join('')}</w:tbl>`; }
+function docx81(body, o) {
+  o = o || {}; const pg = o.land ? '<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>' : '<w:pgSz w:w="11906" w:h="16838"/>';
+  const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr>${pg}<w:pgMar w:top="850" w:right="900" w:bottom="850" w:left="1000" w:header="400" w:footer="400" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Arial" w:eastAsia="Times New Roman"/><w:sz w:val="${o.sz || 23}"/><w:szCs w:val="${o.sz || 23}"/><w:lang w:val="en-IN" w:bidi="ur-PK"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="80"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`;
+  return zip73([
+    { name: '[Content_Types].xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>' },
+    { name: '_rels/.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>' },
+    { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
+    { name: 'word/document.xml', data: doc }, { name: 'word/styles.xml', data: styles }], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+}
+const lh81 = P => String(P.set.letterhead || '').split('\n').filter(Boolean).map((l, i) => P81([[l, { b: i < 3, sz: i === 1 ? 26 : i < 3 ? 24 : 20 }]], { jc: 'center', after: 0 })).join('') + P81('', { after: 60, box: 0 }) + `<w:p><w:pPr><w:pBdr><w:bottom w:val="double" w:sz="6" w:space="1" w:color="000000"/></w:pBdr><w:spacing w:after="160"/></w:pPr></w:p>`;
+const numLine81 = (k) => P81(R81(k + ' No.: ______________________') + '<w:r><w:tab/></w:r>' + R81('Dated: ______________'), { tabs: true, jc: 'left', after: 160 });
+const tname81 = P => P.tehsil;
+function copies81(P, kind) {
+  const L = ['Worthy Deputy Commissioner, Doda for kind information please.', (P.set.copy_to || '______________') + ' for kind information.'];
+  const ctrl = Array.from(new Set((P.depts || []).filter(d => d !== 'Revenue').map(d => P.set.ctrl[d]).filter(Boolean)));
+  ctrl.forEach(c => L.push(c + ' for necessary action.'));
+  if (P.set.cdpo) L.push(P.set.cdpo + ' for necessary action: to direct the concerned Anganwadi Workers to be present at the camps of their panchayats and to mobilise the farmers.');
+  L.push(P.set.nodal.designation + ' (Nodal Officer) for strict compliance.');
+  if (kind !== 'notice') L.push('Officials concerned for compliance.');
+  L.push('Office record file.');
+  return P81([['Copy to the:', { b: true }]], { jc: 'left', after: 40, keep: true }) + L.map((t, i) => P81(`${i + 1}.  ${t}`, { ind: 600, hang: 360, jc: 'left', after: 20 })).join('');
+}
+const sign81 = P => P81([['Tehsildar', { b: true }]], { jc: 'right', after: 0, before: 360 }) + P81(tname81(P), { jc: 'right', after: 200 });
+const offLine81 = o => `${o.name}, ${o.designation}${o.department && o.department !== 'Revenue' ? ' (' + o.department + ')' : ''}${o.mobile ? ' – ' + o.mobile : ''}`;
+
+/* ---------- Document 1: the Camp Order (for officials) ---------- */
+function campOrderDocx81(P) {
+  const vs = P.villages.filter(v => !v.cancelled), out = [lh81(P), numLine81('Order')];
+  out.push(P81([['ORDER', { b: true, u: true, sz: 28 }]], { jc: 'center', after: 160 }));
+  out.push(P81([['Subject: ', { b: true }], `Door-to-door camps for generation of Farmer IDs under AgriStack on ${dLong81(P.date)} – deployment of officials.`], { ind: 1100, hang: 1100 }));
+  const refs = [P.set.ref, P.set.base_order ? 'This office Order ' + P.set.base_order : ''].filter(Boolean);
+  refs.forEach((r, i) => out.push(P81(i ? [(refs.length > 1 ? (i + 1) + '. ' : '') + r + '.'] : [['Reference: ', { b: true }], (refs.length > 1 ? '1. ' : '') + r + '.'], { ind: 1100, hang: i ? 0 : 1100, after: i === refs.length - 1 ? 160 : 20 })));
+  out.push(P81(`In continuation of the orders referred above, the following officials are hereby deployed for door-to-door generation of Farmer IDs on ${dLong81(P.date)}, from 9:00 AM to 5:00 PM, in the villages and panchayats shown against their names. Sh. ${P.set.nodal.name}, ${P.set.nodal.designation} (Mobile ${P.set.nodal.mobile}), shall be the Nodal Officer for all the camps and shall ensure strict compliance.`, { after: 120 }));
+  const W = [640, 2050, 2300, 4030, 900], hd = (t) => C81(P81([[t, { b: true, sz: 20 }]], { jc: 'center', after: 0 }), 0, { shade: 'E7E6E6' });
+  const rows = [{ head: true, cells: ['No.', 'Village (Panchayat)', 'Camp place and hamlets', 'Officials (generate Farmer IDs from their own AgriStack login)', 'Target'].map((t, i) => C81(P81([[t, { b: true, sz: 20 }]], { jc: 'center', after: 0 }), W[i], { shade: 'E7E6E6', v: 'center' })) }];
+  let n = 0;
+  vs.forEach(v => (v.places.length ? v.places : [{ panchayat: '', camp_point: '', hamlets: '', officials: [] }]).forEach((p, j) => { n++;
+    rows.push({ cells: [C81(P81(String(n), { jc: 'center', after: 0 }), W[0]),
+      C81([P81([[v.name, { b: true }]], { jc: 'left', after: 0 }), p.panchayat ? P81('Panchayat ' + p.panchayat, { jc: 'left', after: 0, sz: 20 }) : '', j === 0 && v.patwari ? P81('Patwari: ' + v.patwari, { jc: 'left', after: 0, sz: 19 }) : ''].filter(Boolean), W[1]),
+      C81([P81([[p.camp_point || '______________', { b: true }]], { jc: 'left', after: 0 }), p.hamlets ? P81('Hamlets: ' + p.hamlets, { jc: 'left', after: 0, sz: 19 }) : ''].filter(Boolean), W[2]),
+      C81(p.officials.length ? p.officials.map((o, k) => P81((o.mark ? '★ ' : '') + (k + 1) + '. ' + offLine81(o), { jc: 'left', after: 0, sz: 20 })) : [P81('— nobody deployed —', { jc: 'left', after: 0, sz: 20 })], W[3]),
+      C81(P81(j === 0 ? String(v.target) : '″', { jc: 'center', after: 0 }), W[4])] }); }));
+  out.push(T81(rows, W));
+  out.push(P81([['★ = new, or moved from another village, since the previous day.  Target = Farmer IDs for the village for the day (200, or all the farmers left where fewer remain).', { i: true, sz: 19 }]], { before: 60, after: 120 }));
+  const ch = P.changes || {}, chg = [].concat(ch.added.map(x => 'Added: ' + x), ch.moved.map(x => 'Moved: ' + x), ch.relieved.map(x => 'Relieved: ' + x));
+  if (chg.length) { out.push(P81([['Changes from the previous day:', { b: true }]], { jc: 'left', after: 20, keep: true })); chg.forEach(t => out.push(P81('•  ' + t, { ind: 500, hang: 260, jc: 'left', after: 0, sz: 21 }))); }
+  if ((P.done || []).length) out.push(P81([['Villages completed (no camp needed): ', { b: true }], P.done.map(v => v.name + (v.why === 'Practically done' ? ' (only farmers who cannot get an ID are left)' : '')).join(', ') + '.'], { before: 80, after: 80 }));
+  const cx = P.villages.filter(v => v.cancelled); if (cx.length) out.push(P81([['No camp: ', { b: true }], cx.map(v => v.name + ' (' + v.cancelled + ')').join(', ') + '.'], { after: 80 }));
+  out.push(P81([['Instructions:', { b: true, u: true }]], { before: 120, after: 40, keep: true }));
+  [`Every official shall reach the camp place by 9:00 AM and post a geotagged photograph in the official WhatsApp group by 9:30 AM.`,
+    `Every official shall carry a mobile phone with a working AgriStack login and shall generate Farmer IDs from his/her own account.`,
+    `The officials shall go door to door in the hamlets shown and cover every landholder. For every farmer who cannot get a Farmer ID, the reason (owner dead, living outside, Aadhaar not linked to mobile, etc.) shall be noted.`,
+    `No official shall leave the camp before 5:00 PM.`,
+    `The concerned Lumberdar / Chowkidar and Anganwadi Worker shall mobilise the farmers of the panchayat house to house.`,
+    `The Patwari of the village shall answer for the village target; each official for the panchayat allotted to him/her.`,
+    `Absence, or shortfall against the target, shall invite action under rules without further notice.`].forEach((t, i) => out.push(P81(`${i + 1}.  ${t}`, { ind: 500, hang: 360, after: 30 })));
+  out.push(sign81(P)); out.push(numLine81('')); out.push(copies81(P, 'order'));
+  return docx81(out.join(''), { sz: 22 });
+}
+
+/* ---------- Document 2: the Public Notice (for farmers): English and Urdu, large print ---------- */
+function publicNoticeDocx81(P) {
+  const vs = P.villages.filter(v => !v.cancelled), n = P.set.nodal, out = [];
+  out.push(P81(R81('Notice No.: ________________') + '<w:r><w:tab/></w:r>' + R81('Dated: ______________'), { tabs: true, jc: 'left', after: 120 }));
+  out.push(T81([{ cells: [C81([P81([['PUBLIC NOTICE', { b: true, sz: 40 }]], { jc: 'center', after: 0 }), P81([['اعلانِ عام', { b: true, sz: 40 }]], { jc: 'center', after: 0, rtl: true }),
+    P81([[`Office of the Tehsildar ${P.tehsil}, District Doda`, { sz: 22 }]], { jc: 'center', after: 0 })], 9900, { shade: 'F2F2F2' })] }], [9900], { sz: 18 }));
+  out.push(P81('', { after: 80 }));
+  out.push(P81([['FARMER ID CAMPS ON ' + dLong81(P.date).toUpperCase(), { b: true, sz: 34 }]], { jc: 'center', after: 0 }));
+  out.push(P81([['9:00 AM to 5:00 PM', { b: true, sz: 30 }]], { jc: 'center', after: 40 }));
+  out.push(P81([[`فارمر آئی ڈی کیمپ — ${dU81(P.date)} — صبح 9 بجے سے شام 5 بجے تک`, { b: true, sz: 30 }]], { jc: 'center', rtl: true, after: 120 }));
+  const W = [2500, 3500, 3900], H = (e, u) => C81([P81([[e, { b: true, sz: 22 }]], { jc: 'center', after: 0 }), P81([[u, { b: true, sz: 22 }]], { jc: 'center', after: 0, rtl: true })], 0, { shade: 'D9D9D9' });
+  const rows = [{ head: true, cells: [['YOUR VILLAGE', 'آپ کا گاؤں'], ['CAMP PLACE', 'کیمپ کی جگہ'], ['OFFICIAL TO MEET · MOBILE', 'متعلقہ اہلکار · موبائل']].map((x, i) => C81([P81([[x[0], { b: true, sz: 22 }]], { jc: 'center', after: 0 }), P81([[x[1], { b: true, sz: 22 }]], { jc: 'center', after: 0, rtl: true })], W[i], { shade: 'D9D9D9', v: 'center' })) }];
+  vs.forEach(v => v.places.forEach((p, j) => rows.push({ cells: [
+    C81([P81([[j === 0 ? v.name.toUpperCase() : '″', { b: true, sz: 28 }]], { jc: 'left', after: 0 })], W[0], { v: 'center' }),
+    C81([P81([[p.camp_point || '______________', { b: true, sz: 25 }]], { jc: 'left', after: 0 }), p.panchayat ? P81([['Panchayat ' + p.panchayat, { sz: 20 }]], { jc: 'left', after: 0 }) : ''].filter(Boolean), W[1], { v: 'center' }),
+    C81(p.officials.slice(0, 4).map(o => P81([[o.name, { b: true, sz: 22 }], [` (${o.designation.split(',')[0]})${o.mobile ? ' ' + o.mobile : ''}`, { sz: 21 }]], { jc: 'left', after: 0 })), W[2], { v: 'center' })] })));
+  out.push(T81(rows, W, { sz: 8 }));
+  out.push(P81([['Officials will also come to your house.  ', { b: true, sz: 24 }]], { jc: 'center', before: 80, after: 0 }));
+  out.push(P81([['اہلکار گھر گھر بھی آئیں گے۔', { b: true, sz: 24 }]], { jc: 'center', rtl: true, after: 120 }));
+  const two = (e, u, o) => [P81([[e, Object.assign({ sz: 24 }, o)]], { jc: 'left', after: 0 }), P81([[u, Object.assign({ sz: 24 }, o)]], { rtl: true, after: 60 })];
+  out.push(T81([{ cells: [C81([P81([['BRING  ·  ساتھ لائیں', { b: true, sz: 28 }]], { jc: 'center', after: 40 }),
+    ...two('1.  Aadhaar card', '۱۔  آدھار کارڈ'), ...two('2.  Mobile phone linked to Aadhaar (the OTP comes on it)', '۲۔  آدھار سے جڑا ہوا موبائل فون (اس پر OTP آئے گا)'), ...two('3.  Land details (Khasra / Khewat number), if known', '۳۔  زمین کی تفصیل (خسرہ / کھیوٹ نمبر)، اگر معلوم ہو')], 9900, { shade: 'FFF2CC' })] }], [9900], { sz: 12 }));
+  out.push(P81('', { after: 60 }));
+  [['✔  It is FREE. Do not pay any money to anyone.', 'یہ بالکل مفت ہے۔ کسی کو کوئی پیسہ نہ دیں۔'],
+    ['✔  Farmer ID is needed for PM-KISAN, Kisan Credit Card (KCC), crop insurance (PMFBY) and other Agriculture / Horticulture schemes. Every landowner must get it.', 'پی ایم کسان، کسان کریڈٹ کارڈ (KCC)، فصل بیمہ (PMFBY) اور محکمہ زراعت و باغبانی کی دیگر اسکیموں کے لیے فارمر آئی ڈی ضروری ہے۔ ہر زمین مالک اسے ضرور بنوائے۔'],
+    ['✔  If the landowner has died, the legal heirs should meet the Patwari.', 'اگر زمین کا مالک فوت ہو چکا ہے تو اس کے قانونی وارث پٹواری سے ملیں۔'],
+    ['✔  The concerned Lumberdar, Chowkidar and Anganwadi Worker will inform every household.', 'متعلقہ لمبردار، چوکیدار اور آنگن واڑی ورکر ہر گھر کو اطلاع دیں گے۔']].forEach(x => out.push(...two(x[0], x[1], { sz: 22 })));
+  out.push(T81([{ cells: [C81([P81([[`HELP:  Nodal Officer, Sh. ${n.name}, ${n.designation}  —  ${n.mobile}`, { b: true, sz: 26 }]], { jc: 'center', after: 0 }),
+    P81([[`مدد کے لیے نوڈل آفیسر (نائب تحصیلدار) سے رابطہ کریں:  ${n.mobile}`, { b: true, sz: 26 }]], { jc: 'center', rtl: true, after: 0 })], 9900, { shade: 'E2EFDA' })] }], [9900], { sz: 12 }));
+  out.push(sign81(P));
+  return docx81(out.join(''), { sz: 24 });
+}
+
+/* ---------- Corrigendum: what changed after the order was signed ---------- */
+function diff81(P) {
+  if (!P.snap) return [];
+  const key = v => v.places.map(p => p.panchayat + ': ' + (p.camp_point || '–') + ' · ' + p.officials.map(o => o.name + ' (' + o.designation + ')').join(', ')).join(' | ');
+  const was = {}; P.snap.villages.forEach(v => was[v.village_id] = v);
+  const now = {}; P.villages.forEach(v => now[v.village_id] = v);
+  const out = [];
+  Object.keys(Object.assign({}, was, now)).forEach(id => { const a = was[id], b = now[id]; const ka = a ? (a.cancelled ? 'No camp: ' + a.cancelled : key(a)) : 'No camp', kb = b ? (b.cancelled ? 'No camp: ' + b.cancelled : key(b)) : 'No camp';
+    if (ka !== kb) out.push({ village: (b || a).name, was: ka, now: kb, b }); });
+  return out;
+}
+function corrDocx81(P, D) {
+  const out = [lh81(P), numLine81('Order')];
+  out.push(P81([['CORRIGENDUM', { b: true, u: true, sz: 28 }]], { jc: 'center', after: 160 }));
+  out.push(P81(`In partial modification of this office Order No. ${P.order_no}${P.order_date ? ' dated ' + dDot81(P.order_date) : ''} regarding the door-to-door Farmer ID camps on ${dLong81(P.date)}, the deployment in the following village(s) shall now be as under. The rest of the order remains unchanged.`, { after: 120 }));
+  const W = [2000, 3900, 4000];
+  const rows = [{ head: true, cells: ['Village', 'Earlier', 'Now'].map((t, i) => C81(P81([[t, { b: true }]], { jc: 'center', after: 0 }), W[i], { shade: 'E7E6E6' })) }];
+  D.forEach(d => rows.push({ cells: [C81(P81([[d.village, { b: true }]], { jc: 'left', after: 0 }), W[0]), C81(d.was.split(' | ').map(t => P81(t, { jc: 'left', after: 0, sz: 20 })), W[1]),
+    C81(d.b && !d.b.cancelled ? d.b.places.map(p => P81((p.panchayat ? p.panchayat + ': ' : '') + (p.camp_point || '–') + ' · ' + p.officials.map(o => offLine81(o)).join(', '), { jc: 'left', after: 0, sz: 20 })) : [P81(d.now, { jc: 'left', after: 0, sz: 20 })], W[2])] }));
+  out.push(T81(rows, W)); out.push(sign81(P)); out.push(numLine81('')); out.push(copies81(P, 'order'));
+  return docx81(out.join(''), { sz: 22 });
+}
+
+/* ---------- Tomorrow's camps: plan, documents, numbers ---------- */
+VIEWS.plan81 = async function (a) {
+  setHeader('Tomorrow’s camps'); document.body.classList.add('wide'); const main = $('#view'), tid = curT(), da = DA81(), ed = canEdit8();
+  a.date = a.date || (hm() < '06:00' ? todayIST() : tmr81());
+  const load = async () => { a.data = await api('planGet', { tehsil_id: tid, date: a.date }, 90000); a.tid = tid; };
+  if (!a.data || a.tid !== tid || a.data.date !== a.date) { main.innerHTML = loadingHtml('Opening the plan…'); try { await load(); } catch (e) { main.innerHTML = `<section class="pad"><p class="err">${esc(e.message)}</p></section>`; return; } }
+  const P = a.data, stops = P.checks.filter(c => c.stop), warns = P.checks.filter(c => !c.stop), D = P.status === 'ISSUED' ? diff81(P) : [];
+  const nOff = P.villages.reduce((s, v) => s + v.places.reduce((t, p) => t + p.officials.length, 0), 0);
+  const chip = P.status === 'ISSUED' ? `<span class="done80">Issued · No. ${esc(P.order_no)}</span>` : '<span class="due80">Draft</span>';
+  main.innerHTML = `<section class="pad">${tehSeg()}
+    <div class="pl81h"><div><b>${esc(dLong81(P.date))}</b><small>${esc(P.tehsil)} · ${P.villages.filter(v => !v.cancelled).length} villages · ${nOff} officials · Nodal Officer ${esc(P.set.nodal.name)}</small></div>${chip}</div>
+    <div class="seg7" style="margin:8px 0"><button data-dt="${todayIST()}" class="${a.date === todayIST() ? 'on' : ''}">Today</button><button data-dt="${tmr81()}" class="${a.date === tmr81() ? 'on' : ''}">Tomorrow</button></div>
+    ${stops.length ? `<div class="need80"><b>Fix ${stops.length} thing${stops.length > 1 ? 's' : ''} first</b>${stops.slice(0, 12).map(c => `<div>• ${esc(c.text)}</div>`).join('')}</div>` : ''}
+    ${warns.length ? `<div class="warn81"><b>Check</b>${warns.map(c => `<div>• ${esc(c.text)}</div>`).join('')}</div>` : ''}
+    ${D.length ? `<div class="need80"><b>Changed after the order was signed</b>${D.map(d => `<div>• ${esc(d.village)}</div>`).join('')}<button class="btn" id="cor81" style="margin-top:8px">Make a corrigendum (Word)</button></div>` : ''}
+    ${P.free.length ? `<div class="free81"><b>Free staff: their village is finished</b>${P.free.map(f => `<div class="fr81"><span><b>${esc(f.name)}</b> <small>${esc(f.designation)} · ${esc(f.village)}</small></span>${ed ? `<button class="go80" data-mv="${esc(f.post_id)}">Move</button>` : ''}</div>`).join('')}${P.worst.length ? `<small>Most work left per person: ${esc(P.worst.map(w => w.name + ' (' + fmtN(w.left) + ' left, ' + w.n + ' people)').join(', '))}</small>` : ''}</div>` : ''}
+    ${da ? `<div class="act81">
+      <button class="big80" id="ord81" ${stops.length ? 'disabled' : ''}>📄 Camp Order (Word)</button>
+      <button class="big80 o" id="pn81" ${stops.length ? 'disabled' : ''}>📢 Public Notice · English + Urdu (Word)</button>
+      <button class="big80 o" id="iss81">${P.status === 'ISSUED' ? '✓ Signed: No. ' + esc(P.order_no) + ' · change' : '✍ Signed? Record the numbers'}</button></div>
+      <p class="hint">1. Make both files. 2. Fill in the numbers and send them to the Tehsildar for signature (by 6 PM). 3. After signing, record the numbers here and share the signed PDFs in the groups.</p>` : ''}
+    <p class="sec7">Villages</p>
+    ${P.villages.map(v => `<div class="card7 v81 ${v.cancelled ? 'off' : ''}"><div class="vh81"><span><b>${esc(v.name)}</b><small>${fmtN(v.left)} farmers left · target ${fmtN(v.target)}${v.patwari ? ' · Patwari ' + esc(v.patwari) : ''}</small></span>${v.cancelled ? `<span class="tag81">No camp: ${esc(v.cancelled)}</span>` : ''}</div>
+      ${v.places.map(p => `<div class="pp81"><button class="cp81 ${p.camp_point ? '' : 'miss'}" data-cp="${esc(v.village_id)}" data-pn="${esc(p.panchayat)}" ${ed ? '' : 'disabled'}><span>📍 <b>${esc(p.camp_point || 'Type the camp place')}</b>${p.panchayat ? ` · Panchayat ${esc(p.panchayat)}` : ''}</span>${p.hamlets ? `<small>Hamlets: ${esc(p.hamlets)}</small>` : ''}</button>
+        ${p.officials.map(o => `<div class="of81"><span class="t"><b>${o.mark ? '★ ' : ''}${esc(o.name)}</b><small>${esc(o.designation)} · ${esc(o.department)}${o.mobile ? ' · ' + esc(o.mobile) : ''}${o.mark ? ' · ' + (o.mark === 'new' ? 'new' : 'moved here') : ''}</small></span>${ed ? `<button class="x8" data-mv="${esc(o.post_id)}" title="Move">⇄</button><button class="x8" data-rm="${esc(o.post_id)}" title="Remove">✕</button>` : ''}</div>`).join('')}</div>`).join('') || '<p class="hint" style="color:#C0352B">Nobody deployed.</p>'}
+      ${ed ? `<button class="btn" data-add="${esc(v.village_id)}" style="margin-top:6px">＋ Add a person</button>` : ''}</div>`).join('')}
+    ${P.done.length ? `<p class="sec7">No camp needed</p><div class="card7" style="padding:12px">${P.done.map(v => `<div>✓ ${esc(v.name)} <small class="hint">${esc(v.why)}</small></div>`).join('')}</div>` : ''}
+    ${(P.changes.added.length + P.changes.moved.length + P.changes.relieved.length) ? `<details class="old76"><summary>Changes from the day before (${P.changes.added.length + P.changes.moved.length + P.changes.relieved.length})</summary><div class="card7" style="padding:12px;font-size:14px">${[].concat(P.changes.added.map(x => 'Added: ' + x), P.changes.moved.map(x => 'Moved: ' + x), P.changes.relieved.map(x => 'Relieved: ' + x)).map(x => `<div>• ${esc(x)}</div>`).join('')}</div></details>` : ''}
+    ${da ? `<details class="old76"><summary>No camp (rain, snow, holiday…)</summary><div class="card7" style="padding:12px"><p class="hint">No show-cause notice goes for these villages that day.</p><button class="btn" id="nc81">Mark no camp for some villages</button></div></details>` : ''}
+  </section>`;
+  bindTehSeg(main);
+  const re = async x => { if (x) a.data = x; else await load(); render(); };
+  on(main, '[data-dt]', 'click', el => { a.date = el.dataset.dt; a.data = null; render(); });
+  const allOff = () => P.villages.reduce((s, v) => s.concat(v.places.reduce((t, p) => t.concat(p.officials.map(o => Object.assign({ vn: v.name, vid: v.village_id }, o))), [])), []).concat(P.free.map(f => Object.assign({ vn: f.village, vid: f.village_id, post_id: f.post_id, name: f.name, designation: f.designation })));
+  on(main, '[data-cp]', 'click', el => { const v = P.villages.find(x => x.village_id === el.dataset.cp), p = v.places.find(x => x.panchayat === el.dataset.pn);
+    simpleSheet('Camp place · ' + esc(v.name), `<p class="hint">${p.panchayat ? 'Panchayat ' + esc(p.panchayat) + '. ' : ''}Typed once: kept for the next days too.</p><div class="field"><label>Camp place (where people come)</label><input class="input" id="cp" value="${esc(p.camp_point)}" placeholder="e.g. Panchayat Ghar, Govt. Middle School"></div>
+      <div class="field"><label>Hamlets / mohallas to cover (door to door)</label><input class="input" id="hm" value="${esc(p.hamlets)}" placeholder="e.g. Upper Mohalla, Bagh, Dhar"></div><button class="btn btn-primary" id="ok">Save</button>`, r => {
+      $('#ok', r).onclick = () => busy($('#ok', r), 'Saving…', async () => { const cp = $('#cp', r).value.trim(); if (!cp) throw new Error('Type the camp place.'); const x = await api('placeSave', { tehsil_id: tid, date: a.date, village_id: v.village_id, panchayat: p.panchayat, camp_point: cp, hamlets: $('#hm', r).value }); closeSheet(() => { toast('Saved'); re(x); }); }); }); });
+  on(main, '[data-add]', 'click', el => { const v = P.villages.find(x => x.village_id === el.dataset.add); addSheet76({ village_id: v.village_id, name: v.name, officials: v.places.reduce((s, p) => s.concat(p.officials), []) }, tid, { date: a.date }, () => re()); });
+  on(main, '[data-rm]', 'click', el => { const o = allOff().find(x => x.post_id === el.dataset.rm); if (!o) return;
+    simpleSheet('Remove ' + esc(o.name), `<p>${esc(o.name)} (${esc(o.designation)}) will not be deployed in <b>${esc(o.vn)}</b> from ${esc(dLong81(a.date))}.</p><button class="btn lo75" id="ok">Remove</button>`, r => {
+      $('#ok', r).onclick = () => busy($('#ok', r), 'Removing…', async () => { await api('postEnd', { post_id: o.post_id, from: a.date, date: a.date }); S.c76 = null; closeSheet(() => { toast('Removed'); re(); }); }); }); });
+  on(main, '[data-mv]', 'click', el => { const o = allOff().find(x => x.post_id === el.dataset.mv); if (!o) return;
+    const opts = P.villages.filter(v => !v.cancelled && v.village_id !== o.vid).slice().sort((x, y) => { const w = id => P.worst.findIndex(z => z.village_id === id); return (w(x.village_id) < 0 ? 9 : w(x.village_id)) - (w(y.village_id) < 0 ? 9 : w(y.village_id)) || x.name.localeCompare(y.name); });
+    simpleSheet('Move ' + esc(o.name), `<p class="hint">From <b>${esc(o.vn)}</b> to another village, from ${esc(dLong81(a.date))}.</p><div class="field"><label>Village</label><select class="input" id="vv">${opts.map(v => `<option value="${esc(v.village_id)}">${esc(v.name)} · ${fmtN(v.left)} left${P.worst.some(w => w.village_id === v.village_id) ? ' · needs people' : ''}</option>`).join('')}</select></div>
+      <div class="field"><label>Panchayat</label><input class="input" id="pn" list="pnl81"><datalist id="pnl81"></datalist></div><button class="btn btn-primary" id="ok">Move</button>`, r => {
+      const fill = () => { const v = P.villages.find(x => x.village_id === $('#vv', r).value), ps = v ? v.places.map(p => p.panchayat).filter(Boolean) : []; $('#pnl81', r).innerHTML = ps.map(p => `<option value="${esc(p)}">`).join(''); $('#pn', r).value = ps[0] || ''; };
+      fill(); $('#vv', r).onchange = fill;
+      $('#ok', r).onclick = () => busy($('#ok', r), 'Moving…', async () => { await api('postEnd', { post_id: o.post_id, from: a.date, date: a.date }); await api('postAdd', { village_id: $('#vv', r).value, panchayat: $('#pn', r).value, person_id: o.person_id, from: a.date, date: a.date }); S.c76 = null; closeSheet(() => { toast('Moved'); re(); }); }); }); });
+  b2('ord81', () => runTask('Camp Order · ' + P.tehsil, ['Writing the order'], async () => { addFile(campOrderDocx81(P), `${P.tehsil} – Camp Order – for ${dmyL(P.date)}.docx`, 'Camp Order ready ✓ Fill in the number and date, send for signature'); return { msg: 'Camp Order ready ✓' }; }));
+  b2('pn81', () => runTask('Public Notice · ' + P.tehsil, ['Writing the notice'], async () => { addFile(publicNoticeDocx81(P), `${P.tehsil} – Public Notice – Farmer ID camps – ${dmyL(P.date)}.docx`, 'Public Notice ready ✓ English + Urdu'); return { msg: 'Public Notice ready ✓' }; }));
+  b2('cor81', () => { if (!DA81()) return fail('The Dealing Assistant makes the corrigendum.'); addFile(corrDocx81(P, D), `${P.tehsil} – Corrigendum – camps ${dmyL(P.date)}.docx`, 'Corrigendum ready ✓ After signing, record its number below');
+    setTimeout(() => issueSheet81(true), 400); });
+  b2('iss81', () => issueSheet81(false));
+  function issueSheet81(corr) {
+    simpleSheet(corr ? 'Corrigendum signed' : 'The signed numbers', `<p class="hint">${corr ? 'Type the corrigendum number. The plan is saved again as issued.' : 'As written on the signed order and notice.'}</p>
+      ${corr ? `<div class="field"><label>Corrigendum No.</label><input class="input" id="cn"></div>` : ''}
+      <div class="field"><label>Order No.</label><input class="input" id="on" value="${esc(P.order_no)}" placeholder="e.g. 401-15/Nazir/TKG"></div>
+      <div class="field"><label>Order dated</label><input class="input" type="date" id="od" value="${esc(P.order_date || todayIST())}"></div>
+      <div class="field"><label>Public Notice No.</label><input class="input" id="nn" value="${esc(P.notice_no)}"></div><button class="btn btn-primary" id="ok">Save as issued</button>`, r => {
+      $('#ok', r).onclick = () => busy($('#ok', r), 'Saving…', async () => { const x = await api('planIssue', { tehsil_id: tid, date: a.date, order_no: $('#on', r).value, order_date: $('#od', r).value, notice_no: $('#nn', r).value, corr: corr ? ($('#cn', r).value || 'issued') : '' }); closeSheet(() => { toast('Saved: the public dashboard shows these camps'); re(x); }); }); }); }
+  b2('nc81', () => { const vs = P.villages.concat([]);
+    simpleSheet('No camp', `<div class="field"><label>Day</label><input class="input" type="date" id="dd" value="${esc(a.date)}" min="${esc(yday8())}"></div><div class="field"><label>Why</label><input class="input" id="why" value="Heavy rain"></div>
+      <label class="chk"><input type="checkbox" id="all"> All villages of ${esc(P.tehsil)}</label><div class="list" id="vl">${vs.map(v => `<label class="chk"><input type="checkbox" value="${esc(v.village_id)}" ${v.cancelled ? 'checked' : ''}> ${esc(v.name)}</label>`).join('')}</div>
+      <button class="btn btn-primary" id="ok">Save</button><button class="link" id="un">Restore the camps ticked</button>`, r => {
+      const ids = () => $$('#vl input:checked', r).map(x => x.value), body = () => ({ tehsil_id: tid, date: $('#dd', r).value, reason: $('#why', r).value, all: $('#all', r).checked, village_ids: ids() });
+      $('#ok', r).onclick = () => busy($('#ok', r), 'Saving…', async () => { const b = body(); if (!b.all && !b.village_ids.length) throw new Error('Tick the villages.'); const x = await api('planCancel', b); closeSheet(() => { toast('Saved'); if (b.date === a.date) re(x); else re(); }); });
+      $('#un', r).onclick = () => busy($('#un', r), '…', async () => { const b = Object.assign(body(), { undo: true }); const x = await api('planCancel', b); closeSheet(() => { if (b.date === a.date) re(x); else re(); }); }); }); });
+};
+
+/* ---------- Attendance: everyone present in one tap, then only the absent ones ---------- */
+VIEWS.att81 = async function (a) {
+  setHeader('Attendance'); document.body.classList.add('wide'); const main = $('#view'), tid = curT(), can = DA81();
+  if (!S.c76) S.c76 = await kget('c76');
+  const draw = () => {
+    if (!current() || current().name !== 'att81') return;
+    const t = S.c76 && S.c76.tehsils ? S.c76.tehsils.find(x => x.tehsil_id === tid) : null;
+    if (!t) { main.innerHTML = loadingHtml('Loading…'); return; }
+    const seen = {}, rows = []; t.villages.filter(v => !v.cancelled).forEach(v => { const ps = v.officials.filter(o => !seen[o.key] && (seen[o.key] = 1)); if (ps.length) rows.push({ v, ps }); });
+    const all = rows.reduce((s, r) => s.concat(r.ps), []), n = k => all.filter(o => o.att === k).length, un = all.filter(o => !o.att);
+    main.innerHTML = `<section class="pad">${tehSeg()}<div class="pl81h"><div><b>${esc(T8.dw(todayIST()))} · ${esc(t.name)}</b><small>From the geotagged photos in the group${can ? '' : ' · marked by the Dealing Assistant'}</small></div></div>
+      <div class="att81s"><span class="g"><b>${n('P')}</b>present</span><span class="r"><b>${n('A')}</b>absent</span><span class="m"><b>${n('L')}</b>leave / duty</span><span class="u"><b>${un.length}</b>not marked</span></div>
+      ${can && un.length ? `<button class="big80" id="allp" style="margin:4px 0 6px">✓ Everyone not marked is Present (${un.length})</button><p class="hint">Then tap <b>A</b> only for those without a photo, <b>L</b> for leave or other duty.</p>` : ''}
+      ${!can && un.length && hm() >= '11:00' ? '<div class="need80"><b>Not marked by 11 AM</b>The Dealing Assistant has not marked attendance yet.</div>' : ''}
+      ${rows.map(r => `<p class="sec7">${esc(r.v.name)}</p><div class="card7" style="padding:2px 12px">${r.ps.map(o => `<div class="t8-p"><span class="t"><b>${esc(o.name)}</b><small>${esc(o.designation)}${o.panchayat ? ' · ' + esc(o.panchayat) : ''}</small></span>
+        ${can ? `<span class="pa8 pa81"><button class="${o.att === 'P' ? 'on P' : ''}" data-a="P" data-k="${esc(o.key)}">P</button><button class="${o.att === 'A' ? 'on A' : ''}" data-a="A" data-k="${esc(o.key)}">A</button><button class="${o.att === 'L' ? 'on L' : ''}" data-a="L" data-k="${esc(o.key)}">L</button></span>`
+        : `<span class="st81 ${o.att || 'u'}">${({ P: 'Present', A: 'Absent', L: 'Leave / duty' })[o.att] || 'Not marked'}</span>`}</div>`).join('')}</div>`).join('') || '<div class="empty">Nobody deployed today.</div>'}</section>`;
+    bindTehSeg(main);
+    const save = async items => { try { const x = await api('attSave', { tehsil_id: tid, date: todayIST(), items }); x._at = Date.now(); S.c76 = Object.assign({}, S.c76, { tehsils: S.c76.tehsils.map(y => (x.tehsils.find(z => z.tehsil_id === y.tehsil_id) || y)) }); kput('c76', S.c76); toast('Saved'); draw(); } catch (e) { fail(e.message); } };
+    b2('allp', () => busy($('#allp'), 'Saving…', () => save(un.map(o => ({ key: o.key, status: 'P' })))));
+    on(main, '[data-a]', 'click', el => { const k = el.dataset.k, cur = all.find(o => o.key === k), st = cur && cur.att === el.dataset.a ? '' : el.dataset.a; if (cur) cur.att = st; draw(); save([{ key: k, status: st }]); });
+  };
+  draw(); await loadC76(true); draw();
+};
+
+/* ---------- Show-cause notices: one per department per village, addressed by rank ---------- */
+const _scn73v = VIEWS.scn73;
+VIEWS.scn73 = async function (a) {
+  const tid = curT(), main = $('#view'); a.date = a.date || yesterday();
+  if (!a.data || a.tid !== tid || a.data.date !== a.date) { setHeader('Show-cause notices'); main.innerHTML = loadingHtml('Checking the figures…'); try { a.data = await api('scnList', { tehsil_id: tid, date: a.date }, 90000); a.tid = tid; } catch (e) { main.innerHTML = `<div class="pad"><p class="err">${esc(e.message)}</p></div>`; return; } }
+  if (!a.data.groups) return _scn73v(a);
+  setHeader('Show-cause notices'); document.body.classList.add('wide');
+  const L = a.data, office = DA81(), G = L.groups, due = G.filter(g => !g.exempt), depts = Array.from(new Set(due.map(g => g.department)));
+  const ad = g => [{ n: L.nodal.name, d: L.nodal.designation + ' (Nodal Officer)' }].concat(g.persons.filter(p => !p.exempt).map(p => ({ n: p.name, d: p.designation })));
+  main.innerHTML = `<section class="pad"><div class="ttl7"><div><h1>Show-cause notices</h1><small class="hint">Tehsil ${esc(L.tehsil)} · for ${esc(dateLong(L.date))} · one notice per department per village</small></div>${tehSeg()}</div>
+    <div class="row2" style="align-items:end"><label style="font-size:13px;color:var(--mute);flex:1">Day<input class="input" type="date" id="dd" value="${esc(a.date)}" max="${esc(yesterday())}"></label></div>
+    ${L.down_frac ? `<div class="banner"><p>Portal down ${Math.round(L.down_frac * 420)} minutes that day: the targets were reduced for that time.</p></div>` : ''}
+    ${L.cancelled && L.cancelled.length ? `<div class="banner"><p>No camp (no notices): ${esc(L.cancelled.join(', '))}</p></div>` : ''}
+    ${L.seniors && L.seniors.length ? `<div class="warn81"><b>Controlling officers whose camps were behind</b> (no notice: reported in the DC report)${L.seniors.map(s => `<div>• ${esc(s.name)}, ${esc(s.designation)} · ${esc(s.villages.join(', '))}</div>`).join('')}</div>` : ''}
+    <p class="guide">Order cited: ${esc(L.camp_order || '—')}. Addressees: the Nodal Officer first, then by rank. Copies: ACR / SDM, then the controlling officer, then the record file (the DC too for a second notice).</p>
+    ${office && due.length ? `<div class="card7" style="padding:12px;margin:10px 0"><b>Word files, department-wise</b><div class="dp81">${depts.map(d => `<button class="btn" data-mk="${esc(d)}">${esc(d)} · ${due.filter(g => g.department === d).length}</button>`).join('')}<button class="btn btn-primary" data-mk="">All · ${due.length}</button></div>
+      ${due.some(g => !g.issued_on) ? `<div class="dp81">${depts.filter(d => due.some(g => g.department === d && !g.issued_on)).map(d => `<button class="btn" data-is="${esc(d)}">Mark ${esc(d)} issued</button>`).join('')}</div>` : `<button class="btn" id="msg">Message for the group</button> <button class="link" id="undo">Undo "issued"</button>`}</div>` : ''}
+    ${depts.map(d => `<p class="sec7">${esc(d)}${(due.find(g => g.department === d) || {}).ctrl ? ' · copy to ' + esc(due.find(g => g.department === d).ctrl) : ''}</p>${G.filter(g => g.department === d && !g.exempt).map(g => `<div class="card7 scn73${g.exempt ? ' ex' : ''}"><div class="hd"><span><b>${esc(g.village)}</b> <small class="hint">${g.short ? `${fmtN(g.ids)} of ${fmtN(g.target)} · ${({ C: 'Slow', D: 'Behind' })[g.grade] || ''}` : 'absence'}</small></span><span>${g.issued_on ? tag73('g', 'Issued ' + fmtDate(g.issued_on)) : ''}${g.repeat ? tag73('r', 'Second notice') : ''}</span></div>
+      ${ad(g).map((w, i) => `<div class="ln">${i + 1}. ${esc(w.n)} <small class="hint">${esc(w.d)}</small></div>`).join('')}
+      ${g.persons.map(p => `<div class="ln81"><span>${esc(p.name)}${p.absent ? ' · <b style="color:#C0352B">absent</b>' : ''}${p.exempt ? ' · <i>exempt: ' + esc(p.exempt) + '</i>' : ''}</span>${office && !p.issued_on ? (p.exempt ? `<button class="ab" data-unex="${esc(p.key)}">Remove exemption</button>` : `<button class="ab" data-ex="${esc(p.key)}">Exempt</button>`) : ''}</div>`).join('')}</div>`).join('')}`).join('') || `<div class="empty">${ic('check', 44)}No notice for that day.</div>`}
+    ${G.filter(g => g.exempt).length ? `<p class="sec7">Exempt</p>${G.filter(g => g.exempt).map(g => `<div class="card7 scn73 ex"><b>${esc(g.village)} · ${esc(g.department)}</b>${g.persons.map(p => `<div class="ln81"><span>${esc(p.name)} · <i>${esc(p.exempt)}</i></span>${office && !p.issued_on ? `<button class="ab" data-unex="${esc(p.key)}">Remove exemption</button>` : ''}</div>`).join('')}</div>`).join('')}` : ''}
+  </section>`;
+  bindTehSeg(main);
+  $('#dd').onchange = e => { a.date = e.target.value || yesterday(); a.data = null; render(); };
+  const reload = x => { a.data = x; if (a.date === yesterday()) { S.scn73 = S.scn73 || {}; x._at = Date.now(); S.scn73[tid] = x; } render(); };
+  const keys = gs => Array.from(new Set(gs.reduce((s, g) => s.concat(g.persons.filter(p => !p.exempt).map(p => p.key)), [])));
+  on(main, '[data-ex]', 'click', el => simpleSheet('Exempt', `<p class="guide">No notice for this person for ${esc(fmtDate(L.date))}. Why?</p>${['On leave', 'On other official duty', 'Login / account not working that day'].map(t => `<button class="btn" data-why="${esc(t)}">${esc(t)}</button>`).join('')}<div class="row2"><input class="input" id="oth" placeholder="Other reason"><button class="btn" id="ok">Save</button></div>`, r => {
+    const save = why => busy($('#ok', r), 'Saving…', async () => { const y = await api('scnExempt', { tehsil_id: tid, date: L.date, user_id: el.dataset.ex, reason: why }); closeSheet(() => reload(y)); });
+    on(r, '[data-why]', 'click', b => save(b.dataset.why)); $('#ok', r).onclick = () => { const v = $('#oth', r).value.trim(); if (!v) return fail('Type the reason.'); save(v); }; }));
+  on(main, '[data-unex]', 'click', el => busy(el, '…', async () => reload(await api('scnExempt', { tehsil_id: tid, date: L.date, user_id: el.dataset.unex, reason: '' }))));
+  on(main, '[data-mk]', 'click', el => { const d = el.dataset.mk, gs = due.filter(g => !d || g.department === d);
+    runTask('Show-cause notices · ' + L.tehsil + (d ? ' · ' + d : ''), ['Writing the notices'], async () => { const body = gs.map((g, i) => scnGroupBody81(L, g, i > 0)).join('');
+      addFile(docx81(body, { sz: 23 }), `${L.tehsil} – Show cause notices – ${d || 'all departments'} – for ${dmyL(L.date)}.docx`, 'Word file ready ✓'); await stamp('scn', tid); return { msg: `${gs.length} notice${gs.length > 1 ? 's' : ''} ready ✓ Send for signature.` }; }); });
+  on(main, '[data-is]', 'click', el => { const gs = due.filter(g => g.department === el.dataset.is && !g.issued_on); if (!confirm(`Mark ${gs.length} ${el.dataset.is} notice(s) as issued today (signed and posted in the group)?`)) return;
+    busy(el, 'Saving…', async () => reload(await api('scnIssue', { tehsil_id: tid, date: L.date, user_ids: keys(gs) }))); });
+  b2('msg', () => messageSheet('Group message · notices', `*Show cause notices · Tehsil ${L.tehsil} · for ${dmyL(L.date)}*\n` + depts.map(d => `\n_${d}_\n` + due.filter(g => g.department === d && g.issued_on).map((g, i) => `${i + 1}. ${g.village}${g.short ? ' ' + g.ids + '/' + g.target : ''}: ${g.persons.filter(p => !p.exempt).map(p => p.name + (p.absent ? ' (absent)' : '')).join(', ')}`).join('\n')).join('\n') + `\n\nReply in writing by 11:00 AM on ${dmyL(addDaysJS(todayIST(), 1))}.`, ''));
+  b2('undo', () => { if (confirm('Undo "issued" for these notices?')) busy($('#undo'), '…', async () => reload(await api('scnIssue', { tehsil_id: tid, date: L.date, user_ids: keys(due), undo: true }))); });
+};
+function scnGroupBody81(L, g, brk) {
+  const date = fmtDate(L.date), reply = fmtDate(addDaysJS(todayIST(), 1)), ps = g.persons.filter(p => !p.exempt), abs = ps.filter(p => p.absent), line = g.department !== 'Revenue';
+  const who = [{ n: L.nodal.name, d: L.nodal.designation + ' (Nodal Officer)', nt: 1 }].concat(ps.map(p => ({ n: p.name, d: p.designation + (p.patwari ? ' (village ' + g.village + ')' : ', deployed at ' + g.village + (p.panchayat ? ' (Panchayat ' + p.panchayat + ')' : '')), p })));
+  const what = [g.short ? 'achieve the daily target of Farmer ID generation' : '', abs.length ? 'remain present at the camp' : ''].filter(Boolean).join(' and to ');
+  const out = [];
+  out.push(P81([['SHOW CAUSE NOTICE', { b: true, u: true, sz: 26 }]], { jc: 'center', after: 160, brk }));
+  out.push(numLine81(''));
+  out.push(P81([['To', { b: true }]], { jc: 'left', after: 40 }));
+  who.forEach((w, i) => out.push(P81(`${i + 1}.  Sh. ${w.n}, ${w.d}.`, { ind: 600, hang: 360, jc: 'left', after: 20 })));
+  out.push(P81([['Subject: ', { b: true }], `Failure to ${what} in village ${g.village} on ${date} during the door-to-door campaign for generation of Farmer IDs.`], { ind: 1100, hang: 1100, before: 140 }));
+  out.push(P81([['Reference: ', { b: true }], `This office Order ${L.camp_order || 'No. ____________ dated ____________'}.`], { ind: 1100, hang: 1100, after: 160 }));
+  out.push(P81(`Whereas, vide the order referred above, door-to-door camps for the generation of Farmer IDs are being held in every panchayat from 9:00 AM to 5:00 PM; not less than ${L.target_rule} Farmer IDs are to be generated per village per day (or all the remaining eligible landholders where fewer remain); the Patwari of the village answers for the village target and each official for the panchayat allotted to him/her; the attendance of the deployed officials is verified from the geotagged photographs posted in the official WhatsApp group; and the Naib Tehsildar is the Nodal Officer responsible for compliance;`));
+  out.push(P81(`And whereas, as per the records of the AgriStack portal${abs.length ? ' and the attendance verified from the geotagged photographs' : ''}, the following position has emerged in respect of village ${g.village} on ${date}:`, { keep: true }));
+  if (g.short) { const W = [3400, 2000, 2400, 2000]; out.push(T81([{ head: true, cells: ['Village', 'Daily target', 'Farmer IDs generated', 'Shortfall'].map((t, i) => C81(P81([[t, { b: true }]], { jc: 'center', after: 0 }), W[i], { shade: 'E7E6E6' })) },
+    { cells: [g.village, String(g.target), String(g.ids), String(Math.max(0, g.target - g.ids))].map((t, i) => C81(P81(t, { jc: i ? 'center' : 'left', after: 0 }), W[i])) }], W)); out.push(P81('', { after: 40 })); }
+  if (abs.length) out.push(P81(`${abs.map(p => 'Sh. ' + p.name + ', ' + p.designation).join('; ')} remained absent from the camp, as no geotagged photograph of ${abs.length > 1 ? 'their' : 'his/her'} presence was posted.`));
+  out.push(P81('This shows that you have failed to perform your official duties, as under:', { keep: true }));
+  who.forEach((w, i) => out.push(P81(`(${String.fromCharCode(97 + i)})  Sh. ${w.n}: ${w.nt ? 'failed, as Nodal Officer, to ensure compliance of the directions by the deployed officials' : w.p.patwari ? 'failed to ensure the achievement of the village target' : [g.short ? 'failed to achieve the daily target' : '', w.p.absent ? 'remained absent from the camp' : ''].filter(Boolean).join(' and ')};`, { ind: 600, hang: 360, after: 40 })));
+  const rep = ps.filter(p => p.repeat); if (rep.length) out.push(P81(`It is further noticed that show cause notice(s) were issued earlier to ${rep.map(p => 'Sh. ' + p.name + ' (for ' + fmtDate(p.repeat) + ')').join(', ')}, and the failure has been repeated. The matter is accordingly being reported to the Deputy Commissioner, Doda.`, { before: 60 }));
+  out.push(P81(`You are, therefore, directed to show cause, in writing, by 11:00 AM on ${reply}, as to ${line ? 'why the matter should not be reported to your controlling officer and to the Deputy Commissioner, Doda for disciplinary action under the rules applicable to you' : 'why disciplinary action under the Jammu and Kashmir Civil Services (Classification, Control and Appeal) Rules, 1956 read with the Jammu and Kashmir Government Employees (Conduct) Rules, 1971 should not be initiated against you'}. In case no reply is received within the stipulated time, it shall be presumed that you have nothing to say in your defence and further action shall be taken accordingly.`, { before: 60 }));
+  out.push(P81([['Tehsildar', { b: true }]], { jc: 'right', after: 0, before: 300 })); out.push(P81(L.tehsil, { jc: 'right', after: 160 }));
+  const cp = (rep.length ? ['Worthy Deputy Commissioner, Doda for kind information please.'] : []).concat([(L.copy_to || '______________') + ' for kind information.'], g.ctrl ? [g.ctrl + ' for necessary action.'] : [], ['Office record file (Nazir).']);
+  out.push(P81([['Copy to the:', { b: true }]], { jc: 'left', after: 40, keep: true })); cp.forEach((t, i) => out.push(P81(`${i + 1}.  ${t}`, { ind: 600, hang: 360, jc: 'left', after: 20 })));
+  return out.join('');
+}
+
+/* ---------- Match with the portal: type the portal figure, see the difference ---------- */
+VIEWS.match81 = async function () {
+  setHeader('Match with the portal'); document.body.classList.add('wide'); const main = $('#view'), tid = curT(); await loadDash(false);
+  const F = S.dash && S.dash.full ? S.dash.full.find(t => t.tehsil_id === tid) : null, k = 'm81:' + tid + ':' + todayIST();
+  let vals = {}; try { vals = JSON.parse(localStorage.getItem(k) || '{}'); } catch (e) {}
+  const draw = () => { const vs = F ? F.villages.slice().sort((a, b) => a.name.localeCompare(b.name)) : [];
+    main.innerHTML = `<section class="pad">${tehSeg()}<p class="guide">Type the Farmer IDs the portal shows for each village. A difference in red means a file is missing or a village is mapped wrong.</p>
+      <div class="card7" style="padding:0">${vs.map(v => { const p = vals[v.village_id], dif = p === undefined || p === '' ? null : Number(p) - v.made;
+        return `<div class="mt81"><span class="t"><b>${esc(v.name)}</b><small>App: ${fmtN(v.made)}</small></span><input class="input" inputmode="numeric" data-v="${esc(v.village_id)}" value="${esc(p === undefined ? '' : p)}" placeholder="Portal"><span class="df ${dif === null ? '' : dif === 0 ? 'ok' : 'bad'}">${dif === null ? '' : dif === 0 ? '✓' : (dif > 0 ? '+' : '') + fmtN(dif)}</span></div>`; }).join('') || '<p class="hint" style="padding:12px">No figures yet.</p>'}</div></section>`;
+    bindTehSeg(main);
+    on(main, '[data-v]', 'change', el => { vals[el.dataset.v] = el.value.replace(/\D/g, ''); try { localStorage.setItem(k, JSON.stringify(vals)); } catch (e) {} draw(); }); };
+  draw();
+};
+
+/* ---------- Today (office): the DA's day in steps; the Needs-you box for the others ---------- */
+async function today81(main) {
+  setHeader(''); document.body.classList.add('wide');
+  if (!S.dash) S.dash = await kget('dash'); if (!S.c76) S.c76 = await kget('c76'); if (!S.live73) S.live73 = await kget('live73'); if (!S.lastUp) S.lastUp = await kget('lastUp');
+  const r = role(), da = r === 'DA', tid = curT();
+  const draw = () => {
+    if (!current() || current().name !== 'home') return;
+    const d = S.dash, c = S.c76, ct = c && c.tehsils ? c.tehsils : [], m = d ? T8.model(d, c) : null, h = hm();
+    const plan = tId => ((c && c.plans) || []).find(p => p.tehsil_id === tId) || {};
+    const downOpen = t => { const p = (t && t.down) || []; return p.length && !p[p.length - 1].to ? p[p.length - 1].from : ''; };
+    let top = '';
+    if (da) {
+      const t = lt(tid), s = t && t.slots, cc = ct.find(x => x.tehsil_id === tid), scn = S.scn73 && S.scn73[tid], nScn = scn && scn.groups ? scn.groups.filter(g => !g.exempt && !g.issued_on).length : scn && scn.items ? scn.items.filter(x => !x.exempt && !x.issued_on).length : null;
+      const fileOk = s && s.last && s.list.some(z => z.at && (z.st === 'ok' || z.st === 'late') && h < addMin77(z.t, 60)), unm = cc ? cc.unmarked : null, attLate = unm && h >= '11:00';
+      const fin = m ? (m.ts.find(x => x.tid === tid) || { finished: [] }).finished.filter(v => !v.sat_date) : [];
+      const pl = plan(tid), pIss = pl.status === 'ISSUED', dn = downOpen(cc), frz = cc && cc.frozen_at;
+      const undo = S.lastUp && Date.now() - S.lastUp.at < 3600000 && S.lastUp.ids && S.lastUp.ids[tid];
+      const st = (n, ok, red, ttl, sub, btn, id) => `<div class="st80 ${ok ? 'ok' : ''} ${red ? 'red' : ''}"><span class="no">${ok ? '✓' : n}</span><span class="tx"><b>${ttl}</b><small>${sub}</small></span>${btn ? `<button class="go80" id="${id}">${btn}</button>` : ''}</div>`;
+      top = `${myTehsils().length > 1 ? `<div class="tsw80">${myTehsils().map(x => `<button data-tsw="${x}" class="${x === tid ? 'on' : ''}" style="--c:${T8.tc(x)}">${esc(tehsilName(x))}</button>`).join('')}</div>` : ''}
+        ${dn ? `<div class="need80"><b>Portal marked down since ${esc(T8.t12(dn))}</b>Targets are reduced for this time.<button class="btn" id="pup81" style="margin-top:8px">The portal works again</button></div>` : ''}
+        <div class="t8-hl" style="font-size:20px">${s && s.last ? `The ${esc(T8.t12(s.last))} file is in.` : 'No portal file yet today.'} ${s && s.next ? `Next file at <b>${esc(T8.t12(s.next))}</b>.` : ''}${frz ? ` <span style="color:#5B6676;font-size:15px">Day closed at ${esc(T8.t12(frz))}: later files count for tomorrow.</span>` : ''}</div>
+        ${st(1, fileOk, s && s.list.some(z => z.st === 'over'), 'Drop the portal file', s ? s.list.map(z => slotLab(z.t) + (z.at ? ' ✓' : z.st === 'over' || z.st === 'miss' ? ' ✗' : '')).join(' · ') : 'Registered farmers file from the portal', '', '')}
+        ${dropHtml()}${undo ? `<button class="link" id="und81" style="margin:-4px 0 10px">Wrong file? Undo the last upload</button>` : ''}
+        ${st(2, false, false, h >= '19:30' ? 'Send the day-close update' : 'Send the update', 'Picture + message to the group', 'Send', 'snd8')}
+        ${st(3, unm === 0, attLate, 'Mark attendance', unm === null ? 'Present / Absent / Leave from the geotagged photos' : unm ? `${unm} of ${cc.deployed} not marked${attLate ? ' · due by 11 AM' : ' · one tap for everyone present'}` : `All ${cc.deployed} marked`, unm ? 'Mark' : 'Open', 'att8')}
+        ${st(4, nScn === 0, nScn > 0 && h >= '10:00', 'Notices for yesterday', nScn === null ? 'Word files, department-wise' : nScn ? nScn + ' to make and issue' : 'Done', nScn ? 'Make' : 'Open', 'scn8')}
+        ${h >= '14:00' || pl.status ? st(5, pIss, !pIss && h >= '17:00', 'Tomorrow’s camps', pIss ? 'Order issued · shown on the public page' : 'Plan · Camp Order · Public Notice · due by 6 PM', pIss ? 'Open' : 'Plan', 'pln8') : ''}
+        ${h >= '16:30' ? st(6, false, h >= '17:00', 'DC report', 'Type the figures into the DC sheet', 'Open', 'dcr8') : ''}
+        ${fin.length ? st('✓', false, false, 'Saturation certificate', 'Finished: ' + esc(fin.map(v => v.name).join(', ')), 'Make', 'sat8') : ''}
+        <div class="sm81">${dn ? '' : '<button class="btn" id="pdn81">⚠ Portal down</button>'}${!frz && h >= '17:00' ? '<button class="btn" id="frz81">🌙 Close the day</button>' : ''}<button class="btn" id="pln81b">Camps / no camp</button></div>`;
+    } else {
+      const needs = [];
+      if (m) { if (r === 'ADMIN') { const p = m.ts.reduce((a, t) => a + (t.pending || 0), 0); if (p) needs.push(`<b>${fmtN(p)}</b> Farmer IDs waiting for your approval on the portal`); }
+        ct.forEach(t => { if (t.unmarked && h >= '11:00') needs.push(`${esc(t.name)}: attendance not marked by the Dealing Assistant · <b>${t.unmarked}</b> people`); });
+        ct.forEach(t => { const dn = downOpen(t); if (dn) needs.push(`${esc(t.name)}: portal marked down since ${esc(T8.t12(dn))}`); });
+        m.ts.forEach(t => { if (t.late) needs.push(`${esc(t.name)}: ${esc(slotLab(t.late.t))} file late by ${t.lateMin} min`); });
+        const ab = m.ts.reduce((a, t) => a + t.absent.length, 0); if (ab) needs.push(`Absent today: <b>${ab}</b> (${esc(m.ts.reduce((a, t) => a.concat(t.absent.map(x => x.name)), []).join(', '))})`);
+        if (h >= '18:00') myTehsils().forEach(x => { if (plan(x).status !== 'ISSUED') needs.push(`${esc(tehsilName(x))}: tomorrow’s camp order not issued yet`); });
+        myTehsils().forEach(x => { const sc = S.scn73 && S.scn73[x]; const n = sc && sc.groups ? sc.groups.filter(g => !g.exempt && !g.issued_on).length : sc && sc.items ? sc.items.filter(i => !i.exempt && !i.issued_on).length : 0; if (n && h >= '09:30') needs.push(`${esc(tehsilName(x))}: <b>${n}</b> show-cause notices to issue for yesterday`); }); }
+      top = `${needs.length ? `<div class="need80"><b>Needs you</b>${needs.map(x => `<div>• ${x}</div>`).join('')}</div>` : ''}
+        <div class="row2" style="margin:10px 0 4px"><button class="btn btn-primary" id="snd8">Send the update</button><button class="btn" id="att8">Attendance</button><button class="btn" id="pln8">Tomorrow’s camps</button></div>`;
+    }
+    const el = $('#t80'); if (!el) return;
+    T8.today(el, d, { office: true, c76: c, top, onVillage: (vid, t) => go('village8', { vid, tid: t }) });
+    bindDrop(main);
+    on(main, '[data-tsw]', 'click', b => { S.tid = b.dataset.tsw; draw(); });
+    b2('snd8', () => send80()); b2('att8', () => go('att81', {})); b2('scn8', () => go('scn73', {})); b2('dcr8', () => go('dcr73', {})); b2('sat8', () => go('status', {})); b2('pln8', () => go('plan81', {})); b2('pln81b', () => go('plan81', { date: todayIST() }));
+    b2('pdn81', () => { if (confirm('Mark the portal DOWN now, for both tehsils? Targets are reduced for the time it stays down.')) busy($('#pdn81'), '…', async () => { await api('portalDown', { all: true, on: true }); await loadC76(true); draw(); }); });
+    b2('pup81', () => busy($('#pup81'), '…', async () => { await api('portalDown', { all: true, on: false }); await loadC76(true); draw(); }));
+    b2('frz81', () => { if (confirm('Close the day? Files dropped after this count for tomorrow.')) busy($('#frz81'), '…', async () => { await api('dayFreeze', {}); await loadC76(true); draw(); }); });
+    b2('und81', () => { const id = S.lastUp.ids[tid]; if (confirm('Undo the last portal file? The new IDs it brought are removed. Then drop the right file.')) busy($('#und81'), 'Undoing…', async () => { const x = await api('regUndo', { file_id: id }); S.lastUp = null; kput('lastUp', null); toast(`Undone: ${x.removed} new IDs removed`); await load80(true); draw(); }); });
+  };
+  main.innerHTML = `<section class="pad">${closedHtml()}${noticesHtml()}<div id="t80"></div></section>`; bindNotices(main);
+  draw();
+  const ch = await load80(false); const sc = await Promise.all(myTehsils().map(x => hm() >= '09:00' ? loadScn(x, false) : null));
+  if (ch || sc.some(Boolean)) draw();
+}
+VIEWS.home = async function () { const u = me(); if (!u) return; const main = $('#view'); return isField() ? pat80(main) : today81(main); };
+
+/* ---------- day close shared → the day is closed (later files count for tomorrow) ---------- */
+{ const _s80 = send80; send80 = async function (close) { const c = close === undefined ? hm() >= '19:30' : close; const out = await _s80(close); if (c && DA81() && !S.practice) { try { await api('dayFreeze', {}); } catch (e) {} } return out; }; }
+
+/* ---------- Settings and Reports: the new screens ---------- */
+{ const _set8 = VIEWS.set8; VIEWS.set8 = async function (a) { await _set8(a); const box = $('#view .card7[style*="padding:0"]'); if (!box || $('#s81')) return;
+  [['plan81', 'Camps, orders and public notice', 'Tomorrow’s plan; no camp (rain, holiday)'], ['att81', 'Attendance', 'Present / Absent / Leave, one tap for all'], ['match81', 'Match with the portal', 'Village figures: app vs portal']].reverse().forEach(([k, t, s], i) => {
+    const b = document.createElement('button'); b.className = 'row'; if (!i) b.id = 's81'; b.innerHTML = `<span class="rt"><b>${esc(t)}</b><small>${esc(s)}</small></span>`; b.onclick = () => go(k, {}); box.insertBefore(b, box.children[1] || null); }); }; }
+{ const _rep8 = VIEWS.rep8; VIEWS.rep8 = async function (a) { await _rep8(a); const box = $('#view .pad > div[style*="margin-top:8px"]'); if (!box || $('#r81')) return;
+  const b = document.createElement('button'); b.className = 'rep80'; b.id = 'r81'; const ord = ((S.c76 && S.c76.plans) || []).find(p => p.tehsil_id === curT()) || {};
+  b.innerHTML = `<span class="ic" style="background:#E8F0FB">🗓</span><span class="tx"><b>Camp Order + Public Notice</b><small>For tomorrow · Word files · English + Urdu notice</small></span>${ord.status === 'ISSUED' ? '<span class="done80">Issued</span>' : hm() >= '17:00' ? '<span class="due80">Due</span>' : ''}`;
+  b.onclick = () => go('plan81', {}); box.insertBefore(b, box.children[1] || null); }; }
+
+/* ---------- reminders: 11 AM attendance (office), 5 PM order (DA), 6 PM order not ready (office) ---------- */
+setInterval(() => {
+  if (!S.session || S.viewAs || S.practice || document.visibilityState !== 'visible' || !['DA', 'NT', 'ADMIN'].includes(role())) return;
+  const k = 'rm81' + todayIST(), h = hm(), c = S.c76, pl = t => ((c && c.plans) || []).find(p => p.tehsil_id === t) || {};
+  if (h >= '17:00' && h < '18:30' && role() === 'DA' && !S[k + 'o'] && pl(curT()).status !== 'ISSUED') { S[k + 'o'] = 1; toast('Make tomorrow’s Camp Order and Public Notice: due with the Tehsildar by 6 PM (Today → step 5).', 'info', 15000); }
+  if (h >= '18:00' && h < '21:00' && role() !== 'DA' && !S[k + 'n']) { const nr = myTehsils().filter(t => pl(t).status !== 'ISSUED'); if (nr.length) { S[k + 'n'] = 1; toast('Tomorrow’s camp order not issued yet: ' + nr.map(tehsilName).join(', '), 'info', 15000); } }
+  if (h >= '11:00' && h < '13:00' && role() !== 'DA' && !S[k + 'a']) { const un = c && c.tehsils ? c.tehsils.reduce((a, t) => a + (t.unmarked || 0), 0) : 0; if (un) { S[k + 'a'] = 1; toast(`Attendance not marked by the Dealing Assistant: ${un} people.`, 'info', 12000); } }
+}, 60000);
+
+Object.assign(PRAC_TASKS, { DA: [['regApply', 'Get the sample portal file (below), then drop it on Today'], ['wa:hour', 'Step 2: Send the update'], ['attSave', 'Step 3: attendance (one tap for everyone present)'], ['view:scn73', 'Step 4: notices'], ['view:plan81', 'Step 5: tomorrow’s camps']] });
 
 Object.assign(HELP, {
   status: ['Villages', 'Today: each village against its target, with its In-charge and Patwari. Green = met, amber = on pace, red = behind.', 'Till date: by Patwar Halqa. Tap a village for its page.'],
