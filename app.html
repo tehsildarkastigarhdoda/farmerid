@@ -870,6 +870,15 @@ body{background:#F3F5F8!important}
 .sm81{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}.sm81 .btn{width:auto;flex:1 1 120px;margin:0;font-size:14px;padding:10px}
 .mt81{display:flex;align-items:center;gap:8px;padding:9px 12px;border-top:1px solid #EEF1F5}.mt81:first-child{border-top:0}.mt81 .t{flex:1;min-width:0}.mt81 b{display:block}.mt81 small{color:#5B6676}.mt81 .input{width:96px;flex:none;margin:0}.mt81 .df{width:58px;text-align:right;font-weight:800}.mt81 .df.ok{color:#1E7A46}.mt81 .df.bad{color:#C0352B}
 
+/* ---------- v8.2: one status bar, no top loading bar ---------- */
+#netbar{display:none!important}#bar .pl80,#pill{display:none!important}
+#sb82{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:80;display:none;align-items:center;gap:8px;padding:11px 18px;border-radius:26px;font-weight:700;font-size:15px;box-shadow:0 6px 18px rgba(15,27,45,.22);max-width:92vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
+body.hasnav #sb82{bottom:calc(env(safe-area-inset-bottom,0px) + 80px)}
+#sb82.on{display:flex}#sb82.s{background:#FFF1D1;color:#6B4A00;border:1px solid #EBD39A}#sb82.ok{background:#1E7A46;color:#fff}#sb82.err{background:#C0352B;color:#fff;cursor:pointer}#sb82.off{background:#5B6676;color:#fff}
+.sp82{width:15px;height:15px;border:2.5px solid #C99A2E;border-top-color:transparent;border-radius:50%;display:inline-block;animation:sp82 .8s linear infinite}@keyframes sp82{to{transform:rotate(360deg)}}
+.ob82{display:inline-block;width:22px;text-align:center;font-style:normal;font-size:15px;flex:none}.ob82.ok{color:#1E7A46;font-weight:800}.ob82.err{color:#C0352B;font-weight:800}
+#upd72{display:none!important}
+
 [hidden]{display:none!important}
 #title::before{content:'';float:left;width:30px;height:30px;margin:3px 9px 0 0;background:url(logo.svg) center/contain no-repeat;border-radius:7px}
 
@@ -887,7 +896,7 @@ body{background:#F3F5F8!important}
 'use strict';
 /* ======================= CONFIG ======================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
-const APP_V = '8.1.0';
+const APP_V = '8.2.0';
 const XLSX_URL = 'lib/xlsx.full.min.js';
 const TIER = { A: "Can't be claimed", B: 'Stuck', C: 'Can be done' };
 const DEFAULT_TOP = ['C01', 'B04', 'B11', 'B01', 'A02', 'A08'];
@@ -1374,6 +1383,7 @@ function drawSheet() {
 function closeSheet(after) { if (!SHEET) { if (after) after(); return; } SHEET.after = after; history.back(); }
 function closeAllSheets() { SHEET = null; const el = $('#sheet'); el.classList.add('hidden'); el.innerHTML = ''; document.body.classList.remove('noscroll'); }
 window.addEventListener('popstate', () => {
+  if (S.ign82n > 0) { S.ign82n--; if (typeof done82 === 'function') done82(); return; }
   if (SHEET) { const after = SHEET.after; closeAllSheets(); if (S.dirty) { S.dirty = false; render(); } if (after) after(); return; }
   if (NAV.stack.length > 1) { NAV.stack.pop(); render(); }
 });
@@ -5374,7 +5384,7 @@ VIEWS.home = async function () {
   const [fresh, fp] = await Promise.all([loadHome(false), loadPulse(false)]);
   if ((fresh !== h || fp !== S.pulseShown) && current() && current().name === 'home' && !SHEET) { S.pulseShown = fp; if (fp !== P || fresh !== h) render(); }
 };
-setInterval(() => { if (S.session && !isField() && current() && current().name === 'home' && !SHEET && document.visibilityState === 'visible' && navigator.onLine) loadPulse(true).then(() => render()); }, 5 * 60000);
+
 
 /* ---------- Field home (v6): no work in the app during camp hours ---------- */
 fieldHome = async function (main, top) {
@@ -6653,7 +6663,7 @@ VIEWS.home = async function () {
   const [d2, p2] = await Promise.all([loadDash(false), loadPulse(false), office ? loadHome(false) : null]);
   if ((d2 !== was[0] || p2 !== was[1]) && current() && current().name === 'home' && !SHEET) render();
 };
-setInterval(() => { if (S.session && current() && current().name === 'home' && !SHEET && document.visibilityState === 'visible' && navigator.onLine) loadDash(true).then(() => { if (current() && current().name === 'home' && !SHEET) render(); }); }, 120000);
+
 
 /* menu: My work sits next to Home */
 Object.assign(NAV_ICONS, { work: 'M9 4h6a1 1 0 0 1 1 1v2H8V5a1 1 0 0 1 1-1zM5 7h14v14H5zM9 12h6M9 16h4' });
@@ -7078,12 +7088,10 @@ async function verCheck() {
     const r = S.practice ? (window.PRAC ? PRAC.call({ action: 'ver' }) : null) : await (await fetch(API_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'ver' }) })).json();
     if (!r || !r.ok) return; const uv = r.uv || '';
     if (S.uv === undefined) { S.uv = uv; return; }
-    if (uv !== S.uv) { S.uv = uv; S.pulseAt = 0; S.homeAt = 0; S.dashAt = 0; S.phAt = {}; S.sat72 = {}; S.staff7 = {};
-      await Promise.all([loadPulse(true), loadDash(true)]); const c = current();
-      if (c && !SHEET && ['home', 'status', 'village7', 'reports', 'muts', 'users'].includes(c.name)) { if (c.args) { c.args.data = null; c.args.rows = null; } render(); } upd72(); }
+    if (uv !== S.uv) { S.uv = uv; S.dashAt = 0; S.homeAt = 0; if (typeof refresh82 === 'function') refresh82(); }
   } catch (e) {}
 }
-setInterval(verCheck, 15000);
+setInterval(verCheck, 30000);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') verCheck(); });
 
 /* ---------- Login: one trip, a loading screen that builds the logo ---------- */
@@ -7666,7 +7674,7 @@ setInterval(async () => {
 }, 60000);
 
 /* ---------- refresh: a new file updates the live figures too ---------- */
-setInterval(() => { if (S.session && S.uv !== undefined && S.uv !== S.liveUv && navigator.onLine && !S.viewAs) loadLive(true).then(() => { const c = current(); if (c && c.name === 'home' && !SHEET) render(); }); }, 5000);
+
 
 /* ---------- one card after this update ---------- */
 const NEW73 = { OPERATOR: ['Each village now has one <b>In-charge</b> (Patwari, GQ, OQ or BCG). The In-charge carries the target: <b>40 Farmer IDs a day per village</b>, or what is left.', 'IDs count by the village of the land, whoever makes them.', 'Below target: a show-cause notice the next morning, also to the Patwari and the Naib Tehsildar.'],
@@ -8020,11 +8028,11 @@ function addSheet76(v, tid, a, after) {
       <div class="field"><label>Name</label><input class="input" id="nm"></div><div class="field"><label>Designation</label><input class="input" id="ds" placeholder="e.g. GRS, PAA, AEA"></div>
       <div class="field"><label>Department</label><select class="input" id="dp">${['Revenue', 'RDD', 'Agriculture', 'Horticulture', 'DYSSO', 'Other'].map(d => `<option>${d}</option>`).join('')}</select></div>
       <div class="field"><label>Mobile</label><input class="input" id="mb" inputmode="numeric" maxlength="10"></div><button class="btn btn-primary" id="sv">Add and deploy</button></details>`, async r => {
-    let P = []; try { P = (await api('people76', { tehsil_id: tid })).people; } catch (e) { fail(e.message); }
+    let P = S.ppl82 && S.ppl82[tid] && Date.now() - S.ppl82[tid].at < 300000 ? S.ppl82[tid].p : []; if (!P.length) try { P = (await api('people76', { tehsil_id: tid })).people; S.ppl82 = S.ppl82 || {}; S.ppl82[tid] = { p: P, at: Date.now() }; } catch (e) { fail(e.message); }
     const draw = () => { const s = $('#q', r).value.toLowerCase().trim(); $('#pl', r).innerHTML = P.filter(p => !s || (p.name + ' ' + p.designation + ' ' + p.mobile).toLowerCase().includes(s)).slice(0, 40)
       .map((p, i) => `<button class="row" data-i="${P.indexOf(p)}"><span class="rt"><b>${esc(p.name)}</b><small>${esc(p.designation)} · ${esc(p.department)}${p.mobile ? ' · ' + esc(p.mobile) : ''}${p.login ? ' · has a login' : ''}</small></span></button>`).join('') || '<p class="hint">No match.</p>'; };
     draw(); $('#q', r).oninput = draw;
-    const send = async body => { a.data = await api('postAdd', Object.assign({ village_id: v.village_id, panchayat: $('#pn', r).value, from: $('#fr', r).value, date: a.date }, body)); S.c76 = null; closeSheet(() => { toast('Deployed'); after(); }); };
+    const send = async body => { const res82 = await api('postAdd', Object.assign({ village_id: v.village_id, panchayat: $('#pn', r).value, from: $('#fr', r).value, date: a.date, lite: a.lite82 ? 1 : 0 }, body)); if (!a.lite82) { a.data = res82; S.c76 = null; } closeSheet(() => { toast('Deployed'); after(); }); };
     on(r, '[data-i]', 'click', el => { const p = P[Number(el.dataset.i)]; busy(el, 'Adding…', () => send(p.person_id ? { person_id: p.person_id } : { user_id: p.user_id })); });
     $('#sv', r).onclick = () => busy($('#sv', r), 'Adding…', () => send({ name: $('#nm', r).value, designation: $('#ds', r).value, department: $('#dp', r).value, mobile: $('#mb', r).value }));
   });
@@ -8033,7 +8041,7 @@ function endSheet76(o, tid, a, after) {
   simpleSheet('Remove ' + esc(o.name), `<p>${esc(o.name)} (${esc(o.designation)}) will no longer be deployed in <b>${esc(o.vn)}</b>${o.panchayat ? ' (' + esc(o.panchayat) + ')' : ''}.</p>
     <div class="field"><label>From</label><input class="input" type="date" id="fr" value="${esc(addDaysJS(todayIST(), 1))}" min="${esc(addDaysJS(todayIST(), -1))}"><small>Tomorrow by default: today he still answers for this village. The old record is kept.</small></div>
     <button class="btn lo75" id="ok">Remove</button>`, r => {
-    $('#ok', r).onclick = () => busy($('#ok', r), 'Removing…', async () => { a.data = await api('postEnd', { post_id: o.post_id, from: $('#fr', r).value, date: a.date }); S.c76 = null; closeSheet(() => { toast('Removed'); after(); }); });
+    $('#ok', r).onclick = () => busy($('#ok', r), 'Removing…', async () => { const res82 = await api('postEnd', { post_id: o.post_id, from: $('#fr', r).value, date: a.date, lite: a.lite82 ? 1 : 0 }); if (!a.lite82) { a.data = res82; S.c76 = null; } closeSheet(() => { toast('Removed'); after(); }); });
   });
 }
 async function people76Sheet(tid) {
@@ -8422,10 +8430,9 @@ VIEWS.village8 = async function (a) {
         let q = {}, qt = null;
         on(root, '[data-att8]', 'click', el => { const k = el.dataset.k, stt = el.classList.contains('on') ? '' : el.dataset.att8;
           root.querySelectorAll(`[data-k="${CSS.escape(k)}"]`).forEach(b => { b.classList.toggle('on', b.dataset.att8 === stt); b.classList.toggle('P', b.dataset.att8 === 'P' && stt === 'P'); b.classList.toggle('A', b.dataset.att8 === 'A' && stt === 'A'); b.classList.toggle('L', b.dataset.att8 === 'L' && stt === 'L'); });
-          q[k] = stt; clearTimeout(qt); qt = setTimeout(async () => { const items = Object.keys(q).map(key => ({ key, status: q[key] })); q = {};
-            try { await api('attSave', { tehsil_id: t.tid, date: todayIST(), items }); toast('Attendance saved'); S.c76 = null; await load80(true); } catch (e) { fail(e.message); } }, 600); });
-        on(root, '[data-end8]', 'click', el => { const o = (v.officials || []).find(x => x.post_id === el.dataset.end8); if (o) endSheet76(Object.assign({ vn: v.name }, o), t.tid, { date: todayIST() }, async () => { await load80(true); draw(); }); });
-        const ad = root.querySelector('#add8'); if (ad) ad.onclick = () => addSheet76({ village_id: v.vid, name: v.name, officials: v.officials || [] }, t.tid, { date: todayIST() }, async () => { await load80(true); draw(); });
+          obAtt(t.tid, todayIST(), k, stt); });
+        on(root, '[data-end8]', 'click', el => { const o = (v.officials || []).find(x => x.post_id === el.dataset.end8); if (o) endSheet76(Object.assign({ vn: v.name }, o), t.tid, { date: todayIST(), lite82: 1 }, async () => { S.h82At = 0; await load80(true); draw(); }); });
+        const ad = root.querySelector('#add8'); if (ad) ad.onclick = () => addSheet76({ village_id: v.vid, name: v.name, officials: v.officials || [] }, t.tid, { date: todayIST(), lite82: 1 }, async () => { S.h82At = 0; await load80(true); draw(); });
         const sb = root.querySelector('#sat8'); if (sb) sb.onclick = () => go('status', {});
       } }); };
   draw(); if (await load80(false)) draw();
@@ -8548,13 +8555,13 @@ VIEWS.dead8 = async function (a) {
 
 /* ---------- Daily report PDF (for the joint group, every morning) ---------- */
 async function daily80() {
-  await loadPDF(); const d = await loadDash(true); if (!d || !d.camp) throw new Error('The figures could not be loaded.');
-  const y = yday8(), m = T8.model(d), C = await api('camp76', { date: y }).catch(() => null);
+  const y = yday8(), [, d, C, SC] = await Promise.all([loadPDF(), loadDash(true), api('camp76', { date: y }).catch(() => null), Promise.all(myTehsils().map(t => api('scnList', { tehsil_id: t, date: y }).catch(() => null)))]);
+  if (!d || !d.camp) throw new Error('The figures could not be loaded.'); const m = T8.model(d), over82 = d.camp.to && todayIST() > d.camp.to ? Math.round((Date.parse(todayIST()) - Date.parse(d.camp.to)) / 864e5) : 0;
   const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: 'pt', format: 'a4' }), W = doc.internal.pageSize.getWidth();
   const H = (t, s) => { doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(15, 27, 45); doc.text(t, 36, 44); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(91, 102, 118); doc.text(s, 36, 60); };
   const tb = (startY, head, body, col) => doc.autoTable({ startY, head: [head], body, theme: 'grid', margin: { left: 36, right: 36 }, styles: { font: 'helvetica', fontSize: 9.5, cellPadding: 4, lineColor: [225, 230, 238], lineWidth: .5 }, headStyles: { fillColor: col || [15, 27, 45], textColor: 255 } });
   const wk = (t, dt) => (t.camp ? 0 : 0), yrow = t => { const w = (d.camp.tehsils.find(x => x.tehsil_id === t.tid).week || []).find(x => x.date === y) || {}; return w; };
-  H(`Farmer ID · Daily report · ${T8.dw(y)} (final)`, `Tehsils Assar & Kastigarh · made ${T8.t12(nowIST())}, ${T8.dw(todayIST())} · door-to-door campaign, day ${Math.max(1, (d.camp.day_no || 1) - 1)}`);
+  H(`Farmer ID · Daily report · ${T8.dw(y)} (final)`, `Tehsils Assar & Kastigarh · made ${T8.t12(nowIST())}, ${T8.dw(todayIST())} · door-to-door campaign, day ${Math.max(1, (d.camp.day_no || 1) - 1)}${over82 ? ' · ' + over82 + ' day' + (over82 > 1 ? 's' : '') + ' over the deadline' : ''}`);
   tb(76, ['', ...m.ts.map(t => t.name)], [
     ['Farmer IDs made yesterday', ...m.ts.map(t => fmtN(yrow(t).ids || 0))], ['Yesterday’s target', ...m.ts.map(t => fmtN(yrow(t).target || 0))],
     ['Farmers with a Farmer ID since August', ...m.ts.map(t => `${fmtN(t.made)} of ${fmtN(t.total)} (${t.pct}%)`)], ['Farmers who can still get an ID', ...m.ts.map(t => fmtN(t.all.reduce((a, v) => a + (v.left || 0), 0)))],
@@ -8568,8 +8575,10 @@ async function daily80() {
   const ar = []; (C && C.tehsils || []).forEach(t => t.villages.forEach(v => v.officials.forEach(o => ar.push([t.name, v.name, o.panchayat || '', o.name, o.designation, o.department, o.att === 'A' ? 'Absent' : o.att === 'P' ? 'Present' : 'Not marked']))));
   tb(70, ['Tehsil', 'Village', 'Panchayat', 'Official', 'Designation', 'Department', 'Attendance'], ar.length ? ar : [['–', '–', '–', 'Not available', '', '', '']]);
   doc.addPage(); H('Show-cause notices · for ' + T8.dw(y), 'Village Slow or Behind at day close, or absent');
-  const nr = []; for (const t of myTehsils()) { try { const L = await api('scnList', { tehsil_id: t, date: y }); L.items.filter(x => !x.exempt).forEach(x => nr.push([L.tehsil, x.name, x.designation, x.camp ? [x.camp.short ? x.camp.villages.map(v => v.name + ' ' + v.ids + '/' + v.target).join(', ') : '', x.camp.absent ? 'Absent' : ''].filter(Boolean).join(' · ') : x.sort ? 'Checking not done' : '', x.issued_on ? 'Issued ' + T8.dd(x.issued_on) : 'To be issued'])); } catch (e) {} }
+  const nr = []; for (const L of SC) { try { if (!L) continue; L.items.filter(x => !x.exempt).forEach(x => nr.push([L.tehsil, x.name, x.designation, x.camp ? [x.camp.short ? x.camp.villages.map(v => v.name + ' ' + v.ids + '/' + v.target).join(', ') : '', x.camp.absent ? 'Absent' : ''].filter(Boolean).join(' · ') : x.sort ? 'Checking not done' : '', x.issued_on ? 'Issued ' + T8.dd(x.issued_on) : 'To be issued'])); } catch (e) {} }
   tb(70, ['Tehsil', 'Official', 'Designation', 'Why', 'Status'], nr.length ? nr : [['–', 'No notice', '', '', '']]);
+  const sr82 = []; SC.forEach(L => L && (L.seniors || []).forEach(x => sr82.push([L.tehsil, x.name, x.designation, x.villages.join(', ')])));
+  if (sr82.length) { doc.addPage(); H('Controlling officers whose camps were behind · ' + T8.dw(y), 'Officers of the rank of Tehsildar: no notice from this office; for the information of the Deputy Commissioner'); tb(70, ['Tehsil', 'Officer', 'Designation', 'Villages (IDs / target)'], sr82); }
   const n = doc.getNumberOfPages(); for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFontSize(8.5); doc.setTextColor(120); doc.text(`Page ${i} of ${n} · Tehsil offices Assar & Kastigarh`, W / 2, doc.internal.pageSize.getHeight() - 18, { align: 'center' }); }
   await stamp('daily', curT());
   addFile(doc.output('blob'), `Farmer ID daily report ${y}.pdf`, 'Daily report ready: share it in the joint group');
@@ -8789,24 +8798,25 @@ VIEWS.plan81 = async function (a) {
     ${da ? `<details class="old76"><summary>No camp (rain, snow, holiday…)</summary><div class="card7" style="padding:12px"><p class="hint">No show-cause notice goes for these villages that day.</p><button class="btn" id="nc81">Mark no camp for some villages</button></div></details>` : ''}
   </section>`;
   bindTehSeg(main);
-  const re = async x => { if (x) a.data = x; else await load(); render(); };
+  const re = async x => { if (x) { a.data = x; render(); return; } render(); try { await load(); if (current() && current().args === a) render(); } catch (e) {} };
   on(main, '[data-dt]', 'click', el => { a.date = el.dataset.dt; a.data = null; render(); });
   const allOff = () => P.villages.reduce((s, v) => s.concat(v.places.reduce((t, p) => t.concat(p.officials.map(o => Object.assign({ vn: v.name, vid: v.village_id }, o))), [])), []).concat(P.free.map(f => Object.assign({ vn: f.village, vid: f.village_id, post_id: f.post_id, name: f.name, designation: f.designation })));
   on(main, '[data-cp]', 'click', el => { const v = P.villages.find(x => x.village_id === el.dataset.cp), p = v.places.find(x => x.panchayat === el.dataset.pn);
     simpleSheet('Camp place · ' + esc(v.name), `<p class="hint">${p.panchayat ? 'Panchayat ' + esc(p.panchayat) + '. ' : ''}Typed once: kept for the next days too.</p><div class="field"><label>Camp place (where people come)</label><input class="input" id="cp" value="${esc(p.camp_point)}" placeholder="e.g. Panchayat Ghar, Govt. Middle School"></div>
       <div class="field"><label>Hamlets / mohallas to cover (door to door)</label><input class="input" id="hm" value="${esc(p.hamlets)}" placeholder="e.g. Upper Mohalla, Bagh, Dhar"></div><button class="btn btn-primary" id="ok">Save</button>`, r => {
-      $('#ok', r).onclick = () => busy($('#ok', r), 'Saving…', async () => { const cp = $('#cp', r).value.trim(); if (!cp) throw new Error('Type the camp place.'); const x = await api('placeSave', { tehsil_id: tid, date: a.date, village_id: v.village_id, panchayat: p.panchayat, camp_point: cp, hamlets: $('#hm', r).value }); closeSheet(() => { toast('Saved'); re(x); }); }); }); });
-  on(main, '[data-add]', 'click', el => { const v = P.villages.find(x => x.village_id === el.dataset.add); addSheet76({ village_id: v.village_id, name: v.name, officials: v.places.reduce((s, p) => s.concat(p.officials), []) }, tid, { date: a.date }, () => re()); });
+      $('#ok', r).onclick = () => busy($('#ok', r), 'Saving…', async () => { const cp = $('#cp', r).value.trim(); if (!cp) throw new Error('Type the camp place.'); const hmv = $('#hm', r).value; await api('placeSave', { tehsil_id: tid, date: a.date, village_id: v.village_id, panchayat: p.panchayat, camp_point: cp, hamlets: hmv, lite: 1 }); p.camp_point = cp; p.hamlets = hmv; P.checks = P.checks.filter(c => !(c.village_id === v.village_id && c.panchayat === p.panchayat)); closeSheet(() => re()); }); }); });
+  on(main, '[data-add]', 'click', el => { const v = P.villages.find(x => x.village_id === el.dataset.add); addSheet76({ village_id: v.village_id, name: v.name, officials: v.places.reduce((s, p) => s.concat(p.officials), []) }, tid, { date: a.date, lite82: 1 }, () => re()); });
   on(main, '[data-rm]', 'click', el => { const o = allOff().find(x => x.post_id === el.dataset.rm); if (!o) return;
     simpleSheet('Remove ' + esc(o.name), `<p>${esc(o.name)} (${esc(o.designation)}) will not be deployed in <b>${esc(o.vn)}</b> from ${esc(dLong81(a.date))}.</p><button class="btn lo75" id="ok">Remove</button>`, r => {
-      $('#ok', r).onclick = () => busy($('#ok', r), 'Removing…', async () => { await api('postEnd', { post_id: o.post_id, from: a.date, date: a.date }); S.c76 = null; closeSheet(() => { toast('Removed'); re(); }); }); }); });
+      $('#ok', r).onclick = () => busy($('#ok', r), 'Removing…', async () => { await api('postEnd', { post_id: o.post_id, from: a.date, date: a.date, lite: 1 }); P.villages.forEach(v => v.places.forEach(pl => { pl.officials = pl.officials.filter(x => x.post_id !== o.post_id); })); P.free = P.free.filter(f => f.post_id !== o.post_id); S.h82At = 0; closeSheet(() => re()); }); }); });
   on(main, '[data-mv]', 'click', el => { const o = allOff().find(x => x.post_id === el.dataset.mv); if (!o) return;
     const opts = P.villages.filter(v => !v.cancelled && v.village_id !== o.vid).slice().sort((x, y) => { const w = id => P.worst.findIndex(z => z.village_id === id); return (w(x.village_id) < 0 ? 9 : w(x.village_id)) - (w(y.village_id) < 0 ? 9 : w(y.village_id)) || x.name.localeCompare(y.name); });
     simpleSheet('Move ' + esc(o.name), `<p class="hint">From <b>${esc(o.vn)}</b> to another village, from ${esc(dLong81(a.date))}.</p><div class="field"><label>Village</label><select class="input" id="vv">${opts.map(v => `<option value="${esc(v.village_id)}">${esc(v.name)} · ${fmtN(v.left)} left${P.worst.some(w => w.village_id === v.village_id) ? ' · needs people' : ''}</option>`).join('')}</select></div>
       <div class="field"><label>Panchayat</label><input class="input" id="pn" list="pnl81"><datalist id="pnl81"></datalist></div><button class="btn btn-primary" id="ok">Move</button>`, r => {
       const fill = () => { const v = P.villages.find(x => x.village_id === $('#vv', r).value), ps = v ? v.places.map(p => p.panchayat).filter(Boolean) : []; $('#pnl81', r).innerHTML = ps.map(p => `<option value="${esc(p)}">`).join(''); $('#pn', r).value = ps[0] || ''; };
       fill(); $('#vv', r).onchange = fill;
-      $('#ok', r).onclick = () => busy($('#ok', r), 'Moving…', async () => { await api('postEnd', { post_id: o.post_id, from: a.date, date: a.date }); await api('postAdd', { village_id: $('#vv', r).value, panchayat: $('#pn', r).value, person_id: o.person_id, from: a.date, date: a.date }); S.c76 = null; closeSheet(() => { toast('Moved'); re(); }); }); }); });
+      $('#ok', r).onclick = () => busy($('#ok', r), 'Moving…', async () => { const to = $('#vv', r).value, pnv = $('#pn', r).value; await api('postEnd', { post_id: o.post_id, from: a.date, date: a.date, lite: 1 }); await api('postAdd', { village_id: to, panchayat: pnv, person_id: o.person_id, from: a.date, date: a.date, lite: 1 });
+        P.villages.forEach(v => v.places.forEach(pl => { pl.officials = pl.officials.filter(x => x.post_id !== o.post_id); })); P.free = P.free.filter(f => f.post_id !== o.post_id); const tv = P.villages.find(v => v.village_id === to); if (tv) { let pl = tv.places.find(q => q.panchayat === pnv); if (!pl) { pl = { panchayat: pnv, camp_point: '', hamlets: '', officials: [] }; tv.places.push(pl); } pl.officials.push(Object.assign({}, o, { mark: 'moved', post_id: 'tmp' })); } S.h82At = 0; closeSheet(() => re()); }); }); });
   b2('ord81', () => runTask('Camp Order · ' + P.tehsil, ['Writing the order'], async () => { addFile(campOrderDocx81(P), `${P.tehsil} – Camp Order – for ${dmyL(P.date)}.docx`, 'Camp Order ready ✓ Fill in the number and date, send for signature'); return { msg: 'Camp Order ready ✓' }; }));
   b2('pn81', () => runTask('Public Notice · ' + P.tehsil, ['Writing the notice'], async () => { addFile(publicNoticeDocx81(P), `${P.tehsil} – Public Notice – Farmer ID camps – ${dmyL(P.date)}.docx`, 'Public Notice ready ✓ English + Urdu'); return { msg: 'Public Notice ready ✓' }; }));
   b2('cor81', () => { if (!DA81()) return fail('The Dealing Assistant makes the corrigendum.'); addFile(corrDocx81(P, D), `${P.tehsil} – Corrigendum – camps ${dmyL(P.date)}.docx`, 'Corrigendum ready ✓ After signing, record its number below');
@@ -9012,6 +9022,145 @@ setInterval(() => {
 }, 60000);
 
 Object.assign(PRAC_TASKS, { DA: [['regApply', 'Get the sample portal file (below), then drop it on Today'], ['wa:hour', 'Step 2: Send the update'], ['attSave', 'Step 3: attendance (one tap for everyone present)'], ['view:scn73', 'Step 4: notices'], ['view:plan81', 'Step 5: tomorrow’s camps']] });
+
+/* ======================= v8.2 · speed: instant taps, one status bar, screens from the phone, quiet refresh ======================= */
+const W82 = ['attSave', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'scnExempt', 'scnIssue', 'portalDown', 'regApply', 'uploadApply', 'saveUser', 'mutSave', 'saveSettings'];
+const api82raw = api;
+S.w82 = 0; S.perfC82 = [];
+api = async function (action, payload, timeout) {
+  const w = W82.includes(action), t0 = performance.now(); if (w) { S.w82++; sb82(); }
+  try { const r = await api82raw(action, payload, timeout); if (w) { S.lastOk82 = Date.now(); S.fail82 = null; } return r; }
+  catch (e) { if (w) S.fail82 = { msg: e.message, at: Date.now() }; throw e; }
+  finally { if (w) S.w82 = Math.max(0, S.w82 - 1); const ms = Math.round(performance.now() - t0); S.perfC82.push({ action, ms, at: nowIST().slice(11, 16) }); if (S.perfC82.length > 200) S.perfC82.shift(); sb82(); }
+};
+
+/* ---------- the outbox: a tap is kept on the phone until the server confirms it ---------- */
+const OB = { list: [], busy: false, recent: {} };
+(async () => { try { OB.list = ((await kget('ob82')) || []).map(x => { delete x.fly; return x; }); sb82(); setTimeout(obFlush, 3000); } catch (e) {} })();
+const obSave = () => { try { kput('ob82', OB.list); } catch (e) {} };
+function obAtt(tid, date, key, status) {
+  OB.list = OB.list.filter(x => !(x.tid === tid && x.date === date && x.key === key && !x.fly));
+  OB.list.push({ id: uid(), tid, date, key, status: status || '', tries: 0 });
+  delete OB.recent[key]; obSave(); obOverlay(S.c76); sb82(); obPaint(); clearTimeout(OB.t); OB.t = setTimeout(obFlush, 800);
+}
+function obOverlay(c) {
+  if (!c || !c.tehsils) return c;
+  OB.list.forEach(x => { if (x.date !== (c.date || todayIST())) return; const t = c.tehsils.find(y => y.tehsil_id === x.tid); if (!t) return;
+    t.villages.forEach(v => v.officials.forEach(o => { if (o.key === x.key) o.att = x.status; })); });
+  c.tehsils.forEach(t => { const seen = {}; let un = 0; t.villages.forEach(v => v.officials.forEach(o => { if (seen[o.key]) return; seen[o.key] = 1; if (!o.att) un++; })); t.unmarked = un;
+    t.absent = []; const s2 = {}; t.villages.forEach(v => v.officials.forEach(o => { if (o.att === 'A' && !s2[o.key]) { s2[o.key] = 1; t.absent.push({ key: o.key, name: o.name, designation: o.designation, village: v.name }); } })); });
+  return c;
+}
+const obState = key => { const x = OB.list.filter(y => y.key === key); if (x.some(y => y.err)) return 'err'; if (x.length) return 'wait'; return OB.recent[key] && Date.now() - OB.recent[key] < 4000 ? 'ok' : ''; };
+function obPaint() { $$('[data-ob]').forEach(e => { const s = obState(e.dataset.ob); e.className = 'ob82 ' + s; e.textContent = s === 'wait' ? '⏳' : s === 'ok' ? '✓' : s === 'err' ? '⚠' : ''; e.title = s === 'err' ? 'Not saved: tap Retry below' : ''; }); }
+async function obFlush() {
+  if (OB.busy || !S.session || S.viewAs) return;
+  const ready = OB.list.filter(x => !x.err && !x.fly && (!x.next || x.next <= Date.now()));
+  if (!ready.length || !navigator.onLine) { sb82(); return; }
+  OB.busy = true; sb82();
+  const g = {}; ready.forEach(x => (g[x.tid + '|' + x.date] = g[x.tid + '|' + x.date] || []).push(x));
+  for (const k of Object.keys(g)) { const its = g[k]; its.forEach(x => x.fly = 1);
+    try { await api82raw('attSave', { tehsil_id: its[0].tid, date: its[0].date, items: its.map(x => ({ key: x.key, status: x.status })), lite: 1 }, 40000);
+      const ids = its.map(x => x.id); OB.list = OB.list.filter(x => !ids.includes(x.id)); its.forEach(x => OB.recent[x.key] = Date.now()); S.lastOk82 = Date.now(); S.h82At = 0;
+    } catch (e) { its.forEach(x => { delete x.fly; x.tries++;
+      if (e instanceof NetError || /lock|timed out|timeout|too many|try again|log in again|server/i.test(e.message)) x.next = Date.now() + Math.min(60000, 2000 * Math.pow(2, x.tries)); else x.err = e.message; }); }
+  }
+  OB.busy = false; obSave(); sb82(); obPaint(); setTimeout(obPaint, 4200);
+  if (OB.list.some(x => !x.err)) setTimeout(obFlush, 2500);
+}
+setInterval(obFlush, 8000); window.addEventListener('online', () => setTimeout(obFlush, 500));
+function obRetry() { OB.list.forEach(x => { delete x.err; x.next = 0; x.tries = 0; }); obSave(); obFlush(); }
+
+/* ---------- one status bar at the bottom: Saving… / All saved ✓ / Not saved · Retry ---------- */
+function sb82() {
+  let e = document.getElementById('sb82'); if (!e) { if (!document.body) return; e = document.createElement('div'); e.id = 'sb82'; e.setAttribute('role', 'status'); document.body.appendChild(e); e.onclick = () => { if (e.dataset.k === 'err') { obRetry(); try { sync(); } catch (x) {} if ((S.problems || []).length) openSyncSheet(); } }; }
+  if (!S.session) { e.className = ''; return; }
+  const errs = OB.list.filter(x => x.err).length + (S.problems || []).length, pend = OB.list.filter(x => !x.err).length + (S.queue || []).length + (S.w82 || 0);
+  const failNow = S.fail82 && Date.now() - S.fail82.at < 7000;
+  let k = '', h = '';
+  if (errs) { k = 'err'; h = `⚠ ${errs} not saved · <u>Retry</u>`; }
+  else if (failNow && !pend) { k = 'err'; h = `⚠ Not saved: ${esc(String(S.fail82.msg).slice(0, 70))}`; }
+  else if (pend && !navigator.onLine) { k = 'off'; h = `No internet · ${pend} waiting · will send by itself`; }
+  else if (pend && OB.list.some(x => !x.err && x.tries >= 2)) { k = 'off'; h = `Network slow · ${pend} waiting · will send by itself`; }
+  else if (pend) { k = 's'; h = `<span class="sp82"></span>Saving${pend > 1 ? ' ' + pend : ''}…`; }
+  else if (S.lastOk82 && Date.now() - S.lastOk82 < 2500) { k = 'ok'; h = '✓ All saved'; }
+  e.dataset.k = k; e.className = k ? 'on ' + k : ''; if (h && e.innerHTML !== h) e.innerHTML = h;
+  clearTimeout(sb82._t); if (k === 'ok' || failNow) sb82._t = setTimeout(sb82, 2600);
+}
+setInterval(sb82, 3000); window.addEventListener('offline', sb82); window.addEventListener('online', sb82);
+{ const _up = updatePill; updatePill = function () { try { _up(); } catch (e) {} sb82(); }; }
+
+/* ---------- Today, villages and attendance from one light call; redraw only when something changed ---------- */
+const sig82 = o => { try { return JSON.stringify(o, (k, v) => (k === '_at' || k === 'now' ? undefined : v)); } catch (e) { return String(Math.random()); } };
+load80 = async function (force) {
+  if (!force && S.h82At && Date.now() - S.h82At < 45000) return false;
+  if (!navigator.onLine || S.viewAs) return false;
+  if (S.h82P) return S.h82P;
+  S.h82P = (async () => {
+    try { const r = await api82raw('home82', {}, 60000), before = sig82([S.dash, S.c76, S.live73]); S.h82At = Date.now();
+      if (r.dash) { S.dash = r.dash; S.dashAt = Date.now(); kput('dash', r.dash); }
+      if (r.c76) { r.c76._at = Date.now(); S.c76 = obOverlay(r.c76); kput('c76', S.c76); }
+      if (r.live73) { S.live73 = r.live73; S.liveAt = Date.now(); S.liveUv = S.uv; kput('live73', r.live73); }
+      return sig82([S.dash, S.c76, S.live73]) !== before;
+    } catch (e) { return false; } finally { S.h82P = null; } })();
+  return S.h82P;
+};
+{ const _c = loadC76; loadC76 = async function (force, date) { const r = await _c(force, date); return obOverlay(r); }; }
+/** A new portal file or a save somewhere: refresh quietly; the open screen redraws in place, scroll kept. */
+async function refresh82() { const ch = await load80(true); if (ch && S.redraw82 && !SHEET && document.visibilityState === 'visible') { const y = window.scrollY; S.redraw82(); window.scrollTo(0, y); } }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.session && S.h82At && Date.now() - S.h82At > 45000) refresh82(); });
+
+/* ---------- Back: the screen as it was, where it was ---------- */
+{ const _go = go; go = function (name, args) { const c = current(); if (c && c.args) c.args._y = window.scrollY; return _go(name, args); }; }
+{ const _r = render; render = async function () { const c = current(); S.redraw82 = null; const y = c && c.args ? c.args._y : 0; await _r(); if (y && current() === c) { window.scrollTo(0, y); delete c.args._y; } }; }
+/* a sheet closes at once (no wait for the phone's back step) */
+S.ign82n = 0;
+function done82() { const x = S.ign82; if (!x) return; S.ign82 = 0; clearTimeout(x.t); if (S.dirty) { S.dirty = false; render(); } if (x.after) x.after(); }
+closeSheet = function (after) { if (!SHEET) { if (after) after(); return; } closeAllSheets(); S.ign82 = { after, t: setTimeout(done82, 1500) }; S.ign82n++; history.back(); };
+
+/* ---------- Attendance: a tap is instant; ⏳ until saved, then ✓ ---------- */
+VIEWS.att81 = async function (a) {
+  setHeader('Attendance'); document.body.classList.add('wide'); const main = $('#view'), tid = curT(), can = DA81();
+  if (!S.c76) S.c76 = obOverlay(await kget('c76'));
+  const rowsOf = t => { const seen = {}, rows = []; t.villages.filter(v => !v.cancelled).forEach(v => { const ps = v.officials.filter(o => !seen[o.key] && (seen[o.key] = 1)); if (ps.length) rows.push({ v, ps }); }); return rows; };
+  const sumHtml = all => { const n = k => all.filter(o => o.att === k).length; return `<span class="g"><b>${n('P')}</b>present</span><span class="r"><b>${n('A')}</b>absent</span><span class="m"><b>${n('L')}</b>leave / duty</span><span class="u"><b>${all.filter(o => !o.att).length}</b>not marked</span>`; };
+  const draw = () => {
+    if (!current() || current().name !== 'att81') return;
+    const t = S.c76 && S.c76.tehsils && S.c76.date === todayIST() ? S.c76.tehsils.find(x => x.tehsil_id === tid) : null;
+    if (!t) { main.innerHTML = loadingHtml('Loading…'); return; }
+    const rows = rowsOf(t), all = rows.reduce((s, r) => s.concat(r.ps), []), un = all.filter(o => !o.att);
+    main.innerHTML = `<section class="pad">${tehSeg()}<div class="pl81h"><div><b>${esc(T8.dw(todayIST()))} · ${esc(t.name)}</b><small>From the geotagged photos in the group${can ? '' : ' · marked by the Dealing Assistant'}</small></div></div>
+      <div class="att81s" id="as82">${sumHtml(all)}</div>
+      ${can && un.length ? `<button class="big80" id="allp" style="margin:4px 0 6px">✓ Everyone not marked is Present (${un.length})</button><p class="hint">Then tap <b>A</b> only for those without a photo, <b>L</b> for leave or other duty. Each tap saves by itself: ⏳ saving, ✓ saved.</p>` : ''}
+      ${!can && un.length && hm() >= '11:00' ? '<div class="need80"><b>Not marked by 11 AM</b>The Dealing Assistant has not marked attendance yet.</div>' : ''}
+      ${rows.map(r => `<p class="sec7">${esc(r.v.name)}</p><div class="card7" style="padding:2px 12px">${r.ps.map(o => `<div class="t8-p"><span class="t"><b>${esc(o.name)}</b><small>${esc(o.designation)}${o.panchayat ? ' · ' + esc(o.panchayat) : ''}</small></span>
+        ${can ? `<i class="ob82" data-ob="${esc(o.key)}"></i><span class="pa8 pa81" data-row="${esc(o.key)}"><button class="${o.att === 'P' ? 'on P' : ''}" data-a="P">P</button><button class="${o.att === 'A' ? 'on A' : ''}" data-a="A">A</button><button class="${o.att === 'L' ? 'on L' : ''}" data-a="L">L</button></span>`
+        : `<span class="st81 ${o.att || 'u'}">${({ P: 'Present', A: 'Absent', L: 'Leave / duty' })[o.att] || 'Not marked'}</span>`}</div>`).join('')}</div>`).join('') || '<div class="empty">Nobody deployed today.</div>'}</section>`;
+    bindTehSeg(main); obPaint();
+    b2('allp', () => { un.forEach(o => obAtt(tid, todayIST(), o.key, 'P')); draw(); });
+    on(main, '[data-row] [data-a]', 'click', el => { const row = el.parentElement, k = row.dataset.row, cur = all.find(o => o.key === k), st = cur && cur.att === el.dataset.a ? '' : el.dataset.a;
+      all.filter(o => o.key === k).forEach(o => o.att = st);
+      row.querySelectorAll('button').forEach(b => { b.className = b.dataset.a === st ? 'on ' + st : ''; });
+      obAtt(tid, todayIST(), k, st); const s = $('#as82'); if (s) s.innerHTML = sumHtml(all); });
+  };
+  S.redraw82 = draw; draw(); if (await load80(false)) draw(); S.redraw82 = draw;
+};
+
+/* ---------- Speed: the slowest actions today (server) and on this phone ---------- */
+VIEWS.perf82 = async function () {
+  setHeader('Speed today'); document.body.classList.add('wide'); const main = $('#view'); main.innerHTML = loadingHtml('Loading…');
+  let r = null; try { r = await api('perfList', {}); } catch (e) { r = { actions: [], error: e.message }; }
+  const mine = {}; S.perfC82.forEach(x => { const m = mine[x.action] = mine[x.action] || { action: x.action, n: 0, sum: 0, max: 0 }; m.n++; m.sum += x.ms; m.max = Math.max(m.max, x.ms); });
+  const s1 = n => (n / 1000).toFixed(1) + ' s', row = x => `<div class="mt81"><span class="t"><b>${esc(x.action)}</b><small>${x.n} time${x.n > 1 ? 's' : ''}${x.fail ? ' · ' + x.fail + ' failed' : ''}</small></span><span class="df ${x.max > 8000 ? 'bad' : ''}" style="width:auto">avg ${s1(x.avg || Math.round(x.sum / x.n))} · max ${s1(x.max)}</span></div>`;
+  main.innerHTML = `<section class="pad"><p class="guide">Requests slower than 2.5 seconds on the server today (all users), and every request from this phone since it was opened.</p>
+    <p class="sec7">Server · slow requests</p><div class="card7" style="padding:0">${r.error ? `<p class="err" style="padding:12px">${esc(r.error)}</p>` : (r.actions || []).map(row).join('') || '<p class="hint" style="padding:12px">None today ✓</p>'}</div>
+    <p class="sec7">This phone</p><div class="card7" style="padding:0">${Object.keys(mine).map(k => mine[k]).sort((a, b) => b.max - a.max).slice(0, 15).map(row).join('') || '<p class="hint" style="padding:12px">Nothing yet.</p>'}</div></section>`;
+};
+{ const _s = VIEWS.set8; VIEWS.set8 = async function (a) { await _s(a); if (role() !== 'ADMIN') return; const box = $('#view .card7[style*="padding:0"]'); if (!box || $('#s82')) return;
+  const b = document.createElement('button'); b.className = 'row'; b.id = 's82'; b.innerHTML = '<span class="rt"><b>Speed today</b><small>The slowest actions, to find what to fix</small></span>'; b.onclick = () => go('perf82', {}); box.appendChild(b); }; }
+
+/* ---------- a new version on the phone: one tap to switch ---------- */
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'upd82') { const u = $('#upd'); if (u) u.hidden = false; } });
 
 Object.assign(HELP, {
   status: ['Villages', 'Today: each village against its target, with its In-charge and Patwari. Green = met, amber = on pace, red = behind.', 'Till date: by Patwar Halqa. Tap a village for its page.'],

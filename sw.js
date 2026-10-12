@@ -1,4 +1,4 @@
-const CACHE = 'farmerid-v28';
+const CACHE = 'farmerid-v29';
 const SHELL = ['./', './index.html', './app.html', './dash.js', './logo.svg', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
@@ -7,12 +7,18 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
-  // pages and the dashboard script: network first (always the newest), the phone's copy when offline
+  // pages and the dashboard script: the phone's copy at once; the newest is fetched quietly for next time
   const page = e.request.mode === 'navigate' || /\/$|\.html$|dash\.js$/.test(u.pathname);
   if (page) {
     const key = u.pathname.endsWith('/') ? u.pathname + 'index.html' : u.pathname;
-    e.respondWith(fetch(e.request).then(r => { if (r.ok) { const c = r.clone(); caches.open(CACHE).then(x => x.put(key, c)); } return r; })
-      .catch(() => caches.match(key).then(r => r || caches.match('./app.html'))));
+    e.respondWith(caches.open(CACHE).then(async c => {
+      const hit = await c.match(key);
+      const net = fetch(e.request).then(async r => { if (r.ok) { const tag = x => x ? (x.headers.get('etag') || x.headers.get('last-modified') || '') : ''; const o = tag(hit), n = tag(r);
+          await c.put(key, r.clone()); if (hit && o && n && o !== n) (await self.clients.matchAll()).forEach(x => x.postMessage('upd82')); } return r; })
+        .catch(() => hit || c.match('./app.html'));
+      if (hit) { e.waitUntil(net.catch(() => {})); return hit; }
+      return net;
+    }));
     return;
   }
   // Libraries in /lib/ and icons: from the phone's cache once fetched, so Excel and PDF work offline too.

@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '8.1.0';
+const APP_VERSION = '8.2.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '18';
+const SCHEMA_VERSION = '19';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -280,10 +280,11 @@ const WRITE_ACTIONS = ['placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'reg
 
 function route_(req) {
   if (req.action === 'ping') return { pong: 1 };
-  try { return route2_(req); } catch (e) {
+  const t0 = Date.now(); let ok82 = true;
+  try { return route2_(req); } catch (e) { ok82 = false;
     const m0 = String(e.message || e); if (m0 !== 'SESSION_EXPIRED' && !/PIN|Upload today|Not allowed|Wrong name|not found|Type |Choose /.test(m0)) { try { append_('Errors', [{ ts: now_(), user_id: '', action: String(req.action || ''), error: String(e.message || e).slice(0, 300) }]); } catch (e2) {} }
     throw e;
-  }
+  } finally { perf82_(req.action, Date.now() - t0, ok82); }
 }
 function route2_(req) {
   migrate_();
@@ -1742,8 +1743,8 @@ function regPlan_(req, u, apply) {
     Object.assign(o, { enrollment_no: String(r[1] || ''), village_id: lgd, tehsil_id: v.tehsil_id, name: String(r[2] || '').trim(), gender: String(r[3] || ''),
       age: String(r[4] || ''), category: String(r[5] || '').replace(/\s+/g, ' ').trim(), status: st, inserted_by: String(r[7] || ''),
       mobile: String(r[8] || '').replace(/\D/g, '').slice(-10), aadhaar: aad.length === 12 ? aad : o.aadhaar, aadhaar_mask: String(r[10] || ''),
-      name_score: String(r[12] || ''), last_seen: today, missing: '' });
-    const fl = String(o.files || '').split(',').filter(Boolean); if (fl.indexOf(fileIds[v.tehsil_id]) < 0) fl.push(fileIds[v.tehsil_id]); o.files = fl.join(',');
+      name_score: String(r[12] || ''), missing: '' });
+    if (!ex) { o.last_seen = today; o.files = fileIds[v.tehsil_id]; }
   });
   // Files are cumulative: a farmer once registered stays counted; nobody is ever marked missing.
   Object.keys(byT).forEach(t => { byT[t].missing = 0; });
@@ -1829,19 +1830,20 @@ function regPreview_(req, u) {
 
 function regApply_(req, u) {
   if (!req.backlog && !req.confirm) regGuard_(req, u);
+  const fb82 = snap82_('Farmers', read_('Farmers')), bb82 = snap82_('Buckets', read_('Buckets'));
   const p = regPlan_(req, u, true), logs = [], buckets = read_('Buckets'), now = p.now;
   const match = { auto: 0, suggested: 0, nomatch: 0, nolist: 0 };
   Object.keys(p.byT).forEach(t => {
     const r = linkFarmers_(t, p.farmers, buckets, u, true, logs); Object.keys(match).forEach(k => match[k] += r[k]);
     detectDups_(t, buckets);
   });
-  writeAll_('Farmers', p.farmers);
-  writeAll_('Buckets', buckets);
+  writeDiff82_('Farmers', p.farmers, fb82);
+  writeDiff82_('Buckets', buckets, bb82);
   append_('RegFiles', Object.keys(p.byT).map(t => ({ file_id: p.fileIds[t], tehsil_id: t, file_name: req.file_name || '', file_ts: req.file_ts || '', downloaded_at: p.dl,
     cov_from: p.covFrom, cov_to: p.covTo, note: req.backlog ? 'backlog' : (req.note || ''), uploaded_by: u.user_id, uploaded_at: now, rows: p.byT[t].rows, farmers: Object.keys(p.byT[t].ids).length,
     new: p.byT[t].new, newly_approved: p.byT[t].newly_approved, missing: p.byT[t].missing })));
   append_('Log', logs);
-  try { const pl = read_('PMK'); if (pl.length) { pmkMatch_(pl, u); writeAll_('PMK', pl); } } catch (e) {}
+  try { const pl = read_('PMK'); if (pl.length) { const pb82 = snap82_('PMK', pl); pmkMatch_(pl, u); writeDiff82_('PMK', pl, pb82); } } catch (e) {}
   try { if (now.slice(11, 16) >= String(setting_('day_close') || '17:00')) Object.keys(p.byT).forEach(t => closeDay_(t)); } catch (e) {}
   try { Object.keys(p.byT).forEach(t => { if (p.byT[t].ah && read_('Snapshots').some(x => x.tehsil_id === t && x.village_id === 'CLOSE' && x.date === addDays_(today_(), -1))) closeDay_(t, addDays_(today_(), -1)); }); } catch (e) {}
   return { file_ids: p.fileIds, at: now, after_hours: Object.keys(p.byT).reduce((a, t) => a + (p.byT[t].ah || 0), 0), new_total: Object.keys(p.byT).reduce((a, t) => a + p.byT[t].new, 0), villages: Object.keys(p.byV).map(k => p.byV[k]), unknown: p.unknown, match: match, downloaded_at: p.dl, cov_from: p.covFrom, cov_to: p.covTo,
@@ -3873,7 +3875,7 @@ function dash_(req) {
  * Annexure-B (R1 from the JKLR figures, R2 from the portal files), saturation and locking per village,
  * dead-owner mutations person by person, after-hours IDs, targets to the internal deadline, instant refresh.
  */
-const UV_ACTIONS = ['placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnIssue', 'sorterSave', 'mutCountsSave', 'regApply', 'uploadApply', 'pmkApply', 'staffingSave', 'satSave', 'jklrSave', 'deploySave', 'supLog', 'portalDown', 'mutSave', 'saveBuckets'];
+const UV_ACTIONS = ['scnExempt', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnIssue', 'sorterSave', 'mutCountsSave', 'regApply', 'uploadApply', 'pmkApply', 'staffingSave', 'satSave', 'jklrSave', 'deploySave', 'supLog', 'portalDown', 'mutSave', 'saveBuckets'];
 function ver_() { return { uv: CacheService.getScriptCache().get('uv') || '' }; }
 function tehsilTarget_(tid) {
   const s = settings_(), base = Number(s.daily_target_tehsil || 200), dl = s.internal_deadline || s.final_deadline, today = today_();
@@ -4609,6 +4611,7 @@ function postAdd_(req, u) {
   append_('Posting', [{ post_id: 'D' + Utilities.getUuid().replace(/-/g, '').slice(0, 9), tehsil_id: v.tehsil_id, village_id: v.village_id, panchayat: panch, person_id: pid, from, to: '', by: u.user_id, at: now_(), note: String(req.note || '').slice(0, 100) }]);
   const pn = (read_('People').find(p => p.person_id === pid) || {}).name || '';
   DB.auditNote = { tehsil_id: v.tehsil_id, target: pn, detail: 'deployed: ' + pn + ' → ' + v.name + (panch ? ' (' + panch + ')' : '') + ' from ' + from };
+  if (req.lite) return { ok: 1 };
   return camp76Get_({ tehsil_id: v.tehsil_id, date: req.date || today_() }, u);
 }
 /** Take a person off a village from a date; the record stays. */
@@ -4620,6 +4623,7 @@ function postEnd_(req, u) {
   DB.auditNote = { tehsil_id: r.tehsil_id, target: pn, detail: 'removed: ' + pn + ' from ' + vn + (r.panchayat ? ' (' + r.panchayat + ')' : '') + ' from ' + from }; if (from < addDays_(today_(), -1)) throw new Error('A change can start from yesterday at the earliest.');
   if (r.from >= from) { writeAll_('Posting', rows.filter(x => x.post_id !== r.post_id)); }
   else { r.to = addDays_(from, -1); r.note = String((r.note ? r.note + ' · ' : '') + 'removed by ' + u.name).slice(0, 120); writeRows_('Posting', [r]); }
+  if (req.lite) return { ok: 1 };
   return camp76Get_({ tehsil_id: r.tehsil_id, date: req.date || today_() }, u);
 }
 /** Present / Absent, once a day per person. */
@@ -4854,6 +4858,7 @@ function placeSave_(req, u) {
   Object.assign(r, { camp_point: String(req.camp_point || '').replace(/\s+/g, ' ').trim().slice(0, 120), hamlets: String(req.hamlets || '').replace(/\s+/g, ' ').trim().slice(0, 300), by: u.user_id, at: now_() });
   writeAll_('Places', rows);
   DB.auditNote = { tehsil_id: tid, target: '', detail: 'camp place: ' + ((read_('Villages').find(v => v.village_id === r.village_id) || {}).name || r.village_id) + (r.panchayat ? ' (' + r.panchayat + ')' : '') + ' = ' + r.camp_point };
+  if (req.lite) return { ok: 1 };
   return planData81_(tid, req.date || addDays_(today_(), 1));
 }
 /** The order is signed: its numbers are kept, the plan is frozen as issued (changes after this need a corrigendum). */
@@ -4988,6 +4993,7 @@ function cachedUv81_(key, ttl, fn) {
 
 /* -------- run once from the editor: setupTriggers81 (nightly backup at 11 PM, dashboard kept warm every 5 minutes) -------- */
 function backup81() {
+  try { archive82(); } catch (e) {}
   const ss = ss_(), f = DriveApp.getFileById(ss.getId()), it = DriveApp.getFoldersByName('Farmer ID backups'), folder = it.hasNext() ? it.next() : DriveApp.createFolder('Farmer ID backups');
   f.makeCopy('Farmer ID backup ' + now_().slice(0, 16).replace(':', ''), folder);
   const list = [], fi = folder.getFiles(); while (fi.hasNext()) list.push(fi.next());
@@ -5001,6 +5007,99 @@ function setupTriggers81() {
   backup81();
   return 'Done: nightly backup and dashboard warm-up are on.';
 }
+
+/* ============================== v8.2: SPEED ==============================
+ * Saves write only the rows that changed and reply in a few bytes; heavy reads are prepared once per change and reused;
+ * one call brings the whole Today screen; every slow request is logged for the Tehsildar.
+ */
+/* -------- write only what changed -------- */
+function sig82_(name, o) { return SCHEMA[name].map(k => cell_(o[k])).join('\u0001'); }
+function snap82_(name, rows) { const m = new Map(); rows.forEach(o => m.set(o, sig82_(name, o))); return m; }
+function writeRuns82_(name, objs, all) {
+  if (!objs.length) return;
+  const s = sheet_(name), h = SCHEMA[name], list = objs.slice().sort((a, b) => a._row - b._row), runs = [];
+  list.forEach(o => { const r = runs[runs.length - 1]; if (r && o._row === r[r.length - 1]._row + 1) r.push(o); else runs.push([o]); });
+  if (runs.length > 150) return writeAll_(name, all);
+  runs.forEach(r => s.getRange(r[0]._row, 1, r.length, h.length).setValues(r.map(o => h.map(k => cell_(o[k])))));
+}
+/** rows: the full list after the changes (same objects as read); before: snap82_ taken before the changes. */
+function writeDiff82_(name, rows, before) {
+  const ch = [], add = []; let kept = 0;
+  rows.forEach(o => { if (!o._row || !before.has(o)) add.push(o); else { kept++; if (before.get(o) !== sig82_(name, o)) ch.push(o); } });
+  if (kept !== before.size) return writeAll_(name, rows);      // something was removed: rewrite the sheet
+  writeRuns82_(name, ch, rows);
+  if (add.length) { const s = sheet_(name), h = SCHEMA[name], start = s.getLastRow() + 1; ensureRows_(s, start + add.length, h.length);
+    s.getRange(start, 1, add.length, h.length).setValues(add.map(o => h.map(k => cell_(o[k])))); add.forEach((o, i) => o._row = start + i); }
+  DB.cache[name] = rows;
+  return { changed: ch.length, added: add.length };
+}
+
+/* -------- attendance: one row per change, a short reply -------- */
+function attSave82_(req, u) {
+  const tid = req.tehsil_id; mustPost_(u, tid); if (u.role === 'NT') throw new Error('Attendance is marked by the Dealing Assistant.');
+  const date = req.date || today_(); if (date > today_() || date < addDays_(today_(), -2)) throw new Error('Attendance can be marked for today and the last 2 days.');
+  const rows = read_('Attend'), byK = {}; rows.forEach(a => { if (a.tehsil_id === tid && a.date === date) byK[a.key] = a; });
+  const ch = [], add = [], now = now_();
+  (req.items || []).forEach(it => { const st = ['P', 'A', 'L'].indexOf(it.status) >= 0 ? it.status : '', ex = byK[it.key], note = String(it.note || '').slice(0, 100);
+    if (ex) { if (ex.status !== st || ex.note !== note) { Object.assign(ex, { status: st, note, by: u.user_id, at: now }); ch.push(ex); } }
+    else if (st) { const r = { date, tehsil_id: tid, key: String(it.key), status: st, note, by: u.user_id, at: now }; add.push(r); byK[r.key] = r; } });
+  if (ch.length) writeRuns82_('Attend', ch, rows);
+  if (add.length) append_('Attend', add);
+  const its = req.items || [], nm = {}; people76_(tid).forEach(p => nm[p.key] = p.name); read_('Users').forEach(x => { if (!nm[x.user_id]) nm[x.user_id] = x.name; });
+  DB.auditNote = { tehsil_id: tid, target: its.length === 1 ? nm[its[0].key] || '' : '', detail: 'attendance ' + date + ': ' + its.map(it => (nm[it.key] || it.key) + ' ' + (it.status || 'cleared')).join(', ') };
+  if (req.lite) return { saved: its.length, at: now, keys: its.map(it => it.key) };
+  return camp76Get_({ tehsil_id: tid, date }, u);
+}
+
+/* -------- prepared once per change (any save bumps the version), reused by everyone -------- */
+function camp76c82_(req, u) {
+  if (isField_(u)) return camp76Get_(req, u);
+  return cachedUv81_('c76:' + u.role + ':' + userTehsils_(u).join(',') + ':' + (req.tehsil_id || '') + ':' + (req.date || today_()), 120, () => camp76Get_(req, u));
+}
+function live73c82_(req, u) {
+  if (isField_(u)) return live73_(req, u);
+  return cachedUv81_('l73:' + u.user_id + ':' + (req.tehsil_id || ''), 120, () => live73_(req, u));
+}
+function scnListc82_(req, u) {
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const ts = userTehsils_(u), tid = req.tehsil_id && ts.indexOf(req.tehsil_id) >= 0 ? req.tehsil_id : ts[0], date = req.date || addDays_(today_(), -1);
+  return cachedUv81_('scn:' + tid + ':' + date, 600, () => scnList_(Object.assign({}, req, { tehsil_id: tid, date }), u));
+}
+function planGetc82_(req, u) { const tid = planTid81_(req, u), date = req.date || addDays_(today_(), 1); return cachedUv81_('plan:' + tid + ':' + date, 300, () => planData81_(tid, date)); }
+/** Today in one trip: the dashboard, the campaign day and the live figures. */
+function home82_(req, u) {
+  const out = { now: now_() };
+  try { out.dash = Object.assign({ ok: true }, dash_({})); } catch (e) { out.dash = null; }
+  out.c76 = camp76c82_({}, u);
+  if (['ADMIN', 'NT', 'DA'].indexOf(u.role) >= 0) { try { out.live73 = live73c82_({}, u); } catch (e) { out.live73 = null; } }
+  return out;
+}
+
+/* -------- speed log: every request slower than 2.5 seconds -------- */
+function perf82_(action, ms, ok) {
+  if (ms < 2500 || action === 'ping' || action === 'ver') return;
+  try { const s = sheet_('Perf'); s.appendRow([now_(), String(action), String(ms), ok ? 'Y' : 'N']); } catch (e) {}
+}
+function perfList_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar sees this.');
+  const day = req.date || today_(), rows = read_('Perf').filter(r => String(r.ts).slice(0, 10) === day), by = {};
+  rows.forEach(r => { const x = by[r.action] = by[r.action] || { action: r.action, n: 0, sum: 0, max: 0, fail: 0 }; const ms = Number(r.ms) || 0; x.n++; x.sum += ms; x.max = Math.max(x.max, ms); if (r.ok === 'N') x.fail++; });
+  return { date: day, total: rows.length, actions: Object.keys(by).map(k => by[k]).map(x => ({ action: x.action, n: x.n, avg: Math.round(x.sum / x.n), max: x.max, fail: x.fail })).sort((a, b) => b.max - a.max).slice(0, 20) };
+}
+
+/* -------- nightly: logs older than 30 days move to archive tabs (the app reads less) -------- */
+function archive82() {
+  const cut = addDays_(today_(), -30);
+  [['Log', 'LogOld'], ['Audit', 'AuditOld']].forEach(([a, b]) => { try {
+    const rows = read_(a), old = rows.filter(r => String(r.ts).slice(0, 10) < cut); if (!old.length) return;
+    append_(b, old.map(r => Object.assign({}, r))); writeAll_(a, rows.filter(r => String(r.ts).slice(0, 10) >= cut));
+  } catch (e) {} });
+  try { const p = read_('Perf'), keep = p.filter(r => String(r.ts).slice(0, 10) >= addDays_(today_(), -7)); if (keep.length < p.length) writeAll_('Perf', keep); } catch (e) {}
+}
+
+SCHEMA.Perf = ['ts', 'action', 'ms', 'ok'];
+SCHEMA.LogOld = SCHEMA.Log; SCHEMA.AuditOld = SCHEMA.Audit;
+Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73c82_, scnList: scnListc82_, planGet: planGetc82_, home82: home82_, perfList: perfList_ });
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
