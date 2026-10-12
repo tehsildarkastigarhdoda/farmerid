@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '8.2.0';
+const APP_VERSION = '8.3.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '19';
+const SCHEMA_VERSION = '20';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -275,7 +275,7 @@ const ACTIONS = {
   planGet: planGet_, placeSave: placeSave_, planIssue: planIssue_, planCancel: planCancel_, dayFreeze: dayFreeze_, regUndo: regUndo_, regLast: regLast_, auditList: auditList_, leftList: leftList_, camp76: camp76Get_, people76: people76Get_, postAdd: postAdd_, postEnd: postEnd_, attSave: attSave_, staffing: staffing_, staffingSave: staffingSave_, designationsSave: designationsSave_, setPrefs: setPrefs_, weekTop: weekTop_, official: official_
 };
 
-const WRITE_ACTIONS = ['placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'userVillages', 'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'pinRequest', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkApply', 'pmkSave', 'portalDown', 'savePH', 'changePin', 'transferVillages', 'markSheetDone', 'startFresh', 'saveSummary', 'saveBucketing', 'saveText', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'resetPractice', 'deleteUser', 'saveVillageAll', 'logout', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply',
+const WRITE_ACTIONS = ['scnApprove', 'scnReply', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'userVillages', 'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'pinRequest', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkApply', 'pmkSave', 'portalDown', 'savePH', 'changePin', 'transferVillages', 'markSheetDone', 'startFresh', 'saveSummary', 'saveBucketing', 'saveText', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'resetPractice', 'deleteUser', 'saveVillageAll', 'logout', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply',
   'saveUser', 'resetPin', 'saveVillage', 'saveAssignments', 'saveReason', 'saveSettings', 'saveTehsil', 'login'];
 
 function route_(req) {
@@ -290,6 +290,7 @@ function route2_(req) {
   migrate_();
   const a = req.action;
   const isWrite = WRITE_ACTIONS.indexOf(a) >= 0;
+  if (isWrite && req.hb && req.hb.v && ['logout', 'logError', 'errorLog'].indexOf(a) < 0 && vnum83(req.hb.v) < vnum83(MIN_APP83)) throw new Error('APP_OLD: This app is an old version. Close it and open it again to update.');
   const cache = CacheService.getScriptCache();
   let actor = null;
   const run = () => {
@@ -3875,8 +3876,8 @@ function dash_(req) {
  * Annexure-B (R1 from the JKLR figures, R2 from the portal files), saturation and locking per village,
  * dead-owner mutations person by person, after-hours IDs, targets to the internal deadline, instant refresh.
  */
-const UV_ACTIONS = ['scnExempt', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnIssue', 'sorterSave', 'mutCountsSave', 'regApply', 'uploadApply', 'pmkApply', 'staffingSave', 'satSave', 'jklrSave', 'deploySave', 'supLog', 'portalDown', 'mutSave', 'saveBuckets'];
-function ver_() { return { uv: CacheService.getScriptCache().get('uv') || '' }; }
+const UV_ACTIONS = ['scnApprove', 'scnReply', 'scnExempt', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnIssue', 'sorterSave', 'mutCountsSave', 'regApply', 'uploadApply', 'pmkApply', 'staffingSave', 'satSave', 'jklrSave', 'deploySave', 'supLog', 'portalDown', 'mutSave', 'saveBuckets'];
+function ver_() { return { uv: CacheService.getScriptCache().get('uv') || '', app: MIN_APP83 }; }
 function tehsilTarget_(tid) {
   const s = settings_(), base = Number(s.daily_target_tehsil || 200), dl = s.internal_deadline || s.final_deadline, today = today_();
   if (!dl || today > dl) return base;
@@ -4547,7 +4548,7 @@ function camp76_(tid, date) {
   const star = ranked[0] ? { name: ranked[0].name, ids: ranked[0].ids, officials: ranked[0].officials.filter(o => o.att !== 'A').map(o => o.name) } : null;
   const per = {}; villages.forEach(v => v.officials.forEach(o => { if (o.att === 'A' || !v.target) return; const p = per[o.key] = per[o.key] || { name: o.name, designation: o.designation, ids: 0, target: 0, villages: [] }; p.ids += v.ids; p.target += v.target; p.villages.push(v.name); }));
   const best = Object.keys(per).map(k => per[k]).sort((a, b) => b.ids / b.target - a.ids / a.target || b.ids - a.ids)[0] || null;
-  return { tehsil_id: tid, name: tehsilName_(tid), date, live, early: live && minutesOf_(now_()) < 780, frozen_at: setting_('frz_' + tid + '_' + date) || '', down: portalDownPeriods_(tid, date), waiting: !frac, final: !live || nowHM >= '20:00', frac, ids: villages.reduce((a, v) => a + v.ids, 0), target: villages.reduce((a, v) => a + v.target, 0),
+  return { tehsil_id: tid, name: tehsilName_(tid), date, live, frozen_y: setting_('frz_' + tid + '_' + addDays_(date, -1)) || '', early: live && minutesOf_(now_()) < 780, frozen_at: setting_('frz_' + tid + '_' + date) || '', down: portalDownPeriods_(tid, date), waiting: !frac, final: !live || nowHM >= '20:00', frac, ids: villages.reduce((a, v) => a + v.ids, 0), target: villages.reduce((a, v) => a + v.target, 0),
     grades, villages, absent, unmarked: unmarked.length, deployed: Object.keys(seen).length, star, best: best ? { name: best.name, designation: best.designation, ids: best.ids, villages: best.villages } : null };
 }
 const hm12_ = hm => { let h = Number(hm.slice(0, 2)); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + hm.slice(3, 5) + ' ' + ap; };
@@ -4668,7 +4669,7 @@ function scnCamp76_(L, u) {
 }
 function scnList_(req, u) {
   const L = scnList73_(req, u);
-  return campOn_(L.date) ? scnCamp81_(L, u) : L;
+  return campOn_(L.date) ? scnCamp83_(L, u) : L;
 }
 
 /* -------- public dashboard: campaign block (names and counts; officials named only for the best) -------- */
@@ -5100,6 +5101,102 @@ function archive82() {
 SCHEMA.Perf = ['ts', 'action', 'ms', 'ok'];
 SCHEMA.LogOld = SCHEMA.Log; SCHEMA.AuditOld = SCHEMA.Audit;
 Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73c82_, scnList: scnListc82_, planGet: planGetc82_, home82: home82_, perfList: perfList_ });
+
+/* ============================== v8.3: THE TEHSILDAR APPROVES THE NOTICES; ATTENDANCE REGISTER; REPLIES ==============================
+ * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
+ * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
+ */
+const MIN_APP83 = '8.3.0';
+const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
+const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
+const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
+SCHEMA.ScnAppr = ['date', 'tehsil_id', 'status', 'sig', 'excluded', 'by', 'at'];
+SCHEMA.ScnReply = ['date', 'tehsil_id', 'user_id', 'reply_on', 'verdict', 'note', 'by', 'at'];
+
+function scnCamp83_(L, u) {
+  const R = scnCamp81_(L, u), tid = R.tehsil_id, date = R.date;
+  const ex = {}; read_('Exempt').filter(x => x.date === date && x.tehsil_id === tid).forEach(x => ex[x.user_id] = x.reason);
+  const rep = {}; read_('ScnReply').filter(x => x.tehsil_id === tid && x.date === date).forEach(x => rep[x.user_id] = { reply_on: x.reply_on, verdict: x.verdict, note: x.note });
+  // mobilisers answer for attendance only, never for the village target
+  R.groups.forEach(g => { g.persons = g.persons.filter(p => !(NOTGT83.test(p.designation || '') && !p.absent)); });
+  R.groups = R.groups.filter(g => g.persons.length);
+  // the DA's exemptions are suggestions; only portal-down time exempts by itself
+  R.groups.forEach(g => g.persons.forEach(p => { p.suggest = ex[p.key] || ''; p.exempt = p.exempt && p.exempt !== p.suggest ? p.exempt : ''; p.reply = rep[p.key] || null; }));
+  const proposed = []; R.groups.forEach(g => g.persons.forEach(p => { if (!p.exempt) proposed.push(g.gid + '|' + p.key + '|' + (p.absent ? 'A' : '') + (g.short ? 'S' : '')); }));
+  const sig = hash83(proposed.sort().join(';')), row = read_('ScnAppr').find(x => x.tehsil_id === tid && x.date === date);
+  let excl = {}; try { excl = row && row.excluded ? JSON.parse(row.excluded) : {}; } catch (e) { excl = {}; }
+  const status = !proposed.length ? 'NONE' : !row ? 'PENDING' : row.sig === sig ? 'APPROVED' : 'CHANGED';
+  R.groups.forEach(g => { g.persons.forEach(p => { if (status === 'APPROVED' && excl[p.key] !== undefined && !p.exempt) p.exempt = excl[p.key] || 'Excluded by the Tehsildar'; else if (excl[p.key] !== undefined) p.prev_excluded = excl[p.key] || 'Excluded'; });
+    const due = g.persons.filter(p => !p.exempt); g.exempt = due.length ? '' : 'Everyone exempt'; g.issued_on = due.length && due.every(p => p.issued_on) ? due[0].issued_on : ''; g.repeat = due.some(p => p.repeat); });
+  const dueK = {}; R.groups.forEach(g => g.persons.forEach(p => { if (!p.exempt) dueK[p.key] = 1; }));
+  R.items = R.items.filter(it => it.sort || R.groups.some(g => g.persons.some(p => p.key === it.user_id)))
+    .map(it => Object.assign(it, { exempt: it.sort && !it.camp ? it.exempt : dueK[it.user_id] ? '' : (it.exempt || 'Excluded'), reply: rep[it.user_id] || null }));
+  const un = {}; read_('Users').forEach(x => un[x.user_id] = x.name);
+  R.approval = { status, by: row ? un[row.by] || '' : '', at: row ? row.at : '', n: Object.keys(dueK).length, notices: R.groups.filter(g => !g.exempt).length, proposed: proposed.length };
+  R.locked = status !== 'APPROVED' && status !== 'NONE'; R.sig = sig;
+  return R;
+}
+function scnApprove_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar approves the notices.');
+  const tid = req.tehsil_id, date = req.date; if (!tid || !date) throw new Error('Choose the tehsil and the day.');
+  const L = scnList_({ tehsil_id: tid, date }, u); if (!L.camp) throw new Error('Approval is for campaign days only.');
+  const keys = {}; L.groups.forEach(g => g.persons.forEach(p => keys[p.key] = 1));
+  const excl = {}; Object.keys(req.excluded || {}).forEach(k => { if (keys[k]) excl[k] = String(req.excluded[k] || '').slice(0, 100); });
+  const rows = read_('ScnAppr').filter(x => !(x.tehsil_id === tid && x.date === date));
+  rows.push({ date, tehsil_id: tid, status: 'APPROVED', sig: L.sig, excluded: JSON.stringify(excl), by: u.user_id, at: now_() });
+  writeAll_('ScnAppr', rows);
+  DB.auditNote = { tehsil_id: tid, target: '', detail: 'notices for ' + date + ' approved: ' + (Object.keys(keys).length - Object.keys(excl).length) + ' officials' + (Object.keys(excl).length ? ', excluded ' + Object.keys(excl).length : '') };
+  return scnList_({ tehsil_id: tid, date }, u);
+}
+function scnIssue83_(req, u) {
+  if (!req.undo) { const L = scnList_({ tehsil_id: req.tehsil_id, date: req.date }, u); if (L.camp && L.locked) throw new Error('The Tehsildar has not approved the list yet. Notices can be issued after approval.'); }
+  return scnIssue_(req, u);
+}
+/** The Nazir's register: reply received, satisfactory or not. */
+function scnReply_(req, u) {
+  if (['ADMIN', 'DA'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const tid = req.tehsil_id; mustManage_(u, tid);
+  const rows = read_('ScnReply').filter(x => !(x.date === req.date && x.tehsil_id === tid && x.user_id === req.user_id));
+  if (req.reply_on || req.verdict) rows.push({ date: req.date, tehsil_id: tid, user_id: req.user_id, reply_on: req.reply_on || today_(), verdict: req.verdict || '', note: String(req.note || '').slice(0, 150), by: u.user_id, at: now_() });
+  writeAll_('ScnReply', rows);
+  DB.auditNote = { tehsil_id: tid, target: '', detail: 'reply for notice of ' + req.date + ': ' + (req.verdict || (req.reply_on ? 'received' : 'cleared')) };
+  return { ok: 1 };
+}
+function replyList_(req, u) {
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const ts = userTehsils_(u), rep = {}; read_('ScnReply').forEach(x => rep[x.tehsil_id + '|' + x.date + '|' + x.user_id] = x);
+  const nm = {}; ts.forEach(t => people76_(t).forEach(p => nm[p.key] = p)); read_('Users').forEach(x => { if (!nm[x.user_id]) nm[x.user_id] = { name: x.name, designation: x.designation, department: 'Revenue' }; });
+  const rows = read_('Scn').filter(x => ts.indexOf(x.tehsil_id) >= 0 && x.issued_on && campOn_(x.date)).map(x => { const r = rep[x.tehsil_id + '|' + x.date + '|' + x.user_id] || {}, p = nm[x.user_id] || {};
+    return { date: x.date, tehsil_id: x.tehsil_id, user_id: x.user_id, name: p.name || '', designation: p.designation || '', department: p.department || '', kind: x.kind, issued_on: x.issued_on, repeat: x.repeat || '', reply_on: r.reply_on || '', verdict: r.verdict || '' }; })
+    .sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : a.name.localeCompare(b.name));
+  return { rows };
+}
+
+/* -------- the attendance register: every official, every campaign day -------- */
+function register83_(req, u) {
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const ts = userTehsils_(u).filter(t => !req.tehsil_id || t === req.tehsil_id);
+  return cachedUv81_('reg83:' + ts.join(','), 300, () => {
+    const today = today_(), dates = []; let d = campFrom_(), g = 0; while (d <= today && g++ < 60) { dates.push(d); d = addDays_(d, 1); }
+    const vn = {}; read_('Villages').forEach(v => vn[v.village_id] = v.name);
+    const scn = {}; read_('Scn').forEach(x => { if (x.issued_on && campOn_(x.date)) scn[x.tehsil_id + '|' + x.user_id] = (scn[x.tehsil_id + '|' + x.user_id] || 0) + 1; });
+    const rep = {}; read_('ScnReply').forEach(x => rep[x.tehsil_id + '|' + x.date + '|' + x.user_id] = 1);
+    const pend = {}; read_('Scn').forEach(x => { if (x.issued_on && campOn_(x.date) && !rep[x.tehsil_id + '|' + x.date + '|' + x.user_id]) pend[x.tehsil_id] = (pend[x.tehsil_id] || 0) + 1; });
+    return { dates, today, tehsils: ts.map(tid => {
+      const ppl = {}; people76_(tid).forEach(p => ppl[p.person_id] = p);
+      const att = {}; read_('Attend').forEach(a => { if (a.tehsil_id === tid && a.status) att[a.date + '|' + a.key] = a.status; });
+      const out = {};
+      dates.forEach(dt => postingsOn_(tid, dt).forEach(r => { const p = ppl[r.person_id]; if (!p) return;
+        const x = out[p.key] = out[p.key] || { key: p.key, name: p.name, designation: p.designation, department: p.department, mobile: p.mobile || '', mobiliser: NOTGT83.test(p.designation || ''), v: {}, a: {} };
+        x.v[dt] = x.v[dt] ? (x.v[dt].indexOf(vn[r.village_id]) < 0 ? x.v[dt] + ', ' + vn[r.village_id] : x.v[dt]) : vn[r.village_id] || r.village_id; x.a[dt] = att[dt + '|' + p.key] || ''; }));
+      const people = Object.keys(out).map(k => out[k]).map(x => Object.assign(x, { abs: dates.filter(dt => x.a[dt] === 'A').length, leave: dates.filter(dt => x.a[dt] === 'L').length, notices: scn[tid + '|' + x.key] || 0 }))
+        .sort((a, b) => b.abs - a.abs || a.name.localeCompare(b.name));
+      return { tehsil_id: tid, name: tehsilName_(tid), people, replies_pending: pend[tid] || 0 };
+    }) };
+  });
+}
+
+Object.assign(ACTIONS, { scnApprove: scnApprove_, scnReply: scnReply_, replyList: replyList_, register83: register83_, scnIssue: scnIssue83_ });
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
