@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '8.4.0';
+const APP_VERSION = '8.5.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '21';
+const SCHEMA_VERSION = '22';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -376,6 +376,7 @@ function migrate_() {
     if (Number(ver) < 16) migrateV16_();
     if (Number(ver) < 17) migrateV17_();
     if (Number(ver) < 18) migrateV18_();
+    if (Number(ver) < 22) migrateV22_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -4609,10 +4610,11 @@ function postAdd_(req, u) {
   const panch = String(req.panchayat || '').replace(/\s+/g, ' ').trim();
   const rows = read_('Posting');
   if (rows.some(r => r.village_id === v.village_id && r.person_id === pid && (r.panchayat || '') === panch && (!r.to || r.to >= from) && r.from <= from)) throw new Error('Already deployed there.');
-  append_('Posting', [{ post_id: 'D' + Utilities.getUuid().replace(/-/g, '').slice(0, 9), tehsil_id: v.tehsil_id, village_id: v.village_id, panchayat: panch, person_id: pid, from, to: '', by: u.user_id, at: now_(), note: String(req.note || '').slice(0, 100) }]);
+  const np85 = 'D' + Utilities.getUuid().replace(/-/g, '').slice(0, 9);
+  append_('Posting', [{ post_id: np85, tehsil_id: v.tehsil_id, village_id: v.village_id, panchayat: panch, person_id: pid, from, to: '', by: u.user_id, at: now_(), note: String(req.note || '').slice(0, 100) }]);
   const pn = (read_('People').find(p => p.person_id === pid) || {}).name || '';
   DB.auditNote = { tehsil_id: v.tehsil_id, target: pn, detail: 'deployed: ' + pn + ' → ' + v.name + (panch ? ' (' + panch + ')' : '') + ' from ' + from };
-  if (req.lite) return { ok: 1 };
+  if (req.lite) return { ok: 1, post_id: np85 };
   return camp76Get_({ tehsil_id: v.tehsil_id, date: req.date || today_() }, u);
 }
 /** Take a person off a village from a date; the record stays. */
@@ -4630,7 +4632,7 @@ function postEnd_(req, u) {
 /** Present / Absent, once a day per person. */
 function attSave_(req, u) {
   const tid = req.tehsil_id; mustPost_(u, tid); if (u.role === 'NT') throw new Error('Attendance is marked by the Dealing Assistant.');
-  const date = req.date || today_(); if (date > today_() || date < addDays_(today_(), -2)) throw new Error('Attendance can be marked for today and the last 2 days.');
+  const date = req.date || today_(); if ((date > today_() && !(date === addDays_(today_(), 1) && (req.items || []).every(it => it.status === 'L' || !it.status))) || date < addDays_(today_(), -2)) throw new Error('Attendance can be marked for today and the last 2 days (leave also for tomorrow).');
   const rows = read_('Attend'), keep = rows.filter(a => !(a.tehsil_id === tid && a.date === date && (req.items || []).some(it => it.key === a.key)));
   (req.items || []).forEach(it => { if (['P', 'A', 'L'].indexOf(it.status) >= 0) keep.push({ date, tehsil_id: tid, key: it.key, status: it.status, note: String(it.note || '').slice(0, 100), by: u.user_id, at: now_() }); });
   writeAll_('Attend', keep);
@@ -4818,7 +4820,7 @@ function planData81_(tid, date) {
   const cur = postingsOn_(tid, date).filter(r => vin[r.village_id]), prev = postingsOn_(tid, addDays_(date, -1)).filter(r => vin[r.village_id]);
   const vOf = rows => { const m = {}; rows.forEach(r => { const p = ppl[r.person_id]; if (p && (m[p.key] = m[p.key] || []).indexOf(r.village_id) < 0) m[p.key].push(r.village_id); }); return m; };
   const cv = vOf(cur), pv = vOf(prev), vn = id => (vm[id] || {}).name || id;
-  const NOD = nodalMap84_();
+  const NOD = nodalMap84_(), VON85 = setting_('vnodal_' + tid) === 'Y', DEF85 = nodal81_(tid);
   const places = {}; read_('Places').forEach(p => { if (p.tehsil_id === tid) places[p.village_id + '|' + (p.panchayat || '')] = p; });
   const done = [], free = [], villages = [];
   st.villages.filter(v => v.total > 0 && v.kind !== 'COLLECT').forEach(v0 => {
@@ -4829,7 +4831,7 @@ function planData81_(tid, date) {
     if (fin) { done.push({ village_id: vid, name: v0.name, why: left === 0 ? 'Finished' : 'Practically done' }); offs.forEach(o => free.push({ key: o.key, post_id: o.post_id, name: o.name, designation: o.designation, village: v0.name, village_id: vid })); return; }
     const pn = {}; offs.forEach(o => (pn[o.panchayat] = pn[o.panchayat] || []).push(o));
     const pw = patwariOf_(v, phs, users);
-    villages.push({ village_id: vid, name: v0.name, nodal: NOD[vid] || null, left, target: Math.min(vt, left), patwari: pw ? pw.name : '', cancelled: CX[vid] || '',
+    villages.push({ village_id: vid, name: v0.name, nodal: VON85 ? (NOD[vid] || null) : { name: DEF85.name, designation: DEF85.designation, default: true }, left, target: Math.min(vt, left), patwari: pw ? pw.name : '', cancelled: CX[vid] || '',
       places: Object.keys(pn).sort().map(k => { const pl = places[vid + '|' + k] || {}; return { panchayat: k, camp_point: pl.camp_point || '', hamlets: pl.hamlets || '',
         officials: pn[k].sort((a, b) => a.rank - b.rank || a.name.localeCompare(b.name)) }; }) });
   });
@@ -5039,7 +5041,7 @@ function writeDiff82_(name, rows, before) {
 /* -------- attendance: one row per change, a short reply -------- */
 function attSave82_(req, u) {
   const tid = req.tehsil_id; mustPost_(u, tid); if (u.role === 'NT') throw new Error('Attendance is marked by the Dealing Assistant.');
-  const date = req.date || today_(); if (date > today_() || date < addDays_(today_(), -2)) throw new Error('Attendance can be marked for today and the last 2 days.');
+  const date = req.date || today_(); if ((date > today_() && !(date === addDays_(today_(), 1) && (req.items || []).every(it => it.status === 'L' || !it.status))) || date < addDays_(today_(), -2)) throw new Error('Attendance can be marked for today and the last 2 days (leave also for tomorrow).');
   const rows = read_('Attend'), byK = {}; rows.forEach(a => { if (a.tehsil_id === tid && a.date === date) byK[a.key] = a; });
   const ch = [], add = [], now = now_();
   (req.items || []).forEach(it => { const st = ['P', 'A', 'L'].indexOf(it.status) >= 0 ? it.status : '', ex = byK[it.key], note = String(it.note || '').slice(0, 100);
@@ -5107,7 +5109,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '8.4.0';
+const MIN_APP83 = '8.5.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -5218,7 +5220,8 @@ function nodalSave_(req, u) {
 function camp84_(c) {
   const N = nodalMap84_();
   (c.tehsils || []).forEach(t => { const at = {}; t.villages.forEach(v => v.officials.forEach(o => { (at[o.key] = at[o.key] || []).indexOf(v.name) < 0 && at[o.key].push(v.name); }));
-    t.villages.forEach(v => { v.nodal = N[v.village_id] || null; v.officials.forEach(o => { o.multi = SUPV84.test(o.designation || '') ? [] : (at[o.key] || []).filter(n => n !== v.name); }); });
+    const VON = setting_('vnodal_' + t.tehsil_id) === 'Y', DEF = nodal81_(t.tehsil_id);
+    t.villages.forEach(v => { v.nodal = VON ? (N[v.village_id] || null) : { name: DEF.name, designation: DEF.designation, default: true }; v.officials.forEach(o => { o.multi = SUPV84.test(o.designation || '') ? [] : (at[o.key] || []).filter(n => n !== v.name); }); });
     t.doubles = Object.keys(at).filter(k => at[k].length > 1).map(k => { let o = null; t.villages.some(v => (o = v.officials.find(x => x.key === k))); return o && !SUPV84.test(o.designation || '') ? { key: k, name: o.name, designation: o.designation, villages: at[k] } : null; }).filter(Boolean); });
   return c;
 }
@@ -5235,7 +5238,7 @@ function review84_(req, u) {
   const N = nodalMap84_(), cv = {}; c.villages.forEach(v => cv[v.village_id] = v), hist = {}; rt.people.forEach(p => hist[p.key] = p);
   const reasonsOf = bc => Object.keys(bc || {}).filter(k => rs[k] && rs[k].tier !== 'C' && bc[k]).map(k => ({ code: k, tier: rs[k].tier, label: rs[k].label, n: bc[k] })).sort((a, b) => b.n - a.n);
   const vs = st.villages.filter(v => v.total > 0 && v.kind !== 'COLLECT').map(v => { const n = villageNums_(v), x = cv[v.village_id] || {}, pw = patwariOf_(vm[v.village_id] || {}, phs, users), gen = Math.min(n.total, n.generated);
-    return { village_id: v.village_id, name: v.name, patwari: pw ? pw.name : '', nodal: N[v.village_id] || null, total: n.total, gen, pct: n.total ? Math.round(gen * 1000 / n.total) / 10 : 0, pending: Math.max(0, n.total - gen),
+    return { village_id: v.village_id, name: v.name, patwari: pw ? pw.name : '', nodal: setting_('vnodal_' + tid) === 'Y' ? (N[v.village_id] || null) : { name: nodal81_(tid).name, designation: nodal81_(tid).designation, default: true }, total: n.total, gen, pct: n.total ? Math.round(gen * 1000 / n.total) / 10 : 0, pending: Math.max(0, n.total - gen),
       can: n.can, notgen: n.stuck + n.cannot, notchecked: n.notsorted, reasons: reasonsOf(n.by_code), today: x.ids || 0, target: x.target || 0, grade: x.grade || '', cancelled: x.cancelled || '',
       officials: (x.officials || []).map(o => ({ name: o.name, designation: o.designation, department: o.department, panchayat: o.panchayat, att: o.att || '', abs: (hist[o.key] || {}).abs || 0, multi: o.multi || [], mobiliser: NOTGT83.test(o.designation || '') })) }; });
   const order = g => '-DCBAPS'.indexOf(g || '-');
@@ -5279,6 +5282,32 @@ function errList84_(req, u) {
 }
 
 Object.assign(ACTIONS, { camp76: camp76c84_, home82: home84_, nodalSave: nodalSave_, review84: review84_, dept84: dept84_, errList: errList84_ });
+
+/* ============================== v8.5: ALLOTMENT MADE EASY ==============================
+ * Tomorrow's plan also lists everyone not allotted (with where he worked before), leave marked in advance,
+ * and, in Assar, a nodal officer per village (Kastigarh: the Naib Tehsildar Topneel for every village).
+ */
+const MOB85 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|anganwadi|\bAWW\b/i;
+function migrateV22_() { if (!read_('Settings').some(r => r.key === 'vnodal_T_ASSAR')) setSetting_('vnodal_T_ASSAR', 'Y'); }
+const planData81raw_ = planData81_;
+planData81_ = function (tid, date) {
+  const P = planData81raw_(tid, date), ATT = {}; read_('Attend').forEach(a => { if (a.tehsil_id === tid && a.date === date && a.status) ATT[a.key] = a.status; });
+  P.set.vnodal = setting_('vnodal_' + tid) === 'Y';
+  const posted = {}; P.villages.forEach(v => v.places.forEach(pl => pl.officials.forEach(o => { posted[o.key] = 1; o.att = ATT[o.key] || ''; o.leave = ATT[o.key] === 'L'; })));
+  P.free.forEach(f => posted[f.key] = 1);
+  const vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v.name), hist85 = {};
+  const ppl = people76_(tid), byPid = {}; ppl.forEach(p => byPid[p.person_id] = p);
+  read_('Posting').filter(r => r.tehsil_id === tid && r.from < date).sort((a, b) => a.from < b.from ? 1 : -1).forEach(r => { const p = byPid[r.person_id]; if (!p) return; const h = hist85[p.key] = hist85[p.key] || { last: vm[r.village_id] || '', worked: [] }; if (h.worked.indexOf(r.village_id) < 0) h.worked.push(r.village_id); });
+  const linked = {}; ppl.forEach(p => { if (p.user_id) linked[p.user_id] = 1; });
+  const extra = read_('Users').filter(x => x.active === 'Y' && !linked[x.user_id] && x.role === 'OPERATOR' && userTehsils_(x).indexOf(tid) >= 0 && x.designation !== 'Sorting helper')
+    .map(x => ({ person_id: '', user_id: x.user_id, key: x.user_id, name: x.name, designation: x.designation, department: 'Revenue' }));
+  P.unallotted = ppl.filter(p => p.active !== 'N').map(p => ({ person_id: p.person_id, user_id: p.user_id || '', key: p.key, name: p.name, designation: p.designation, department: p.department })).concat(extra)
+    .filter(p => !posted[p.key] && !MOB85.test(p.designation || ''))
+    .map(p => Object.assign(p, { leave: ATT[p.key] === 'L', last: (hist85[p.key] || {}).last || '', worked: (hist85[p.key] || {}).worked || [] }))
+    .sort((a, b) => (a.leave ? 1 : 0) - (b.leave ? 1 : 0) || a.designation.localeCompare(b.designation) || a.name.localeCompare(b.name));
+  P.free.forEach(f => { f.worked = (hist85[f.key] || {}).worked || []; });
+  return P;
+};
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
