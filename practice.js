@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '9.2.0';
+const APP_VERSION = '9.3.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '22';
+const SCHEMA_VERSION = '23';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -5107,7 +5107,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '9.2.0';
+const MIN_APP83 = '9.3.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -5637,6 +5637,334 @@ function home92_(req, u) {
 }
 
 Object.assign(ACTIONS, { home82: home92_, health: healthGet_ });
+
+/* ============================== v9.3: SHOW CAUSE NOTICES, DEPARTMENT-WISE, IN FIVE STEPS ==============================
+ * Grounds come only from the data: a camp village below the minimum (50, or the target when fewer farmers remain)
+ * gives "Low progress" to the officials present there and to its Patwari, and "Not ensuring compliance" to the Nodal
+ * Officer for all such villages; an official marked absent gets "Unauthorised absence". Mobilisers answer for
+ * attendance only. One notice per department per day; levels count every notice of the campaign.
+ * Steps: replies first → list (DA) → approval (Tehsildar) → numbers and Word files → signed → sent.
+ */
+SCHEMA.ScnDay93 = ['date', 'tehsil_id', 'status', 'sig', 'excluded', 'return_note', 'sub_by', 'sub_at', 'appr_by', 'appr_at', 'nos', 'notice_date', 'reply_by', 'files_at', 'signed_at', 'sent_at', 'frozen', 'n', 'by', 'at'];
+SCHEMA.Scn93 = ['date', 'tehsil_id', 'key', 'name', 'designation', 'grp', 'villages', 'grounds', 'level', 'no', 'notice_date', 'reply_by', 'sent_at', 'recv', 'recv_by', 'recv_at', 'verdict', 'judge_by', 'judge_at', 'drop', 'dc_at'];
+const G93 = { C: 'Not ensuring compliance of directions', L: 'Low progress', A: 'Unauthorised absence' };
+const GRP93 = ['NT', 'Revenue', 'RDD', 'Agriculture', 'Horticulture', 'ICDS', 'DYSSO', 'Other'];
+const GNAME93 = { NT: 'Naib Tehsildar', Revenue: 'Revenue', RDD: 'Rural Development', Agriculture: 'Agriculture', Horticulture: 'Horticulture', ICDS: 'Anganwadi (ICDS)', DYSSO: 'Youth Services and Sports', Other: 'Other departments' };
+const DDO93 = {
+  T_KASTIGARH: { Revenue: 'Tehsildar, Doda', RDD: 'Block Development Officer, Kastigarh', Agriculture: 'Agriculture Extension Officer, Kastigarh', Horticulture: 'Horticulture Development Officer, Kastigarh/Bhagwah', ICDS: 'Child Development Project Officer, Bhagwah' },
+  T_ASSAR: { Revenue: 'Tehsildar, Doda', RDD: 'Block Development Officer, Assar', Agriculture: 'Agriculture Extension Officer, Assar', Horticulture: 'Horticulture Development Officer, Assar', ICDS: 'Child Development Project Officer, Assar' } };
+const COPY93 = { T_KASTIGARH: 'Assistant Commissioner Revenue, Doda', T_ASSAR: 'Sub-Divisional Magistrate, Assar' };
+const ICDS93 = /anganwadi|\bAWW\b|\bAWH\b|\bICDS\b|\bCDPO\b/i;
+
+function grp93_(designation, department) {
+  const d = String(designation || '');
+  if (/naib tehsildar/i.test(d)) return 'NT';
+  if (ICDS93.test(d) || department === 'ICDS') return 'ICDS';
+  return GRP93.indexOf(department) > 0 ? department : department ? 'Other' : 'Revenue';
+}
+function ddo93_(tid, g) {
+  if (g === 'NT') return '';
+  const s = setting_('ddo93_' + g + '_' + tid);
+  if (s) return s === '-' ? '' : s;
+  return (DDO93[tid] || {})[g] || setting_('ctrl_' + g + '_' + tid) || '';
+}
+const min93_ = () => Number(setting_('scn_min') || 50);
+const sd93_ = () => read_('ScnDay93');
+function day93_(tid, date) { return sd93_().find(x => x.tehsil_id === tid && x.date === date) || null; }
+function dayPut93_(tid, date, fn) {
+  const rows = sd93_(); let r = rows.find(x => x.tehsil_id === tid && x.date === date);
+  if (!r) { r = {}; SCHEMA.ScnDay93.forEach(k => r[k] = ''); Object.assign(r, { date, tehsil_id: tid }); rows.push(r); }
+  fn(r); r.at = now_(); writeAll_('ScnDay93', rows); return r;
+}
+const j93 = (s, d) => { try { return s ? JSON.parse(s) : d; } catch (e) { return d; } };
+
+/** Every notice already sent to each person before a date (the campaign's count; dropped ones are left out). */
+function hist93_(tid, before) {
+  const out = {}, seen = {};
+  read_('Scn93').forEach(x => { if (x.tehsil_id !== tid || !x.sent_at || x.date >= before) return; seen[x.date + '|' + x.key] = 1;
+    if (x.drop === 'Y') return; (out[x.key] = out[x.key] || []).push({ date: x.date, no: x.no, notice_date: x.notice_date, verdict: x.verdict, recv: x.recv }); });
+  // notices issued before v9.3 count too
+  read_('Scn').forEach(x => { if (x.tehsil_id !== tid || !x.issued_on || !campOn_(x.date) || x.date >= before || seen[x.date + '|' + x.user_id]) return;
+    (out[x.user_id] = out[x.user_id] || []).push({ date: x.date, no: '', notice_date: x.issued_on, verdict: '', recv: '' }); });
+  Object.keys(out).forEach(k => out[k].sort((a, b) => a.date < b.date ? -1 : 1));
+  return out;
+}
+/** The day the DA works on: today once the day is closed, else yesterday. */
+function scnDate93_(tid, req) {
+  const today = today_();
+  if (req && req.date) return req.date;
+  if (frz81_(tid, today)) return today;
+  return addDays_(today, -1);
+}
+function ntOf93_(tid) {
+  const nod = nodal81_(tid), nts = ntsOf_(tid), nm = String(nod.name || '').toLowerCase();
+  const u = nts.find(x => nm && (nm.indexOf(String(x.name).toLowerCase()) === 0 || String(x.name).toLowerCase().indexOf(nm) === 0)) || nts.find(x => /naib tehsildar/i.test(x.designation || '')) || (nm ? null : nts[0]);
+  if (u) return { key: u.user_id, name: nod.name || u.name, designation: nod.designation || 'Naib Tehsildar' };
+  return nod.name ? { key: 'NODAL:' + tid, name: nod.name, designation: nod.designation || 'Naib Tehsildar' } : null;
+}
+
+/** Who gets a notice for a day, and why. Pure: reads the figures, writes nothing. */
+function scnBuild93_(tid, date) {
+  const cd = camp76_(tid, date), CX = cancel81_(tid, date), downF = Math.min(1, downFrac81_(tid, date)), MIN = min93_();
+  const ex = {}; read_('Exempt').filter(x => x.date === date && x.tehsil_id === tid).forEach(x => ex[x.user_id] = x.reason);
+  const P = {}, below = [], left = [], unmarked = [], seniors = [];
+  const add = (key, name, designation, department) => P[key] = P[key] || { key, name, designation: designation || '', department: department || 'Revenue', grounds: {}, villages: [] };
+  const vin = (p, v, att) => { let x = p.villages.find(z => z.village_id === v.village_id); if (!x) { x = { village_id: v.village_id, name: v.name, ids: v.ids, target: v.target, att: '' }; p.villages.push(x); } if (att) x.att = att; };
+  cd.villages.forEach(v => {
+    if (CX[v.village_id] || v.cancelled) { left.push({ village: v.name, why: 'No camp: ' + (CX[v.village_id] || v.cancelled) }); return; }
+    const thr = Math.min(MIN, Number(v.target) || 0), short = thr > 0 && v.ids < thr;
+    let low = short;
+    if (short && (v.grade === 'S' || v.grade === 'P')) { low = false; left.push({ village: v.name, ids: v.ids, why: 'All eligible farmers covered' }); }
+    else if (short && downF >= 0.5) { low = false; left.push({ village: v.name, ids: v.ids, why: 'Portal down most of the day' }); }
+    else if (short && downF > 0 && v.ids >= Math.ceil(thr * (1 - downF))) { low = false; left.push({ village: v.name, ids: v.ids, why: 'Short only for the time the portal was down' }); }
+    if (low) below.push({ village_id: v.village_id, name: v.name, ids: v.ids, target: v.target, min: thr });
+    v.officials.forEach(o => {
+      if (senior81_(o.designation)) { if (low) seniors.push({ name: o.name, designation: o.designation, village: v.name }); return; }
+      if (!o.att) { unmarked.push({ key: o.key, name: o.name, village: v.name }); return; }
+      if (o.att === 'L') return;
+      if (o.att === 'A') { const p = add(o.key, o.name, o.designation, o.department); p.grounds.A = 1; vin(p, v, 'A'); return; }
+      if (low && !NOTGT83.test(o.designation || '')) { const p = add(o.key, o.name, o.designation, o.department); p.grounds.L = 1; vin(p, v, 'P'); }
+    });
+    if (low && v.patwari) { const p = add(v.patwari.user_id, v.patwari.name, 'Patwari', 'Revenue'); p.grounds.L = 1; vin(p, v, ''); }
+  });
+  if (below.length) { const nt = ntOf93_(tid); if (nt) { const p = add(nt.key, nt.name, nt.designation, 'Revenue'); p.grp = 'NT'; p.grounds.C = 1; below.forEach(b => vin(p, b, '')); } }
+  const H = hist93_(tid, date), list = [], removed = [];
+  Object.keys(P).forEach(k => { const p = P[k];
+    p.grp = p.grp || grp93_(p.designation, p.department);
+    p.prev = H[k] || []; p.n = p.prev.length + 1; p.level = Math.min(3, p.n);
+    p.g = ['C', 'L', 'A'].filter(x => p.grounds[x]); delete p.grounds; p.villages.sort((a, b) => a.name.localeCompare(b.name));
+    if (ex[k]) removed.push(Object.assign(p, { reason: ex[k] })); else list.push(p); });
+  const ord = (a, b) => GRP93.indexOf(a.grp) - GRP93.indexOf(b.grp) || rank81_(a.designation) - rank81_(b.designation) || a.name.localeCompare(b.name);
+  list.sort(ord); removed.sort(ord);
+  return { cd, list, removed, below, left, unmarked, seniors, min: MIN, down: Math.round(downF * 420) };
+}
+const sig93_ = list => hash83(list.map(p => p.key + ':' + p.g.join('') + ':' + p.villages.map(v => v.village_id + v.att).join(',')).sort().join(';'));
+/** The Tehsildar's exclusions applied: whole persons, or single grounds. */
+function applyEx93_(list, excl) {
+  const P = (excl && excl.p) || {}, G = (excl && excl.g) || {};
+  return list.filter(p => P[p.key] === undefined).map(p => { const g = p.g.filter(x => (G[p.key] || []).indexOf(x) < 0); return g.length ? Object.assign({}, p, { g }) : null; }).filter(Boolean);
+}
+function groups93_(tid, list, nos) {
+  const by = {}; list.forEach(p => { const g = by[p.grp] = by[p.grp] || { grp: p.grp, name: GNAME93[p.grp] || p.grp, ddo: ddo93_(tid, p.grp), persons: [], no: (nos || {})[p.grp] || '' }; g.persons.push(p); });
+  return GRP93.filter(g => by[g]).map(g => by[g]);
+}
+
+/** Replies the DA must mark: the reply time is over and nothing is marked yet. */
+function pend93_(tid) {
+  const now = now_().slice(0, 16);
+  return read_('Scn93').filter(x => x.tehsil_id === tid && x.sent_at && !x.recv && String(x.reply_by || '9999') <= now)
+    .map(x => ({ date: x.date, key: x.key, name: x.name, designation: x.designation, grp: x.grp, grounds: String(x.grounds).split(','), no: x.no, reply_by: x.reply_by }));
+}
+
+/** Everything the notices screen needs, for one tehsil and day. */
+function scnState93_(tid, date, u) {
+  const today = today_(), t = read_('Tehsils').find(x => x.tehsil_id === tid) || {}, row = day93_(tid, date);
+  const closed = date < today || frz81_(tid, date), camp = campOn_(date);
+  const B = camp && closed ? scnBuild93_(tid, date) : null;
+  const excl = j93(row && row.excluded, { p: {}, g: {} }), nos = j93(row && row.nos, {});
+  let status = row ? row.status : '';
+  const sig = B ? sig93_(B.list) : '';
+  if (B && (status === 'SUBMITTED' || status === 'APPROVED') && row.sig !== sig) status = 'CHANGED';
+  if (B && status === 'RETURNED' && !B.list.length) status = '';
+  const made = ['FILES', 'SIGNED', 'SENT'].indexOf(status) >= 0 && row.frozen;   // once the files are made, the list is what was made
+  const final = made ? j93(row.frozen, []) : B ? (status === 'APPROVED' ? applyEx93_(B.list, excl) : B.list) : [];
+  if (status === 'SENT') { const sent = read_('Scn93').filter(x => x.tehsil_id === tid && x.date === date);
+    final.forEach(p => { const s = sent.find(x => x.key === p.key); if (s) { p.recv = s.recv; p.verdict = s.verdict; p.drop = s.drop === 'Y'; } }); }
+  if (B && !B.list.length && !B.removed.length && !status) status = 'NONE';
+  const pend = pend93_(tid), last = read_('Scn93').filter(x => x.tehsil_id === tid && x.no).map(x => x.no).sort().slice(-1)[0] || '';
+  const un = {}; read_('Users').forEach(x => un[x.user_id] = x.name);
+  return { tehsil_id: tid, tehsil: t.name || tid, date, today, camp, closed, status,
+    opens: !closed ? 'After the day is closed (8 PM file, then Close the day).' : !camp ? 'Not a campaign day.' : '',
+    gate: { pending: pend }, unmarked: B ? B.unmarked : [], below: B ? B.below : [], left: B ? B.left : [], seniors: B ? B.seniors : [], min: B ? B.min : min93_(), down: B ? B.down : 0,
+    list: B ? B.list : [], removed: B ? B.removed : [], excluded: excl, final, groups: groups93_(tid, final, nos),
+    sig, return_note: row ? row.return_note : '', sub: row && row.sub_at ? { by: un[row.sub_by] || '', at: row.sub_at } : null, appr: row && row.appr_at ? { by: un[row.appr_by] || '', at: row.appr_at } : null,
+    nos, notice_date: (row && row.notice_date) || date, reply_by: (row && row.reply_by) || addDays_(today, 1) + ' 11:00',
+    files_at: row ? row.files_at : '', signed_at: row ? row.signed_at : '', sent_at: row ? row.sent_at : '', last_no: last,
+    letter: { head: String(t.letterhead || letterDefaults_(t).letterhead).split('\n').filter(Boolean), copy_to: setting_('scn_copy_' + tid) || COPY93[tid] || '', order: setting_('scn_camp_order_' + tid) || '', sign: 'Tehsildar\n' + (t.name || ''), target: Number(setting_('village_target') || 200) } };
+}
+function tidOf93_(req, u) { const ts = userTehsils_(u); if (req.tehsil_id && ts.indexOf(req.tehsil_id) < 0) throw new Error('Not your tehsil.'); return req.tehsil_id || ts[0]; }
+function office93_(u) { if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Not allowed.'); }
+function da93_(u, tid) { if (['ADMIN', 'DA'].indexOf(u.role) < 0) throw new Error('The Dealing Assistant does this step.'); mustManage_(u, tid); }
+
+function scnGet93_(req, u) { office93_(u); const tid = tidOf93_(req, u), date = scnDate93_(tid, req), st = scnState93_(tid, date, u);
+  if (st.status === 'NONE' && !day93_(tid, date)) dayPut93_(tid, date, r => { r.status = 'NONE'; });   // nothing to do that day: Today stops asking
+  return st; }
+/** Step 1: the DA takes a person off the list, always with a reason (or puts him back). */
+function scnRemove93_(req, u) {
+  const tid = tidOf93_(req, u), date = req.date; da93_(u, tid);
+  const r = day93_(tid, date), lock = u.role === 'ADMIN' ? ['FILES', 'SIGNED', 'SENT'] : ['SUBMITTED', 'APPROVED', 'FILES', 'SIGNED', 'SENT'];
+  if (r && lock.indexOf(r.status) >= 0) throw new Error(u.role === 'ADMIN' ? 'The Word files are already made. Return the list first.' : 'The list is already with the Tehsildar. Ask him to return it first.');
+  const reason = String(req.reason || '').trim(); if (req.reason !== '' && !reason) throw new Error('Choose or type the reason.');
+  const rows = read_('Exempt').filter(x => !(x.date === date && x.tehsil_id === tid && x.user_id === req.key));
+  if (reason) rows.push({ date, tehsil_id: tid, user_id: req.key, reason: reason.slice(0, 120), by: u.user_id, at: now_() });
+  writeAll_('Exempt', rows);
+  return scnState93_(tid, date, u);
+}
+function scnSubmit93_(req, u) {
+  const tid = tidOf93_(req, u), date = req.date; da93_(u, tid);
+  const S0 = scnState93_(tid, date, u);
+  if (S0.gate.pending.length) throw new Error('Mark the replies to the earlier notices first (' + S0.gate.pending.length + ').');
+  if (!S0.closed) throw new Error('The list opens after the day is closed.');
+  if (S0.unmarked.length) throw new Error('Attendance is not marked for ' + S0.unmarked.length + ' official(s). Mark it first: absence must never be wrong.');
+  if (!S0.list.length) throw new Error('Nobody is on the list.');
+  if (['APPROVED', 'FILES', 'SIGNED', 'SENT'].indexOf(S0.status) >= 0) throw new Error('Already approved.');
+  dayPut93_(tid, date, r => { r.status = 'SUBMITTED'; r.sig = S0.sig; r.sub_by = u.user_id; r.sub_at = now_(); r.return_note = ''; r.excluded = ''; r.n = String(S0.list.length); });
+  DB.auditNote = { tehsil_id: tid, target: '', detail: 'notices for ' + date + ' sent for approval: ' + S0.list.length + ' officials' };
+  return scnState93_(tid, date, u);
+}
+/** The Tehsildar approves (with people or grounds taken off) or returns the list. */
+function scnDecide93_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar approves the notices.');
+  const tid = tidOf93_(req, u), date = req.date, S0 = scnState93_(tid, date, u);
+  if (['SUBMITTED', 'CHANGED', 'APPROVED'].indexOf(S0.status) < 0 && !(req.ret && S0.status === 'FILES')) throw new Error('There is no list waiting for approval.');
+  if (req.ret) { dayPut93_(tid, date, r => { r.status = 'RETURNED'; r.return_note = String(req.note || '').slice(0, 200); r.appr_by = u.user_id; r.appr_at = now_(); r.nos = ''; r.files_at = ''; r.frozen = ''; r.excluded = ''; });
+    DB.auditNote = { tehsil_id: tid, target: '', detail: 'notices for ' + date + ' returned to the DA' }; return scnState93_(tid, date, u); }
+  const keys = {}; S0.list.forEach(p => keys[p.key] = p.g);
+  const e = req.excluded || {}, ex = { p: {}, g: {} };
+  Object.keys(e.p || {}).forEach(k => { if (keys[k]) ex.p[k] = String(e.p[k] || '').slice(0, 100); });
+  Object.keys(e.g || {}).forEach(k => { if (keys[k]) { const g = (e.g[k] || []).filter(x => keys[k].indexOf(x) >= 0); if (g.length) ex.g[k] = g; } });
+  const n = applyEx93_(S0.list, ex).length; if (!n) throw new Error('Everyone is unticked. Return the list instead.');
+  dayPut93_(tid, date, r => { r.status = 'APPROVED'; r.n = String(n); r.sig = S0.sig; r.excluded = JSON.stringify(ex); r.appr_by = u.user_id; r.appr_at = now_(); r.return_note = ''; });
+  DB.auditNote = { tehsil_id: tid, target: '', detail: 'notices for ' + date + ' approved: ' + n + ' officials' };
+  return scnState93_(tid, date, u);
+}
+/** Step 3: the numbers (one per department), the date and the reply time; then the Word files are made in the app. */
+function scnFiles93_(req, u) {
+  const tid = tidOf93_(req, u), date = req.date; da93_(u, tid);
+  const S0 = scnState93_(tid, date, u);
+  if (['APPROVED', 'FILES', 'SIGNED'].indexOf(S0.status) < 0) throw new Error(S0.status === 'CHANGED' ? 'The figures changed after the approval. The Tehsildar must approve again.' : 'The Tehsildar has not approved the list yet.');
+  const nos = {}, used = {};
+  read_('Scn93').forEach(x => { if (x.no && !(x.tehsil_id === tid && x.date === date)) used[String(x.no).trim().toLowerCase()] = x.date; });
+  S0.groups.forEach(g => { const v = String((req.nos || {})[g.grp] || '').replace(/\s+/g, ' ').trim();
+    if (!v) throw new Error('Type the number of the ' + g.name + ' notice.');
+    if (used[v.toLowerCase()]) throw new Error('Number ' + v + ' is already used for a notice of ' + used[v.toLowerCase()] + '.');
+    if (Object.keys(nos).some(k => nos[k].toLowerCase() === v.toLowerCase())) throw new Error('Two notices cannot have the same number (' + v + ').');
+    nos[g.grp] = v.slice(0, 60); });
+  const nd = /^\d{4}-\d{2}-\d{2}$/.test(req.notice_date || '') ? req.notice_date : date, rb = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(req.reply_by || '') ? req.reply_by : addDays_(today_(), 1) + ' 11:00';
+  if (rb.slice(0, 10) < nd) throw new Error('The reply time is before the notice date.');
+  dayPut93_(tid, date, r => { r.nos = JSON.stringify(nos); r.notice_date = nd; r.reply_by = rb; if (S0.status === 'APPROVED' || !r.frozen) r.frozen = JSON.stringify(S0.final); if (r.status !== 'SIGNED') { r.status = 'FILES'; r.files_at = now_(); } });
+  // a notice already sent keeps its rows in step
+  read_('Scn93').filter(x => x.tehsil_id === tid && x.date === date).forEach(x => { if (nos[x.grp]) { x.no = nos[x.grp]; x.notice_date = nd; x.reply_by = rb; } });
+  const rows = read_('Scn93').filter(x => x.tehsil_id === tid && x.date === date); if (rows.length) writeRows_('Scn93', rows);
+  return scnState93_(tid, date, u);
+}
+function scnSigned93_(req, u) {
+  const tid = tidOf93_(req, u), date = req.date; da93_(u, tid);
+  const r0 = day93_(tid, date); if (!r0 || (r0.status !== 'FILES' && r0.status !== 'SIGNED')) throw new Error('Make the Word files first.');
+  dayPut93_(tid, date, r => { if (req.undo) { r.status = 'FILES'; r.signed_at = ''; } else { r.status = 'SIGNED'; r.signed_at = now_(); } });
+  return scnState93_(tid, date, u);
+}
+/** Step 5: sent in the group. The notices are recorded person by person; the reply clock starts. */
+function scnSent93_(req, u) {
+  const tid = tidOf93_(req, u), date = req.date; da93_(u, tid);
+  const S0 = scnState93_(tid, date, u);
+  if (S0.status !== 'SIGNED') throw new Error(S0.status === 'SENT' ? 'Already marked sent.' : 'Tick “Signed by the Tehsildar” first.');
+  const now = now_(), keep = read_('Scn93').filter(x => !(x.tehsil_id === tid && x.date === date)), add = [];
+  S0.groups.forEach(g => g.persons.forEach(p => add.push({ date, tehsil_id: tid, key: p.key, name: p.name, designation: p.designation, grp: p.grp,
+    villages: p.villages.map(v => v.name + (v.target ? ' ' + v.ids + '/' + v.target : '') + (v.att === 'A' ? ' (absent)' : '')).join('; '), grounds: p.g.join(','), level: String(p.level),
+    no: S0.nos[p.grp] || '', notice_date: S0.notice_date, reply_by: S0.reply_by, sent_at: now, recv: '', recv_by: '', recv_at: '', verdict: '', judge_by: '', judge_at: '', drop: '', dc_at: '' })));
+  writeAll_('Scn93', keep.concat(add));
+  // the older registers (attendance register, reports) read the Scn sheet
+  const old = read_('Scn').filter(x => !(x.tehsil_id === tid && x.date === date));
+  add.forEach(x => { const p = S0.final.find(y => y.key === x.key) || { villages: [] };
+    old.push({ date, tehsil_id: tid, user_id: x.key, kind: x.grounds.split(',').map(g => ({ C: 'NC', L: 'IDS', A: 'ABS' })[g]).join('+'), ids: p.villages.reduce((a, v) => a + (v.ids || 0), 0), target: p.villages.reduce((a, v) => a + (v.target || 0), 0), unsorted: '', issued_on: today_(), by: u.user_id, at: now, repeat: p.prev && p.prev.length ? p.prev[p.prev.length - 1].date : '' }); });
+  writeAll_('Scn', old);
+  dayPut93_(tid, date, r => { r.status = 'SENT'; r.sent_at = now; });
+  DB.auditNote = { tehsil_id: tid, target: '', detail: 'notices for ' + date + ' sent: ' + add.length + ' officials, ' + S0.groups.length + ' notices' };
+  return scnState93_(tid, date, u);
+}
+/** Step 0: the DA marks each reply: on time, late or not received. */
+function scnRecv93_(req, u) {
+  const tid = tidOf93_(req, u); da93_(u, tid);
+  const rows = read_('Scn93'), ch = [], now = now_(), rep = read_('ScnReply');
+  (req.items || []).forEach(it => { const x = rows.find(y => y.tehsil_id === tid && y.date === it.date && y.key === it.key); if (!x || ['ONTIME', 'LATE', 'NONE', ''].indexOf(it.recv) < 0) return;
+    x.recv = it.recv; x.recv_by = it.recv ? u.user_id : ''; x.recv_at = it.recv ? now : ''; if (it.recv === 'NONE' || !it.recv) { x.verdict = ''; x.judge_by = ''; x.judge_at = ''; } ch.push(x);
+    const i = rep.findIndex(y => y.tehsil_id === tid && y.date === it.date && y.user_id === it.key); if (i >= 0) rep.splice(i, 1);
+    if (it.recv) rep.push({ date: it.date, tehsil_id: tid, user_id: it.key, reply_on: it.recv === 'NONE' ? '' : today_(), verdict: it.recv === 'NONE' ? 'NOT_OK' : '', note: it.recv === 'LATE' ? 'late' : it.recv === 'NONE' ? 'no reply' : '', by: u.user_id, at: now }); });
+  if (ch.length) { writeRows_('Scn93', ch); writeAll_('ScnReply', rep); }
+  DB.auditNote = { tehsil_id: tid, target: '', detail: 'replies marked: ' + ch.length };
+  return scnReplies93_({ tehsil_id: tid }, u);
+}
+/** The Tehsildar judges a received reply; he can also drop a notice from the count. */
+function scnJudge93_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar judges the replies.');
+  const tid = tidOf93_(req, u), rows = read_('Scn93'), x = rows.find(y => y.tehsil_id === tid && y.date === req.date && y.key === req.key); if (!x) throw new Error('Notice not found.');
+  if (req.verdict !== undefined) { if (['OK', 'NOT_OK', ''].indexOf(req.verdict) < 0) throw new Error('Bad verdict.'); if (req.verdict && (x.recv !== 'ONTIME' && x.recv !== 'LATE')) throw new Error('The reply has not been marked received.');
+    x.verdict = req.verdict; x.judge_by = u.user_id; x.judge_at = now_();
+    const rep = read_('ScnReply'), r = rep.find(y => y.tehsil_id === tid && y.date === req.date && y.user_id === req.key); if (r) { r.verdict = req.verdict; writeRows_('ScnReply', [r]); } }
+  if (req.drop !== undefined) x.drop = req.drop ? 'Y' : '';
+  writeRows_('Scn93', [x]);
+  DB.auditNote = { tehsil_id: tid, target: x.name, detail: 'reply to notice of ' + req.date + ': ' + (x.verdict || '-') + (x.drop === 'Y' ? ', dropped from the count' : '') };
+  return scnReplies93_({ tehsil_id: tid }, u);
+}
+function scnReplies93_(req, u) {
+  office93_(u); const tid = tidOf93_(req, u), now = now_().slice(0, 16);
+  const rows = read_('Scn93').filter(x => x.tehsil_id === tid && x.sent_at).map(x => ({ date: x.date, key: x.key, name: x.name, designation: x.designation, grp: x.grp, grounds: String(x.grounds).split(',').filter(Boolean), level: Number(x.level) || 1,
+    no: x.no, notice_date: x.notice_date, reply_by: x.reply_by, over: String(x.reply_by || '9999') <= now, recv: x.recv, verdict: x.verdict, drop: x.drop === 'Y', villages: x.villages }))
+    .sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : a.name.localeCompare(b.name));
+  return { tehsil_id: tid, tehsil: tehsilName_(tid), rows, pending: rows.filter(x => x.over && !x.recv).length, to_judge: rows.filter(x => (x.recv === 'ONTIME' || x.recv === 'LATE') && !x.verdict).length };
+}
+/** Officials with three or more counted notices: for the report to the Deputy Commissioner. */
+function scnDc93_(req, u) {
+  office93_(u); const tid = tidOf93_(req, u), all = read_('Scn93').filter(x => x.tehsil_id === tid && x.sent_at && x.drop !== 'Y'), by = {};
+  const t = read_('Tehsils').find(x => x.tehsil_id === tid) || {};
+  all.forEach(x => { const p = by[x.key] = by[x.key] || { key: x.key, name: x.name, designation: x.designation, grp: '', notices: [], grounds: {}, villages: {} }; if (x.grp) p.grp = x.grp; if (x.designation) p.designation = x.designation;
+    p.notices.push({ date: x.date, no: x.no, notice_date: x.notice_date, recv: x.recv, verdict: x.verdict, grounds: String(x.grounds).split(',') });
+    String(x.grounds).split(',').forEach(g => { if (g) (p.grounds[g] = p.grounds[g] || []).push(x.date); });
+    String(x.villages).split('; ').forEach(v => { const n = v.replace(/ \d+\/\d+.*$| \(absent\)$/, ''); if (n) p.villages[n] = 1; }); });
+  const list = Object.keys(by).map(k => by[k]).filter(p => p.notices.length >= 3).map(p => Object.assign(p, { ddo: ddo93_(tid, p.grp || 'Other'), villages: Object.keys(p.villages), notices: p.notices.sort((a, b) => a.date < b.date ? -1 : 1), reported: all.filter(x => x.key === p.key && x.dc_at).map(x => x.dc_at)[0] || '' }))
+    .sort((a, b) => GRP93.indexOf(a.grp) - GRP93.indexOf(b.grp) || a.name.localeCompare(b.name));
+  return { tehsil_id: tid, tehsil: t.name || tid, list, letter: { head: String(t.letterhead || letterDefaults_(t).letterhead).split('\n').filter(Boolean), copy_to: setting_('scn_copy_' + tid) || COPY93[tid] || '', order: setting_('scn_camp_order_' + tid) || '' } };
+}
+function scnDcMark93_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar sends the report to the DC.');
+  const tid = tidOf93_(req, u), want = {}; (req.keys || []).forEach(k => want[k] = 1);
+  const rows = read_('Scn93').filter(x => x.tehsil_id === tid && want[x.key]), now = now_();
+  rows.forEach(x => x.dc_at = req.undo ? '' : now); if (rows.length) writeRows_('Scn93', rows);
+  return scnDc93_({ tehsil_id: tid }, u);
+}
+/** A week of one department: attendance day by day, the village's IDs, notices and satisfactory replies. */
+function scnWeek93_(req, u) {
+  office93_(u); const tid = tidOf93_(req, u), to = req.to || addDays_(today_(), -1), from = req.from || addDays_(to, -6), days = [];
+  for (let d = from, g = 0; d <= to && g < 14; d = addDays_(d, 1), g++) days.push(d);
+  const t = read_('Tehsils').find(x => x.tehsil_id === tid) || {}, ppl = {}; people76_(tid).forEach(p => ppl[p.person_id] = p);
+  const vn = {}; read_('Villages').forEach(v => vn[v.village_id] = v.name);
+  const att = {}; read_('Attend').forEach(a => { if (a.tehsil_id === tid && a.date >= from && a.date <= to) att[a.key + '|' + a.date] = a.status; });
+  const vids = {}; days.forEach(d => { const B = ids92_(tid, d).byV; Object.keys(B).forEach(v => vids[v] = (vids[v] || 0) + B[v]); });
+  const sc = read_('Scn93').filter(x => x.tehsil_id === tid && x.sent_at && x.date >= from && x.date <= to);
+  const P = {}; read_('Posting').filter(r => r.tehsil_id === tid && r.from <= to && (!r.to || r.to >= from)).forEach(r => { const p = ppl[r.person_id]; if (!p || senior81_(p.designation)) return;
+    const x = P[p.key] = P[p.key] || { key: p.key, name: p.name, designation: p.designation, grp: grp93_(p.designation, p.department), villages: {} }; x.villages[r.village_id] = 1; });
+  const rows = Object.keys(P).map(k => P[k]).map(p => { const n = sc.filter(x => x.key === p.key);
+    return { key: p.key, name: p.name, designation: p.designation, grp: p.grp, villages: Object.keys(p.villages).map(v => vn[v] || v), ids: Object.keys(p.villages).reduce((a, v) => a + (vids[v] || 0), 0),
+      att: days.map(d => att[p.key + '|' + d] || ''), notices: n.length, ok: n.filter(x => x.verdict === 'OK').length, judged: n.filter(x => x.verdict).length }; });
+  const groups = GRP93.filter(g => g !== 'NT').map(g => ({ grp: g, name: GNAME93[g], ddo: ddo93_(tid, g), rows: rows.filter(r => r.grp === g).sort((a, b) => a.name.localeCompare(b.name)) })).filter(g => g.rows.length);
+  return { tehsil_id: tid, tehsil: t.name || tid, from, to, days, groups, letter: { head: String(t.letterhead || letterDefaults_(t).letterhead).split('\n').filter(Boolean), copy_to: setting_('scn_copy_' + tid) || COPY93[tid] || '' } };
+}
+/** The DDO of each department, per tehsil (copied on every notice). */
+function scnDdo93_(req, u) {
+  office93_(u); const tid = tidOf93_(req, u);
+  if (req.set) { if (['ADMIN', 'DA'].indexOf(u.role) < 0) throw new Error('Not allowed.'); Object.keys(req.set).forEach(g => { if (GRP93.indexOf(g) > 0) setSetting_('ddo93_' + g + '_' + tid, String(req.set[g] || '-').slice(0, 150)); }); }
+  const unp = []; people76_(tid).forEach(p => { const g = grp93_(p.designation, p.department); if (g !== 'NT' && !ddo93_(tid, g)) unp.push({ name: p.name, designation: p.designation, grp: g }); });
+  return { tehsil_id: tid, ddo: GRP93.filter(g => g !== 'NT').map(g => ({ grp: g, name: GNAME93[g], ddo: ddo93_(tid, g) })), missing: unp };
+}
+/** For Today: what the notices need from this person now. Cheap: sheets only. */
+function scnSum93_(tid, u) {
+  const today = today_(), date = scnDate93_(tid, {}), r = day93_(tid, date), pend = pend93_(tid).length;
+  const judge = read_('Scn93').filter(x => x.tehsil_id === tid && (x.recv === 'ONTIME' || x.recv === 'LATE') && !x.verdict).length;
+  const st = r ? r.status : '', closed = date < today || frz81_(tid, date);
+  return { date, status: st, pend, judge, closed, approval: { status: st === 'SUBMITTED' ? 'PENDING' : st === 'APPROVED' || st === 'FILES' || st === 'SIGNED' || st === 'SENT' ? 'APPROVED' : st === 'NONE' ? 'NONE' : '', n: Number(r && r.n) || 0 } };
+}
+
+/* Today brings the notices' state with it */
+const _home9293 = home92_;
+home92_ = function (req, u) {
+  const r = _home9293(req, u);
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) >= 0) { try { r.scn93 = {}; userTehsils_(u).forEach(t => r.scn93[t] = scnSum93_(t, u)); } catch (e) { r.scn93 = null; } }
+  return r;
+};
+Object.assign(ACTIONS, { home82: home92_, scn93: scnGet93_, scnRemove93: scnRemove93_, scnSubmit93: scnSubmit93_, scnDecide93: scnDecide93_, scnFiles93: scnFiles93_, scnSigned93: scnSigned93_, scnSent93: scnSent93_,
+  scnRecv93: scnRecv93_, scnJudge93: scnJudge93_, scnReplies93: scnReplies93_, scnDc93: scnDc93_, scnDcMark93: scnDcMark93_, scnWeek93: scnWeek93_, scnDdo93: scnDdo93_ });
+['scnRemove93', 'scnSubmit93', 'scnDecide93', 'scnFiles93', 'scnSigned93', 'scnSent93', 'scnRecv93', 'scnJudge93', 'scnDcMark93', 'scnDdo93'].forEach(a => { WRITE_ACTIONS.push(a); UV_ACTIONS.push(a); });
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
