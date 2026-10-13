@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '9.0.0';
+const APP_VERSION = '9.0.1';
 
 /* ============================== SCHEMA ============================== */
 
@@ -5321,15 +5321,21 @@ slots74_ = function (tid, date) {
     .map(x => ({ at: String(x.uploaded_at), m: minutesOf_(x.uploaded_at), n: Number(x.new) || 0, by: un[x.uploaded_by] || '', stale: x.note === 'stale' })).sort((a, b) => a.m - b.m);
   const down = portalDownPeriods_(tid, date).map(p => [minutesOf_(p.from), p.to ? minutesOf_(p.to) : (date < today ? 24 * 60 : nowM)]);
   const ts = slotTimes74_(), used = {};
-  const list = ts.map(t => { const s = toM(t), from = s - W90.early, to = s + W90.late;
+  // IDs hour by hour come from the farmers themselves (when each first appeared), so they always add up to the day's total
+  const cut = ts.map((t, i) => i ? toM(t) - W90.early : -1), seg = ts.map(() => 0);
+  const clock = minutesOf_(now_()); let byNow = 0, total = 0;
+  read_('Farmers').forEach(f => { if (f.tehsil_id !== tid || String(f.first_seen) !== date || f.missing === 'Y') return; const sa = String(f.seen_at || ''), m = sa.slice(0, 10) === date ? minutesOf_(sa) : sa.slice(0, 10) > date ? 24 * 60 : 0;
+    total++; if (m <= clock) byNow++;
+    let k = 0; for (let i = cut.length - 1; i >= 0; i--) if (m >= cut[i]) { k = i; break; } seg[k]++; });
+  const list = ts.map((t, ti) => { const s = toM(t), from = s - W90.early, to = s + W90.late;
     const fs = files.filter((f, k) => !used[k] && !f.stale && f.m >= from && f.m <= to); files.forEach((f, k) => { if (!f.stale && f.m >= from && f.m <= to) used[k] = 1; });
     const exc = down.some(d => d[0] < to && d[1] > s - 5);
     let st; if (fs.length) st = fs[0].m <= s + W90.ok ? 'ok' : 'late'; else if (nowM < from) st = 'up'; else if (nowM <= s + W90.ok) st = 'due'; else if (nowM <= to) st = exc ? 'exc' : 'over'; else st = exc ? 'exc' : 'miss';
-    return { t, st, at: fs.length ? fs[0].at.slice(11, 16) : '', by: fs.length ? fs[0].by : '', n: fs.reduce((a, f) => a + f.n, 0), files: fs.length }; });
+    return { t, st, at: fs.length ? fs[0].at.slice(11, 16) : '', by: fs.length ? fs[0].by : '', n: seg[ti], files: fs.length }; });
   const extra = files.filter((f, k) => !used[k]).map(f => ({ at: f.at.slice(11, 16), by: f.by, n: f.n, stale: f.stale }));
   const nx = list.find(x => x.st === 'due' || x.st === 'over' || x.st === 'up');
   const c = k => list.filter(x => x.st === k).length;
-  return { list, extra, next: nx ? nx.t : '', on_time: c('ok'), late: c('late'), missed: c('miss'), excused: c('exc'), done: c('ok') + c('late'), counted: list.filter(x => ['ok', 'late', 'miss', 'exc'].indexOf(x.st) >= 0).length,
+  return { list, extra, total, by_now: byNow, seg_from: cut.map(m => Math.max(0, m)), next: nx ? nx.t : '', on_time: c('ok'), late: c('late'), missed: c('miss'), excused: c('exc'), done: c('ok') + c('late'), counted: list.filter(x => ['ok', 'late', 'miss', 'exc'].indexOf(x.st) >= 0).length,
     last: files.length ? files[files.length - 1].at.slice(11, 16) : '', last_by: files.length ? files[files.length - 1].by : '' };
 };
 
