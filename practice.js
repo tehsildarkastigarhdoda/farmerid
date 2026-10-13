@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '9.0.1';
+const APP_VERSION = '9.2.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -2180,9 +2180,10 @@ function phStatus_(req, u) {
     const fs = read_('Farmers').filter(f => f.tehsil_id === tid && f.missing !== 'Y' && f.status !== 'REJECTED'), BASE = '2026-10-05', daily = {}, dailyRep = {};
     fs.forEach(f => { const vid = (f.bucket_id && bVil[f.bucket_id]) || f.village_id, e = E(vid);
       const fieldAlready = f.bucket_id && (allB.find(b => b.bucket_id === f.bucket_id) || {}).claimed_source === 'FIELD';
-      if (!fieldAlready && f.first_seen > BASE) { if (f.first_seen === today) e.today++; if (f.first_seen === yday) e.yday++; daily[f.first_seen] = (daily[f.first_seen] || 0) + 1; }
+      if (false && !fieldAlready) {}
       if (!f.bucket_id && f.link_conf !== 'NONE' && f.link_conf !== 'NO_LIST' && String(f.candidates || '')) E(f.village_id).to_link++;
       if (f.first_seen > e.last_id) e.last_id = f.first_seen; });
+    { const IX = ids92Index_(tid); Object.keys(IX.byDate).forEach(d => { if (d > BASE) daily[d] = IX.byDate[d].list.length; }); [[today, 'today'], [yday, 'yday']].forEach(([d, k]) => { const B = ids92_(tid, d).byV; Object.keys(B).forEach(v => E(v)[k] = B[v]); }); }
     allB.forEach(b => { if (b.tehsil_id !== tid) return; const e = E(b.village_id);
       if (b.gender === 'F' && b.status !== 'CLAIMED') e.women++;
       if (b.surveyed_date === today && b.surveyed_by && b.status !== 'NOT_SURVEYED' && b.claimed_source !== 'PORTAL' && b.claimed_source !== 'REG') e.checked++;
@@ -3495,10 +3496,7 @@ function deployMap_(tid, date) {
 function dayCredits_(tid, date) {
   const vn = {}; read_('Villages').forEach(v => { if (v.tehsil_id === tid) vn[v.village_id] = v.name; });
   const bVil = {}; read_('Buckets').forEach(b => { if (b.tehsil_id === tid) bVil[b.bucket_id] = b.village_id; });
-  const fs = read_('Farmers').filter(f => f.tehsil_id === tid && f.first_seen === date && f.status !== 'REJECTED' && f.missing !== 'Y')
-    .sort((a, b) => String(a.seen_at).localeCompare(String(b.seen_at)));
-  const seenA = {}, list = [], dups = [];
-  fs.forEach(f => { const k = f.aadhaar || ('F:' + f.farmer_id); if (seenA[k]) dups.push({ name: f.name, village: vn[f.village_id] || f.village_id, other: seenA[k] }); else { seenA[k] = f.name; list.push(f); } });
+  const I92 = ids92_(tid, date), list = I92.list, dups = I92.dups.map(d => ({ name: d.name, village: vn[d.village_id] || d.village_id, other: d.other }));
   const dm = deployMap_(tid, date), per = {}, vil = {};
   Object.keys(dm.users).forEach(uid => per[uid] = { today: 0, by_at: {} });
   list.forEach(f => {
@@ -3567,7 +3565,7 @@ function pulseTehsil_(tid) {
       pending: fs.filter(f => f.status === 'PENDING').length, unmatched: fs.filter(f => !f.bucket_id && String(f.link_conf).indexOf('SUGGESTED') === 0).length,
       sorting: sortingStatus_(tid), pace: (() => { const vp = villagePace_(tid, c, today); return vp; })(), top2: inchargeDay_(tid, today, c).list.filter(x => x.ids > 0).sort((a, b) => b.ids - a.ids || a.name.localeCompare(b.name)).slice(0, 2).map(x => ({ name: x.name, designation: x.designation, today: x.ids, villages: x.villages.filter(v => v.ids > 0).map(v => v.name) })),
       streaks: streaks_(tid, floor), forecast: forecast_(tid), after_hours: fs.filter(f => f.seen_at === ydayD + ' 23:59:00').length,
-      yday: { date: ydayD, total: fs.filter(f => f.first_seen === ydayD && f.status !== 'REJECTED').length, top: Object.keys(ydU).sort((a, b) => ydU[b] - ydU[a]).slice(0, 3).map(k => ({ name: unm[k] || '', ids: ydU[k] })) },
+      yday: { date: ydayD, total: ids92_(tid, ydayD).total, top: Object.keys(ydU).sort((a, b) => ydU[b] - ydU[a]).slice(0, 3).map(k => ({ name: unm[k] || '', ids: ydU[k] })) },
       explain: closed ? villagePace_(tid, c, today).filter(v => v.below).map(v => ({ village: v.name, ids: v.ids, target: v.target, incharge: v.incharge ? v.incharge.name : '', patwari: v.patwari && (!v.incharge || v.patwari.user_id !== v.incharge.user_id) ? v.patwari.name : '' })) : [] };
   });
 }
@@ -3857,17 +3855,17 @@ function dash_(req) {
     const closed = s.campaign_closed === 'Y' || today > deadline, daysLeft = Math.max(1, daysBetween_(today, deadline) + 1);
     let camp = null, full = null; try { camp = dashCamp76_(); } catch (e) { camp = null; } try { full = dashFull77_(); } catch (e) { full = null; }
     let plan = []; try { plan = dashPlan81_(); } catch (e) { plan = []; }
-    return { camp, full, plan, slot_times: slotTimes74_(), now: now_(), today, start, deadline, closed, days_left: closed ? 0 : daysLeft, expected_pct: Math.round(gone * 1000 / span) / 10,
+    return { app: APP_VERSION, camp, full, plan, slot_times: slotTimes74_(), now: now_(), today, start, deadline, closed, days_left: closed ? 0 : daysLeft, expected_pct: Math.round(gone * 1000 / span) / 10,
       tehsils: read_('Tehsils').filter(t => t.active === 'Y').map(t => {
         const tid = t.tehsil_id, p = pulseTehsil_(tid), st = computeStats_(tid), c = dayCredits_(tid, today), vp = {};
         villagePace_(tid, c, today).forEach(v => vp[v.village_id] = v);
         const vs = st.villages.filter(v => v.total > 0 && v.kind !== 'COLLECT').map(v => { const x = vp[v.village_id], cls = !x || !x.target ? 'mute' : x.ids >= x.target ? 'ok' : x.proj >= x.target ? 'due' : 'late';
           return { village_id: v.village_id, name: v.name, total: v.total, made: Math.min(v.total, v.claimed), today: x ? x.ids : ((c.vil[v.village_id] || {}).ids || 0), target: x ? x.target : 0, cls }; })
           .sort((a, b) => b.made / b.total - a.made / a.total || a.name.localeCompare(b.name));
-        const total = vs.reduce((a, v) => a + v.total, 0), made = vs.reduce((a, v) => a + v.made, 0);
+        const T92 = tot92_(tid), total = T92.total, made = T92.made;
         const camps = Object.keys(c.dm.byV || {}).filter(vid => (c.dm.byV[vid] || []).length).map(vid => (vs.find(v => v.village_id === vid) || {}).name).filter(Boolean).sort();
-        return { tehsil_id: tid, name: t.name, today: p.today, target: p.target, as_on: p.as_on, last_n: p.last_n, uploads: p.uploads, closed_day: p.closed,
-          top2: p.top2, total, made, pct: total ? Math.round(made * 1000 / total) / 10 : 0, needed: closed ? 0 : Math.ceil(Math.max(0, total - made) / daysLeft),
+        return { tehsil_id: tid, name: t.name, today: ids92_(tid, today).total, target: p.target, as_on: p.as_on, last_n: p.last_n, uploads: p.uploads, closed_day: p.closed,
+          top2: p.top2, total, made, pct: T92.pct, needed: closed ? 0 : Math.ceil(Math.max(0, total - made) / daysLeft),
           villages: vs, camps, down: p.down.filter(d => !d.to).length > 0, days: daySeries_(tid, start, today), next_slot: slots74_(tid, today).next };
       }) };
   });
@@ -3957,7 +3955,7 @@ function annexB_(req, u) {
   const st = computeStats_(tid), vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v);
   const vs = st.villages.filter(v => v.total > 0 && v.kind !== 'COLLECT');
   const fs = read_('Farmers').filter(f => f.tehsil_id === tid && f.missing !== 'Y' && f.status !== 'REJECTED');
-  const prev = fs.filter(f => f.first_seen <= sun).length, week = fs.length - prev;
+  const week = ids92Between_(tid, sun, today), prev = fs.length - week;
   const total = vs.reduce((a, v) => a + v.total, 0), j = jklrGet_({ tehsil_id: tid }, u), J = j.today || j.last || {};
   const t = read_('Tehsils').find(x => x.tehsil_id === tid) || {};
   const allV = read_('Villages').filter(v => v.tehsil_id === tid && v.active === 'Y' && v.practice !== 'Y');
@@ -4681,7 +4679,7 @@ function dashCamp76_() {
   const date = today;
   return { from, to, date, day_no: daysBetween_(from, date) + 1, days: Math.max(daysBetween_(from, to), daysBetween_(from, date)) + 1, days_left: Math.max(0, daysBetween_(today, to) + (today <= to ? 1 : 0) - 1),
     tehsils: read_('Tehsils').filter(t => t.active === 'Y').map(t => { const c = camp76_(t.tehsil_id, date);
-      return { tehsil_id: t.tehsil_id, name: t.name, ids: c.ids, target: c.target, grades: c.grades, final: c.final, waiting: c.waiting, early: c.early, frozen_at: c.frozen_at, down: c.down, star: c.star, best: c.best,
+      return { tehsil_id: t.tehsil_id, name: t.name, ids: c.ids, ids_camp: c.ids_camp, ex92: c.ex92, present: c.present, leave: c.leave, target: c.target, grades: c.grades, final: c.final, waiting: c.waiting, early: c.early, frozen_at: c.frozen_at, down: c.down, star: c.star, best: c.best,
         villages: c.villages.map(v => ({ village_id: v.village_id, name: v.name, ids: v.ids, target: v.target, grade: v.grade, cancelled: v.cancelled, reason: v.reason, why: v.why, absent: v.officials.filter(o => o.att === 'A').length, patwari: v.patwari ? v.patwari.name : '',
           officials: v.officials.map(o => ({ name: o.name, designation: o.designation, department: o.department, panchayat: o.panchayat, att: o.att })) })),
         absent_list: c.absent.map(a => ({ name: a.name, designation: a.designation, village: a.village })), unmarked: c.unmarked, deployed: c.deployed,
@@ -5109,7 +5107,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '9.0.0';
+const MIN_APP83 = '9.2.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -5324,7 +5322,7 @@ slots74_ = function (tid, date) {
   // IDs hour by hour come from the farmers themselves (when each first appeared), so they always add up to the day's total
   const cut = ts.map((t, i) => i ? toM(t) - W90.early : -1), seg = ts.map(() => 0);
   const clock = minutesOf_(now_()); let byNow = 0, total = 0;
-  read_('Farmers').forEach(f => { if (f.tehsil_id !== tid || String(f.first_seen) !== date || f.missing === 'Y') return; const sa = String(f.seen_at || ''), m = sa.slice(0, 10) === date ? minutesOf_(sa) : sa.slice(0, 10) > date ? 24 * 60 : 0;
+  ids92_(tid, date).list.forEach(f => { const sa = String(f.seen_at || ''), m = sa.slice(0, 10) === date ? minutesOf_(sa) : sa.slice(0, 10) > date ? 24 * 60 : 0;
     total++; if (m <= clock) byNow++;
     let k = 0; for (let i = cut.length - 1; i >= 0; i--) if (m >= cut[i]) { k = i; break; } seg[k]++; });
   const list = ts.map((t, ti) => { const s = toM(t), from = s - W90.early, to = s + W90.late;
@@ -5407,10 +5405,9 @@ function report90_(req, u) {
   R.fresh = { at: lastAt, dl: last ? String(last.downloaded_at || '') : '', by: last ? un[last.uploaded_by] || '' : '', ago, final, made: now, missed8: final && !(s8 && (s8.st === 'ok' || s8.st === 'late')) };
   R.uploads = { list: sl.list, on_time: sl.on_time, late: sl.late, missed: sl.missed, excused: sl.excused, done: sl.done, counted: sl.counted };
   // the day's IDs, village by village, for the last 4 days
-  const days = [3, 2, 1, 0].map(k => addDays_(today, -k)), F = read_('Farmers').filter(f => f.tehsil_id === tid && f.missing !== 'Y'), per = {}, sofar = { today: 0, yday: 0 };
-  F.forEach(f => { const d = String(f.first_seen); if (days.indexOf(d) >= 0) { const k = f.village_id + '|' + d; per[k] = (per[k] || 0) + 1; }
-    const hm = String(f.seen_at || '').slice(11, 16); if (d === today) sofar.today++; if (d === yd && hm && hm <= nowHM) sofar.yday++; });
-  const camp = F.filter(f => String(f.first_seen) >= campFrom_() && String(f.first_seen) < today).length, campDays = Math.max(0, daysBetween_(campFrom_(), today));
+  const days = [3, 2, 1, 0].map(k => addDays_(today, -k)), per = {}, sofar = { today: ids92_(tid, today).total, yday: ids92By_(tid, yd, nowHM) };
+  days.forEach(d => { const B = ids92_(tid, d).byV; Object.keys(B).forEach(v => per[v + '|' + d] = B[v]); });
+  const camp = ids92Between_(tid, addDays_(campFrom_(), -1), yd), campDays = Math.max(0, daysBetween_(campFrom_(), today));
   const avg = campDays ? Math.round(camp / campDays) : sofar.today;
   const frac = Math.max(0, Math.min(1, (minutesOf_(now) - 600) / 420)), need = R.totals.need_per_day || 0;
   const finishIn = avg > 0 ? Math.ceil(R.totals.can / avg) : null;
@@ -5449,7 +5446,7 @@ function master90_(req, u) {
   const today = today_(), since = req.since || setting_('dc_last_review') || addDays_(today, -3);
   if (req.save_since) setSetting_('dc_last_review', String(req.save_since));
   const ts = userTehsils_(u).map(tid => report90_({ tehsil_id: tid }, u));
-  const F = read_('Farmers'), out = ts.map(R => { const ids = F.filter(f => f.tehsil_id === R.tehsil_id && f.missing !== 'Y' && String(f.first_seen) > since).length;
+  const out = ts.map(R => { const ids = ids92Between_(R.tehsil_id, since, today);
     const ns = read_('Scn').filter(x => x.tehsil_id === R.tehsil_id && x.issued_on && String(x.issued_on).slice(0, 10) > since).length;
     return { R, since: { ids, notices: ns } }; });
   const sum = k => ts.reduce((a, R) => a + (R.totals[k] || 0), 0);
@@ -5489,6 +5486,157 @@ planData81_ = function (tid, date) {
 };
 
 Object.assign(ACTIONS, { home82: home90_, report90: report90_, master90: master90_, uploadReg: uploadReg90_, handoverSave: handoverSave_ });
+
+/* ============================== v9.2: ONE RULE FOR EVERY FIGURE ==============================
+ * The rulebook (approved 13.10.2026). Every screen, picture, message, PDF and the public page takes its figures from here.
+ *  1-2 IDs made on a day: farmers in the portal files whose first appearance was that day; approved and pending count, rejected never;
+ *      one farmer once (same Aadhaar listed twice counts once); the village is the village of the farmer's land entry, else the portal village;
+ *      the tehsil = every village. IDs uploaded after the day is closed count for the next day.
+ *  3   hour by hour: the same IDs grouped by the upload that brought them (an hour runs from 10 minutes before it).
+ *  4   yesterday by now: yesterday's IDs up to the same clock time.
+ *  5-6 % done, can still get, cannot get, not checked: from the land entries (bucket lists) and the Patwari's sorting.
+ */
+const IX92 = (typeof WeakMap !== 'undefined') ? new WeakMap() : null;
+function ids92Index_(tid) {
+  const F = read_('Farmers'), memo = IX92 && IX92.get(F); if (memo && memo[tid]) return memo[tid];
+  const bVil = {}; read_('Buckets').forEach(b => { if (b.tehsil_id === tid) bVil[b.bucket_id] = b.village_id; });
+  const byDate = {}, rej = {};
+  F.filter(f => f.tehsil_id === tid && f.missing !== 'Y' && f.first_seen).sort((a, b) => String(a.seen_at).localeCompare(String(b.seen_at))).forEach(f => {
+    const d = String(f.first_seen);
+    if (f.status === 'REJECTED') { rej[d] = (rej[d] || 0) + 1; return; }
+    const x = byDate[d] = byDate[d] || { list: [], dups: [], seen: {}, byV: {} }, k = f.aadhaar || ('F:' + f.farmer_id);
+    if (x.seen[k]) { x.dups.push({ name: f.name, village_id: f.village_id, other: x.seen[k] }); return; }
+    x.seen[k] = f.name; const vid = (f.bucket_id && bVil[f.bucket_id]) || f.village_id; x.list.push(f); x.byV[vid] = (x.byV[vid] || 0) + 1; f._v92 = vid; });
+  const out = { byDate, rej };
+  if (IX92) { const m = memo || {}; m[tid] = out; IX92.set(F, m); }
+  return out;
+}
+/** The IDs made in a tehsil on a day, by the rulebook. */
+function ids92_(tid, date) { const ix = ids92Index_(tid), x = ix.byDate[date] || { list: [], dups: [], byV: {} }; return { list: x.list, dups: x.dups, byV: x.byV, total: x.list.length, rejected: ix.rej[date] || 0 }; }
+function ids92Between_(tid, from, to) { const ix = ids92Index_(tid); return Object.keys(ix.byDate).filter(d => d > from && d <= to).reduce((a, d) => a + ix.byDate[d].list.length, 0); }
+/** Up to a clock time (HH:MM) on that day. */
+function ids92By_(tid, date, hhmm) { return ids92_(tid, date).list.filter(f => { const s = String(f.seen_at || ''); return s.slice(0, 10) < date || (s.slice(0, 10) === date && s.slice(11, 16) <= hhmm); }).length; }
+
+/** % done and the sorting, from the land entries: one place for the card, the public page, the report and the master sheet. */
+function tot92_(tid) {
+  const st = computeStats_(tid), T = { total: 0, made: 0, can: 0, notgen: 0, notchecked: 0 };
+  st.villages.filter(v => v.total > 0 && v.kind !== 'COLLECT').forEach(v => { const n = villageNums_(v); T.total += n.total; T.made += Math.min(n.total, n.generated); T.can += n.can; T.notgen += n.stuck + n.cannot; T.notchecked += n.notsorted; });
+  T.pct = T.total ? Math.round(T.made * 1000 / T.total) / 10 : 0; return T;
+}
+
+/** Explains a tehsil's IDs today: "83 = 70 in camp villages + 13 in other villages". */
+function ex92_(tid, date, campVillages) {
+  const I = ids92_(tid, date), vn = {}; read_('Villages').forEach(v => vn[v.village_id] = v.name);
+  const inCamp = {}; (campVillages || []).forEach(v => inCamp[v.village_id] = 1);
+  const camp = Object.keys(I.byV).filter(k => inCamp[k]).reduce((a, k) => a + I.byV[k], 0);
+  const other = Object.keys(I.byV).filter(k => !inCamp[k]).map(k => ({ name: vn[k] || k, ids: I.byV[k] })).sort((a, b) => b.ids - a.ids);
+  const last = I.list.length ? String(I.list[I.list.length - 1].seen_at || '') : '';
+  return { total: I.total, camp, other, rejected: I.rejected, dups: I.dups.length, approved: I.list.filter(f => f.status === 'APPROVED').length, pending: I.list.filter(f => f.status !== 'APPROVED').length, last };
+}
+
+/* -------- every counter now reads the one rule -------- */
+daySeries_ = function (tid, start, today) {
+  const ix = ids92Index_(tid), out = []; let d = start || '2026-08-02'; let guard = 0;
+  while (d <= today && guard++ < 400) { out.push(ix.byDate[d] ? ix.byDate[d].list.length : 0); d = addDays_(d, 1); }
+  return { from: start || '2026-08-02', n: out };
+};
+const forecast85_ = forecast_;
+forecast_ = function (tid) { const r = forecast85_(tid), today = today_(); r.pace = Math.round(ids92Between_(tid, addDays_(today, -8), addDays_(today, -1)) / 7); return r; };
+const camp7692_ = camp76_;
+camp76_ = function (tid, date) {
+  const c = camp7692_(tid, date), I = ids92_(tid, date);
+  // a past day: the villages' IDs are counted again by the rule (a later rejection is then left out)
+  if (!c.live) c.villages.forEach(v => { v.ids = I.byV[v.village_id] || 0; });
+  c.ids_camp = c.villages.reduce((a, v) => a + (v.ids || 0), 0);
+  c.ex92 = ex92_(tid, date, c.villages); c.ids = c.ex92.total;
+  const seen = {}; let P = 0, L = 0; c.villages.forEach(v => v.officials.forEach(o => { if (seen[o.key]) return; seen[o.key] = 1; if (o.att === 'P') P++; else if (o.att === 'L') L++; }));
+  c.present = P; c.leave = L;
+  return c;
+};
+week76_ = function (tid) {
+  const out = [], today = today_(); let d = campFrom_(), g = 0; const end = campTo_() > today ? campTo_() : today;
+  while (d <= end && g++ < 40) {
+    if (d > today) out.push({ date: d, ids: null, grade: '' });
+    else if (d === today) { const c = camp76_(tid, d); out.push({ date: d, ids: c.ids, target: c.target, grade: c.final ? tehsilGrade76_(c.ids_camp, c.target) : '' }); }
+    else { const sn = read_('Snapshots').find(x => x.tehsil_id === tid && x.village_id === 'CLOSE' && x.date === d); let x = {}; try { x = sn ? JSON.parse(sn.data) : {}; } catch (e) {}
+      const vs = x.villages || {}, I = ids92_(tid, d), tg = Object.keys(vs).reduce((a, k) => a + vs[k].target, 0), inCamp = Object.keys(vs).reduce((a, k) => a + (I.byV[k] || 0), 0);
+      out.push({ date: d, ids: I.total, target: tg, grade: sn ? tehsilGrade76_(inCamp, tg) : '' }); }
+    d = addDays_(d, 1);
+  }
+  return out;
+};
+
+/* -------- versions: the app and the server must match; saved figures belong to one version -------- */
+const SRV92 = APP_VERSION;
+cachedUv81_ = function (key, ttl, fn) {
+  const c = CacheService.getScriptCache(), k = SRV92 + ':' + key + ':' + (c.get('uv') || '0'), hit = c.get(k);
+  if (hit) { try { return JSON.parse(hit); } catch (e) {} }
+  const out = fn(); try { const s = JSON.stringify(out); if (s.length < 95000) c.put(k, s, ttl); } catch (e) {}
+  return out;
+};
+cached_ = function (key, ttl, fn) {
+  const c = CacheService.getScriptCache(), k = SRV92 + ':' + key + ':' + dataVersion_(), hit = c.get(k);
+  if (hit) { try { return JSON.parse(hit); } catch (e) {} }
+  const out = fn(); try { const s = JSON.stringify(out); if (s.length < 95000) c.put(k, s, ttl); } catch (e) {}
+  return out;
+};
+warm81 = function () { try { migrate_(); const c = CacheService.getScriptCache(); c.remove(SRV92 + ':dash81:' + (c.get('uv') || '0')); dash_({}); } catch (e) {} };
+
+/* -------- the checks: every figure the same everywhere, run before figures go out and every hour on live data -------- */
+function check92_(tid, deep) {
+  const today = today_(), out = [], ok = (name, a, b) => out.push({ name, a, b, ok: a === b });
+  const I = ids92_(tid, today), c = camp76_(tid, today);
+  ok('Tehsil IDs today = rule', c.ids, I.total);
+  ok('Camp villages + other villages = tehsil', c.ex92.camp + c.ex92.other.reduce((a, v) => a + v.ids, 0), c.ids);
+  ok('Village cards = camp villages', c.villages.reduce((a, v) => a + (v.ids || 0), 0), c.ex92.camp);
+  const s = slots74_(tid, today); ok('Hour by hour adds up to the day', s.list.reduce((a, z) => a + z.n, 0), I.total);
+  ok('Hourly total = tehsil', s.total, I.total);
+  try { ok('Hourly pulse = tehsil', pulseTehsil_(tid).today, I.total); } catch (e) {}
+  ok('Day series today = tehsil', daySeries_(tid, today, today).n[0], I.total);
+  ok('Attendance: present + absent + leave + not marked = deployed', c.present + c.absent.length + c.leave + c.unmarked, c.deployed);
+  const T = tot92_(tid); ok('Made + can + cannot + not checked = farmers in the lists', T.made + T.can + T.notgen + T.notchecked, T.total);
+  if (deep) { const R = report90_({ tehsil_id: tid }, { role: 'ADMIN', tehsils: 'ALL', user_id: '_check', tehsil_id: tid });
+    ok('Daily report today = tehsil', R.pace.today, I.total); ok('Daily report farmers = lists', R.totals.total, T.total); ok('Daily report made = lists', R.totals.gen, T.made);
+    ok('Daily report villages add up', R.villages.reduce((a, v) => a + v.total, 0), R.totals.total);
+    ok('Daily report attendance = camp', R.officials_total.absent, c.absent.length); }
+  return out;
+}
+function health92_(deep) {
+  const ts = read_('Tehsils').filter(t => t.active === 'Y').map(t => t.tehsil_id), res = { at: now_(), app: SRV92, tehsils: {} };
+  ts.forEach(tid => { try { res.tehsils[tid] = check92_(tid, deep); } catch (e) { res.tehsils[tid] = [{ name: 'Check could not run', a: String(e.message || e), b: '', ok: false }]; } });
+  if (deep) { try { const u = { role: 'ADMIN', tehsils: 'ALL', user_id: '_check' }, M = master90_({}, u);
+    res.master = [{ name: 'Master: both = sum (IDs today)', a: M.both.today, b: M.tehsils.reduce((a, t) => a + t.pace.today, 0) }, { name: 'Master: both = sum (farmers)', a: M.both.total, b: M.tehsils.reduce((a, t) => a + t.totals.total, 0) }].map(x => Object.assign(x, { ok: x.a === x.b })); } catch (e) { res.master = [{ name: 'Master check', a: String(e.message), b: '', ok: false }]; } }
+  res.ok = Object.keys(res.tehsils).every(t => res.tehsils[t].every(x => x.ok)) && (res.master || []).every(x => x.ok);
+  return res;
+}
+function healthRun92() { try { const r = health92_(true); setSetting_('health92', JSON.stringify(r)); if (!r.ok) append_('Errors', [{ ts: now_(), user_id: '_check', action: 'health92', error: JSON.stringify(Object.keys(r.tehsils).map(t => [t, r.tehsils[t].filter(x => !x.ok)])).slice(0, 1500) }]); } catch (e) {} }
+function healthGet_(req, u) {
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  if (req.run && u.role === 'ADMIN') healthRun92();
+  let r = null; try { r = JSON.parse(setting_('health92') || 'null'); } catch (e) {}
+  return { app: SRV92, health: r };
+}
+setupTriggers81 = function () {
+  ScriptApp.getProjectTriggers().forEach(t => { if (['backup81', 'warm81', 'healthRun92'].indexOf(t.getHandlerFunction()) >= 0) ScriptApp.deleteTrigger(t); });
+  ScriptApp.newTrigger('backup81').timeBased().atHour(23).everyDays(1).inTimezone('Asia/Kolkata').create();
+  ScriptApp.newTrigger('warm81').timeBased().everyMinutes(5).create();
+  ScriptApp.newTrigger('healthRun92').timeBased().everyHours(1).create();
+  backup81(); healthRun92();
+  return 'Done: nightly backup, dashboard warm-up and the hourly figure check are on.';
+};
+/* the home bundle carries the server's version and a quick check of the figures it holds */
+function home92_(req, u) {
+  const r = home90_(req, u); r.srv = SRV92;
+  try { r.chk = {}; ((r.c76 && r.c76.tehsils) || []).forEach(t => { const bad = []; const L = r.live73 && r.live73.tehsils ? r.live73.tehsils.find(x => x.tehsil_id === t.tehsil_id) : null;
+    if (L && L.slots && L.slots.total !== t.ids) bad.push('hourly ' + L.slots.total + ' vs ' + t.ids);
+    if (t.ex92 && t.ex92.camp + t.ex92.other.reduce((a, v) => a + v.ids, 0) !== t.ids) bad.push('villages do not add up');
+    if (t.present + t.absent.length + t.leave + t.unmarked !== t.deployed) bad.push('attendance does not add up');
+    r.chk[t.tehsil_id] = bad; if (bad.length) append_('Errors', [{ ts: now_(), user_id: u.user_id, action: 'check92', error: t.tehsil_id + ': ' + bad.join('; ') }]); }); } catch (e) {}
+  try { r.health = JSON.parse(setting_('health92') || 'null'); } catch (e) {}
+  return r;
+}
+
+Object.assign(ACTIONS, { home82: home92_, health: healthGet_ });
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
