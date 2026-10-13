@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '9.3.0';
+const APP_VERSION = '9.4.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '23';
+const SCHEMA_VERSION = '24';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -5107,7 +5107,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '9.3.0';
+const MIN_APP83 = '9.4.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -5965,6 +5965,113 @@ home92_ = function (req, u) {
 Object.assign(ACTIONS, { home82: home92_, scn93: scnGet93_, scnRemove93: scnRemove93_, scnSubmit93: scnSubmit93_, scnDecide93: scnDecide93_, scnFiles93: scnFiles93_, scnSigned93: scnSigned93_, scnSent93: scnSent93_,
   scnRecv93: scnRecv93_, scnJudge93: scnJudge93_, scnReplies93: scnReplies93_, scnDc93: scnDc93_, scnDcMark93: scnDcMark93_, scnWeek93: scnWeek93_, scnDdo93: scnDdo93_ });
 ['scnRemove93', 'scnSubmit93', 'scnDecide93', 'scnFiles93', 'scnSigned93', 'scnSent93', 'scnRecv93', 'scnJudge93', 'scnDcMark93', 'scnDdo93'].forEach(a => { WRITE_ACTIONS.push(a); UV_ACTIONS.push(a); });
+
+/* ============================== v9.4: STAFF IN ONE PLACE; REPORTS WITH THE WHY ============================== */
+SCHEMA.People.push('relieved_from', 'relieved_reason', 'relieved_order');
+if (DEPTS76.indexOf('ICDS') < 0) DEPTS76.push('ICDS');
+
+/* -------- the daily report: villages with yesterday-by-now and the why; absences with dates; the campaign days -------- */
+function report94_(req, u) {
+  const R = report90_(req, u), tid = R.tehsil_id, today = R.date, yd = addDays_(today, -1), hm = R.pace.as_of;
+  const ydV = {}; ids92_(tid, yd).list.forEach(f => { const s = String(f.seen_at || ''); if (s.slice(0, 10) < yd || (s.slice(0, 10) === yd && s.slice(11, 16) <= hm)) ydV[f._v92] = (ydV[f._v92] || 0) + 1; });
+  const camp = R.villages.filter(v => !v.cancelled);
+  R.villages.forEach(v => {
+    v.yday_now = ydV[v.village_id] || 0;
+    const w = [], abs = v.officials.filter(o => o.att === 'A'), um = v.officials.filter(o => !o.att);
+    if (v.cancelled) w.push('no camp: ' + v.cancelled);
+    if (!v.officials.length && !v.cancelled) w.push('no official posted');
+    if (abs.length) w.push(abs.map(o => o.designation.split(',')[0]).join(', ') + ' absent');
+    if (um.length && um.length === v.officials.length) w.push('attendance not marked');
+    if (v.notchecked) w.push(fmtN_(v.notchecked) + ' not yet checked');
+    if (v.can && v.ids_today < Math.min(v.target || 0, v.can)) w.push(fmtN_(v.can) + ' can still get one');
+    if (!v.notchecked && !v.can && !v.cancelled) w.push('every listed farmer covered');
+    v.why = w.slice(0, 3).join('; ');
+  });
+  const sev = g => ({ D: 0, C: 1, '': 2, B: 3, P: 4, A: 5, S: 6 })[g || ''] ?? 2;
+  R.villages.sort((a, b) => (a.cancelled ? 1 : 0) - (b.cancelled ? 1 : 0) || sev(a.grade) - sev(b.grade) || (a.ids_today / (a.target || 1)) - (b.ids_today / (b.target || 1)) || a.pct - b.pct || a.name.localeCompare(b.name));
+  R.camp_today = camp.reduce((s, v) => s + (v.ids_today || 0), 0); R.camp_yday = camp.reduce((s, v) => s + (v.yday_now || 0), 0);
+  R.other_today = Math.max(0, R.pace.today - R.camp_today); R.other_yday = Math.max(0, R.pace.yday_by_now - R.camp_yday);
+  R.below = camp.filter(v => { const thr = Math.min(min93_(), Number(v.target) || 0); return thr > 0 && v.ids_today < thr && v.grade !== 'S' && v.grade !== 'P'; }).length;
+  R.ncamp = camp.length;
+  R.days94 = week76_(tid).map(d => ({ date: d.date, ids: d.ids }));
+  // absent on two or more campaign days, with the dates
+  const ppl = {}; people76_(tid).forEach(p => ppl[p.key] = p); const vn = {}; R.villages.forEach(v => v.officials.forEach(o => { const k = Object.keys(ppl).find(k2 => ppl[k2].name === o.name && ppl[k2].designation === o.designation); if (k) vn[k] = v.name; }));
+  const ab = {}; read_('Attend').forEach(a => { if (a.tehsil_id === tid && a.status === 'A' && campOn_(a.date) && a.date <= today) (ab[a.key] = ab[a.key] || []).push(a.date); });
+  R.absent2 = Object.keys(ab).filter(k => ab[k].length >= 2 && ppl[k]).map(k => ({ name: ppl[k].name, designation: ppl[k].designation, department: ppl[k].department, village: vn[k] || '', dates: ab[k].sort() }))
+    .sort((a, b) => b.dates.length - a.dates.length || a.name.localeCompare(b.name));
+  R.nodal = nodal81_(tid);
+  return R;
+}
+const fmtN_ = n => Number(n || 0).toLocaleString('en-IN');
+
+/* -------- staff: one list per tehsil; relieve, move, edit, delete only what has no history -------- */
+const GN94 = { Revenue: 'Revenue', RDD: 'Rural Development', Agriculture: 'Agriculture', Horticulture: 'Horticulture', ICDS: 'Anganwadi (ICDS)', DYSSO: 'Youth Services and Sports', Other: 'Other' };
+function staff94_(req, u) {
+  const tid = tidOf93_(req, u); office93_(u);
+  const today = today_(), vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v);
+  const posts = read_('Posting').filter(r => r.tehsil_id === tid && (!r.to || r.to >= today));
+  const att = {}; read_('Attend').forEach(a => { if (a.tehsil_id === tid) att[a.key] = (att[a.key] || 0) + 1; });
+  const scn = {}; read_('Scn').forEach(x => { if (x.tehsil_id === tid && x.issued_on) scn[x.user_id] = (scn[x.user_id] || 0) + 1; }); read_('Scn93').forEach(x => { if (x.tehsil_id === tid && x.sent_at) scn[x.key] = (scn[x.key] || 0) + 1; });
+  const P = read_('People').filter(p => p.tehsil_id === tid && p.active !== 'N'), users = {}; read_('Users').forEach(x => users[x.user_id] = x);
+  const people = P.map(p => { const x = p.user_id && users[p.user_id], key = personKey_(p), g = grp93_(p.designation || (x ? x.designation : ''), p.department || 'Revenue');
+    const my = posts.filter(r => r.person_id === p.person_id).map(r => ({ post_id: r.post_id, village_id: r.village_id, village: (vm[r.village_id] || {}).name || r.village_id, panchayat: r.panchayat || '', from: r.from }));
+    const hist = (att[key] || 0) + (scn[key] || 0) + read_('Posting').filter(r => r.person_id === p.person_id && r.from < today).length;
+    return { person_id: p.person_id, key, name: x ? x.name : p.name, designation: p.designation || (x ? x.designation : ''), department: p.department || 'Revenue', grp: g, mobile: p.mobile || (x ? x.mobile : ''), login: !!(x && x.active === 'Y'),
+      relieved: p.relieved_from ? { from: p.relieved_from, reason: p.relieved_reason, order: p.relieved_order } : null, posts: my, att_days: att[key] || 0, notices: scn[key] || 0, can_delete: !hist }; })
+    .sort((a, b) => GRP93.indexOf(a.grp) - GRP93.indexOf(b.grp) || (a.relieved ? 1 : 0) - (b.relieved ? 1 : 0) || rank81_(a.designation) - rank81_(b.designation) || a.name.localeCompare(b.name));
+  const villages = read_('Villages').filter(v => v.tehsil_id === tid && v.active === 'Y' && v.practice !== 'Y').map(v => ({ village_id: v.village_id, name: v.name })).sort((a, b) => a.name.localeCompare(b.name));
+  const depts = DEPTS76.map(d => ({ dept: d, name: GN94[d] || d, ddo: ddo93_(tid, d === 'Other' ? 'Other' : d) }));
+  return { tehsil_id: tid, tehsil: tehsilName_(tid), today, people, villages, depts, can_edit: canPost_(u, tid) };
+}
+function person94_(tid, pid) { const p = read_('People').find(x => x.person_id === pid && x.tehsil_id === tid); if (!p) throw new Error('Person not found.'); return p; }
+function staffSave94_(req, u) {
+  const tid = tidOf93_(req, u); mustPost_(u, tid);
+  const p = person94_(tid, req.person_id), name = String(req.name || '').replace(/\s+/g, ' ').trim(), desig = String(req.designation || '').trim(), mob = mob10_(req.mobile);
+  if (!name || !desig) throw new Error('Type the name and designation.');
+  if (DEPTS76.indexOf(req.department) < 0) throw new Error('Choose the department.');
+  if (req.mobile && mob.length !== 10) throw new Error('Mobile must be 10 digits.');
+  if (mob && read_('People').some(x => x.tehsil_id === tid && x.person_id !== p.person_id && x.mobile === mob && x.active !== 'N')) throw new Error('Another person in this tehsil has this mobile.');
+  const was = p.name + ', ' + p.designation + ' (' + p.department + ')';
+  Object.assign(p, { name, designation: desig, department: req.department, mobile: mob }); writeRows_('People', [p]);
+  DB.auditNote = { tehsil_id: tid, target: name, detail: 'staff edited: ' + was + ' → ' + name + ', ' + desig + ' (' + req.department + ')' };
+  return staff94_({ tehsil_id: tid }, u);
+}
+function endPosts94_(pid, tid, from, u) { read_('Posting').filter(r => r.person_id === pid && r.tehsil_id === tid && (!r.to || r.to >= from)).forEach(r => postEnd_({ post_id: r.post_id, from, lite: 1 }, u)); DB.cache.Posting = null; }
+function staffMove94_(req, u) {
+  const tid = tidOf93_(req, u); mustPost_(u, tid); const p = person94_(tid, req.person_id), from = req.from || today_();
+  if (!req.village_id) throw new Error('Choose the village.');
+  endPosts94_(p.person_id, tid, from, u); DB.cache = {};
+  postAdd_({ village_id: req.village_id, person_id: p.person_id, panchayat: req.panchayat || '', from, lite: 1 }, u); DB.cache = {};
+  if (p.relieved_from) { const q = person94_(tid, p.person_id); q.relieved_from = ''; q.relieved_reason = ''; q.relieved_order = ''; writeRows_('People', [q]); }
+  return staff94_({ tehsil_id: tid }, u);
+}
+function staffRelieve94_(req, u) {
+  const tid = tidOf93_(req, u); mustPost_(u, tid); const p = person94_(tid, req.person_id);
+  if (req.undo) { p.relieved_from = ''; p.relieved_reason = ''; p.relieved_order = ''; writeRows_('People', [p]); DB.auditNote = { tehsil_id: tid, target: p.name, detail: 'back on duty: ' + p.name }; return staff94_({ tehsil_id: tid }, u); }
+  const from = req.from || today_(), reason = String(req.reason || '').trim();
+  if (!reason) throw new Error('Choose the reason.');
+  if (from < addDays_(today_(), -1)) throw new Error('A change can start from yesterday at the earliest.');
+  endPosts94_(p.person_id, tid, from, u); DB.cache = {};
+  const q = person94_(tid, p.person_id); Object.assign(q, { relieved_from: from, relieved_reason: reason.slice(0, 80), relieved_order: String(req.order || '').trim().slice(0, 80) }); writeRows_('People', [q]);
+  DB.auditNote = { tehsil_id: tid, target: q.name, detail: 'relieved from ' + from + ': ' + reason + (req.order ? ' (' + req.order + ')' : '') };
+  return staff94_({ tehsil_id: tid }, u);
+}
+function staffDelete94_(req, u) {
+  const tid = tidOf93_(req, u); mustPost_(u, tid); const S0 = staff94_({ tehsil_id: tid }, u), x = S0.people.find(q => q.person_id === req.person_id);
+  if (!x) throw new Error('Person not found.');
+  if (!x.can_delete) throw new Error('This person has attendance, notices or earlier postings. Relieve instead: the record must stay.');
+  writeAll_('People', read_('People').filter(q => q.person_id !== req.person_id)); writeAll_('Posting', read_('Posting').filter(r => r.person_id !== req.person_id));
+  DB.auditNote = { tehsil_id: tid, target: x.name, detail: 'deleted (added by mistake): ' + x.name + ', ' + x.designation }; DB.cache = {};
+  return staff94_({ tehsil_id: tid }, u);
+}
+function staffAdd94_(req, u) {
+  const tid = tidOf93_(req, u); mustPost_(u, tid);
+  if (!req.village_id) throw new Error('Choose the village.');
+  postAdd_({ village_id: req.village_id, name: req.name, designation: req.designation, department: req.department, mobile: req.mobile, panchayat: req.panchayat || '', from: req.from || today_(), lite: 1 }, u); DB.cache = {};
+  return staff94_({ tehsil_id: tid }, u);
+}
+Object.assign(ACTIONS, { report94: report94_, staff94: staff94_, staffSave94: staffSave94_, staffMove94: staffMove94_, staffRelieve94: staffRelieve94_, staffDelete94: staffDelete94_, staffAdd94: staffAdd94_ });
+['staffSave94', 'staffMove94', 'staffRelieve94', 'staffDelete94', 'staffAdd94'].forEach(a => { WRITE_ACTIONS.push(a); UV_ACTIONS.push(a); });
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
