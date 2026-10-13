@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '8.5.0';
+const APP_VERSION = '9.0.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -275,7 +275,7 @@ const ACTIONS = {
   planGet: planGet_, placeSave: placeSave_, planIssue: planIssue_, planCancel: planCancel_, dayFreeze: dayFreeze_, regUndo: regUndo_, regLast: regLast_, auditList: auditList_, leftList: leftList_, camp76: camp76Get_, people76: people76Get_, postAdd: postAdd_, postEnd: postEnd_, attSave: attSave_, staffing: staffing_, staffingSave: staffingSave_, designationsSave: designationsSave_, setPrefs: setPrefs_, weekTop: weekTop_, official: official_
 };
 
-const WRITE_ACTIONS = ['nodalSave', 'scnApprove', 'scnReply', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'userVillages', 'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'pinRequest', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkApply', 'pmkSave', 'portalDown', 'savePH', 'changePin', 'transferVillages', 'markSheetDone', 'startFresh', 'saveSummary', 'saveBucketing', 'saveText', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'resetPractice', 'deleteUser', 'saveVillageAll', 'logout', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply',
+const WRITE_ACTIONS = ['handoverSave', 'nodalSave', 'scnApprove', 'scnReply', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnExempt', 'scnIssue', 'sorterSave', 'helperSave', 'mutCountsSave', 'dcReport', 'save73', 'mutSave', 'satSave', 'jklrSave', 'staffingSave', 'designationsSave', 'setPrefs', 'userVillages', 'deploySave', 'picksSave', 'supLog', 'errorLog', 'boardKey', 'pinRequest', 'pinApprove', 'noticeSave', 'noticeRead', 'spotSave', 'setZoom', 'practiceKeep', 'campaign', 'pmkApply', 'pmkSave', 'portalDown', 'savePH', 'changePin', 'transferVillages', 'markSheetDone', 'startFresh', 'saveSummary', 'saveBucketing', 'saveText', 'regApply', 'regConfirm', 'regNone', 'regUnlink', 'resetPractice', 'deleteUser', 'saveVillageAll', 'logout', 'saveBuckets', 'confirmSuggestions', 'dupConfirm', 'dupBreak', 'saveCamp', 'uploadApply',
   'saveUser', 'resetPin', 'saveVillage', 'saveAssignments', 'saveReason', 'saveSettings', 'saveTehsil', 'login'];
 
 function route_(req) {
@@ -3877,7 +3877,7 @@ function dash_(req) {
  * Annexure-B (R1 from the JKLR figures, R2 from the portal files), saturation and locking per village,
  * dead-owner mutations person by person, after-hours IDs, targets to the internal deadline, instant refresh.
  */
-const UV_ACTIONS = ['nodalSave', 'scnApprove', 'scnReply', 'scnExempt', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnIssue', 'sorterSave', 'mutCountsSave', 'regApply', 'uploadApply', 'pmkApply', 'staffingSave', 'satSave', 'jklrSave', 'deploySave', 'supLog', 'portalDown', 'mutSave', 'saveBuckets'];
+const UV_ACTIONS = ['handoverSave', 'nodalSave', 'scnApprove', 'scnReply', 'scnExempt', 'placeSave', 'planIssue', 'planCancel', 'dayFreeze', 'regUndo', 'postAdd', 'postEnd', 'attSave', 'scnIssue', 'sorterSave', 'mutCountsSave', 'regApply', 'uploadApply', 'pmkApply', 'staffingSave', 'satSave', 'jklrSave', 'deploySave', 'supLog', 'portalDown', 'mutSave', 'saveBuckets'];
 function ver_() { return { uv: CacheService.getScriptCache().get('uv') || '', app: MIN_APP83 }; }
 function tehsilTarget_(tid) {
   const s = settings_(), base = Number(s.daily_target_tehsil || 200), dl = s.internal_deadline || s.final_deadline, today = today_();
@@ -5109,7 +5109,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '8.5.0';
+const MIN_APP83 = '9.0.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -5308,6 +5308,181 @@ planData81_ = function (tid, date) {
   P.free.forEach(f => { f.worked = (hist85[f.key] || {}).worked || []; });
   return P;
 };
+
+/* ============================== v9.0: UPLOAD WINDOWS, THE TEHSIL REPORT, THE MASTER SHEET, HANDOVER ============================== */
+const MIN_APP90 = '9.0.0';
+const W90 = { early: 10, ok: 15, late: 45, stale: 75 };
+
+/* -------- upload windows: on time up to 15 min after the hour, late up to 45, then missed; portal down = excused -------- */
+slots74_ = function (tid, date) {
+  const toM = t => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5)), today = today_(), nowM = date === today ? minutesOf_(now_()) : 24 * 60;
+  const un = {}; read_('Users').forEach(x => un[x.user_id] = x.name);
+  const files = read_('RegFiles').filter(x => x.tehsil_id === tid && String(x.uploaded_at).slice(0, 10) === date && x.note !== 'backlog' && x.note !== 'Built in')
+    .map(x => ({ at: String(x.uploaded_at), m: minutesOf_(x.uploaded_at), n: Number(x.new) || 0, by: un[x.uploaded_by] || '', stale: x.note === 'stale' })).sort((a, b) => a.m - b.m);
+  const down = portalDownPeriods_(tid, date).map(p => [minutesOf_(p.from), p.to ? minutesOf_(p.to) : (date < today ? 24 * 60 : nowM)]);
+  const ts = slotTimes74_(), used = {};
+  const list = ts.map(t => { const s = toM(t), from = s - W90.early, to = s + W90.late;
+    const fs = files.filter((f, k) => !used[k] && !f.stale && f.m >= from && f.m <= to); files.forEach((f, k) => { if (!f.stale && f.m >= from && f.m <= to) used[k] = 1; });
+    const exc = down.some(d => d[0] < to && d[1] > s - 5);
+    let st; if (fs.length) st = fs[0].m <= s + W90.ok ? 'ok' : 'late'; else if (nowM < from) st = 'up'; else if (nowM <= s + W90.ok) st = 'due'; else if (nowM <= to) st = exc ? 'exc' : 'over'; else st = exc ? 'exc' : 'miss';
+    return { t, st, at: fs.length ? fs[0].at.slice(11, 16) : '', by: fs.length ? fs[0].by : '', n: fs.reduce((a, f) => a + f.n, 0), files: fs.length }; });
+  const extra = files.filter((f, k) => !used[k]).map(f => ({ at: f.at.slice(11, 16), by: f.by, n: f.n, stale: f.stale }));
+  const nx = list.find(x => x.st === 'due' || x.st === 'over' || x.st === 'up');
+  const c = k => list.filter(x => x.st === k).length;
+  return { list, extra, next: nx ? nx.t : '', on_time: c('ok'), late: c('late'), missed: c('miss'), excused: c('exc'), done: c('ok') + c('late'), counted: list.filter(x => ['ok', 'late', 'miss', 'exc'].indexOf(x.st) >= 0).length,
+    last: files.length ? files[files.length - 1].at.slice(11, 16) : '', last_by: files.length ? files[files.length - 1].by : '' };
+};
+
+/* a file downloaded more than 75 minutes before it is uploaded, or the same file again, is not a new window's file */
+const regGuard85_ = regGuard_;
+regGuard_ = function (req, u) {
+  if (req.file_ts) {
+    const dl = tsToIst_(req.file_ts), age = minutesOf_(now_()) - minutesOf_(dl);
+    if (dl.slice(0, 10) === today_() && age > W90.stale) throw new Error('STALE|' + dl.slice(11, 16));
+    if (read_('RegFiles').some(f => String(f.file_ts) === String(req.file_ts) && userTehsils_(u).indexOf(f.tehsil_id) >= 0)) throw new Error('DUP|' + dl.slice(11, 16));
+  }
+  return regGuard85_(req, u);
+};
+const regApply85_ = regApply_;
+regApply_ = function (req, u) {
+  if (req.file_ts && !req.backlog) { const dl = tsToIst_(req.file_ts); if (dl.slice(0, 10) === today_() && minutesOf_(now_()) - minutesOf_(dl) > W90.stale) req.note = 'stale'; }
+  return regApply85_(req, u);
+};
+
+/* -------- the upload register: who uploaded when, who was late, who missed -------- */
+function uploadReg90_(req, u) {
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const today = today_(), date = req.date || today, from = campFrom_(), users = read_('Users');
+  return { date, now: now_(), tehsils: userTehsils_(u).map(tid => {
+    const da = users.find(x => x.role === 'DA' && x.tehsil_id === tid && x.active === 'Y');
+    const days = []; let d = from, g = 0; while (d <= today && g++ < 60) { const s = slots74_(tid, d); days.push({ date: d, ok: s.on_time, late: s.late, miss: s.missed, exc: s.excused, counted: s.counted }); d = addDays_(d, 1); }
+    const tot = days.reduce((a, x) => { a.ok += x.ok; a.late += x.late; a.miss += x.miss; a.exc += x.exc; a.counted += x.counted; return a; }, { ok: 0, late: 0, miss: 0, exc: 0, counted: 0 });
+    const wk = days.slice(-7).reduce((a, x) => { a.ok += x.ok; a.n += x.counted - x.exc; return a; }, { ok: 0, n: 0 });
+    return { tehsil_id: tid, name: tehsilName_(tid), da: da ? da.name : '', day: slots74_(tid, date), days, total: tot, week_pct: wk.n ? Math.round(wk.ok * 100 / wk.n) : null };
+  }) };
+}
+
+/* -------- the tehsil's totals, kept at the end of each day for "since yesterday" -------- */
+function tehTotals90_(tid) {
+  const st = computeStats_(tid); const T = { total: 0, gen: 0, can: 0, notgen: 0, notchecked: 0 };
+  st.villages.filter(v => v.total > 0 && v.kind !== 'COLLECT').forEach(v => { const n = villageNums_(v); T.total += n.total; T.gen += Math.min(n.total, n.generated); T.can += n.can; T.notgen += n.stuck + n.cannot; T.notchecked += n.notsorted; });
+  return T;
+}
+function totSave90_(tid, date) {
+  const rows = read_('Snapshots'), ex = rows.find(x => x.tehsil_id === tid && x.village_id === 'TOT' && x.date === date), data = JSON.stringify(Object.assign(tehTotals90_(tid), { at: now_() }));
+  if (ex) { ex.data = data; writeRows_('Snapshots', [ex]); } else append_('Snapshots', [{ date, tehsil_id: tid, village_id: 'TOT', data }]);
+}
+function totGet90_(tid, date) { const x = read_('Snapshots').find(r => r.tehsil_id === tid && r.village_id === 'TOT' && r.date === date); if (!x) return null; try { return JSON.parse(x.data); } catch (e) { return null; } }
+const closeDay85_ = closeDay_;
+closeDay_ = function (tid, date) { closeDay85_(tid, date); try { if (!date || date === today_()) totSave90_(tid, today_()); } catch (e) {} };
+
+/* what is done about each reason, and who does it */
+function remedy90_(label) {
+  const l = String(label || '').toLowerCase();
+  if (/dead|deceas|died|heir|death/.test(l)) return ['Patwari lists the heirs; mutation of legal heirs, then the ID', 'Patwari'];
+  if (/aadhaar|mobile|otp|link/.test(l)) return ['Aadhaar–mobile linking camp (India Post / CSC)', 'District'];
+  if (/outside|migrat|abroad|station|away|married/.test(l)) return ['Family informed; OTP over phone on the camp day', 'Lumberdar'];
+  if (/disput|joint|share|co-?owner|court/.test(l)) return ['Co-sharers come together; record checked', 'Girdawar'];
+  if (/government|shamlat|institution|state land|kahcharai|forest/.test(l)) return ['Not a farmer’s land: no ID needed', '–'];
+  if (/untrace|not found|unknown/.test(l)) return ['Lumberdar and Chowkidar trace the family', 'Lumberdar'];
+  if (/same farmer|another bucket|multiple/.test(l)) return ['Already counted under another entry', '–'];
+  return ['Checked case by case', 'Patwari'];
+}
+
+/* -------- the tehsil daily report: any time of the day, with how fresh the figures are -------- */
+function report90_(req, u) {
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const tid = req.tehsil_id; if (userTehsils_(u).indexOf(tid) < 0) throw new Error('Not allowed.');
+  const R = review84_({ tehsil_id: tid }, u), today = R.date, now = now_(), nowHM = now.slice(11, 16), yd = addDays_(today, -1);
+  const sl = slots74_(tid, today), last = read_('RegFiles').filter(x => x.tehsil_id === tid && x.note !== 'backlog' && x.note !== 'Built in').sort((a, b) => String(a.uploaded_at) < String(b.uploaded_at) ? 1 : -1)[0];
+  const un = {}; read_('Users').forEach(x => un[x.user_id] = x.name);
+  const lastAt = last ? String(last.uploaded_at) : '', ago = lastAt && lastAt.slice(0, 10) === today ? minutesOf_(now) - minutesOf_(lastAt) : null;
+  const s8 = sl.list.find(x => x.t === '20:00'), final = !!(s8 && (s8.st === 'ok' || s8.st === 'late')) || minutesOf_(now) >= 20 * 60 + 45;
+  R.fresh = { at: lastAt, dl: last ? String(last.downloaded_at || '') : '', by: last ? un[last.uploaded_by] || '' : '', ago, final, made: now, missed8: final && !(s8 && (s8.st === 'ok' || s8.st === 'late')) };
+  R.uploads = { list: sl.list, on_time: sl.on_time, late: sl.late, missed: sl.missed, excused: sl.excused, done: sl.done, counted: sl.counted };
+  // the day's IDs, village by village, for the last 4 days
+  const days = [3, 2, 1, 0].map(k => addDays_(today, -k)), F = read_('Farmers').filter(f => f.tehsil_id === tid && f.missing !== 'Y'), per = {}, sofar = { today: 0, yday: 0 };
+  F.forEach(f => { const d = String(f.first_seen); if (days.indexOf(d) >= 0) { const k = f.village_id + '|' + d; per[k] = (per[k] || 0) + 1; }
+    const hm = String(f.seen_at || '').slice(11, 16); if (d === today) sofar.today++; if (d === yd && hm && hm <= nowHM) sofar.yday++; });
+  const camp = F.filter(f => String(f.first_seen) >= campFrom_() && String(f.first_seen) < today).length, campDays = Math.max(0, daysBetween_(campFrom_(), today));
+  const avg = campDays ? Math.round(camp / campDays) : sofar.today;
+  const frac = Math.max(0, Math.min(1, (minutesOf_(now) - 600) / 420)), need = R.totals.need_per_day || 0;
+  const finishIn = avg > 0 ? Math.ceil(R.totals.can / avg) : null;
+  R.pace = { need, avg, today: sofar.today, yday_by_now: sofar.yday, expected_now: Math.round(need * frac), finish: finishIn !== null ? addDays_(today, finishIn) : '', deadline: R.deadline,
+    late_days: finishIn !== null ? Math.max(0, daysBetween_(R.deadline, addDays_(today, finishIn))) : null, early_days: finishIn !== null ? Math.max(0, daysBetween_(addDays_(today, finishIn), R.deadline)) : null, as_of: nowHM };
+  R.villages.forEach(v => { v.trend = days.map(d => per[v.village_id + '|' + d] || 0); v.ids_today = v.trend[3];
+    v.rising = v.trend[0] < v.trend[1] && v.trend[1] < v.trend[2] && v.trend[2] < v.trend[3];
+    const g = days.map((d, i) => i === 3 ? v.grade : grade76_(v.trend[i], v.target || 200, 1, 1)); let k = 0;
+    for (let i = 3; i >= 0; i--) { if (days[i] < campFrom_()) break; if (i === 3 && !g[3]) continue; if (g[i] === 'D') k++; else break; }
+    v.d_streak = k; v.idmakers = v.officials.filter(o => !o.mobiliser && o.att !== 'L').length; v.per_head = v.idmakers ? Math.round(v.can / v.idmakers) : v.can; });
+  const yT = totGet90_(tid, yd), T = R.totals;
+  R.deltas = yT ? { gen: T.gen - yT.gen, can: T.can - yT.can, notgen: T.notgen - yT.notgen, notchecked: T.notchecked - yT.notchecked } : null;
+  R.totals.reasons = (R.totals.reasons || []).map(r => { const m = remedy90_(r.label); return Object.assign(r, { remedy: m[0], who: m[1] }); });
+  const best = R.villages.slice().sort((a, b) => b.ids_today - a.ids_today)[0];
+  R.best = best && best.ids_today ? { name: best.name, ids: best.ids_today, grade: best.grade } : null;
+  R.rising = R.villages.filter(v => v.rising).map(v => ({ name: v.name, from: v.trend[0], to: v.trend[3] }));
+  // page 2: notices and replies per official
+  const scn = {}, rep = {}; read_('ScnReply').forEach(x => rep[x.tehsil_id + '|' + x.date + '|' + x.user_id] = 1);
+  read_('Scn').forEach(x => { if (x.tehsil_id !== tid || !x.issued_on || !campOn_(x.date)) return; const s2 = scn[x.user_id] = scn[x.user_id] || { n: 0, pending: 0 }; s2.n++; if (!rep[x.tehsil_id + '|' + x.date + '|' + x.user_id]) s2.pending++; });
+  const keyOf = {}; people76_(tid).forEach(p => keyOf[p.name + '|' + p.designation] = p.key);
+  R.villages.forEach(v => v.officials.forEach(o => { const s2 = scn[keyOf[o.name + '|' + o.designation]] || { n: 0, pending: 0 }; o.notices = s2.n; o.pending = s2.pending; }));
+  // what is still to be done today, printed instead of blocking
+  const steps = []; if (T.unmarked) steps.push('Attendance not marked for ' + T.unmarked);
+  if (minutesOf_(now) >= 17 * 60) { const pl = planRow81_(tid, addDays_(today, 1)); if (!pl || pl.status !== 'ISSUED') steps.push('Tomorrow’s camp order not yet recorded'); }
+  if (sl.missed) steps.push(sl.missed + ' upload window' + (sl.missed > 1 ? 's' : '') + ' missed');
+  R.pending_steps = steps;
+  R.officials_total = { deployed: T.deployed, present: T.present, absent: T.absent, leave: T.leave, unmarked: T.unmarked };
+  R.absent_today = R.exceptions.absent; R.absent_repeat = R.exceptions.repeat;
+  R.d_streak = R.villages.filter(v => v.d_streak >= 2).map(v => ({ name: v.name, days: v.d_streak, rising: v.rising, from: v.trend[0], to: v.trend[3] }));
+  return R;
+}
+
+/* -------- the master sheet: both tehsils, for the Tehsildar's review with the Deputy Commissioner -------- */
+function master90_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar makes the master sheet.');
+  const today = today_(), since = req.since || setting_('dc_last_review') || addDays_(today, -3);
+  if (req.save_since) setSetting_('dc_last_review', String(req.save_since));
+  const ts = userTehsils_(u).map(tid => report90_({ tehsil_id: tid }, u));
+  const F = read_('Farmers'), out = ts.map(R => { const ids = F.filter(f => f.tehsil_id === R.tehsil_id && f.missing !== 'Y' && String(f.first_seen) > since).length;
+    const ns = read_('Scn').filter(x => x.tehsil_id === R.tehsil_id && x.issued_on && String(x.issued_on).slice(0, 10) > since).length;
+    return { R, since: { ids, notices: ns } }; });
+  const sum = k => ts.reduce((a, R) => a + (R.totals[k] || 0), 0);
+  const both = { villages: ts.reduce((a, R) => a + R.villages.length, 0), total: sum('total'), gen: sum('gen'), can: sum('can'), notgen: sum('notgen'), notchecked: sum('notchecked'), today: ts.reduce((a, R) => a + R.pace.today, 0),
+    avg: ts.reduce((a, R) => a + R.pace.avg, 0), need: ts.reduce((a, R) => a + R.pace.need, 0), deployed: sum('deployed'), present: sum('present'), absent: sum('absent'), leave: sum('leave') };
+  both.pct = both.total ? Math.round(both.gen * 1000 / both.total) / 10 : 0;
+  const reasons = {}; ts.forEach(R => R.totals.reasons.forEach(r => { const x = reasons[r.label] = reasons[r.label] || { label: r.label, n: 0, by: {}, remedy: r.remedy, who: r.who }; x.n += r.n; x.by[R.tehsil] = (x.by[R.tehsil] || 0) + r.n; }));
+  const weak = [].concat(...ts.map(R => R.villages.filter(v => v.can > 0).map(v => ({ name: v.name, tehsil: R.tehsil, pct: v.pct, today: v.ids_today, can: v.can, grade: v.grade, staff: v.officials.filter(o => o.att === 'P').length + '·' + v.officials.filter(o => o.att === 'A').length + '·' + v.officials.filter(o => o.att === 'L').length, per_head: v.per_head, idmakers: v.idmakers }))))
+    .sort((a, b) => a.pct - b.pct).slice(0, 10);
+  // requests to the district, drafted from the figures (edited before printing)
+  const asks = [], rl = Object.keys(reasons).map(k => reasons[k]);
+  const aad = rl.filter(r => /aadhaar|mobile|otp|link/i.test(r.label)), aadN = aad.reduce((a, r) => a + r.n, 0);
+  if (aadN) asks.push('Aadhaar–mobile linking camps for ' + aadN + ' farmers (' + ts.map(R => R.tehsil + ' ' + aad.reduce((a, r) => a + (r.by[R.tehsil] || 0), 0)).join(', ') + ').');
+  const short = weak.filter(w => w.per_head > 250); if (short.length) asks.push('More ID-making staff for ' + short.slice(0, 4).map(w => w.name + ' (' + w.tehsil + ', ' + w.per_head + ' per head)').join(', ') + '.');
+  const dead = rl.filter(r => /dead|deceas|heir|death/i.test(r.label)).reduce((a, r) => a + r.n, 0); if (dead) asks.push('Special drive for mutation of legal heirs: ' + dead + ' deceased landowners cannot get an ID until then.');
+  return { date: today, now: now_(), since, both, tehsils: out.map(x => ({ tehsil_id: x.R.tehsil_id, name: x.R.tehsil, nvill: x.R.villages.length, totals: x.R.totals, pace: x.R.pace, fresh: x.R.fresh, uploads: x.R.uploads, deltas: x.R.deltas, since: x.since,
+    grades: x.R.totals.grades, notices: x.R.exceptions.notices, absent: x.R.absent_today, repeat: x.R.absent_repeat, d_streak: x.R.d_streak, best: x.R.best, days_left: x.R.days_left, day_no: x.R.day_no })),
+    reasons: rl.sort((a, b) => b.n - a.n), weak, asks, deadline: ts[0] ? ts[0].deadline : '' };
+}
+
+/* -------- handover note between the DA and the backup -------- */
+function handoverSave_(req, u) {
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const tid = req.tehsil_id || u.tehsil_id; if (userTehsils_(u).indexOf(tid) < 0) throw new Error('Not allowed.');
+  setSetting_('handover_' + tid, req.text ? JSON.stringify({ text: String(req.text).slice(0, 400), by: u.name, at: now_(), uid: u.user_id }) : '');
+  return { ok: 1 };
+}
+function handover90_(u) { const o = {}; userTehsils_(u).forEach(t => { try { const x = setting_('handover_' + t); if (x) o[t] = JSON.parse(x); } catch (e) {} }); return o; }
+function home90_(req, u) { const r = home84_(req, u); if (['ADMIN', 'DA', 'NT'].indexOf(u.role) >= 0) { r.handover = handover90_(u); try { r.upreg = uploadReg90_({}, u); } catch (e) {} } return r; }
+
+/* -------- the last order and notice numbers, to suggest the next -------- */
+const planData85_ = planData81_;
+planData81_ = function (tid, date) {
+  const P = planData85_(tid, date), prev = read_('CampPlan').filter(r => r.tehsil_id === tid && r.status === 'ISSUED' && r.date < date && r.order_no).sort((a, b) => a.date < b.date ? 1 : -1)[0];
+  P.last_nos = prev ? { date: prev.date, order_no: prev.order_no, notice_no: prev.notice_no || '', order_date: prev.order_date || '' } : null;
+  return P;
+};
+
+Object.assign(ACTIONS, { home82: home90_, report90: report90_, master90: master90_, uploadReg: uploadReg90_, handoverSave: handoverSave_ });
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };

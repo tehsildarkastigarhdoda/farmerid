@@ -1,5 +1,5 @@
-const CACHE = 'farmerid-v32';
-const SHELL = ['./', './index.html', './app.html', './dash.js', './logo.svg', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+const CACHE = 'farmerid-v33';
+const SHELL = ['./', './index.html', './app.html', './dash.js', './logo.svg', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './fonts/geist-400.woff2', './fonts/geist-500.woff2', './fonts/geist-600.woff2', './fonts/geist-mono-500.woff2'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -15,7 +15,7 @@ self.addEventListener('fetch', e => {
       const hit = await c.match(key);
       const net = fetch(e.request).then(async r => { if (r.ok) { const tag = x => x ? (x.headers.get('etag') || x.headers.get('last-modified') || '') : ''; const o = tag(hit), n = tag(r);
           await c.put(key, r.clone()); if (hit && o && n && o !== n) (await self.clients.matchAll()).forEach(x => x.postMessage('upd82')); } return r; })
-        .catch(() => hit || c.match('./app.html'));
+        .catch(() => hit || c.match(/app\.html$/.test(key) ? './app.html' : './index.html'));
       if (hit) { e.waitUntil(net.catch(() => {})); return hit; }
       return net;
     }));

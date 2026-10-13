@@ -13,15 +13,15 @@
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="https://tehsildarkastigarhdoda.github.io/farmerid/">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preload" href="fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Inter;font-weight:400;font-display:swap;src:url(fonts/inter-400.woff2) format("woff2")}@font-face{font-family:Inter;font-weight:500;font-display:swap;src:url(fonts/inter-500.woff2) format("woff2")}@font-face{font-family:Inter;font-weight:600;font-display:swap;src:url(fonts/inter-600.woff2) format("woff2")}@font-face{font-family:Inter;font-weight:700;font-display:swap;src:url(fonts/inter-700.woff2) format("woff2")}@font-face{font-family:Inter;font-weight:800;font-display:swap;src:url(fonts/inter-800.woff2) format("woff2")}</style>
-<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com"><link rel="preload" href="dash.js?v=8.5.0" as="script">
+<link rel="preload" href="fonts/geist-400.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="fonts/geist-600.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Geist;font-weight:400;font-display:swap;src:url(fonts/geist-400.woff2) format("woff2")}@font-face{font-family:Geist;font-weight:500;font-display:swap;src:url(fonts/geist-500.woff2) format("woff2")}@font-face{font-family:Geist;font-weight:600 900;font-display:swap;src:url(fonts/geist-600.woff2) format("woff2")}@font-face{font-family:"Geist Mono";font-weight:400 900;font-display:swap;src:url(fonts/geist-mono-500.woff2) format("woff2")}</style>
+<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com"><link rel="preload" href="dash.js?v=9.0.0" as="script">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;overflow-x:hidden}
-body{font:16px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#F3F5F2;color:#16201B}
+body{font:16px/1.45 Geist,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#F3F5F2;color:#16201B}
 .top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid #E0E6E2}
 .top .in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px}
 .top img{width:44px;height:44px;flex:none}
@@ -41,7 +41,7 @@ footer .cr{margin-top:6px;color:#55635B;font-weight:600}
 <main><div class="upd" id="upd"></div><div id="msg"></div><div id="rc"></div><div id="dash" hidden></div></main>
 <footer>Figures are compiled from the Agristack portal files uploaded by the Tehsil offices and are indicative. The portal remains the official record.
 <div class="cr">Designed and developed by Pushpak Saroop, JKAS, Tehsildar Kastigarh.</div></footer>
-<script src="dash.js?v=8.5.0"></script>
+<script src="dash.js?v=9.0.0"></script>
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
 (async () => {
@@ -64,13 +64,20 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
       if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text }); } catch (e) {} } else { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); } }, 'image/jpeg', 0.9); };
     document.getElementById('sp8').onclick = () => shp('square'); document.getElementById('ss8').onclick = () => shp('story');
     document.getElementById('sl8').onclick = async () => { if (navigator.share) { try { await navigator.share({ title: 'Farmer ID · Assar & Kastigarh', text: 'Farmer ID live status', url: page }); } catch (e) {} } else { try { await navigator.clipboard.writeText(page); alert('Link copied'); } catch (e) {} } }; upd.innerHTML = `<span>Updated ${DASH.t12(d.now)} · updates by itself</span><button id="rf">Refresh</button>`; document.getElementById('rf').onclick = load; };
-  if (last) draw(last); else root.innerHTML = '';
+  if (last) { try { draw(last); } catch (e) { last = null; try { localStorage.removeItem('d7:last'); } catch (e2) {} root.innerHTML = ''; } } else root.innerHTML = '';
+  let busy85 = false, retry85 = null;
   async function load() {
+    if (busy85) return; busy85 = true; clearTimeout(retry85);
+    if (typeof T8 === 'undefined') { msg.innerHTML = '<div class="err">The page did not load fully (weak internet). <button onclick="location.reload()">Reload</button></div>'; busy85 = false; return; }
+    const ac = new AbortController(), t0 = Date.now(), to = setTimeout(() => ac.abort(), 30000);
+    const tk = setInterval(() => { const s = Math.round((Date.now() - t0) / 1000); if (s >= 6) msg.innerHTML = `<div class="err" style="background:#FFF7EA;color:#8A5A00">Waiting for the server · ${s} s… ${last ? 'Showing the last figures meanwhile.' : 'Please keep the page open.'}</div>`; }, 1000);
     try {
-      const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'dash' }) }); const d = await r.json();
+      const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify({ action: 'dash' }), signal: ac.signal }); const d = await r.json();
       if (!d.ok) { const er = new Error(d.error || 'Could not load.'); er.server = 1; throw er; } msg.innerHTML = ''; draw(d); try { localStorage.setItem('d7:last', JSON.stringify(d)); } catch (e) {}
-    } catch (e) { const why = e.server ? (/Unknown action/.test(e.message) ? 'The server is on an older version: the office needs to deploy the new Code.gs (Deploy > Manage deployments > New version).' : 'The server replied: ' + e.message) : navigator.onLine ? 'Could not reach the server.' : 'No internet.';
-      msg.innerHTML = `<div class="err">${why.replace(/</g, '&lt;')} ${last ? 'Showing the last figures.' : 'Try again in a minute.'}</div>`; }
+    } catch (e) { if (e.name === 'AbortError') e = { message: 'timeout', slow: 1 }; retry85 = setTimeout(load, last ? 60000 : 10000);
+      const why = e.slow ? 'The server did not answer in 30 seconds. Trying again by itself…' : e.server ? (/Unknown action/.test(e.message) ? 'The server is on an older version: the office needs to deploy the new Code.gs (Deploy > Manage deployments > New version).' : 'The server replied: ' + e.message) : navigator.onLine ? 'Could not reach the server.' : 'No internet.';
+      msg.innerHTML = `<div class="err">${why.replace(/</g, '&lt;')} ${last ? 'Showing the last figures.' : (e.slow ? '' : 'Trying again by itself.')} <button onclick="location.reload()">Reload</button></div>`; }
+    finally { clearTimeout(to); clearInterval(tk); busy85 = false; }
   }
   load(); setInterval(() => { if (document.visibilityState === 'visible') load(); }, 120000);
   let uv; setInterval(async () => { if (document.visibilityState !== 'visible') return; try { const r = await (await fetch(API_URL, { method: 'POST', redirect: 'follow', body: '{"action":"ver"}' })).json(); if (uv !== undefined && r.uv !== uv) load(); uv = r.uv; } catch (e) {} }, 15000);
@@ -78,7 +85,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
 </script>
-<script>(function () { var PV = '8.5.0', n = function (v) { return String(v || '0').split('.').map(Number).reduce(function (a, x) { return a * 1000 + (x || 0); }, 0); };
+<script>(function () { var PV = '9.0.0', n = function (v) { return String(v || '0').split('.').map(Number).reduce(function (a, x) { return a * 1000 + (x || 0); }, 0); };
   function chk() { fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { if (j && n(j.v) > n(PV)) location.replace(location.pathname + '?t=' + Date.now()); }).catch(function () {}); }
   setInterval(chk, 300000); setTimeout(chk, 5000); document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') chk(); }); })();</script>
 </body>
