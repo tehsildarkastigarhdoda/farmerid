@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '9.5.0';
+const APP_VERSION = '10.0.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '25';
+const SCHEMA_VERSION = '26';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -378,6 +378,7 @@ function migrate_() {
     if (Number(ver) < 18) migrateV18_();
     if (Number(ver) < 22) migrateV22_();
     if (Number(ver) < 25) migrateV25_();
+    if (Number(ver) < 26) migrateV26_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -5108,7 +5109,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '9.5.0';
+const MIN_APP83 = '10.0.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -6304,7 +6305,7 @@ function match95Run_(req, u) {
 function matchAll95_(u) {
   const farmers = read_('Farmers'), buckets = read_('Buckets'), logs = [], out = {};
   const fb = snap82_('Farmers', farmers), bb = snap82_('Buckets', buckets);
-  read_('Tehsils').filter(t => t.active === 'Y').forEach(t => { out[t.tehsil_id] = linkFarmers_(t.tehsil_id, farmers, buckets, u, true, logs); });
+  read_('Tehsils').filter(t => t.active === 'Y').forEach(t => { detectDups_(t.tehsil_id, buckets); out[t.tehsil_id] = linkFarmers_(t.tehsil_id, farmers, buckets, u, true, logs); });
   writeDiff82_('Farmers', farmers, fb); writeDiff82_('Buckets', buckets, bb); append_('Log', logs);
   return out;
 }
@@ -6586,6 +6587,199 @@ ACTIONS.report94 = report94_; ACTIONS.saveBuckets = saveBuckets_; ACTIONS.logout
   if (u.role === 'DA') { const nowM = minutesOf_(now_()); o.cover = userTehsils_(u).filter(t => t !== o.tehsil_id).map(t => ({ tehsil_id: t, tehsil: tehsilName_(t),
     late: duty95_(t, today_()).filter(x => !x.done && !x.paused && nowM - (Number(x.due.slice(0, 2)) * 60 + Number(x.due.slice(3))) >= 30).map(x => ({ k: x.k, label: x.label, due: x.due })) })).filter(x => x.late.length); }
   return o; }; ACTIONS.today95 = today95_; }
+
+/* 9.5.1: the same-farmer groups are recounted for every tehsil (Kastigarh's had never been counted) */
+function migrateV26_() { try { matchAll95_({ user_id: 'SYSTEM' }); } catch (e) { append_('Errors', [{ ts: now_(), user_id: 'SYSTEM', action: 'migrateV26', error: String(e.message || e).slice(0, 300) }]); } }
+
+/* ============================== v10.0: FEWER STEPS FOR THE DEALING ASSISTANT ==============================
+ * Notices: the list is built at the 8 PM day close; the Tehsildar approves (by 12 noon) and that makes the files
+ * (numbers blank: written from the Nazir's register); the DA prints, gets them signed by 2 PM and posts them by 4 PM;
+ * at 4 PM they count as sent. Replies go to the Tehsildar, who marks them; unmarked at 11 AM next day = no reply.
+ * WhatsApp: the DA sends three messages a day (morning, 1 PM, 8 PM day close); the app records each.
+ */
+const SYS10 = { user_id: 'SYSTEM', role: 'ADMIN', name: 'System' };
+const at10_ = (d, hm) => d + ' ' + hm + ':00';
+/** When approved notices count as sent: 4 PM that day; approved late, 4 hours after the files (after 8 PM: noon next day). */
+function due10_(filesAt) {
+  const d = String(filesAt).slice(0, 10), t = String(filesAt).slice(11, 16), four = at10_(d, '16:00');
+  if (t <= '12:00') return four;
+  const m = Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5)) + 240; if (m > 20 * 60) return at10_(addDays_(d, 1), '12:00');
+  const x = at10_(d, String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0')); return x > four ? x : four;
+}
+
+/** Approval makes the files at once: numbers blank, dated today, reply by 11 AM next day. */
+const _decide93 = scnDecide93_;
+scnDecide93_ = function (req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar approves the notices.');
+  const tid = tidOf93_(req, u), date = req.date, S0 = scnState93_(tid, date, u);
+  if (!req.ret) {
+    if (!S0.closed) throw new Error('The list is ready after the 8 PM day close.');
+    if (!S0.list.length) throw new Error('Nobody is on the list.');
+    if (['FILES', 'SIGNED', 'SENT'].indexOf(S0.status) >= 0) throw new Error('Already approved.');
+    if (['SUBMITTED', 'CHANGED', 'APPROVED'].indexOf(S0.status) < 0) dayPut93_(tid, date, r => { r.status = 'SUBMITTED'; r.sig = S0.sig; r.sub_by = 'AUTO'; r.sub_at = now_(); r.n = String(S0.list.length); });
+  }
+  const out = _decide93(req, u);
+  if (req.ret || out.status !== 'APPROVED') return out;
+  const today = today_(), rb = addDays_(today, 1) + ' 11:00';
+  dayPut93_(tid, date, r => { r.nos = JSON.stringify({}); r.notice_date = today; r.reply_by = rb; r.frozen = JSON.stringify(out.final); r.status = 'FILES'; r.files_at = now_(); });
+  return scnState93_(tid, date, u);
+};
+/** The DA may record the numbers later (optional); nothing is required. */
+function scnNos10_(req, u) {
+  const tid = tidOf93_(req, u), date = req.date; da93_(u, tid);
+  const r0 = day93_(tid, date); if (!r0 || ['FILES', 'SIGNED', 'SENT'].indexOf(r0.status) < 0) throw new Error('The notices are not approved yet.');
+  const nos = j93(r0.nos, {}); Object.keys(req.nos || {}).forEach(g => { const v = String(req.nos[g] || '').replace(/\s+/g, ' ').trim().slice(0, 60); if (v) nos[g] = v; else delete nos[g]; });
+  dayPut93_(tid, date, r => { r.nos = JSON.stringify(nos); });
+  const rows = read_('Scn93').filter(x => x.tehsil_id === tid && x.date === date); rows.forEach(x => { x.no = nos[x.grp] || ''; }); if (rows.length) writeRows_('Scn93', rows);
+  return scnState93_(tid, date, u);
+}
+/** Posted: recorded as sent (the DA can tap it; at 4 PM it happens by itself). */
+function send10_(tid, date, at) {
+  const r0 = day93_(tid, date); if (!r0 || (r0.status !== 'FILES' && r0.status !== 'SIGNED')) return false;
+  dayPut93_(tid, date, r => { r.status = 'SIGNED'; r.signed_at = r.signed_at || at; });
+  scnSent93_({ tehsil_id: tid, date }, SYS10);
+  const rows = read_('Scn93').filter(x => x.tehsil_id === tid && x.date === date); rows.forEach(x => x.sent_at = at); if (rows.length) writeRows_('Scn93', rows);
+  const rb = addDays_(String(at).slice(0, 10), 1) + ' 11:00', R2 = read_('Scn93').filter(x => x.tehsil_id === tid && x.date === date && String(x.reply_by || '') < rb); R2.forEach(x => x.reply_by = rb); if (R2.length) writeRows_('Scn93', R2);
+  dayPut93_(tid, date, r => { r.sent_at = at; if (String(r.reply_by || '') < rb) r.reply_by = rb; });
+  return true;
+}
+function scnPosted10_(req, u) { const tid = tidOf93_(req, u); da93_(u, tid); if (!send10_(tid, req.date, now_())) throw new Error('Nothing approved to post.'); return scnState93_(tid, req.date, u); }
+/** Lazy clock: at 4 PM of the files' day the notices are sent; at the reply time an unmarked reply is "no reply". */
+function clock10_(tid) {
+  const now0 = now_();
+  const need = sd93_().some(r => r.tehsil_id === tid && (r.status === 'FILES' || r.status === 'SIGNED') && r.files_at && now0 >= due10_(r.files_at))
+    || read_('Scn93').some(x => x.tehsil_id === tid && x.sent_at && !x.recv && x.reply_by && now0.slice(0, 16) >= String(x.reply_by).slice(0, 16));
+  if (!need) return false;
+  const lock = LockService.getScriptLock(); if (!lock.tryLock(15000)) return false;
+  try { DB.cache = {}; return clock10b_(tid); } finally { lock.releaseLock(); }
+}
+function clock10b_(tid) {
+  const now = now_(); let ch = false;
+  sd93_().filter(r => r.tehsil_id === tid && (r.status === 'FILES' || r.status === 'SIGNED') && r.files_at).forEach(r => {
+    const due = due10_(r.files_at); if (now >= due) { send10_(tid, r.date, due); ch = true; } });
+  const rows = read_('Scn93').filter(x => x.tehsil_id === tid && x.sent_at && !x.recv && x.reply_by && now.slice(0, 16) >= String(x.reply_by).slice(0, 16));
+  if (rows.length) { rows.forEach(x => { x.recv = 'NONE'; x.recv_by = 'AUTO'; x.recv_at = now; x.verdict = ''; }); writeRows_('Scn93', rows); ch = true; }
+  return ch;
+}
+/** The Tehsildar marks a reply as it reaches him: satisfactory, not satisfactory, or drop the notice from the count. */
+function scnReply10_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar marks replies.');
+  const tid = tidOf93_(req, u), rows = read_('Scn93'), x = rows.find(y => y.tehsil_id === tid && y.date === req.date && y.key === req.key); if (!x) throw new Error('Notice not found.');
+  const v = String(req.verdict || ''); if (['OK', 'NOT_OK', 'DROP', ''].indexOf(v) < 0) throw new Error('Bad choice.');
+  const now = now_();
+  if (v === 'DROP') { x.drop = x.drop === 'Y' ? '' : 'Y'; }
+  else if (!v) { x.recv = ''; x.verdict = ''; x.recv_at = ''; x.judge_at = ''; }
+  else { if (!x.recv || x.recv === 'NONE') { x.recv = now.slice(0, 16) <= String(x.reply_by || '9999').slice(0, 16) ? 'ONTIME' : 'LATE'; x.recv_by = u.user_id; x.recv_at = now; } x.verdict = v; x.judge_by = u.user_id; x.judge_at = now; }
+  writeRows_('Scn93', [x]);
+  const rep = read_('ScnReply'), i = rep.findIndex(y => y.tehsil_id === tid && y.date === req.date && y.user_id === req.key); if (i >= 0) rep.splice(i, 1);
+  if (x.recv && x.recv !== 'NONE') rep.push({ date: req.date, tehsil_id: tid, user_id: req.key, reply_on: today_(), verdict: x.verdict, note: x.recv === 'LATE' ? 'late' : '', by: u.user_id, at: now });
+  writeAll_('ScnReply', rep);
+  DB.auditNote = { tehsil_id: tid, target: x.name, detail: 'reply to notice of ' + req.date + ': ' + (v || 'cleared') };
+  return scnReplies93_({ tehsil_id: tid }, u);
+};
+{ const _g = scnGet93_; scnGet93_ = function (req, u) { try { clock10_(tidOf93_(req, u)); } catch (e) {} return _g(req, u); }; ACTIONS.scn93 = scnGet93_; }
+{ const _r = scnReplies93_; scnReplies93_ = function (req, u) { try { clock10_(tidOf93_(req, u)); } catch (e) {} return _r(req, u); }; ACTIONS.scnReplies93 = scnReplies93_; }
+ACTIONS.scnDecide93 = scnDecide93_;
+
+/* -------------------- the three WhatsApp messages: recorded when sent -------------------- */
+const MSG10 = { morning: ['09:00', '10:00', 'Morning update'], midday: ['13:00', '13:30', '1 PM update'], close: ['20:00', '20:30', 'Day-close update'] };
+function msgSent10_(req, u) {
+  if (['ADMIN', 'DA'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const tid = req.tehsil_id || u.tehsil_id; if (userTehsils_(u).indexOf(tid) < 0) throw new Error('Not your tehsil.');
+  if (!MSG10[req.kind]) throw new Error('Unknown message.');
+  const k = 'msg10_' + tid + '_' + today_() + '_' + req.kind; if (!setting_(k)) setSetting_(k, now_());
+  return { ok: 1, at: setting_(k) };
+}
+function msg10_(tid, date) { const o = {}; Object.keys(MSG10).forEach(k => o[k] = setting_('msg10_' + tid + '_' + date + '_' + k) || ''); return o; }
+function msgWindow10_() { const h = now_().slice(11, 16); return h < '12:00' ? 'morning' : h < '19:30' ? 'midday' : 'close'; }
+
+/* -------------------- the DA's day: the new duties -------------------- */
+duty95_ = function (tid, date) {
+  const today = today_(), isToday = date === today, nowHm = now_().slice(11, 16), out = [], M = msg10_(tid, date);
+  const att = read_('Attend').filter(a => a.tehsil_id === tid && a.date === date), attAt = att.reduce((m, a) => a.at > m ? a.at : m, '');
+  const jk = read_('Jklr').find(r => r.tehsil_id === tid && r.date === date), frz = setting_('frz_' + tid + '_' + date);
+  const nd = sd93_().find(r => r.tehsil_id === tid && String(r.files_at || '').slice(0, 10) === date);
+  const D = [['morning', '10:00', 'Morning update in the group', 'Subah ka message', M.morning],
+    ['att', '11:00', 'Attendance from the photos', 'Haazri lagaayein', attAt],
+    ['midday', '13:30', '1 PM update in the group', '1 baje ka message', M.midday],
+    ['figures', '15:30', 'Portal figures for the DC sheet', 'DC sheet ke figures', jk ? jk.at : '']];
+  if (nd) { const dd = due10_(nd.files_at), dh = dd.slice(0, 10) === date ? dd.slice(11, 16) : '20:00';
+    D.push(['notices', dh, dh === '16:00' ? 'Notices: print, signed by 2 PM, post by 4 PM' : 'Notices: print, sign, post by ' + dh, 'Notice chhaapein, sign, group mein', nd.sent_at ? (String(nd.sent_at).slice(0, 16) < dd.slice(0, 16) ? nd.sent_at : dd) : '']); }
+  D.push(['close', '20:30', '8 PM file, close the day, day-close update', 'Din band karein · group mein update', frz && M.close ? (frz > M.close ? frz : M.close) : '']);
+  D.forEach(([k, due, label, hi, a]) => { const hmA = a ? String(a).slice(11, 16) : '', dayA = a ? String(a).slice(0, 10) : '';
+    const done = !!a, late = done ? (dayA > date || hmA > due) : (!isToday || nowHm > due);
+    out.push({ k, t: due, due, label, hi, done, at: hmA, late, open: !done && isToday && nowHm <= due, paused: false }); });
+  return out;
+};
+{ const _t = today95_; today95_ = function (req, u) { const o = _t(req, u); try { o.msgs = msg10_(o.tehsil_id, today_()); o.window = msgWindow10_(); } catch (e) {}
+  try { o.scn = userTehsils_(u).map(t => { clock10_(t); const d = scnDate93_(t, {}), S = scnState93_(t, d, u), R = read_('Scn93').filter(x => x.tehsil_id === t && x.sent_at);
+    return { tehsil_id: t, tehsil: tehsilName_(t), date: d, status: S.status, closed: S.closed, n: S.list.length, groups: (S.groups || []).length, files_at: S.files_at, sent_at: S.sent_at,
+      replies: R.filter(x => !x.recv || ((x.recv === 'ONTIME' || x.recv === 'LATE') && !x.verdict)).filter(x => x.reply_by && now_().slice(0, 10) <= String(x.reply_by).slice(0, 10)).length, dc: 0 }; }); } catch (e) { o.scn_err = String(e.message); }
+  return o; }; ACTIONS.today95 = today95_; }
+
+Object.assign(ACTIONS, { scnNos10: scnNos10_, scnPosted10: scnPosted10_, scnReply10: scnReply10_, msgSent10: msgSent10_ });
+['scnNos10', 'scnPosted10', 'scnReply10', 'msgSent10'].forEach(a => { WRITE_ACTIONS.push(a); UV_ACTIONS.push(a); });
+
+/* -------------------- Today for the Tehsildar / NT: each DA's duties, people absent 2+ days -------------------- */
+{ const _t = today95_; today95_ = function (req, u) { const o = _t(req, u); if (u.role === 'DA') return o;
+  const today = today_(), ts = userTehsils_(u), users = read_('Users');
+  try { o.das = ts.map(t => { const da = users.find(x => x.role === 'DA' && x.tehsil_id === t && x.active !== 'DEL' && x.active !== 'N');
+    return { tehsil_id: t, tehsil: tehsilName_(t), name: da ? da.name : '', duties: duty95_(t, today), msgs: msg10_(t, today) }; }); } catch (e) { o.das_err = String(e.message); }
+  try { const att = read_('Attend'); o.abs2 = ts.map(t => { const ab = {}, last = {};
+      att.forEach(a => { if (a.tehsil_id === t && a.status === 'A' && campOn_(a.date) && a.date <= today) { (ab[a.key] = ab[a.key] || []).push(a.date); } });
+      const ppl = {}; people76_(t).forEach(p => ppl[p.key] = p);
+      const y = addDays_(today, -1);
+      return { tehsil_id: t, list: Object.keys(ab).filter(k => ppl[k] && ab[k].length >= 2 && ab[k].some(d => d >= y)).map(k => ({ name: ppl[k].name, designation: ppl[k].designation, dates: ab[k].sort().slice(-5) })).sort((a, b) => b.dates.length - a.dates.length) }; }); } catch (e) { o.abs2_err = String(e.message); }
+  return o; }; ACTIONS.today95 = today95_; }
+
+/* -------------------- Farmer Coverage (10.0): the register + 7-day trend + checks + IDs a day per village -------------------- */
+function covSnap10_(tid, pct) {
+  const k = 'cov10_' + tid + '_' + today_(), v = String(pct);
+  if (setting_(k) === v) return;
+  const lock = LockService.getScriptLock(); if (!lock.tryLock(5000)) return;
+  try { setSetting_(k, v); } finally { lock.releaseLock(); }
+}
+function cov10_(req, u) {
+  const sc = satScope95_(u, req), today = today_(), days = []; for (let i = 6; i >= 0; i--) days.push(addDays_(today, -i));
+  const F = read_('Farmers'), V9 = read_('Verify95'), un = {}; read_('Users').forEach(x => un[x.user_id] = x.name);
+  return { as_on: now_(), days, tehsils: sc.tids.map(t => { const s = sat95_(t); try { covSnap10_(t, s.totals.pct); } catch (e) {}
+    s.trend = days.map(d => { const v = setting_('cov10_' + t + '_' + d); return v === '' || v === undefined || v === null ? null : Number(v); });
+    const vids = {}; s.villages.forEach(v => { vids[v.village_id] = days.map(() => 0); });
+    F.forEach(f => { if (f.tehsil_id !== t || !vids[f.village_id]) return; const i = days.indexOf(String(f.first_seen || '').slice(0, 10)); if (i >= 0) vids[f.village_id][i]++; });
+    s.villages.forEach(v => { v.days = vids[v.village_id]; });
+    const vt = V9.filter(x => x.tehsil_id === t), ck = {};
+    vt.forEach(x => { const k = x.kind; const c = ck[k] = ck[k] || { kind: k, checker: un[x.checker_id] || '', checked: 0, wrong: 0 }; if (x.result) c.checked++; if (x.result === 'WRONG') c.wrong++; });
+    s.checks = Object.keys(ck).map(k => ck[k]);
+    s.checks_v = {}; vt.filter(x => x.result).forEach(x => { const c = s.checks_v[x.village_id] = s.checks_v[x.village_id] || { checked: 0, wrong: 0, notes: [] }; c.checked++; if (x.result === 'WRONG') { c.wrong++; if (c.notes.length < 3) c.notes.push(x.note); } });
+    return s; }) };
+}
+ACTIONS.cov10 = cov10_;
+{ const _t = today95_; today95_ = function (req, u) { const o = _t(req, u); try { (o.sats || []).forEach(s => covSnap10_(s.tehsil_id, s.totals.pct)); if (o.sat) covSnap10_(o.tehsil_id, o.sat.pct); } catch (e) {} return o; }; ACTIONS.today95 = today95_; }
+
+/* -------------------- one village today (10.0): checkpoints, places, week, notices -------------------- */
+const CP10 = ['10:00', '12:00', '14:00', '16:00', '18:00'];
+function vil10_(req, u) {
+  const v = read_('Villages').find(x => x.village_id === String(req.village_id)); if (!v) throw new Error('Village not found.');
+  if (userTehsils_(u).indexOf(v.tehsil_id) < 0 && !(isField_(u) && phVillageIds_(u).indexOf(v.village_id) >= 0)) throw new Error('Not your village.');
+  const today = today_(), y = addDays_(today, -1), nowHm = now_().slice(11, 16), days = []; for (let i = 6; i >= 0; i--) days.push(addDays_(today, -i));
+  const F = read_('Farmers').filter(f => f.village_id === v.village_id), cp = CP10.map(() => 0), wk = days.map(() => 0); let ydayNow = 0;
+  F.forEach(f => { const d = String(f.first_seen || '').slice(0, 10), t = String(f.seen_at || '').slice(11, 16) || '23:59';
+    const i = days.indexOf(d); if (i >= 0) wk[i]++;
+    if (d === today) CP10.forEach((c, k) => { if (t <= c) cp[k]++; });
+    if (d === y && t <= nowHm) ydayNow++; });
+  const places = read_('Places').filter(p => p.village_id === v.village_id).map(p => ({ panchayat: p.panchayat || '', camp_point: p.camp_point || '', hamlets: p.hamlets || '' }));
+  const nd = nodalMap84_()[v.village_id] || (setting_('vnodal_' + v.tehsil_id) === 'Y' ? null : nodal81_(v.tehsil_id));
+  const nts = read_('Scn93').filter(x => x.tehsil_id === v.tehsil_id && x.date >= days[0] && String(x.villages || '').indexOf(v.name) >= 0)
+    .map(x => ({ date: x.date, name: x.name, designation: x.designation, grounds: x.grounds, level: x.level, sent: !!x.sent_at, recv: x.recv || '', verdict: x.verdict || '' })).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 12);
+  return { village_id: v.village_id, name: v.name, tehsil_id: v.tehsil_id, cp: CP10, cps: cp, now: nowHm, yday_now: ydayNow, days, week: wk, places, nodal: nd ? { name: nd.name, designation: nd.designation } : null, notices: nts };
+}
+ACTIONS.vil10 = vil10_;
+
+/* -------------------- the 10.0 practice drill: four short steps on the new way of working -------------------- */
+const DRILL10 = ['msgs10', 'notices10', 'order10', 'close10'];
+drill95Get_ = function (req, u) { const d = read_('Drill95').filter(r => r.user_id === u.user_id).map(r => r.step); return { steps: DRILL10, done: d, need: u.role === 'DA' && DRILL10.some(s => d.indexOf(s) < 0) }; };
+drill95Save_ = function (req, u) { if (DRILL10.indexOf(req.step) < 0) throw new Error('Unknown step.'); const R = read_('Drill95'); if (!R.some(r => r.user_id === u.user_id && r.step === req.step)) append_('Drill95', [{ user_id: u.user_id, step: req.step, at: now_() }]); return drill95Get_(req, u); };
+ACTIONS.drill95 = drill95Get_; ACTIONS.drill95Save = drill95Save_;
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
