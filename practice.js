@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '9.4.0';
+const APP_VERSION = '9.5.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '24';
+const SCHEMA_VERSION = '25';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -377,6 +377,7 @@ function migrate_() {
     if (Number(ver) < 17) migrateV17_();
     if (Number(ver) < 18) migrateV18_();
     if (Number(ver) < 22) migrateV22_();
+    if (Number(ver) < 25) migrateV25_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -4829,7 +4830,7 @@ function planData81_(tid, date) {
     if (fin) { done.push({ village_id: vid, name: v0.name, why: left === 0 ? 'Finished' : 'Practically done' }); offs.forEach(o => free.push({ key: o.key, post_id: o.post_id, name: o.name, designation: o.designation, village: v0.name, village_id: vid })); return; }
     const pn = {}; offs.forEach(o => (pn[o.panchayat] = pn[o.panchayat] || []).push(o));
     const pw = patwariOf_(v, phs, users);
-    villages.push({ village_id: vid, name: v0.name, nodal: VON85 ? (NOD[vid] || null) : { name: DEF85.name, designation: DEF85.designation, default: true }, left, target: Math.min(vt, left), patwari: pw ? pw.name : '', cancelled: CX[vid] || '',
+    villages.push({ village_id: vid, name: v0.name, nodal: VON85 ? (NOD[vid] || null) : { name: DEF85.name, designation: DEF85.designation, default: true }, left, target: Math.min(vt95_(vid, date) || vt, left), patwari: pw ? pw.name : '', cancelled: CX[vid] || '',
       places: Object.keys(pn).sort().map(k => { const pl = places[vid + '|' + k] || {}; return { panchayat: k, camp_point: pl.camp_point || '', hamlets: pl.hamlets || '',
         officials: pn[k].sort((a, b) => a.rank - b.rank || a.name.localeCompare(b.name)) }; }) });
   });
@@ -5107,7 +5108,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '9.4.0';
+const MIN_APP83 = '9.5.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -5778,7 +5779,7 @@ function scnState93_(tid, date, u) {
     gate: { pending: pend }, unmarked: B ? B.unmarked : [], below: B ? B.below : [], left: B ? B.left : [], seniors: B ? B.seniors : [], min: B ? B.min : min93_(), down: B ? B.down : 0,
     list: B ? B.list : [], removed: B ? B.removed : [], excluded: excl, final, groups: groups93_(tid, final, nos),
     sig, return_note: row ? row.return_note : '', sub: row && row.sub_at ? { by: un[row.sub_by] || '', at: row.sub_at } : null, appr: row && row.appr_at ? { by: un[row.appr_by] || '', at: row.appr_at } : null,
-    nos, notice_date: (row && row.notice_date) || date, reply_by: (row && row.reply_by) || addDays_(today, 1) + ' 11:00',
+    nos, notice_date: (row && row.notice_date) || today, reply_by: (row && row.reply_by) || addDays_(today, 1) + ' 10:00',
     files_at: row ? row.files_at : '', signed_at: row ? row.signed_at : '', sent_at: row ? row.sent_at : '', last_no: last,
     letter: { head: String(t.letterhead || letterDefaults_(t).letterhead).split('\n').filter(Boolean), copy_to: setting_('scn_copy_' + tid) || COPY93[tid] || '', order: setting_('scn_camp_order_' + tid) || '', sign: 'Tehsildar\n' + (t.name || ''), target: Number(setting_('village_target') || 200) } };
 }
@@ -5840,7 +5841,7 @@ function scnFiles93_(req, u) {
     if (used[v.toLowerCase()]) throw new Error('Number ' + v + ' is already used for a notice of ' + used[v.toLowerCase()] + '.');
     if (Object.keys(nos).some(k => nos[k].toLowerCase() === v.toLowerCase())) throw new Error('Two notices cannot have the same number (' + v + ').');
     nos[g.grp] = v.slice(0, 60); });
-  const nd = /^\d{4}-\d{2}-\d{2}$/.test(req.notice_date || '') ? req.notice_date : date, rb = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(req.reply_by || '') ? req.reply_by : addDays_(today_(), 1) + ' 11:00';
+  const nd = /^\d{4}-\d{2}-\d{2}$/.test(req.notice_date || '') ? req.notice_date : today_(), rb = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(req.reply_by || '') ? req.reply_by : addDays_(today_(), 1) + ' 10:00';
   if (rb.slice(0, 10) < nd) throw new Error('The reply time is before the notice date.');
   dayPut93_(tid, date, r => { r.nos = JSON.stringify(nos); r.notice_date = nd; r.reply_by = rb; if (S0.status === 'APPROVED' || !r.frozen) r.frozen = JSON.stringify(S0.final); if (r.status !== 'SIGNED') { r.status = 'FILES'; r.files_at = now_(); } });
   // a notice already sent keeps its rows in step
@@ -6072,6 +6073,519 @@ function staffAdd94_(req, u) {
 }
 Object.assign(ACTIONS, { report94: report94_, staff94: staff94_, staffSave94: staffSave94_, staffMove94: staffMove94_, staffRelieve94: staffRelieve94_, staffDelete94: staffDelete94_, staffAdd94: staffAdd94_ });
 ['staffSave94', 'staffMove94', 'staffRelieve94', 'staffDelete94', 'staffAdd94'].forEach(a => { WRITE_ACTIONS.push(a); UV_ACTIONS.push(a); });
+
+/* ============================== v9.5: SATURATION REGISTER · PATWARI · GUIDED DAY ==============================
+ * Every land entry falls in exactly one box:
+ *   done        – Farmer ID made (this entry, or the same farmer's other entry, or in another village/tehsil)
+ *   possible    – an action makes the ID (field check pending, out of station, Aadhaar–mobile, lives in another village of the tehsil …)
+ *   notpossible – owner died (mutation), untraceable, married away, joint entry, dispute, minor
+ *   land        – not a farmer: state, shamlat, abadi / public use, department / school, religious land
+ *   unchecked   – not yet checked, or sent back to the Patwari to check again
+ * Distinct farmers = entries − land − the same farmer's other entries. Saturation = IDs ÷ (farmers − not possible).
+ */
+SCHEMA.Buckets.push('moved_to', 'old_mark');
+BUCKET_OUT.push('moved_to', 'old_mark');
+EDITABLE.push('moved_to');
+SCHEMA.Verify95 = ['vid', 'date', 'tehsil_id', 'village_id', 'bucket_id', 'patwari_id', 'checker_id', 'kind', 'result', 'right_code', 'note', 'at'];
+SCHEMA.Targets95 = ['village_id', 'tehsil_id', 'target', 'from', 'by', 'at'];
+SCHEMA.Sign95 = ['sid', 'tehsil_id', 'kind', 'title', 'ref', 'date', 'status', 'by', 'at', 'signed_at', 'note'];
+SCHEMA.Drill95 = ['user_id', 'step', 'at'];
+
+const CAT95 = {
+  done: ['A01', 'A14'],
+  land: ['A05', 'A06', 'A07', 'A12', 'A15'],
+  notpossible: ['A02', 'A03', 'A04', 'A08', 'A09', 'A10', 'A11', 'A13']
+};
+const BOX95 = { done: 'Farmer ID generated', possible: 'ID possible', notpossible: 'ID not possible', land: 'Not a farmer (land)', unchecked: 'Not yet checked' };
+function cat95_(b) {
+  if (b.status === 'CLAIMED') return 'done';
+  if (b.status !== 'REASON' || b.flag === 'RECHECK') return 'unchecked';
+  const c = b.reason_code;
+  if (CAT95.done.indexOf(c) >= 0) return 'done';
+  if (CAT95.land.indexOf(c) >= 0) return 'land';
+  if (CAT95.notpossible.indexOf(c) >= 0) return 'notpossible';
+  if (c === 'B10') return 'unchecked';
+  return 'possible';
+}
+const RANK95 = { done: 4, possible: 3, notpossible: 2, unchecked: 1 };
+
+/** Not-a-farmer names: religious land first (it was "department" before). */
+const _suggest94 = suggest_;
+suggest_ = function (name, parentage) {
+  const t = (' ' + name + ' ' + parentage + ' ').toLowerCase().replace(/[^a-z&]/g, ' ');
+  if (/\b(mandir|mandar|temple|devta|devtaa|dewta|masjid|mosque|gurdwara|gurudwara|waqf|wakf|auqaf|awqaf|dharamshala|ziarat|ziyarat|imambara|church)\b/.test(t) || /\bahl?[ae]?\s*(e\s*)?(islam|hanud|hunud|hanood|hunood)\b/.test(t) || /\bahl?[ae]?(islam|hanud|hunud)\b/.test(t)) return 'A15';
+  if (/\b(education|talim|taleem|mahkma|mehkma|mahakma|college|degree)\b/.test(t)) return 'A07';
+  if (/\bmakbuza\b/.test(t) && /\b(ahl|ahle|ahal|ahel|ahal)\w*\b/.test(t)) return 'A15';
+  return _suggest94(name, parentage);
+};
+NON_INDIVIDUAL.push('A15');
+
+/* -------------------- the engine -------------------- */
+function sat95Raw_(tid) {
+  const vs = read_('Villages').filter(v => v.tehsil_id === tid && v.active === 'Y' && v.practice !== 'Y' && !isCollect_(v));
+  const vset = {}; vs.forEach(v => vset[v.village_id] = v);
+  const byV = {}; read_('Buckets').forEach(b => { if (vset[b.village_id]) (byV[b.village_id] = byV[b.village_id] || []).push(b); });
+  const un = {}; read_('Farmers').forEach(f => { if (f.tehsil_id === tid && vset[f.village_id] && !f.bucket_id && f.missing !== 'Y' && f.status !== 'REJECTED' && f.link_conf !== 'NONE') un[f.village_id] = (un[f.village_id] || 0) + 1; });
+  return { vs, byV, un };
+}
+/** Groups the entries of one village into farmers. Returns per-bucket box and group key. */
+function satVillage95_(list) {
+  const groups = {}, info = {}; let land = 0;
+  list.forEach(b => {
+    const c = cat95_(b); info[b.bucket_id] = { cat: c };
+    if (c === 'land') { land++; return; }
+    let k;
+    if (b.farmer_id) k = 'F' + b.farmer_id;
+    else if (b.dup_group && b.dup_confirmed !== 'N' && (b.dup_conf === 'HIGH' || b.dup_conf === 'CONFIRMED' || b.dup_confirmed === 'Y')) k = 'G' + b.dup_group;
+    else if (b.reason_code === 'A01' && b.status === 'REASON') k = 'X' + b.bucket_id;   // the same farmer's other entry, no group: not a farmer of its own
+    else k = 'B' + b.bucket_id;
+    info[b.bucket_id].g = k;
+    (groups[k] = groups[k] || []).push(b);
+  });
+  const out = { entries: list.length, land, farmers: 0, extra: 0, done: 0, possible: 0, notpossible: 0, unchecked: 0, recheck: 0, codes: {}, e: { done: 0, possible: 0, notpossible: 0, unchecked: 0 } };
+  Object.keys(groups).forEach(k => {
+    const g = groups[k];
+    if (k[0] === 'X') { out.extra += g.length; g.forEach(b => out.e.done++); return; }
+    let best = g[0]; g.forEach(b => { if (RANK95[info[b.bucket_id].cat] > RANK95[info[best.bucket_id].cat]) best = b; });
+    const c = info[best.bucket_id].cat; out.farmers++; out[c]++; out.extra += g.length - 1;
+    g.forEach(b => { info[b.bucket_id].lead = b === best; out.e[info[b.bucket_id].cat]++; });
+    if (c !== 'done' && c !== 'unchecked' && best.reason_code) out.codes[best.reason_code] = (out.codes[best.reason_code] || 0) + 1;
+    if (c === 'unchecked' && best.flag === 'RECHECK') out.recheck++;
+  });
+  const base = out.farmers - out.notpossible;
+  out.pct = base > 0 ? Math.round(out.done * 1000 / base) / 10 : (out.farmers ? 100 : 0);
+  return { out, info };
+}
+function sat95_(tid) {
+  const R = sat95Raw_(tid), users = {}; read_('Users').forEach(x => users[x.user_id] = x);
+  const phs = read_('PHs').filter(p => p.tehsil_id === tid), rl = {}; read_('Reasons').forEach(r => rl[r.code] = r.report_label || r.label);
+  const villages = R.vs.map(v => { const s = satVillage95_(R.byV[v.village_id] || []).out, pw = patwariOf_(v, phs, users), ph = phs.find(p => p.ph_id === v.ph_id);
+    return Object.assign(s, { village_id: v.village_id, name: v.name, ph_id: v.ph_id || '', ph: ph ? ph.name : '', patwari: pw ? pw.name : '', patwari_id: pw ? pw.user_id : '', unmatched: R.un[v.village_id] || 0,
+      ready: s.entries > 0 && s.possible === 0 && s.unchecked === 0 && !(R.un[v.village_id] || 0), sat_date: v.sat_date || '' }); }).sort((a, b) => a.name.localeCompare(b.name));
+  const sum = k => villages.reduce((a, v) => a + (v[k] || 0), 0), T = {};
+  ['entries', 'land', 'extra', 'farmers', 'done', 'possible', 'notpossible', 'unchecked', 'recheck', 'unmatched'].forEach(k => T[k] = sum(k));
+  T.codes = {}; villages.forEach(v => Object.keys(v.codes).forEach(c => T.codes[c] = (T.codes[c] || 0) + v.codes[c]));
+  const base = T.farmers - T.notpossible; T.pct = base > 0 ? Math.round(T.done * 1000 / base) / 10 : 0;
+  const halqas = {}; villages.forEach(v => { const k = v.ph_id || '-'; const h = halqas[k] = halqas[k] || { ph_id: k, name: v.ph || 'No halqa', patwari: v.patwari, patwari_id: v.patwari_id, villages: [], farmers: 0, done: 0, possible: 0, notpossible: 0, unchecked: 0, entries: 0, unmatched: 0 };
+    h.villages.push(v.name); ['farmers', 'done', 'possible', 'notpossible', 'unchecked', 'entries', 'unmatched'].forEach(x => h[x] += v[x] || 0); });
+  const H = Object.keys(halqas).map(k => { const h = halqas[k], b = h.farmers - h.notpossible; h.pct = b > 0 ? Math.round(h.done * 1000 / b) / 10 : 0; h.checked = h.farmers ? Math.round((h.farmers - h.unchecked) * 1000 / h.farmers) / 10 : 0; return h; })
+    .sort((a, b) => b.pct - a.pct);
+  const byChecked = H.slice().sort((a, b) => b.checked - a.checked); H.forEach(h => { h.rank_sat = H.indexOf(h) + 1; h.rank_chk = byChecked.indexOf(h) + 1; });
+  const order = ['possible', 'notpossible'], reasons = Object.keys(T.codes).map(c => ({ code: c, label: rl[c] || c, box: CAT95.notpossible.indexOf(c) >= 0 ? 'notpossible' : 'possible', n: T.codes[c], act: ACT95[c] || '' }))
+    .sort((a, b) => order.indexOf(a.box) - order.indexOf(b.box) || b.n - a.n);
+  return { tehsil_id: tid, tehsil: tehsilName_(tid), as_on: now_(), totals: T, villages, halqas: H, reasons, labels: rl };
+}
+const ACT95 = { C03: 'Invite to the camp · Patwari', C01: 'Call to the camp: ready now', C02: 'Claim at the camp', C04: 'Moved to that village’s list', B04: 'Call list · family relays the OTP', B01: 'Aadhaar–mobile linking camp',
+  B11: 'Aadhaar–mobile linking camp', B02: 'Doorstep linking', B03: 'Call: family relays the OTP', B05: 'Call the family', B06: 'Aadhaar enrolment', B07: 'Name correction', B08: 'Counselling by the Patwari', B09: 'Portal ticket',
+  A02: 'Patwari: attest mutations', A04: 'Patwari: attest mutations', A08: 'Certified · sample checked', A13: 'Certified · sample checked', A09: 'Certified', A10: 'Certified', A11: 'Certified' };
+
+function satScope95_(u, req) {
+  const ts = userTehsils_(u);
+  if (isField_(u)) { const mine = phVillageIds_(u); const vt = read_('Villages').filter(v => mine.indexOf(v.village_id) >= 0).map(v => v.tehsil_id); return { tids: Array.from(new Set(vt.length ? vt : ts)), vids: mine }; }
+  return { tids: (req.tehsil_id ? [req.tehsil_id] : ts).filter(t => ts.indexOf(t) >= 0), vids: null };
+}
+/** The register: every role, scoped. The Patwari sees his halqa and the halqas compared (names and numbers). */
+function sat95Get_(req, u) {
+  const sc = satScope95_(u, req);
+  return { tehsils: sc.tids.map(t => { const s = sat95_(t); if (sc.vids) { s.mine = sc.vids; } return s; }) };
+}
+/** Farmer-wise rows (no Aadhaar). Mobile only for the office and the Patwari of the village. */
+function sat95List_(req, u) {
+  const sc = satScope95_(u, req), names = {}; read_('Villages').forEach(v => names[v.village_id] = v.name);
+  const rl = {}; read_('Reasons').forEach(r => rl[r.code] = r.report_label || r.label), un = {}; read_('Users').forEach(x => un[x.user_id] = x);
+  const out = [];
+  sc.tids.forEach(tid => { const R = sat95Raw_(tid), phs = read_('PHs').filter(p => p.tehsil_id === tid);
+    R.vs.forEach(v => { if (sc.vids && sc.vids.indexOf(v.village_id) < 0) return; if (req.village_ids && req.village_ids.length && req.village_ids.indexOf(v.village_id) < 0) return;
+      const list = R.byV[v.village_id] || [], S = satVillage95_(list), ph = phs.find(p => p.ph_id === v.ph_id);
+      list.forEach(b => { const i = S.info[b.bucket_id];
+        out.push({ t: tid, v: v.name, vid: v.village_id, ph: ph ? ph.name : '', id: b.bucket_id, n: b.name, p: b.parentage, k: b.khasras, box: i.cat, lead: i.lead === undefined ? (i.cat === 'land') : i.lead, g: i.g || '',
+          r: b.status === 'REASON' ? (rl[b.reason_code] || b.reason_code) : '', c: b.reason_code || '', rem: b.remarks || '', to: b.moved_to ? (names[b.moved_to] || b.moved_to) : '', fid: b.farmer_id || '',
+          m: (OFFICE95(u) || isField_(u)) ? (b.mobile || '') : '', by: b.surveyed_by && un[b.surveyed_by] ? un[b.surveyed_by].name : '', on: b.surveyed_date || '', re: b.flag === 'RECHECK' ? (rl[b.old_mark] || b.old_mark || 'yes') : '' }); }); }); });
+  return { rows: out, as_on: now_() };
+}
+const OFFICE95 = u => ['ADMIN', 'DA', 'NT'].indexOf(u.role) >= 0;
+
+/* -------------------- the Patwari's home -------------------- */
+function pw95_(req, u) {
+  if (!isField_(u) && !OFFICE95(u)) throw new Error('Not allowed.');
+  const mine = isField_(u) ? phVillageIds_(u) : (req.village_ids || []);
+  const vrows = read_('Villages').filter(v => mine.indexOf(v.village_id) >= 0 && v.active === 'Y' && v.practice !== 'Y');
+  const tids = Array.from(new Set(vrows.map(v => v.tehsil_id))), sat = tids.map(t => sat95_(t));
+  const vs = [], halqas = []; sat.forEach(s => { s.villages.forEach(v => { if (mine.indexOf(v.village_id) >= 0) vs.push(v); }); s.halqas.forEach(h => halqas.push(Object.assign({ tehsil: s.tehsil, mine: h.patwari_id === u.user_id }, h))); });
+  const T = {}; ['entries', 'land', 'extra', 'farmers', 'done', 'possible', 'notpossible', 'unchecked', 'recheck', 'unmatched'].forEach(k => T[k] = vs.reduce((a, v) => a + (v[k] || 0), 0));
+  const base = T.farmers - T.notpossible; T.pct = base > 0 ? Math.round(T.done * 1000 / base) / 10 : 0;
+  const all = read_('Buckets');
+  const back = read_('Verify95').filter(x => x.result === 'WRONG' && mine.indexOf(x.village_id) >= 0 && all.some(b => b.bucket_id === x.bucket_id && b.flag === 'RECHECK')).length;
+  const same = all.filter(b => mine.indexOf(b.village_id) >= 0 && b.dup_conf === 'MEDIUM' && b.dup_confirmed !== 'Y' && b.dup_confirmed !== 'N' && b.status !== 'CLAIMED').length;
+  const vn95 = {}; read_('Villages').forEach(v => vn95[v.village_id] = v.name);
+  const inl = all.filter(b => b.moved_to && mine.indexOf(b.moved_to) >= 0 && b.status === 'REASON' && b.reason_code === 'C04'), incoming = inl.length;
+  const incoming_list = inl.map(b => ({ id: b.bucket_id, n: b.name, p: b.parentage, k: b.khasras, from: vn95[b.village_id] || '', to: b.moved_to, to_name: vn95[b.moved_to] || '', m: b.mobile || '' }));
+  let muts = 0; try { const m = {}; read_('Mutations').forEach(x => m[x.bucket_id] = x); muts = all.filter(b => mine.indexOf(b.village_id) >= 0 && b.status === 'REASON' && b.reason_code === 'A02' && !(m[b.bucket_id] && m[b.bucket_id].s4)).length; } catch (e) {}
+  const land = all.filter(b => mine.indexOf(b.village_id) >= 0 && b.status === 'NOT_SURVEYED' && b.suggested_code).length;
+  const dl = setting_('sat_check_deadline') || '2026-10-15 11:00';
+  return { villages: vs, totals: T, halqas, todo: { match: T.unmatched, recheck: T.recheck, back, same, incoming, muts, land }, incoming_list, deadline: dl, as_on: now_() };
+}
+
+/* -------------------- matching portal Farmer IDs to entries -------------------- */
+const _link94 = linkFarmers_;
+/** One more rule: the same name in the village, and every entry with that name has the same father → one person with several entries. */
+linkFarmers_ = function (tid, farmers, buckets, u, apply, logs) {
+  const c = _link94(tid, farmers, buckets, u, apply, logs);
+  const taken = {}; farmers.forEach(f => { if (f.bucket_id) taken[f.bucket_id] = 1; });
+  const byV = {}; buckets.forEach(b => { if (b.tehsil_id === tid && !b.farmer_id && !taken[b.bucket_id] && NON_INDIVIDUAL.indexOf(b.reason_code || b.suggested_code) < 0) (byV[b.village_id] = byV[b.village_id] || []).push(b); });
+  const open = farmers.filter(f => f.tehsil_id === tid && !f.bucket_id && f.missing !== 'Y' && f.link_conf !== 'NONE' && f.status !== 'REJECTED');
+  const nameCount = {}; open.forEach(f => { const k = f.village_id + '|' + normName_(f.name); nameCount[k] = (nameCount[k] || 0) + 1; });
+  open.forEach(f => {
+    const n0 = normName_(f.name); if (!n0 || nameCount[f.village_id + '|' + n0] !== 1) return;
+    const cand = (byV[f.village_id] || []).filter(b => !taken[b.bucket_id] && normName_(b.name) === n0);
+    if (cand.length < 2) return;
+    const fa = Array.from(new Set(cand.map(b => normName_(b.parentage))));
+    if (fa.length !== 1 || !fa[0]) return;
+    const prim = cand.slice().sort((a, b) => (b.status === 'CLAIMED') - (a.status === 'CLAIMED') || Number(b.khasra_count || 0) - Number(a.khasra_count || 0))[0];
+    c.auto++; c.suggested = Math.max(0, c.suggested - (String(f.link_conf).indexOf('SUGGESTED') === 0 ? 1 : 0));
+    cand.forEach(b => taken[b.bucket_id] = 1);
+    if (apply) { linkFarmer_(f, prim, u, 'NAME_FATHER', logs); sameFarmer95_(prim, cand.filter(b => b !== prim), u, logs); }
+  });
+  return c;
+};
+/** The other entries of a farmer whose ID is made: "Same farmer – ID made from another entry". */
+function sameFarmer95_(prim, others, u, logs) {
+  const now = now_(), today = today_(), gid = prim.dup_group && prim.dup_confirmed === 'Y' ? prim.dup_group : 'G' + shortHash_(prim.bucket_id + '|' + now);
+  prim.dup_group = gid; prim.dup_conf = 'CONFIRMED'; prim.dup_confirmed = 'Y'; prim.dup_role = 'PRIMARY';
+  others.forEach(b => { const old = b.status + '/' + b.reason_code;
+    b.dup_group = gid; b.dup_conf = 'CONFIRMED'; b.dup_confirmed = 'Y'; b.dup_role = 'SECONDARY';
+    if (b.status !== 'CLAIMED') { b.status = 'REASON'; b.reason_code = 'A01'; if (b.flag === 'RECHECK') b.flag = ''; if (!b.surveyed_date) { b.surveyed_date = today; b.surveyed_by = u.user_id; } }
+    b.updated_by = u.user_id; b.updated_at = now;
+    logs.push({ ts: now, user_id: u.user_id, bucket_id: b.bucket_id, action: 'SAME95', field: 'reason_code', old_value: old, new_value: 'A01 ' + gid }); });
+}
+function match95List_(req, u) {
+  const v = village_(req.village_id); regAccess95_(u, v);
+  const fs = read_('Farmers').filter(f => f.village_id === v.village_id && !f.bucket_id && f.missing !== 'Y' && f.status !== 'REJECTED' && f.link_conf !== 'NONE');
+  const taken = {}; read_('Farmers').forEach(f => { if (f.bucket_id) taken[f.bucket_id] = 1; });
+  const rl = {}; read_('Reasons').forEach(r => rl[r.code] = r.report_label || r.label);
+  const es = read_('Buckets').filter(b => b.village_id === v.village_id && !taken[b.bucket_id] && NON_INDIVIDUAL.indexOf(b.reason_code) < 0);
+  const ent = es.map(b => ({ id: b.bucket_id, n: b.name, p: b.parentage, k: b.khasras, st: b.status === 'NOT_SURVEYED' ? 'Not yet checked' : b.status === 'CLAIMED' ? 'Marked ID made' : (rl[b.reason_code] || b.reason_code), nn: normName_(b.name), sk: skeleton_(b.name) }));
+  return { village: v.name, farmers: fs.map(f => { const n0 = normName_(f.name), s0 = skeleton_(f.name), first = n0.split(' ')[0];
+    const sc = e => (e.nn === n0 ? 3 : e.sk === s0 ? 2 : first && e.nn.split(' ')[0] === first ? 1 : 0);
+    const cand = ent.map(e => ({ e, s: sc(e) })).filter(x => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 12).map(x => Object.assign({ score: x.s }, x.e));
+    cand.forEach(x => { delete x.nn; delete x.sk; });
+    return { farmer_id: f.farmer_id, name: f.name, gender: f.gender, age: f.age, mobile: f.mobile ? String(f.mobile).slice(0, 5) + '•••' + String(f.mobile).slice(-2) : '', status: f.status, at: String(f.first_seen || '').slice(0, 10), cand }; })
+      .sort((a, b) => ((b.cand[0] || {}).score || 0) - ((a.cand[0] || {}).score || 0) || String(a.name).localeCompare(String(b.name))),
+    entries: ent.map(e => ({ id: e.id, n: e.n, p: e.p, k: e.k, st: e.st })) };
+}
+function regAccess95_(u, v) {
+  if (u.role === 'ADMIN') return true;
+  if (u.role === 'DA' && userTehsils_(u).indexOf(v.tehsil_id) >= 0) return true;
+  if (isField_(u) && (phVillageIds_(u).indexOf(v.village_id) >= 0 || canEdit_(u, v))) return true;
+  throw new Error('Matching is done by the Patwari of the village or the Dealing Assistant.');
+}
+/** req: {farmer_id, bucket_ids:[…]} ticks every entry that is his land; or {farmer_id, none:true}: his land is not in this village. */
+function match95Save_(req, u) {
+  const farmers = read_('Farmers'), f = farmers.find(x => x.farmer_id === req.farmer_id);
+  if (!f) throw new Error('Farmer not found.'); regAccess95_(u, village_(f.village_id));
+  if (f.bucket_id) throw new Error(f.name + ' is already matched.');
+  const logs = [];
+  if (req.none) { f.link_conf = 'NONE'; f.candidates = ''; writeRows_('Farmers', [f]); append_('Log', [{ ts: now_(), user_id: u.user_id, bucket_id: '', action: 'MATCH95', field: 'none', old_value: f.farmer_id, new_value: 'not in this village' }]); return { ok: 1 }; }
+  const ids = (req.bucket_ids || []).map(String); if (!ids.length) throw new Error('Tick at least one entry.');
+  const all = read_('Buckets'), bs = ids.map(id => all.find(b => b.bucket_id === id));
+  if (bs.some(b => !b || b.village_id !== f.village_id)) throw new Error('Entry not found in this village.');
+  const linked = {}; farmers.forEach(x => { if (x.bucket_id) linked[x.bucket_id] = x.name; });
+  bs.forEach(b => { if (linked[b.bucket_id]) throw new Error('“' + b.name + '” is already matched to ' + linked[b.bucket_id] + '.'); });
+  const prim = bs.slice().sort((a, b) => (b.status === 'CLAIMED') - (a.status === 'CLAIMED'))[0];
+  linkFarmer_(f, prim, u, 'FIELD_CONFIRMED', logs);
+  if (bs.length > 1) sameFarmer95_(prim, bs.filter(b => b !== prim), u, logs);
+  writeRows_('Farmers', [f]); writeRows_('Buckets', bs); append_('Log', logs);
+  return { ok: 1, linked: bs.length };
+}
+function match95Run_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar.');
+  return { tehsils: matchAll95_(u) };
+}
+function matchAll95_(u) {
+  const farmers = read_('Farmers'), buckets = read_('Buckets'), logs = [], out = {};
+  const fb = snap82_('Farmers', farmers), bb = snap82_('Buckets', buckets);
+  read_('Tehsils').filter(t => t.active === 'Y').forEach(t => { out[t.tehsil_id] = linkFarmers_(t.tehsil_id, farmers, buckets, u, true, logs); });
+  writeDiff82_('Farmers', farmers, fb); writeDiff82_('Buckets', buckets, bb); append_('Log', logs);
+  return out;
+}
+
+/* -------------------- saving an answer: rules of the new reasons, re-check clears -------------------- */
+const _save94 = saveBuckets_;
+saveBuckets_ = function (req, u) {
+  const ups = req.updates || [], bad = [], vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v);
+  const all = read_('Buckets'), idx = {}; all.forEach(b => idx[b.bucket_id] = b);
+  const ok = ups.filter(up => { const b = idx[up.bucket_id]; if (!b) return true;
+    const code = up.reason_code !== undefined ? up.reason_code : b.reason_code, st = up.status !== undefined ? up.status : b.status;
+    if (st === 'REASON' && code === 'C04') { const to = up.moved_to !== undefined ? up.moved_to : b.moved_to, tv = vm[to];
+      if (!tv || tv.village_id === b.village_id || tv.tehsil_id !== b.tehsil_id) { bad.push({ bucket_id: up.bucket_id, ok: false, error: 'Choose the village of this tehsil where the farmer lives now.' }); return false; } }
+    else if (up.reason_code !== undefined && b.moved_to && up.moved_to === undefined) up.moved_to = '';
+    if (st === 'REASON' && code === 'A14' && !String(up.remarks !== undefined ? up.remarks : b.remarks || '').trim()) { bad.push({ bucket_id: up.bucket_id, ok: false, error: 'Write where the ID was made (village or tehsil).' }); return false; }
+    if (st === 'REASON' && code === 'B10' && up.reason_code === 'B10') { bad.push({ bucket_id: up.bucket_id, ok: false, error: '“Other reasons” is closed. Choose one of the reasons.' }); return false; }
+    return true; });
+  const was = {}; ok.forEach(up => { const b = idx[up.bucket_id]; if (b) was[b.bucket_id] = b.flag === 'RECHECK'; });
+  const r = ok.length ? _save94(Object.assign({}, req, { updates: ok }), u) : { results: [] };
+  const fix = [], now = now_(), today = today_();
+  (r.results || []).forEach(x => { if (!x.ok || !was[x.bucket_id]) return; const b = read_('Buckets').find(y => y.bucket_id === x.bucket_id); if (!b) return;
+    if (b.status !== 'NOT_SURVEYED') { b.flag = b.flag === 'RECHECK' ? '' : b.flag; b.surveyed_by = u.user_id; b.surveyed_date = today; b.updated_at = now; fix.push(b); x.flag = b.flag; } });
+  if (fix.length) writeRows_('Buckets', fix);
+  r.results = (r.results || []).concat(bad);
+  return r;
+};
+
+/* -------------------- random cross-check of "ID not possible" -------------------- */
+function checkerKind95_(u) { return /\bBCG\b/i.test(String(u.designation || '')) ? 'BCG' : u.role === 'NT' ? 'NT' : u.role === 'ADMIN' ? 'NT' : ''; }
+function rnd95_(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
+/** Sample size per Patwari: BCG 10% (at least 3), Naib Tehsildar 5% (at least 2). More than 1 in 5 wrong: double. Twice: all. */
+function verifyPlan95_(tid, kind) {
+  const users = {}; read_('Users').forEach(x => users[x.user_id] = x);
+  const phs = read_('PHs').filter(p => p.tehsil_id === tid), vs = read_('Villages').filter(v => v.tehsil_id === tid && v.active === 'Y' && v.practice !== 'Y');
+  const pwOf = {}; vs.forEach(v => { const p = patwariOf_(v, phs, users); if (p) pwOf[v.village_id] = p.user_id; });
+  const pool = {}; read_('Buckets').forEach(b => { if (b.tehsil_id !== tid || !pwOf[b.village_id]) return; const c = cat95_(b); if (c === 'notpossible' || c === 'land') (pool[pwOf[b.village_id]] = pool[pwOf[b.village_id]] || []).push(b); });
+  const V = read_('Verify95').filter(x => x.tehsil_id === tid && x.kind === kind);
+  return Object.keys(pool).map(pid => { const P = pool[pid], mine = V.filter(x => x.patwari_id === pid), doneR = mine.filter(x => x.result);
+    const wrong = doneR.filter(x => x.result === 'WRONG').length, rounds = mine.reduce((a, x) => Math.max(a, Number(x.vid.split('-')[2] || 0)), 0);
+    const pct = kind === 'BCG' ? 0.10 : 0.05, min = kind === 'BCG' ? 3 : 2;
+    let esc = 0; if (doneR.length >= min && wrong * 5 > doneR.length) esc = 1; if (esc && Number(setting_('vesc95_' + kind + '_' + pid) || 0) >= 1 && wrong * 5 > doneR.length && doneR.length >= 2 * min) esc = 2;
+    const need = esc === 2 ? P.length : Math.min(P.length, Math.max(min, Math.ceil(P.length * pct)) * (esc ? 2 : 1));
+    return { patwari_id: pid, name: users[pid] ? users[pid].name : pid, pool: P, picked: mine, need, wrong, checked: doneR.length, esc, rounds }; });
+}
+function verify95Get_(req, u) {
+  const kind = checkerKind95_(u); if (!kind && !OFFICE95(u)) throw new Error('Not allowed.');
+  const ts = userTehsils_(u), tid = req.tehsil_id && ts.indexOf(req.tehsil_id) >= 0 ? req.tehsil_id : (/\bAssar\b/i.test(u.designation || '') ? 'T_ASSAR' : ts[0]);
+  const K = req.kind || kind || 'NT', plan = verifyPlan95_(tid, K), add = [], now = now_(), today = today_();
+  if (kind === K) plan.forEach(p => { const have = {}; p.picked.forEach(x => have[x.bucket_id] = 1);
+    const short = p.need - p.picked.length; if (short <= 0) return;
+    const rest = p.pool.filter(b => !have[b.bucket_id]).map(b => ({ b, r: rnd95_(b.bucket_id + K) })).sort((a, c) => a.r - c.r).slice(0, short);
+    if (p.esc) setSetting_('vesc95_' + K + '_' + p.patwari_id, String(p.esc));
+    rest.forEach((x, i) => { const row = { vid: K + '-' + p.patwari_id + '-' + (p.esc || 0) + '-' + x.b.bucket_id, date: today, tehsil_id: tid, village_id: x.b.village_id, bucket_id: x.b.bucket_id, patwari_id: p.patwari_id, checker_id: u.user_id, kind: K, result: '', right_code: '', note: '', at: now };
+      add.push(row); p.picked.push(row); }); });
+  if (add.length) append_('Verify95', add);
+  const all = {}; read_('Buckets').forEach(b => all[b.bucket_id] = b); const vn = {}; read_('Villages').forEach(v => vn[v.village_id] = v.name);
+  const rl = {}; read_('Reasons').forEach(r => rl[r.code] = r.report_label || r.label);
+  return { tehsil_id: tid, tehsil: tehsilName_(tid), kind: K, me: kind, patwaris: plan.map(p => ({ patwari_id: p.patwari_id, name: p.name, pool: p.pool.length, need: p.need, checked: p.checked, wrong: p.wrong, esc: p.esc,
+    items: p.picked.map(x => { const b = all[x.bucket_id] || {}; return { vid: x.vid, village: vn[x.village_id] || '', name: b.name || '', parentage: b.parentage || '', khasras: b.khasras || '', reason: rl[b.reason_code] || b.reason_code || '', remarks: b.remarks || '', mobile: b.mobile || '', result: x.result, right: x.right_code ? (rl[x.right_code] || x.right_code) : '', note: x.note }; }) })) };
+}
+function verify95Save_(req, u) {
+  const kind = checkerKind95_(u); if (!kind) throw new Error('Only the BCG or the Naib Tehsildar checks samples.');
+  const rows = read_('Verify95'), x = rows.find(r => r.vid === req.vid); if (!x) throw new Error('Not found.');
+  if (x.kind !== kind && u.role !== 'ADMIN') throw new Error('This is another checker’s sample.');
+  if (['OK', 'WRONG'].indexOf(req.result) < 0) throw new Error('Choose Correct or Wrong.');
+  if (req.result === 'WRONG' && !String(req.note || '').trim()) throw new Error('Write what is wrong (what you found in the field).');
+  Object.assign(x, { result: req.result, right_code: String(req.right_code || ''), note: String(req.note || '').slice(0, 300), checker_id: u.user_id, at: now_() }); writeRows_('Verify95', [x]);
+  const b = read_('Buckets').find(y => y.bucket_id === x.bucket_id);
+  if (b && req.result === 'WRONG') { b.old_mark = b.reason_code; b.flag = 'RECHECK'; b.updated_by = u.user_id; b.updated_at = now_(); writeRows_('Buckets', [b]);
+    append_('Log', [{ ts: now_(), user_id: u.user_id, bucket_id: b.bucket_id, action: 'VERIFY95', field: 'flag', old_value: b.reason_code, new_value: 'RECHECK: ' + x.note }]); }
+  return { ok: 1 };
+}
+
+/* -------------------- village targets (default 200; own target from a date) -------------------- */
+function vt95_(vid, date) {
+  const rows = read_('Targets95').filter(r => r.village_id === vid && r.from <= (date || today_())).sort((a, b) => a.from < b.from ? 1 : a.from > b.from ? -1 : (a.at < b.at ? 1 : -1));
+  return rows.length && Number(rows[0].target) > 0 ? Number(rows[0].target) : 0;
+}
+const _vt73 = villageTarget73_;
+villageTarget73_ = function (v, left) { const t = vt95_(v.village_id, today_()); if (t) return Math.min(t, Math.max(0, left)); return _vt73(v, left); };
+function targets95_(req, u) {
+  if (!OFFICE95(u)) throw new Error('Not allowed.');
+  const ts = userTehsils_(u), R = read_('Targets95'), def = Number(setting_('village_target') || 200);
+  return { default: def, villages: read_('Villages').filter(v => ts.indexOf(v.tehsil_id) >= 0 && v.active === 'Y' && v.practice !== 'Y').sort((a, b) => a.tehsil_id.localeCompare(b.tehsil_id) || a.name.localeCompare(b.name))
+    .map(v => { const now = vt95_(v.village_id, today_()), next = R.filter(r => r.village_id === v.village_id && r.from > today_()).sort((a, b) => a.from < b.from ? -1 : 1)[0];
+      return { village_id: v.village_id, tehsil_id: v.tehsil_id, tehsil: tehsilName_(v.tehsil_id), name: v.name, target: now || '', next: next ? { target: Number(next.target) || 0, from: next.from } : null }; }),
+    history: R.slice(-30).reverse() };
+}
+function targets95Save_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar changes targets.');
+  const from = req.from || addDays_(today_(), 1); if (from < today_()) throw new Error('The date cannot be in the past.');
+  if (req.default !== undefined && Number(req.default) > 0) setSetting_('village_target', String(Math.round(Number(req.default))));
+  const vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v), add = [];
+  (req.items || []).forEach(it => { const v = vm[it.village_id]; if (!v) return; const t = String(it.target === '' || it.target === null || it.target === undefined ? '0' : Math.max(0, Math.round(Number(it.target) || 0)));
+    add.push({ village_id: v.village_id, tehsil_id: v.tehsil_id, target: t, from, by: u.user_id, at: now_() }); });
+  if (add.length) append_('Targets95', add);
+  DB.auditNote = { tehsil_id: '', target: '', detail: 'village targets from ' + from + ': ' + add.map(x => (vm[x.village_id] || {}).name + ' ' + (x.target === '0' ? 'default' : x.target)).join(', ') + (req.default ? ' · default ' + req.default : '') };
+  return targets95_(req, u);
+}
+
+/* -------------------- signing folder · drill · punctuality -------------------- */
+function sign95Add_(req, u) {
+  if (['ADMIN', 'DA'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const tid = req.tehsil_id || u.tehsil_id, rows = read_('Sign95');
+  let x = rows.find(r => r.tehsil_id === tid && r.kind === req.kind && r.ref === String(req.ref || '') && r.status === 'WAIT');
+  if (!x) { x = { sid: 'S' + Utilities.getUuid().slice(0, 8), tehsil_id: tid, kind: String(req.kind || ''), title: String(req.title || '').slice(0, 160), ref: String(req.ref || ''), date: today_(), status: 'WAIT', by: u.user_id, at: now_(), signed_at: '', note: '' }; append_('Sign95', [x]); }
+  return sign95Get_({ tehsil_id: tid }, u);
+}
+function sign95Done_(req, u) {
+  if (['ADMIN', 'DA'].indexOf(u.role) < 0) throw new Error('Not allowed.');
+  const rows = read_('Sign95'), x = rows.find(r => r.sid === req.sid); if (!x) throw new Error('Not found.');
+  x.status = req.undo ? 'WAIT' : 'SIGNED'; x.signed_at = req.undo ? '' : now_(); writeRows_('Sign95', [x]);
+  return sign95Get_({ tehsil_id: x.tehsil_id }, u);
+}
+function sign95Get_(req, u) {
+  const ts = userTehsils_(u), tids = (req.tehsil_id ? [req.tehsil_id] : ts).filter(t => ts.indexOf(t) >= 0), today = today_();
+  const items = [];
+  tids.forEach(t => {
+    read_('ScnDay93').filter(r => r.tehsil_id === t && r.date >= addDays_(today, -3)).forEach(r => {
+      if (r.status === 'SUBMITTED') items.push({ tehsil_id: t, kind: 'approve', title: 'Approve the notice list (' + r.date + ')', ref: r.date, at: r.sub_at, action: 'approve' });
+      else if (r.files_at && !r.signed_at) items.push({ tehsil_id: t, kind: 'notices', title: 'Sign the show-cause notices (' + (Number(r.n) || '') + ')', ref: r.date, at: r.files_at }); });
+    read_('Sign95').filter(r => r.tehsil_id === t && r.status === 'WAIT').forEach(r => items.push({ tehsil_id: t, sid: r.sid, kind: r.kind, title: r.title, ref: r.ref, at: r.at }));
+  });
+  return { items: items.map(x => Object.assign(x, { tehsil: tehsilName_(x.tehsil_id) })), away: away95_() };
+}
+function away95_() { const a = String(setting_('away95') || ''); if (!a) return null; const [from, to] = a.split('|'); return now_() >= from && (!to || now_() <= to) ? { from, to } : null; }
+function away95Save_(req, u) { if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar.'); setSetting_('away95', req.clear ? '' : (req.from || now_()) + '|' + (req.to || '')); return { away: away95_() }; }
+
+const DRILL95 = ['replies', 'list', 'files', 'order', 'corr', 'close'];
+function drill95Get_(req, u) { const d = read_('Drill95').filter(r => r.user_id === u.user_id).map(r => r.step); return { steps: DRILL95, done: d, need: u.role === 'DA' && DRILL95.some(s => d.indexOf(s) < 0) }; }
+function drill95Save_(req, u) { if (DRILL95.indexOf(req.step) < 0) throw new Error('Unknown step.'); const R = read_('Drill95'); if (!R.some(r => r.user_id === u.user_id && r.step === req.step)) append_('Drill95', [{ user_id: u.user_id, step: req.step, at: now_() }]); return drill95Get_(req, u); }
+
+/** The day's duties with their times; done or not, on time or late. */
+const DUTY95 = [['att', '09:30', '11:00', 'Attendance'], ['replies', '10:00', '10:00', 'Replies to yesterday’s notices'], ['list', '10:30', '10:30', 'Notice list to the Tehsildar'], ['signed', '11:30', '11:30', 'Notices signed'],
+  ['sent', '12:00', '12:00', 'Notices sent in the group'], ['figures', '15:30', '15:30', 'Portal figures for the DC sheet'], ['close', '20:00', '20:30', 'Last file · close the day']];
+function duty95_(tid, date) {
+  const today = today_(), isToday = date === today, nowHm = now_().slice(11, 16), out = [];
+  const d93 = read_('ScnDay93').find(r => r.tehsil_id === tid && r.date === addDays_(date, -1)) || read_('ScnDay93').find(r => r.tehsil_id === tid && String(r.sub_at || '').slice(0, 10) === date) || {};
+  const pend = (() => { try { return pend93_(tid).length; } catch (e) { return 0; } })();
+  const att = read_('Attend').filter(a => a.tehsil_id === tid && a.date === date), attAt = att.reduce((m, a) => a.at > m ? a.at : m, '');
+  const jk = read_('Jklr').find(r => r.tehsil_id === tid && r.date === date), frz = setting_('frz_' + tid + '_' + date);
+  const at = { att: attAt, replies: isToday && pend ? '' : (d93.sub_at || attAt ? (d93.sub_at || '') : ''), list: d93.sub_at || '', signed: d93.signed_at || '', sent: d93.sent_at || '', figures: jk ? jk.at : '', close: frz || '' };
+  const hasScn = !!(d93.sub_at || d93.status);
+  const away = away95_();
+  DUTY95.forEach(([k, t, due, label]) => {
+    if (['list', 'signed', 'sent', 'replies'].indexOf(k) >= 0 && !hasScn && !(isToday && nowHm < due)) { if (k !== 'replies') return; }
+    const a = at[k], hmA = a ? String(a).slice(11, 16) : '', dayA = a ? String(a).slice(0, 10) : '';
+    const done = !!a, late = done ? (dayA > date || hmA > due) : (!isToday || nowHm > due);
+    const paused = !!away && k === 'signed';
+    out.push({ k, t, due, label, done, at: hmA, late: paused ? false : late, open: !done && isToday && nowHm <= due, paused });
+  });
+  return out;
+}
+function punct95_(tid, date) { const d = duty95_(tid, date), due = d.filter(x => x.done || x.late), ok = due.filter(x => x.done && !x.late).length; return { ok, due: due.length, list: d }; }
+function today95_(req, u) {
+  const ts = userTehsils_(u), tid = req.tehsil_id && ts.indexOf(req.tehsil_id) >= 0 ? req.tehsil_id : (u.role === 'DA' ? u.tehsil_id : ts[0]), today = today_();
+  const out = { tehsil_id: tid, now: now_(), duties: duty95_(tid, today), punct: { today: punct95_(tid, today), yday: punct95_(tid, addDays_(today, -1)) }, drill: drill95Get_({}, u), away: away95_() };
+  out.yday = ts.map(t => ({ tehsil_id: t, tehsil: tehsilName_(t), p: punct95_(t, addDays_(today, -1)) }));
+  try { const s = sat95_(tid); out.sat = s.totals; out.sat_v = s.villages.map(v => ({ name: v.name, unchecked: v.unchecked, possible: v.possible, pct: v.pct })); } catch (e) {}
+  if (u.role !== 'DA') try { out.sats = ts.map(t => { const s = sat95_(t); return { tehsil_id: t, tehsil: s.tehsil, totals: s.totals }; }); } catch (e) {}
+  try { out.sign = sign95Get_({}, u).items.length; } catch (e) {}
+  try { const wk = new Date(today + 'T12:00:00Z').getUTCDay(); out.saturday = wk === 6; } catch (e) {}
+  return out;
+}
+
+/* -------------------- weekly camp order: Saturday, for Sunday to Saturday -------------------- */
+function weekIssue95_(req, u) {
+  const tid = planTid81_(req, u); if (['ADMIN', 'DA'].indexOf(u.role) < 0) throw new Error('The Dealing Assistant records the order.');
+  if (!String(req.order_no || '').trim()) throw new Error('Type the order number.');
+  const from = req.from; if (!/^\d{4}-\d{2}-\d{2}$/.test(String(from || ''))) throw new Error('Choose the Sunday.');
+  for (let i = 0; i < 7; i++) planIssue_({ tehsil_id: tid, date: addDays_(from, i), order_no: req.order_no, order_date: req.order_date, notice_no: req.notice_no, corr: '' }, u);
+  setSetting_('week95_' + tid + '_' + from, String(req.order_no) + '|' + (req.order_date || today_()) + '|' + (req.notice_no || ''));
+  DB.auditNote = { tehsil_id: tid, target: '', detail: 'weekly camp order ' + from + ' to ' + addDays_(from, 6) + ': No. ' + req.order_no };
+  return { ok: 1, from, to: addDays_(from, 6) };
+}
+
+/* -------------------- sessions: never rewrite the whole sheet; a lost read retries once -------------------- */
+writeAll_ = function (name, rows) {
+  const s = sheet_(name), h = SCHEMA[name], last = s.getLastRow();
+  if (rows.length) {
+    ensureRows_(s, rows.length + 1, h.length);
+    s.getRange(2, 1, rows.length, h.length).setValues(rows.map(r => h.map(k => cell_(r[k]))));
+  }
+  if (last - 1 > rows.length) s.getRange(rows.length + 2, 1, last - 1 - rows.length, h.length).clearContent();
+  rows.forEach((r, i) => r._row = i + 2);
+  DB.cache[name] = rows;
+};
+login_ = (function (orig) { return function (req) {
+  const u = read_('Users').find(x => x.user_id === req.user_id && x.active === 'Y');
+  if (!u) throw new Error('Wrong name or PIN.');
+  pinExpire_(); checkPin_(u, req.pin);
+  const pr = read_('PinRequests').filter(r => r.user_id === u.user_id && r.status === 'APPROVED'); if (pr.length) { pr.forEach(r => r.status = 'USED'); writeRows_('PinRequests', pr); }
+  const now = new Date(), token = Utilities.getUuid(), exp = new Date(now.getTime() + 3650 * 86400000);
+  append_('Sessions', [{ token: token, user_id: u.user_id, created: now.toISOString(), expires: exp.toISOString() }]);
+  const out = { token: token, user: publicUser_(u) };
+  if (req.boot) { try { out.boot = bootstrap_({}, u); } catch (e) {} }
+  return out; }; })(login_);
+logout_ = function (req) { const s = read_('Sessions').find(x => x.token === req.token); if (s) { s.expires = '2000-01-01T00:00:00.000Z'; writeRows_('Sessions', [s]); } return {}; };
+const _auth94 = auth_;
+auth_ = function (token, allowOff) {
+  try { return _auth94(token, allowOff); }
+  catch (e) { if (String(e.message) !== 'SESSION_EXPIRED' || !token) throw e; delete DB.cache.Sessions; delete DB.cache.Users; Utilities.sleep(700); return _auth94(token, allowOff); }
+};
+
+/* -------------------- one-time upgrade -------------------- */
+function migrateV25_() {
+  const rs = read_('Reasons'), add = [];
+  if (!rs.some(r => r.code === 'C04')) add.push({ code: 'C04', tier: 'C', label: 'Lives in another village of this tehsil', report_label: 'Lives in another village of the tehsil (ID possible there)', checklist_col: '', sort: '42', active: 'Y',
+    label_hi: 'Tehsil ke doosre gaon mein rehta hai', explain: 'The farmer lives in another village of this tehsil. The ID is made at that village’s camp.', explain_hi: 'Kisan isi tehsil ke doosre gaon mein rehta hai. ID us gaon ke camp mein banegi.' });
+  if (!rs.some(r => r.code === 'A14')) add.push({ code: 'A14', tier: 'A', label: 'ID already made in another village / tehsil', report_label: 'Farmer ID already made in another village / tehsil', checklist_col: '', sort: '0.5', active: 'Y',
+    label_hi: 'ID doosre gaon / tehsil mein ban chuki', explain: 'This farmer already has a Farmer ID, made in another village or tehsil.', explain_hi: 'Is kisan ki Farmer ID doosre gaon ya tehsil mein ban chuki hai.' });
+  if (!rs.some(r => r.code === 'A15')) add.push({ code: 'A15', tier: 'A', label: 'Religious land (mandir, masjid, Auqaf, etc.)', report_label: 'Religious land (mandir, masjid, Auqaf, Ahl-e-Islam / Hanud)', checklist_col: '', sort: '7.5', active: 'Y',
+    label_hi: 'Dharmik zameen', explain: 'Land of a temple, mosque, Auqaf or a religious body. Not a farmer.', explain_hi: 'Mandir, masjid, Auqaf ya dharmik sanstha ki zameen.' });
+  if (add.length) append_('Reasons', add);
+  const b10 = read_('Reasons').find(r => r.code === 'B10'); if (b10 && b10.active !== 'N') { b10.active = 'N'; writeRows_('Reasons', [b10]); }
+  const a07 = read_('Reasons').find(r => r.code === 'A07'); if (a07) { a07.label = 'Department / school / institution land'; writeRows_('Reasons', [a07]); }
+  const users = {}; read_('Users').forEach(x => users[x.user_id] = x);
+  const vs = read_('Villages'), all = read_('Buckets'), logs = [], now = now_(), sys = { user_id: 'SYSTEM' }, n = { remap: 0, recheck: 0, sug: 0 };
+  const sk = s => skeleton_(s);
+  all.forEach(b => {
+    if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; n.sug++; } }
+    if (b.status === 'REASON' && b.reason_code === 'B10') {
+      const t = String(b.remarks || '').toLowerCase(), byName = suggest_(b.name, b.parentage);
+      let code = '', to = '';
+      const vt = vs.filter(v => v.tehsil_id === b.tehsil_id && v.village_id !== b.village_id && v.practice !== 'Y').find(v => { const w = t.replace(/[^a-z ]/g, ' ').split(/\s+/).filter(x => x.length >= 4);
+        return w.some(x => sk(x) === sk(v.name) || normName_(v.name).replace(/\s/g, '').indexOf(x) === 0 || x.indexOf(normName_(v.name).replace(/\s/g, '').slice(0, 5)) === 0); });
+      if (/(id|i\.d|former id|farmer id).*(already|generat|created|made|bani)|already.*(id|created|generat)/.test(t)) code = 'A14';
+      else if (byName && byName !== 'A09') code = byName;
+      else if (/temple|mandir|devta|auqaf|waqf|masjid|ahle?|ahal|islam|hanud|hunud|religious/.test(t)) code = 'A15';
+      else if (/school|education|department|deptt|college/.test(t)) code = 'A07';
+      else if (/sarkar|state land|govt land/.test(t)) code = 'A05';
+      else if (/shamlat/.test(t)) code = 'A06';
+      else if (/abadi|road|path|nallah|graveyard/.test(t)) code = 'A12';
+      else if (vt && /village|gaon|in |lives|living|resid/.test(t)) { code = 'C04'; to = vt.village_id; }
+      else if (/not ?found|cannot ?found|can ?not ?found|untrace|not traceable|unknown|missing|^cannot$|^can not$|not in record/.test(t)) code = 'A08';
+      if (code) { logs.push({ ts: now, user_id: 'SYSTEM', bucket_id: b.bucket_id, action: 'REMAP95', field: 'reason_code', old_value: 'B10: ' + b.remarks, new_value: code + (to ? ' → ' + to : '') });
+        b.reason_code = code; if (to) b.moved_to = to; b.updated_at = now; n.remap++; }
+      else { b.old_mark = 'B10'; b.flag = 'RECHECK'; n.recheck++; }
+    }
+    const by = users[b.surveyed_by];
+    if (b.status === 'REASON' && b.flag !== 'RECHECK' && by && (by.role === 'ADMIN' || by.role === 'DA') && b.reason_code !== 'A01' && NON_INDIVIDUAL.indexOf(b.reason_code) < 0) {
+      b.old_mark = b.reason_code; b.flag = 'RECHECK'; n.recheck++;
+      logs.push({ ts: now, user_id: 'SYSTEM', bucket_id: b.bucket_id, action: 'RECHECK95', field: 'flag', old_value: b.reason_code + ' by ' + by.name, new_value: 'RECHECK' }); }
+  });
+  writeAll_('Buckets', all); append_('Log', logs);
+  try { matchAll95_(sys); } catch (e) { append_('Errors', [{ ts: now_(), user_id: 'SYSTEM', action: 'migrateV25 match', error: String(e.message || e).slice(0, 300) }]); }
+  if (!setting_('sat_check_deadline')) setSetting_('sat_check_deadline', '2026-10-15 11:00');
+  setSetting_('v95_migrated', JSON.stringify(n));
+}
+
+/* -------------------- the village line in the reports -------------------- */
+const _rep94 = report94_;
+report94_ = function (req, u) {
+  const r = _rep94(req, u), tid = r.tehsil_id;
+  try { const s = sat95_(tid), m = {}; s.villages.forEach(v => m[v.village_id] = v);
+    (r.villages || []).forEach(v => { const x = m[v.village_id]; if (x) v.sat = { farmers: x.farmers, done: x.done, possible: x.possible, notpossible: x.notpossible, unchecked: x.unchecked, unmatched: x.unmatched, pct: x.pct }; });
+    r.sat = s.totals; } catch (e) {}
+  return r;
+};
+
+Object.assign(ACTIONS, { sat95: sat95Get_, sat95List: sat95List_, pw95: pw95_, match95List: match95List_, match95Save: match95Save_, match95Run: match95Run_,
+  verify95: verify95Get_, verify95Save: verify95Save_, targets95: targets95_, targets95Save: targets95Save_,
+  sign95: sign95Get_, sign95Add: sign95Add_, sign95Done: sign95Done_, away95Save: away95Save_, drill95: drill95Get_, drill95Save: drill95Save_, today95: today95_, weekIssue95: weekIssue95_ });
+['match95Save', 'match95Run', 'verify95Save', 'targets95Save', 'sign95Add', 'sign95Done', 'away95Save', 'drill95Save', 'weekIssue95'].forEach(a => { WRITE_ACTIONS.push(a); UV_ACTIONS.push(a); });
+WRITE_ACTIONS.push('verify95');
+ACTIONS.report94 = report94_; ACTIONS.saveBuckets = saveBuckets_; ACTIONS.logout = logout_; PUBLIC_ACTIONS.login = login_;
+/* the master sheet and the upload register carry the 9.5 figures */
+{ const _m = ACTIONS.master90; ACTIONS.master90 = function (req, u) { const M = _m(req, u);
+  try { M.sat95 = userTehsils_(u).map(t => { const s = sat95_(t); return { tehsil: s.tehsil, totals: s.totals, villages: s.villages.map(v => ({ name: v.name, farmers: v.farmers, done: v.done, possible: v.possible, notpossible: v.notpossible, unchecked: v.unchecked, pct: v.pct })) }; }); } catch (e) {}
+  return M; }; }
+{ const _u = ACTIONS.uploadReg; ACTIONS.uploadReg = function (req, u) { const R = _u(req, u); try { (R.tehsils || []).forEach(t => { t.duty95 = punct95_(t.tehsil_id, R.date || today_()); }); } catch (e) {} return R; }; }
+/* a village is certified saturated only when nobody can still get an ID and nobody is left to check */
+{ const _s = satSave_; satSave_ = function (req, u) {
+  if (req.sat) { const v = village_(req.village_id), s = sat95_(v.tehsil_id).villages.find(x => x.village_id === v.village_id);
+    if (s && !s.ready) throw new Error(`${v.name} is not saturated yet: ${s.possible} can still get an ID, ${s.unchecked} not yet checked${s.unmatched ? ', ' + s.unmatched + ' Farmer IDs to match' : ''}.`); }
+  return _s(req, u); }; ACTIONS.satSave = satSave_; }
+/* the backup Dealing Assistant: duties of the other tehsil 30 minutes late */
+{ const _t = today95_; today95_ = function (req, u) { const o = _t(req, u);
+  if (u.role === 'DA') { const nowM = minutesOf_(now_()); o.cover = userTehsils_(u).filter(t => t !== o.tehsil_id).map(t => ({ tehsil_id: t, tehsil: tehsilName_(t),
+    late: duty95_(t, today_()).filter(x => !x.done && !x.paused && nowM - (Number(x.due.slice(0, 2)) * 60 + Number(x.due.slice(3))) >= 30).map(x => ({ k: x.k, label: x.label, due: x.due })) })).filter(x => x.late.length); }
+  return o; }; ACTIONS.today95 = today95_; }
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
