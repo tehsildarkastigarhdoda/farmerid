@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '10.0.0';
+const APP_VERSION = '10.0.1';
 
 /* ============================== SCHEMA ============================== */
 
@@ -5109,7 +5109,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '10.0.0';
+const MIN_APP83 = '10.0.1';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -6780,6 +6780,32 @@ const DRILL10 = ['msgs10', 'notices10', 'order10', 'close10'];
 drill95Get_ = function (req, u) { const d = read_('Drill95').filter(r => r.user_id === u.user_id).map(r => r.step); return { steps: DRILL10, done: d, need: u.role === 'DA' && DRILL10.some(s => d.indexOf(s) < 0) }; };
 drill95Save_ = function (req, u) { if (DRILL10.indexOf(req.step) < 0) throw new Error('Unknown step.'); const R = read_('Drill95'); if (!R.some(r => r.user_id === u.user_id && r.step === req.step)) append_('Drill95', [{ user_id: u.user_id, step: req.step, at: now_() }]); return drill95Get_(req, u); };
 ACTIONS.drill95 = drill95Get_; ACTIONS.drill95Save = drill95Save_;
+
+/* -------------------- 10.0.1: the DC office's "Progress of Farmers ID" sheet is the headline figure -------------------- */
+function dcSheet10Save_(req, u) {
+  if (['ADMIN', 'DA', 'NT'].indexOf(u.role) < 0) throw new Error('Only the office uploads the DC sheet.');
+  const at = String(req.at || '').slice(0, 16); if (!/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(at)) throw new Error('The date and time of the DC sheet could not be read.');
+  if (at.slice(0, 10) > today_()) throw new Error('The DC sheet is dated in the future.');
+  const ids = read_('Tehsils').map(t => t.tehsil_id), saved = [];
+  (req.rows || []).forEach(r => { if (ids.indexOf(r.tehsil_id) < 0) return;
+    const n = k => Math.max(0, Math.round(Number(r[k]) || 0)), o = { at, buckets: n('buckets'), claimed_y: n('claimed_y'), today: n('today'), claimed: n('claimed'), pending: n('pending'), by: u.user_id, saved: now_() };
+    if (!o.buckets || o.claimed > o.buckets) throw new Error('The figures for ' + tehsilName_(r.tehsil_id) + ' do not add up.');
+    o.pct = Math.round(o.claimed * 1000 / o.buckets) / 10;
+    const old = dc10_(r.tehsil_id); if (old && old.at > at) { saved.push({ tehsil_id: r.tehsil_id, older: 1 }); return; }
+    setSetting_('dcs10_' + r.tehsil_id, JSON.stringify(o)); setSetting_('dcs10_' + r.tehsil_id + '_' + at.slice(0, 10), String(o.pct)); saved.push(Object.assign({ tehsil_id: r.tehsil_id }, o)); });
+  if (!saved.length) throw new Error('Neither Assar nor Kastigarh was found in this sheet.');
+  DB.auditNote = { tehsil_id: '', target: '', detail: 'DC sheet of ' + at + ' uploaded' };
+  return { ok: 1, saved };
+}
+function dc10_(tid) { try { const v = setting_('dcs10_' + tid); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+function dcInfo10_(tid) {
+  const d = dc10_(tid), B = read_('Buckets').filter(b => b.tehsil_id === tid), unc = B.filter(b => b.status !== 'CLAIMED').length;
+  const list = read_('Uploads').filter(x => x.tehsil_id === tid && x.file_ts !== 'REGISTERED').map(x => x.ts).sort().pop() || '';
+  return { dc: d, app_unclaimed: unc, app_claimed: B.length - unc, list_at: String(list).slice(0, 16) };
+}
+{ const _c = cov10_; cov10_ = function (req, u) { const o = _c(req, u); o.tehsils.forEach(t => { Object.assign(t, dcInfo10_(t.tehsil_id)); t.dc_trend = o.days.map(d => { const v = setting_('dcs10_' + t.tehsil_id + '_' + d); return v === '' || v === undefined || v === null ? null : Number(v); }); }); return o; }; ACTIONS.cov10 = cov10_; }
+{ const _t = today95_; today95_ = function (req, u) { const o = _t(req, u); try { o.dcs = userTehsils_(u).map(t => Object.assign({ tehsil_id: t }, dcInfo10_(t))); } catch (e) {} return o; }; ACTIONS.today95 = today95_; }
+ACTIONS.dcSheet10Save = dcSheet10Save_; WRITE_ACTIONS.push('dcSheet10Save'); UV_ACTIONS.push('dcSheet10Save');
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
