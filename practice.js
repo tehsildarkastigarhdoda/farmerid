@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '10.0.1';
+const APP_VERSION = '10.0.2';
 
 /* ============================== SCHEMA ============================== */
 
@@ -5109,7 +5109,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '10.0.1';
+const MIN_APP83 = '10.0.2';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -6806,6 +6806,10 @@ function dcInfo10_(tid) {
 { const _c = cov10_; cov10_ = function (req, u) { const o = _c(req, u); o.tehsils.forEach(t => { Object.assign(t, dcInfo10_(t.tehsil_id)); t.dc_trend = o.days.map(d => { const v = setting_('dcs10_' + t.tehsil_id + '_' + d); return v === '' || v === undefined || v === null ? null : Number(v); }); }); return o; }; ACTIONS.cov10 = cov10_; }
 { const _t = today95_; today95_ = function (req, u) { const o = _t(req, u); try { o.dcs = userTehsils_(u).map(t => Object.assign({ tehsil_id: t }, dcInfo10_(t))); } catch (e) {} return o; }; ACTIONS.today95 = today95_; }
 ACTIONS.dcSheet10Save = dcSheet10Save_; WRITE_ACTIONS.push('dcSheet10Save'); UV_ACTIONS.push('dcSheet10Save');
+
+/* -------------------- 10.0.2: coverage = IDs generated ÷ all buckets (the DC office's formula), live; the DC sheet is a cross-check -------------------- */
+function main10_(tid) { const T = tot92_(tid); try { const k = 'tot10_' + tid + '_' + today_(), v = String(T.pct); if (setting_(k) !== v) { const l = LockService.getScriptLock(); if (l.tryLock(5000)) { try { setSetting_(k, v); } finally { l.releaseLock(); } } } } catch (e) {} return { total: T.total, made: T.made, pct: T.pct }; }
+{ const _c = cov10_; cov10_ = function (req, u) { const o = _c(req, u); o.tehsils.forEach(t => { t.main = main10_(t.tehsil_id); t.main_trend = o.days.map(d => { const v = setting_('tot10_' + t.tehsil_id + '_' + d); return v === '' || v === undefined || v === null ? null : Number(v); }); }); return o; }; ACTIONS.cov10 = cov10_; }
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
