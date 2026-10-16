@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '10.1.1';
+const APP_VERSION = '10.2.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '28';
+const SCHEMA_VERSION = '29';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -381,6 +381,7 @@ function migrate_() {
     if (Number(ver) < 26) migrateV26_();
     if (Number(ver) < 27) migrateV27_();
     if (Number(ver) < 28) migrateV28_();
+    if (Number(ver) < 29) migrateV29_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -5111,7 +5112,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '10.1.1';
+const MIN_APP83 = '10.2.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -7016,6 +7017,80 @@ function migrateV28_() { try {
     n++; });
   if (n) writeAll_('Buckets', all); if (fch) writeAll_('Farmers', fs); setSetting_('fix11_restore', String(n));
 } catch (e) { append_('Errors', [{ ts: now_(), user_id: 'SYSTEM', action: 'migrateV28', error: String(e.message || e).slice(0, 300) }]); } }
+
+/* ============================== 10.2: CLAIMABLE OR NOT · SAME FARMER · SATURATION · NOT-CLAIMABLE REPORT ==============================
+ * Claimable: not sorted · ID possible · inteqal to be done (A02, A04) · mobile not linked but present (B11) · out of station (B04) ·
+ *            B01 (to find out) · same farmer whose ID is not made yet (C02) · "marked ID made, still on the portal list" until answered.
+ * Not claimable: same farmer, ID made through another bucket (A01) · ID made elsewhere (A14) · A03 A08 A09 A10 A11 A13 · B02 B03 B08 · land.
+ * Part-claimed buckets are claimed on the portal: they do not block saturation and are not in the categories.
+ * Saturated village: no claimable bucket left on the portal's list.
+ */
+['A02', 'A04'].forEach(c => { const i = CAT95.notpossible.indexOf(c); if (i >= 0) CAT95.notpossible.splice(i, 1); });
+['B02', 'B03', 'B08'].forEach(c => { if (CAT95.notpossible.indexOf(c) < 0) CAT95.notpossible.push(c); });
+/** Categories in the words of the DC's format; the first seven are its rows. */
+const CAT12 = [['Expired and mutation not attested', ['A03']], ['Farmer id created but some khasras left due to name difference', ['A01']], ['Missing and untraceable', ['A08']], ['State land', ['A05']],
+  ['mobile number not linked, not present in village', ['B01']], ['mobile number not linked with adhaar, paralyzed face, very old, unable to get face id authentication', ['B02']],
+  ['mobile number not linked with adhaar, residing outside of village and not coming for biometric authentication', ['B03']],
+  ['Consent / OTP refused', ['B08']], ['Female landholder married / migrated outside the village', ['A13']], ['Farmer ID already made in another village / tehsil', ['A14']], ['Joint entry (etc.)', ['A09']],
+  ['Land dispute / court case', ['A10']], ['Minor landholder', ['A11']], ['Shamlat deh (no individual owner recorded)', ['A06']], ['Public use land (road, path, nallah, graveyard, abadi)', ['A12']],
+  ['Departmental / Institutional land', ['A07']], ['Religious land (mandir, masjid, Auqaf, Ahl-e-Islam / Hanud)', ['A15']]];
+const CATOF12 = {}; CAT12.forEach(c => c[1].forEach(k => CATOF12[k] = c[0]));
+/** 'claim' | 'not' | 'part' (claimed on the portal in part) | 'open' (marked ID made, still listed: claimable till answered) | '' (not on the list) */
+function claim12_(b) {
+  if (b.portal_state !== 'UNCLAIMED') return '';
+  if (b.claimed_source === 'PORTAL_PART') return 'part';
+  if (b.status === 'CLAIMED') return 'open';
+  if (b.status !== 'REASON' || b.flag === 'RECHECK' || b.reason_code === 'B10') return 'claim';
+  const c = b.reason_code;
+  if (CAT95.done.indexOf(c) >= 0 || CAT95.land.indexOf(c) >= 0 || CAT95.notpossible.indexOf(c) >= 0) return 'not';
+  return 'claim';
+}
+/** Same farmer: once one of his buckets has the ID, his other claimable buckets become "same farmer in multiple buckets" (A01).
+ *  His buckets = a confirmed same-person group, or the same name and father in the village. A not-claimable reason the Patwari gave is kept. */
+function same12_(u, vids) {
+  const all = read_('Buckets'), logs = [], now = now_(), today = today_(), by = {}, bad = /^(nil|na|n a|unknown|none|not known)$/;
+  all.forEach(b => { if (vids && vids.indexOf(b.village_id) < 0) return; if (NON_INDIVIDUAL.indexOf(b.reason_code) >= 0 || CAT95.land.indexOf(b.reason_code) >= 0) return;
+    const ks = []; if (b.dup_group && (b.dup_confirmed === 'Y' || b.dup_conf === 'CONFIRMED')) ks.push('G' + b.dup_group);
+    const p = normName_(b.parentage), n = normName_(b.name); if (n && p && !bad.test(p)) ks.push('N' + b.village_id + '|' + n + '|' + p);
+    ks.forEach(k => (by[k] = by[k] || []).push(b)); });
+  const done = {}; let n = 0;
+  Object.keys(by).forEach(k => { const g = by[k]; if (g.length < 2) return;
+    const made = g.find(b => b.portal_state === 'GONE' || b.claimed_source === 'PORTAL_PART' || (b.status === 'CLAIMED' && !isOpen10_(b))); if (!made) return;
+    g.forEach(b => { if (b === made || done[b.bucket_id] || claim12_(b) !== 'claim') return; done[b.bucket_id] = 1;
+      logs.push({ ts: now, user_id: u.user_id, bucket_id: b.bucket_id, action: 'SAME12', field: 'reason_code', old_value: b.status + '/' + (b.reason_code || ''), new_value: 'A01 (ID made through ' + made.bucket_id + ')' });
+      Object.assign(b, { status: 'REASON', reason_code: 'A01', flag: '', updated_by: u.user_id, updated_at: now }); if (!b.surveyed_date) { b.surveyed_date = today; b.surveyed_by = u.user_id; } n++; }); });
+  if (n) { writeAll_('Buckets', all); append_('Log', logs); }
+  return n;
+}
+{ const _f = fix10_; fix10_ = function (u, opt) { const r = _f(u, opt); try { r.same = same12_(u, (opt || {}).vids); } catch (e) { append_('Errors', [{ ts: now_(), user_id: u.user_id, action: 'same12', error: String(e.message || e).slice(0, 300) }]); } return r; }; }
+['saveBuckets', 'regApply', 'match95Save', 'regConfirm'].forEach(a => { const _a = ACTIONS[a]; if (!_a) return; ACTIONS[a] = function (req, u) { const o = _a(req, u);
+  try { const vids = (req.updates || []).map(x => { const b = read_('Buckets').find(y => y.bucket_id === x.bucket_id); return b ? b.village_id : ''; }).filter(Boolean); same12_(u, a === 'saveBuckets' ? Array.from(new Set(vids)) : null); } catch (e) {} return o; }; });
+function migrateV29_() { try { setSetting_('same12_install', String(same12_({ user_id: 'SYSTEM' }, null))); } catch (e) { append_('Errors', [{ ts: now_(), user_id: 'SYSTEM', action: 'migrateV29', error: String(e.message || e).slice(0, 300) }]); } }
+/** Saturation per village: claimable buckets left on the portal's list. */
+{ const _s = sat95_; sat95_ = function (tid) { const o = _s(tid), byV = {}; read_('Buckets').forEach(b => { const c = claim12_(b); if (c === 'claim' || c === 'open') byV[b.village_id] = (byV[b.village_id] || 0) + 1; });
+  o.villages.forEach(v => { v.claim12 = byV[v.village_id] || 0; v.ready = v.entries > 0 && !v.claim12; }); o.totals.claim12 = o.villages.reduce((a, v) => a + v.claim12, 0); o.totals.sat12 = o.villages.filter(v => v.ready).length;
+  return o; }; }
+/** Not-claimable report: the format (categories × villages, one sheet per tehsil) and every not-claimable bucket with its category and reason. */
+function nc12_(req, u) {
+  if (!OFFICE95(u)) throw new Error('Not allowed.');
+  const sc = satScope95_(u, req), rl = {}; read_('Reasons').forEach(r => rl[r.code] = r.report_label || r.label), un = {}; read_('Users').forEach(x => un[x.user_id] = x.name);
+  const phs = {}; read_('PHs').forEach(p => phs[p.ph_id] = p.name);
+  const bs = read_('Buckets'), out = [];
+  sc.tids.forEach(tid => { const vs = read_('Villages').filter(v => v.tehsil_id === tid && v.active === 'Y' && v.practice !== 'Y' && !isCollect_(v)).sort((a, b) => a.name.localeCompare(b.name));
+    const T = { tehsil_id: tid, tehsil: tehsilName_(tid), villages: [], rows: [] };
+    vs.forEach(v => { const L = bs.filter(b => b.village_id === v.village_id), cnt = {}; let claim = 0, open = 0;
+      L.forEach(b => { const c = claim12_(b); if (c === 'claim') claim++; else if (c === 'open') open++; else if (c === 'not') { const cat = CATOF12[b.reason_code] || (rl[b.reason_code] || b.reason_code); cnt[cat] = (cnt[cat] || 0) + 1;
+        T.rows.push({ v: v.name, ph: phs[v.ph_id] || '', n: b.name, p: b.parentage, k: b.khasras, cat, r: (rl[b.reason_code] || b.reason_code) + (b.remarks ? ' – ' + b.remarks : ''), by: un[b.surveyed_by] || '', on: b.surveyed_date || '' }); } });
+      const total = Number(v.portal_total) || 0, made = Number(v.portal_claimed) || 0;
+      T.villages.push({ name: v.name, ph: phs[v.ph_id] || '', cnt, claim: claim + open, made, total, sat: L.length > 0 && !(claim + open), as_on: v.portal_as_on || '' }); });
+    T.rows.sort((a, b) => a.v.localeCompare(b.v) || CAT12.findIndex(c => c[0] === a.cat) - CAT12.findIndex(c => c[0] === b.cat) || String(a.k).localeCompare(String(b.k), undefined, { numeric: true }));
+    out.push(T); });
+  return { tehsils: out, cats: CAT12.map(c => c[0]), as_on: now_() };
+}
+ACTIONS.nc12 = nc12_;
+/** Registers: the category of each row. */
+{ const _p = packet10_; packet10_ = function (req, u) { const o = _p(req, u), bm = {}; read_('Buckets').forEach(b => bm[b.bucket_id] = b);
+  o.rows.forEach(r => { const b = bm[r.id]; if (!b) return; r.cl12 = claim12_(b); if (r.cl12 === 'not') r.cat = CATOF12[b.reason_code] || r.r; }); o.cats = CAT12.map(c => c[0]); return o; }; ACTIONS.packet10 = packet10_; }
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
