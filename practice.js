@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '10.1.0';
+const APP_VERSION = '10.1.1';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '27';
+const SCHEMA_VERSION = '28';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -380,6 +380,7 @@ function migrate_() {
     if (Number(ver) < 25) migrateV25_();
     if (Number(ver) < 26) migrateV26_();
     if (Number(ver) < 27) migrateV27_();
+    if (Number(ver) < 28) migrateV28_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -5110,7 +5111,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '10.1.0';
+const MIN_APP83 = '10.1.1';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -6817,11 +6818,11 @@ const NPC10 = {"adfc16e6-8ddb-40b5-adfb-699e97a4abc6":"Female landholder married
 /* ============================== 10.1: THE PORTAL IS THE TRUTH · PM KISAN · HALQA PACKETS ==============================
  * After every bucket list (and once on install):
  *   part-claimed  – still on the portal's unclaimed list with fewer khasras than before → "ID made · khasras left" (PORTAL_PART / PARTIAL)
- *   portal open   – marked ID made in the app before the list was taken, but the list still has it → back to "not checked", RECHECK / PORTAL_OPEN
+ *   portal open   – marked ID made in the app before the list was taken, but the list still has it → flag PORTAL_OPEN (mostly part-claimed); the Patwari says which
  *   np claimed    – marked not possible / land, then claimed on the portal → flag NP_CLAIMED until the Patwari says "Seen"
  * PM Kisan: Aadhaar gives the farmer's ID and his father; name + father picks his entry. No matching on the name alone.
  */
-const FIX10 = { PORTAL_OPEN: 'Still unclaimed on the portal. You marked them ID made. Check the position on the ground first.', NP_CLAIMED: 'Claimed on the portal. You had marked them not possible.' };
+const FIX10 = { PORTAL_OPEN: 'The portal still lists these khasras. If the ID was made, these khasras were left out: add them to the ID. If no ID was made, sort it again.', NP_CLAIMED: 'Claimed on the portal. You had marked them not possible.' };
 const FIX10_NOT = ['HEIRS'];
 const ks10_ = s => String(s || '').split(',').map(x => x.trim()).filter(Boolean);
 const shrunk10_ = (o, n) => { o = ks10_(o); n = ks10_(n); return n.length > 0 && n.length < o.length && n.every(x => o.indexOf(x) >= 0); };
@@ -6833,7 +6834,7 @@ function listDates10_() {
     if (x && (!d[r.village_id] || x > d[r.village_id])) d[r.village_id] = x; });
   return d;
 }
-const isOpen10_ = b => b.flag === 'RECHECK' && b.old_mark === 'PORTAL_OPEN';
+const isOpen10_ = b => b.flag === 'PORTAL_OPEN' || (b.flag === 'RECHECK' && b.old_mark === 'PORTAL_OPEN');
 /** opt: {vids, pre (install: preloaded lists + the whole Log), since (Log ts: shrinks from this upload), np ({id: code} marked not possible before this upload)} */
 function fix10_(u, opt) {
   opt = opt || {};
@@ -6856,11 +6857,8 @@ function fix10_(u, opt) {
     }
     if (b.claimed_source === 'PORTAL_PART' && b.status === 'CLAIMED' && b.portal_state === 'UNCLAIMED') { if (b.flag !== 'PARTIAL') { b.flag = 'PARTIAL'; ch.push(b); } return; }
     if (b.status === 'CLAIMED' && b.portal_state === 'UNCLAIMED' && FIX10_NOT.indexOf(b.claimed_source) < 0 && ld[b.village_id] && String(b.claimed_date || '') < ld[b.village_id].slice(0, 10)) {
-      const f = fBy[b.bucket_id];
-      lg(b, 'status', 'CLAIMED/' + (b.claimed_source || '') + ' ' + (b.claimed_date || '') + (b.farmer_id ? ' ID ' + b.farmer_id : ''), 'NOT_SURVEYED/PORTAL_OPEN');
-      Object.assign(b, { status: 'NOT_SURVEYED', reason_code: '', claimed_source: '', claimed_date: '', claimed_by: '', farmer_id: '', flag: 'RECHECK', old_mark: 'PORTAL_OPEN', updated_by: u.user_id, updated_at: now });
-      if (f) { Object.assign(f, { bucket_id: '', link_method: '', link_conf: '', candidates: '', linked_by: '', linked_at: '' }); fch = true; }
-      n.open++; ch.push(b); return;
+      if (b.flag !== 'PORTAL_OPEN') { const again = opt.was && opt.was[b.bucket_id]; if (!again) lg(b, 'flag', b.flag, 'PORTAL_OPEN'); b.flag = 'PORTAL_OPEN'; b.updated_at = now; if (!again) n.open++; ch.push(b); }
+      return;
     }
     if (b.status === 'CLAIMED' && b.portal_state === 'GONE' && b.flag !== 'NP_CLAIMED' && !b.old_mark) {
       const code = opt.np && opt.np[b.bucket_id] ? opt.np[b.bucket_id] : opt.pre && NPC10[b.bucket_id] ? (rc[NPC10[b.bucket_id]] || NPC10[b.bucket_id]) : '';
@@ -6923,8 +6921,9 @@ function matchable10_(vids) {
 { const _a = uploadApply_; uploadApply_ = function (req, u) {
   const t0 = now_(), np = {}, vids = Object.keys(groupUpload_(req.rows));
   read_('Buckets').forEach(b => { if (vids.indexOf(b.village_id) >= 0 && b.status === 'REASON' && b.flag !== 'RECHECK' && (CAT95.notpossible.indexOf(b.reason_code) >= 0 || CAT95.land.indexOf(b.reason_code) >= 0)) np[b.bucket_id] = b.reason_code; });
+  const was = {}; read_('Buckets').forEach(b => { if (b.flag === 'PORTAL_OPEN') was[b.bucket_id] = 1; });
   const o = _a(req, u);
-  try { o.fix10 = fix10_(u, { vids, since: t0, np }); } catch (e) { append_('Errors', [{ ts: now_(), user_id: u.user_id, action: 'fix10', error: String(e.message || e).slice(0, 300) }]); }
+  try { o.fix10 = fix10_(u, { vids, since: t0, np, was }); } catch (e) { append_('Errors', [{ ts: now_(), user_id: u.user_id, action: 'fix10', error: String(e.message || e).slice(0, 300) }]); }
   return o; }; ACTIONS.uploadApply = uploadApply_; }
 /* After a PM Kisan file: the whole pass (links by name + father, writes buckets and farmers). */
 { const _p = pmkApply_; pmkApply_ = function (req, u) { const o = _p(req, u); try { o.linked = fix10_(u, {}).linked; } catch (e) { append_('Errors', [{ ts: now_(), user_id: u.user_id, action: 'fix10pmk', error: String(e.message || e).slice(0, 300) }]); } return o; }; ACTIONS.pmkApply = pmkApply_; }
@@ -6933,6 +6932,13 @@ function migrateV27_() { try { const r = fix10_({ user_id: 'SYSTEM' }, { pre: tr
 function fix10Ack_(req, u) {
   const b = read_('Buckets').find(x => x.bucket_id === req.bucket_id); if (!b) throw new Error('Entry not found.');
   if (!canEdit_(u, village_(b.village_id)) && !OFFICE95(u)) throw new Error('Not allowed for this village.');
+  if (isOpen10_(b) && b.status === 'CLAIMED' && (req.kind === 'part' || req.kind === 'noid')) { const now = now_(), was = b.claimed_source + ' ' + (b.farmer_id || '');
+    if (req.kind === 'part') Object.assign(b, { claimed_source: 'PORTAL_PART', flag: 'PARTIAL', old_mark: '', updated_by: u.user_id, updated_at: now });
+    else { const fs = read_('Farmers'), f = fs.find(x => x.bucket_id === b.bucket_id);
+      Object.assign(b, { status: 'NOT_SURVEYED', reason_code: '', claimed_source: '', claimed_date: '', claimed_by: '', farmer_id: '', flag: '', old_mark: '', updated_by: u.user_id, updated_at: now });
+      if (f) { Object.assign(f, { bucket_id: '', link_method: '', link_conf: 'NONE', candidates: '', linked_by: '', linked_at: '' }); writeRows_('Farmers', [f]); } }
+    writeRows_('Buckets', [b]); append_('Log', [{ ts: now, user_id: u.user_id, bucket_id: b.bucket_id, action: 'FIX10', field: 'flag', old_value: 'PORTAL_OPEN ' + was, new_value: req.kind === 'part' ? 'ID MADE, KHASRAS LEFT' : 'NO ID, SORT AGAIN' }]);
+    return { ok: true, bucket: b }; }
   if (b.flag === 'NP_CLAIMED') { b.flag = 'CONFIRMED'; b.old_mark = 'NP_SEEN:' + (b.old_mark || ''); b.updated_by = u.user_id; b.updated_at = now_(); writeRows_('Buckets', [b]);
     append_('Log', [{ ts: now_(), user_id: u.user_id, bucket_id: b.bucket_id, action: 'FIX10', field: 'flag', old_value: 'NP_CLAIMED', new_value: 'SEEN' }]); }
   return { ok: true };
@@ -6943,19 +6949,19 @@ ACTIONS.fix10Ack = fix10Ack_; WRITE_ACTIONS.push('fix10Ack'); UV_ACTIONS.push('f
   const bs = read_('Buckets').filter(b => mine.indexOf(b.village_id) >= 0), op = bs.filter(isOpen10_), np = bs.filter(b => b.flag === 'NP_CLAIMED');
   const fv = op.concat(np).map(b => b.village_id), cnt = {}; fv.forEach(v => cnt[v] = (cnt[v] || 0) + 1);
   o.todo.open = op.length; o.todo.npc = np.length; o.todo.fix = op.length + np.length; o.todo.fix_vid = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0] || '';
-  o.todo.recheck = Math.max(0, (o.todo.recheck || 0) - op.length); o.todo.part = bs.filter(b => b.flag === 'PARTIAL').length;
+  o.todo.recheck = Math.max(0, (o.todo.recheck || 0) - op.filter(b => b.flag === 'RECHECK').length); o.todo.part = bs.filter(b => b.flag === 'PARTIAL').length;
   return o; }; ACTIONS.pw95 = pw95_; }
 /** Village check: the app's open entries against the portal's own village report. */
 function vchk10_(v, list, ld) {
   const tot = Number(v.portal_total) || 0, cl = Number(v.portal_claimed) || 0; if (!tot || !list.length) return null;
-  const portal = tot - cl, app = list.filter(b => b.portal_state === 'UNCLAIMED' && b.claimed_source !== 'PORTAL_PART').length, part = list.filter(b => b.portal_state === 'UNCLAIMED' && b.claimed_source === 'PORTAL_PART').length;
+  const portal = tot - cl, onl = list.filter(b => b.portal_state === 'UNCLAIMED'), part = onl.filter(b => b.claimed_source === 'PORTAL_PART' || isOpen10_(b) || b.reason_code === 'A14').length, app = onl.length - part, inlist = onl.length;
   const tol = Math.max(3, Math.round(tot * 0.02)), at = ld || '', asOn = v.portal_as_on || '';
   const days = at ? Math.round((Date.parse(today_()) - Date.parse(at.slice(0, 10))) / 864e5) : 99;
   const ok = Math.abs(app - portal) <= tol && days <= 7;
   const why = days > 7 ? (at ? 'Bucket list is ' + days + ' days old. Ask the DC office for a fresh one.' : 'No bucket list yet.')
-    : app > portal ? (app - portal) + ' more open here than the portal report. Some may be part-claimed on the portal; the next list shows it.'
+    : app > portal ? (app - portal) + ' more open here than the portal report. Some of them may be part-claimed; the Patwari will see.'
     : app < portal ? (portal - app) + ' fewer open here than the portal report. Upload the newest bucket list.' : '';
-  return { portal, app, part, list_at: at, report_at: asOn, ok, why };
+  return { portal, app, part, inlist, list_at: at, report_at: asOn, ok, why };
 }
 { const _s = sat95_; sat95_ = function (tid) { const o = _s(tid), ld = listDates10_(), vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v);
   const byV = {}; read_('Buckets').forEach(b => { (byV[b.village_id] = byV[b.village_id] || []).push(b); });
@@ -6965,7 +6971,7 @@ function vchk10_(v, list, ld) {
 /** Rows for lists and packets: flags, PM Kisan, the plain-words line for the fixes. */
 { const _l = sat95List_; sat95List_ = function (req, u) { const o = _l(req, u), bm = {}; read_('Buckets').forEach(b => bm[b.bucket_id] = b);
   const pk = {}, pf = {}; try { read_('PMK').forEach(k => { if (k.active === 'N' || !k.bucket_id) return; if (k.farmer_id) pf[k.bucket_id] = k.farmer_id; else pk[k.bucket_id] = 1; }); } catch (e) {}
-  o.rows.forEach(r => { const b = bm[r.id] || {}; r.fl = b.flag || ''; r.om = b.old_mark || ''; r.cs = b.claimed_source || ''; r.pk = pk[r.id] ? 1 : 0; r.pf = pf[r.id] && b.status !== 'CLAIMED' ? pf[r.id] : '';
+  o.rows.forEach(r => { const b = bm[r.id] || {}; r.fl = b.flag || ''; r.om = b.old_mark || ''; r.cs = b.claimed_source || ''; r.ps = b.portal_state || ''; r.pk = pk[r.id] ? 1 : 0; r.pf = pf[r.id] && b.status !== 'CLAIMED' ? pf[r.id] : '';
     if (isOpen10_(b)) r.re = FIX10.PORTAL_OPEN; if (b.flag === 'NP_CLAIMED') r.np = b.old_mark || '?'; });
   const rl = {}; read_('Reasons').forEach(x => rl[x.code] = x.report_label || x.label); o.rows.forEach(r => { if (r.np) r.np = rl[r.np] || r.np; });
   return o; }; ACTIONS.sat95List = sat95List_; }
@@ -6983,9 +6989,33 @@ function packet10_(req, u) {
   const checks = Object.keys(vids).map(vid => ({ vid, v: (vm[vid] || {}).name || '', chk: vchk10_(vm[vid] || {}, byV[vid] || [], ld[vid]) }));
   const halqas = {}; Object.keys(vids).forEach(vid => { const v = vm[vid] || {}, p = phs[v.ph_id] || {}; const pw = p.patwari_user_id ? users[p.patwari_user_id] : (v.patwari_user_id ? users[v.patwari_user_id] : null);
     halqas[p.name || ''] = { ph: p.name || '', patwari: pw ? pw.name : '', mobile: pw ? (pw.mobile || '') : '', tehsil: tehsilName_(v.tehsil_id) }; });
-  return { rows: L.rows, call, checks, halqas: Object.keys(halqas).map(k => halqas[k]), as_on: now_() };
+  // khasras already claimed on a part-claimed bucket: the first list's khasras minus today's
+  const first = {}; read_('Log').forEach(l => { if (l.field === 'khasras' && l.action === 'PORTAL' && bm[l.bucket_id] && vids[bm[l.bucket_id].village_id] && !first[l.bucket_id]) first[l.bucket_id] = l.old_value; });
+  // PM Kisan on an open bucket: same name and father (sure), or the same once vowels and spaces are dropped (spelling differs)
+  let pa = []; try { pa = read_('PMK').filter(k => k.active !== 'N' && vids[k.village_id]); } catch (e) {}
+  const sk = s => normName_(s).replace(/\bmohd\b|\bmd\b/g, 'mohammad').replace(/[aeiouyh ]/g, ''), ex = {}, lo = {};
+  pa.forEach(k => { const a = k.village_id + '|' + normName_(k.name) + '|' + normName_(k.father), b2 = k.village_id + '|' + sk(k.name) + '|' + sk(k.father); ex[a] = (ex[a] || 0) + 1; lo[b2] = (lo[b2] || 0) + 1; });
+  L.rows.forEach(r => { const b = bm[r.id]; if (!b || b.portal_state !== 'UNCLAIMED') return;
+    if (first[r.id]) { const now = ks10_(b.khasras); r.cl = ks10_(first[r.id]).filter(k => now.indexOf(k) < 0).join(', '); }
+    if (r.pk) { r.pm = 'yes'; return; }
+    if (ex[b.village_id + '|' + normName_(b.name) + '|' + normName_(b.parentage)] === 1) r.pm = 'yes';
+    else if (b.parentage && lo[b.village_id + '|' + sk(b.name) + '|' + sk(b.parentage)] === 1) r.pm = 'maybe'; });
+  const lists = {}; Object.keys(vids).forEach(v => lists[v] = ld[v] || '');
+  return { rows: L.rows, call, checks, lists, halqas: Object.keys(halqas).map(k => halqas[k]), as_on: now_() };
 }
 ACTIONS.packet10 = packet10_;
+
+function migrateV28_() { try {
+  const all = read_('Buckets'), fs = read_('Farmers'), fb = {}; fs.forEach(f => fb[f.farmer_id] = f);
+  const L = {}; read_('Log').forEach(l => { if (l.action === 'FIX10' && l.field === 'status' && l.new_value === 'NOT_SURVEYED/PORTAL_OPEN') L[l.bucket_id] = l.old_value; });
+  let n = 0, fch = false; const now = now_();
+  all.forEach(b => { if (!(b.flag === 'RECHECK' && b.old_mark === 'PORTAL_OPEN' && b.status === 'NOT_SURVEYED' && L[b.bucket_id])) return;
+    const m = String(L[b.bucket_id]).match(/^CLAIMED\/(\S*) (\S*)(?: ID (\S+))?/) || [];
+    Object.assign(b, { status: 'CLAIMED', claimed_source: m[1] || 'FIELD', claimed_date: m[2] || '', reason_code: '', flag: 'PORTAL_OPEN', old_mark: '', updated_at: now });
+    const f = m[3] ? fb[m[3]] : null; if (f && !f.bucket_id) { b.farmer_id = f.farmer_id; Object.assign(f, { bucket_id: b.bucket_id, link_method: 'RESTORED', link_conf: 'LINKED', linked_at: now }); fch = true; }
+    n++; });
+  if (n) writeAll_('Buckets', all); if (fch) writeAll_('Farmers', fs); setSetting_('fix11_restore', String(n));
+} catch (e) { append_('Errors', [{ ts: now_(), user_id: 'SYSTEM', action: 'migrateV28', error: String(e.message || e).slice(0, 300) }]); } }
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
