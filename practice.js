@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '10.2.0';
+const APP_VERSION = '10.3.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '29';
+const SCHEMA_VERSION = '30';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -382,6 +382,7 @@ function migrate_() {
     if (Number(ver) < 27) migrateV27_();
     if (Number(ver) < 28) migrateV28_();
     if (Number(ver) < 29) migrateV29_();
+    if (Number(ver) < 30) migrateV30_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -5112,7 +5113,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '10.2.0';
+const MIN_APP83 = '10.3.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -7056,7 +7057,7 @@ function same12_(u, vids) {
   const done = {}; let n = 0;
   Object.keys(by).forEach(k => { const g = by[k]; if (g.length < 2) return;
     const made = g.find(b => b.portal_state === 'GONE' || b.claimed_source === 'PORTAL_PART' || (b.status === 'CLAIMED' && !isOpen10_(b))); if (!made) return;
-    g.forEach(b => { if (b === made || done[b.bucket_id] || claim12_(b) !== 'claim') return; done[b.bucket_id] = 1;
+    g.forEach(b => { if (b === made || done[b.bucket_id] || claim12_(b) !== 'claim' || b.status === 'CLAIMED' || b.reason_code === 'A01' || b.reason_code === 'A14') return; done[b.bucket_id] = 1;
       logs.push({ ts: now, user_id: u.user_id, bucket_id: b.bucket_id, action: 'SAME12', field: 'reason_code', old_value: b.status + '/' + (b.reason_code || ''), new_value: 'A01 (ID made through ' + made.bucket_id + ')' });
       Object.assign(b, { status: 'REASON', reason_code: 'A01', flag: '', updated_by: u.user_id, updated_at: now }); if (!b.surveyed_date) { b.surveyed_date = today; b.surveyed_by = u.user_id; } n++; }); });
   if (n) { writeAll_('Buckets', all); append_('Log', logs); }
@@ -7091,6 +7092,123 @@ ACTIONS.nc12 = nc12_;
 /** Registers: the category of each row. */
 { const _p = packet10_; packet10_ = function (req, u) { const o = _p(req, u), bm = {}; read_('Buckets').forEach(b => bm[b.bucket_id] = b);
   o.rows.forEach(r => { const b = bm[r.id]; if (!b) return; r.cl12 = claim12_(b); if (r.cl12 === 'not') r.cat = CATOF12[b.reason_code] || r.r; }); o.cats = CAT12.map(c => c[0]); return o; }; ACTIONS.packet10 = packet10_; }
+
+/* ============================== 10.3: NUMBERED CATEGORIES · LAND ADDITION (UFR) SWITCH · SAME FARMER ACROSS VILLAGES · PATWARI APP IN TWO PARTS ==============================
+ * One numbered list everywhere. 0 and 1 are set by the app; the Patwari picks 2–28.
+ * UFR switch (Settings, Tehsildar): when the portal lets land be added to an approved Farmer ID, the same farmer's other buckets (A01),
+ * "ID made in another village" (A14) and part-claimed khasras become claimable: "1. Add land to existing ID".
+ */
+SCHEMA.Buckets.push('xv'); BUCKET_OUT.push('xv');
+const NUM13 = [[0, 'ID made? Portal still shows it', 'claim', []], [1, 'Add land to existing ID', 'claim', []],
+  [2, 'Can get ID: call to the camp', 'claim', ['C01', 'C03', 'B09']], [3, 'Same farmer, ID not made yet: claim this bucket', 'claim', ['C02']],
+  [4, 'Mobile not linked with Aadhaar, present in village', 'claim', ['B11']], [5, 'Out of station: may come / share OTP', 'claim', ['B04']], [6, 'Abroad', 'claim', ['B05']],
+  [7, 'No Aadhaar', 'claim', ['B06']], [8, 'Name mismatch: Aadhaar vs land record', 'claim', ['B07']], [9, 'Expired: inheritance mutation to be done', 'claim', ['A02']],
+  [10, 'Land sold: mutation to be done', 'claim', ['A04']], [11, 'Lives in another village of the tehsil', 'claim', ['C04']], [12, 'Mobile not linked, not in village: find out', 'claim', ['B01']],
+  [13, 'Expired and mutation not attested', 'not', ['A03']], [14, 'Farmer id created but some khasras left due to name difference (same farmer, multiple buckets)', 'not', ['A01']],
+  [15, 'Farmer ID already made in another village / tehsil', 'not', ['A14']], [16, 'Missing and untraceable', 'not', ['A08']], [17, 'Mobile not linked, very old / face authentication fails', 'not', ['B02']],
+  [18, 'Mobile not linked, living outside, not coming for biometric', 'not', ['B03']], [19, 'Consent / OTP refused', 'not', ['B08']], [20, 'Woman married / moved out of village', 'not', ['A13']],
+  [21, 'Joint entry (…etc)', 'not', ['A09']], [22, 'Land dispute / court case', 'not', ['A10']], [23, 'Minor', 'not', ['A11']], [24, 'State land', 'not', ['A05']], [25, 'Shamlat deh', 'not', ['A06']],
+  [26, 'Public use land', 'not', ['A12']], [27, 'Department / institution land', 'not', ['A07']], [28, 'Religious land', 'not', ['A15']]];
+const NUMOF13 = {}; NUM13.forEach(r => r[3].forEach(c => { if (NUMOF13[c] === undefined) NUMOF13[c] = r[0]; }));
+const ufr13_ = () => { if (DB._ufr === undefined) DB._ufr = setting_('ufr_live') === 'Y'; return DB._ufr; };
+claim12_ = function (b) {
+  if (b.portal_state !== 'UNCLAIMED') return '';
+  if (b.status === 'CLAIMED') return b.claimed_source === 'PORTAL_PART' ? (ufr13_() ? 'claim' : 'part') : 'open';
+  if (b.status !== 'REASON' || b.flag === 'RECHECK' || b.reason_code === 'B10') return 'claim';
+  const c = b.reason_code;
+  if ((c === 'A01' || c === 'A14') && ufr13_()) return 'claim';
+  if (CAT95.done.indexOf(c) >= 0 || CAT95.land.indexOf(c) >= 0 || CAT95.notpossible.indexOf(c) >= 0) return 'not';
+  return 'claim';
+};
+/** The bucket's number: 'U' not yet sorted, 0–28, or null (not on the portal's list / part-claimed while UFR is off). */
+function num13_(b) {
+  if (b.portal_state !== 'UNCLAIMED') return null;
+  if (b.status === 'CLAIMED') return b.claimed_source === 'PORTAL_PART' ? (ufr13_() ? 1 : null) : 0;
+  if (b.status !== 'REASON' || b.flag === 'RECHECK' || b.reason_code === 'B10') return 'U';
+  if ((b.reason_code === 'A01' || b.reason_code === 'A14') && ufr13_()) return 1;
+  return NUMOF13[b.reason_code] !== undefined ? NUMOF13[b.reason_code] : 2;
+}
+/** The UFR switch: the Tehsildar only. */
+function ufr13Set_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar can change this.');
+  setSetting_('ufr_live', req.on ? 'Y' : 'N'); setSetting_('ufr_at', now_()); setSetting_('ufr_by', u.user_id); DB._ufr = undefined;
+  append_('Audit', [{ ts: now_(), user_id: u.user_id, tehsil_id: '', action: 'UFR', target: req.on ? 'ON' : 'OFF', detail: 'Land addition to existing Farmer ID' }]);
+  return { on: ufr13_(), at: setting_('ufr_at') };
+}
+ACTIONS.ufr13 = ufr13Set_; WRITE_ACTIONS.push('ufr13'); UV_ACTIONS.push('ufr13');
+/* ---- who holds the ID: name + father (any village), or the bucket's own ID ---- */
+const key13_ = b => { const n = normName_(b.name), p = normName_(b.parentage); return n && p && !/^(nil|na|n a|unknown|none|not known)$/.test(p) ? n + '|' + p : ''; };
+function idIndex13_() {
+  const fs = {}; read_('Farmers').forEach(f => fs[f.farmer_id] = f);
+  const vm = {}; read_('Villages').forEach(v => vm[v.village_id] = v.name);
+  const made = {}; read_('Buckets').forEach(b => { const has = b.portal_state === 'GONE' || b.claimed_source === 'PORTAL_PART' || (b.status === 'CLAIMED' && !isOpen10_(b)); if (!has) return; const k = key13_(b); if (!k) return;
+    (made[k] = made[k] || []).push({ id: b.bucket_id, vid: b.village_id, v: vm[b.village_id] || '', fid: b.farmer_id || '', st: b.farmer_id && fs[b.farmer_id] ? fs[b.farmer_id].status : '', k: b.khasras }); });
+  return { made, fs, vm };
+}
+/** Anchor of a bucket: where his ID was made (same village first). */
+function anchor13_(b, I) { const k = key13_(b); if (!k || !I.made[k]) return null; const L = I.made[k].filter(x => x.id !== b.bucket_id); if (!L.length) return null;
+  return L.find(x => x.vid === b.village_id && x.fid) || L.find(x => x.vid === b.village_id) || L.find(x => x.fid) || L[0]; }
+/** Same farmer across villages (both tehsils). Automatic where an Aadhaar proves it; otherwise a question for the Patwari. */
+function xvAuto13_(u) {
+  const all = read_('Buckets'), fs = read_('Farmers').filter(f => f.farmer_id && f.missing !== 'Y' && f.status !== 'REJECTED'), byA = {}, fb = {};
+  fs.forEach(f => { if (f.aadhaar) byA[f.aadhaar] = f; }); all.forEach(b => fb[b.bucket_id] = b);
+  let pmk = []; try { pmk = read_('PMK').filter(k => k.active !== 'N' && k.farmer_id); } catch (e) {}
+  const pk = {}; pmk.forEach(k => { const kk = k.village_id + '|' + normName_(k.name) + '|' + normName_(k.father); pk[kk] = pk[kk] ? 'X' : k; });
+  const logs = [], now = now_(), today = today_(); let n = 0;
+  all.forEach(b => { if (claim12_(b) !== 'claim' || b.status === 'CLAIMED' || b.reason_code === 'A01' || b.reason_code === 'A14') return;
+    let f = b.aadhaar ? byA[b.aadhaar] : null;
+    if (!f) { const k = pk[b.village_id + '|' + normName_(b.name) + '|' + normName_(b.parentage)]; if (k && k !== 'X') f = fs.find(x => x.farmer_id === k.farmer_id); }
+    if (!f || !f.bucket_id || f.bucket_id === b.bucket_id) return; const home = fb[f.bucket_id]; if (!home) return;
+    const code = home.village_id === b.village_id ? 'A01' : 'A14';
+    logs.push({ ts: now, user_id: u.user_id, bucket_id: b.bucket_id, action: 'XV13', field: 'reason_code', old_value: b.status + '/' + (b.reason_code || ''), new_value: code + ' (Aadhaar: ID ' + f.farmer_id + ')' });
+    Object.assign(b, { status: 'REASON', reason_code: code, flag: '', updated_by: u.user_id, updated_at: now }); if (!b.surveyed_date) { b.surveyed_date = today; b.surveyed_by = u.user_id; } n++; });
+  if (n) { writeAll_('Buckets', all); append_('Log', logs); }
+  return n;
+}
+{ const _f = fix10_; fix10_ = function (u, opt) { const r = _f(u, opt); try { r.xv = xvAuto13_(u); } catch (e) {} return r; }; }
+function migrateV30_() { try { setSetting_('xv13_install', String(xvAuto13_({ user_id: 'SYSTEM' }))); } catch (e) { append_('Errors', [{ ts: now_(), user_id: 'SYSTEM', action: 'migrateV30', error: String(e.message || e).slice(0, 300) }]); } }
+/** A claimable bucket in one village whose name and father match an ID made in another village: the question for the Patwari. */
+function xvAsk13_(b, I) { if (b.xv === 'N' || claim12_(b) !== 'claim' || b.status === 'CLAIMED') return null; const k = key13_(b); if (!k || !I.made[k]) return null;
+  const o = I.made[k].find(x => x.vid !== b.village_id); return o ? { v: o.v, fid: o.fid, k: o.k } : null; }
+/** The Patwari's answer: Yes → 15 (ID made in another village); No → never asked again. */
+function xv13_(req, u) {
+  const b = read_('Buckets').find(x => x.bucket_id === req.bucket_id); if (!b) throw new Error('Entry not found.');
+  if (!canEdit_(u, village_(b.village_id)) && !OFFICE95(u)) throw new Error('Not allowed for this village.');
+  const now = now_();
+  if (req.ans === 'Y') Object.assign(b, { status: 'REASON', reason_code: 'A14', flag: '', surveyed_by: u.user_id, surveyed_date: today_(), updated_by: u.user_id, updated_at: now });
+  else b.xv = 'N';
+  writeRows_('Buckets', [b]); append_('Log', [{ ts: now, user_id: u.user_id, bucket_id: b.bucket_id, action: 'XV13', field: 'answer', old_value: '', new_value: req.ans === 'Y' ? 'SAME FARMER (A14)' : 'NOT HIM' }]);
+  return { bucket: b };
+}
+ACTIONS.xv13 = xv13_; WRITE_ACTIONS.push('xv13'); UV_ACTIONS.push('xv13');
+/** The Patwari's app: notes for his pending buckets, and the IDs made in his villages with each farmer's other buckets. */
+function pw13_(req, u) {
+  if (!isField_(u) && !OFFICE95(u)) throw new Error('Not allowed.');
+  const mine = isField_(u) ? phVillageIds_(u) : (req.village_ids || []), set = {}; mine.forEach(v => set[v] = 1);
+  const I = idIndex13_(), all = read_('Buckets'), notes = {};
+  all.forEach(b => { if (!set[b.village_id] || b.portal_state !== 'UNCLAIMED') return; const n = num13_(b); if (n === null) return; const o = {};
+    if (n === 1 || n === 14 || n === 15) { const a = b.status === 'CLAIMED' && b.farmer_id ? { v: I.vm[b.village_id] || '', fid: b.farmer_id, st: (I.fs[b.farmer_id] || {}).status || '' } : anchor13_(b, I); if (a) o.anc = { v: a.v, fid: a.fid, st: a.st }; }
+    const q = xvAsk13_(b, I); if (q) o.xv = q;
+    if (Object.keys(o).length) notes[b.bucket_id] = o; });
+  // IDs made: one card per farmer (Farmer ID, or name + father when the portal claimed it without a linked ID)
+  const cards = {}, ufr = ufr13_();
+  all.forEach(b => { if (!set[b.village_id]) return; const has = b.portal_state === 'GONE' || b.claimed_source === 'PORTAL_PART' || (b.status === 'CLAIMED' && !isOpen10_(b)); if (!has) return;
+    const k = b.farmer_id ? 'F' + b.farmer_id : 'K' + (key13_(b) || b.bucket_id); const f = b.farmer_id ? I.fs[b.farmer_id] : null;
+    const c = cards[k] = cards[k] || { fid: b.farmer_id || '', n: b.name, p: b.parentage, st: f ? f.status : '', on: f ? String(f.first_seen || '').slice(0, 10) : (b.claimed_date || ''), m: f ? (f.mobile || '') : (b.mobile || ''), made: [], other: [], key: key13_(b) };
+    c.made.push({ v: I.vm[b.village_id] || '', k: b.khasras, part: b.claimed_source === 'PORTAL_PART' && b.portal_state === 'UNCLAIMED' }); });
+  const byKey = {}; Object.keys(cards).forEach(k => { if (cards[k].key) (byKey[cards[k].key] = byKey[cards[k].key] || []).push(cards[k]); });
+  all.forEach(b => { if (b.portal_state !== 'UNCLAIMED' || b.status === 'CLAIMED') return; const k = key13_(b); if (!k || !byKey[k]) return; const n = num13_(b); if (n === null) return;
+    if (!(n === 1 || n === 14 || n === 15)) return; byKey[k][0].other.push({ v: I.vm[b.village_id] || '', k: b.khasras, num: n }); });
+  const unl = read_('Farmers').filter(f => set[f.village_id] && !f.bucket_id && f.missing !== 'Y' && f.status !== 'REJECTED').length;
+  return { ufr, ufr_at: setting_('ufr_at') || '', notes, ids: Object.keys(cards).map(k => { const c = cards[k]; delete c.key; return c; }), unmatched: unl, nums: NUM13.map(r => [r[0], r[1], r[2]]), as_on: now_() };
+}
+ACTIONS.pw13 = pw13_;
+/** Registers: the number, the note (where his ID was made, same farmer elsewhere?) and the switch. */
+{ const _p = packet10_; packet10_ = function (req, u) { const o = _p(req, u), bm = {}; read_('Buckets').forEach(b => bm[b.bucket_id] = b); const I = idIndex13_();
+  o.rows.forEach(r => { const b = bm[r.id]; if (!b) return; r.num = num13_(b); if (r.num === 1 || r.num === 14 || r.num === 15) { const a = b.status === 'CLAIMED' && b.farmer_id ? { v: I.vm[b.village_id], fid: b.farmer_id } : anchor13_(b, I); if (a) r.anc = { v: a.v, fid: a.fid }; }
+    const q = xvAsk13_(b, I); if (q) r.xvq = q; });
+  o.nums = NUM13.map(x => [x[0], x[1], x[2]]); o.ufr = ufr13_(); return o; }; ACTIONS.packet10 = packet10_; }
+{ const _b = bootstrap_; if (typeof _b === 'function') { bootstrap_ = function (req, u) { const o = _b(req, u); try { o.ufr = ufr13_(); o.ufr_at = setting_('ufr_at') || ''; } catch (e) {} return o; }; if (ACTIONS.bootstrap) ACTIONS.bootstrap = bootstrap_; } }
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
