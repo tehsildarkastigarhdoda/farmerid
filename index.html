@@ -14,7 +14,7 @@
 <meta property="og:url" content="https://tehsildarkastigarhdoda.github.io/farmerid/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/nunito-700.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="fonts/nunito-900.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Nunito;font-weight:400;font-display:swap;src:url(fonts/nunito-400.woff2) format("woff2")}@font-face{font-family:Nunito;font-weight:600;font-display:swap;src:url(fonts/nunito-600.woff2) format("woff2")}@font-face{font-family:Nunito;font-weight:700;font-display:swap;src:url(fonts/nunito-700.woff2) format("woff2")}@font-face{font-family:Nunito;font-weight:800;font-display:swap;src:url(fonts/nunito-800.woff2) format("woff2")}@font-face{font-family:Nunito;font-weight:900;font-display:swap;src:url(fonts/nunito-900.woff2) format("woff2")}</style><style>@font-face{font-family:Geist;font-weight:400;font-display:swap;src:url(fonts/geist-400.woff2) format("woff2")}@font-face{font-family:Geist;font-weight:500;font-display:swap;src:url(fonts/geist-500.woff2) format("woff2")}@font-face{font-family:Geist;font-weight:600 900;font-display:swap;src:url(fonts/geist-600.woff2) format("woff2")}@font-face{font-family:"Geist Mono";font-weight:400 900;font-display:swap;src:url(fonts/geist-mono-500.woff2) format("woff2")}</style>
-<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com"><link rel="preload" href="dash.js?v=11.0.0" as="script">
+<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com"><link rel="preload" href="dash.js?v=11.0.1" as="script">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -80,7 +80,7 @@ body *{font-family:inherit}
 <main><div class="upd" id="upd"></div><div id="msg"></div><div id="rc"></div><div id="dash" hidden></div></main>
 <footer>Figures are compiled from the Agristack portal files uploaded by the Tehsil offices and are indicative. The portal remains the official record.
 <div class="cr">Designed and developed by Pushpak Saroop, JKAS, Tehsildar Kastigarh.</div></footer>
-<script src="dash.js?v=11.0.0"></script>
+<script src="dash.js?v=11.0.1"></script>
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
 (async () => {
@@ -124,7 +124,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
 </script>
-<script>(function () { var PV = '11.0.0', n = function (v) { return String(v || '0').split('.').map(Number).reduce(function (a, x) { return a * 1000 + (x || 0); }, 0); };
+<script>(function () { var PV = '11.0.1', n = function (v) { return String(v || '0').split('.').map(Number).reduce(function (a, x) { return a * 1000 + (x || 0); }, 0); };
   function chk() { fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { if (j && n(j.v) > n(PV)) location.replace(location.pathname + '?t=' + Date.now()); }).catch(function () {}); }
   setInterval(chk, 300000); setTimeout(chk, 5000); document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') chk(); }); })();</script>
 </body>

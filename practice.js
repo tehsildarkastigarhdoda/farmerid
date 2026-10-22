@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '11.0.0';
+const APP_VERSION = '11.0.1';
 
 /* ============================== SCHEMA ============================== */
 
@@ -5116,7 +5116,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '11.0.0';
+const MIN_APP83 = '11.0.1';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -7525,14 +7525,14 @@ function flag15_(tid) {
 
 /* uploads: clear the collect tag, bump the signal, work the figures out now (no lag on the phones) */
 { const _a = ACTIONS.uploadApply; ACTIONS.uploadApply = function (req, u) { const o = _a(req, u); try { unCollect15_(); } catch (e) { err15_('unCollect15', e); }
-  const t = {}; ((o && o.villages) || []).forEach(v => { if (v.tehsil_id) t[v.tehsil_id] = 1; }); sig15Bump_('list', Object.keys(t).join(',')); warm15_(Object.keys(t)); return o; }; }
+  const t = {}; ((o && o.villages) || []).forEach(v => { if (v.tehsil_id) t[v.tehsil_id] = 1; }); sig15Bump_('list', Object.keys(t).join(',')); if (!req.more) warm15_(Object.keys(t)); return o; }; }
 { const _a = ACTIONS.regApply; ACTIONS.regApply = function (req, u) { const o = _a(req, u);
   try { const vn = {}; read_('Villages').forEach(v => vn[v.village_id] = v.name), low = [], minor = [];
     (req.rows || []).forEach(r => { const st = String(r[6] || '').toUpperCase(), sc = String(r[12] === undefined ? '' : r[12]).trim(), ag = Number(r[4]);
       const f = { name: String(r[2] || ''), village: vn[String(r[11] || '').trim()] || '', score: sc === '' ? null : Number(sc), age: ag || null };
       if (st !== 'APPROVED' && st !== 'REJECTED' && sc !== '' && Number(sc) < 50) low.push(f); if (ag > 0 && ag < 18 && st !== 'REJECTED') minor.push(f); });
     if (o && typeof o === 'object') o.flags15 = { low, minor }; } catch (e) { err15_('flags15', e); }
-  const t = {}; ((o && o.villages) || []).forEach(v => { if (v.tehsil_id) t[v.tehsil_id] = 1; }); sig15Bump_('portal', Object.keys(t).join(',')); warm15_(Object.keys(t)); return o; }; }
+  const t = {}; ((o && o.villages) || []).forEach(v => { if (v.tehsil_id) t[v.tehsil_id] = 1; }); sig15Bump_('portal', Object.keys(t).join(',')); if (!req.more) warm15_(Object.keys(t)); return o; }; }
 { const _a = ACTIONS.pmkApply; ACTIONS.pmkApply = function (req, u) { const o = _a(req, u); sig15Bump_('pmk'); return o; }; }
 { const _a = ACTIONS.saveBuckets; ACTIONS.saveBuckets = function (req, u) { const o = _a(req, u); try { CacheService.getScriptCache().put('sig15', JSON.stringify({ at: now_(), what: 'sort', tehsil_id: '' }), 21600); } catch (e) {} return o; }; }
 
@@ -7699,7 +7699,7 @@ function chk15Answer_(req, u) {
   setSetting_(chkK15_(b.tehsil_id), JSON.stringify(A)); return { ok: 1 };
 }
 ACTIONS.chk15 = chk15_; ACTIONS.chk15Answer = chk15Answer_; WRITE_ACTIONS.push('chk15Answer'); UV_ACTIONS.push('chk15Answer');
-{ ['uploadApply', 'regApply'].forEach(a => { const _a = ACTIONS[a]; ACTIONS[a] = function (req, u) { const o = _a(req, u); try { const t = {}; ((o && o.villages) || []).forEach(v => { if (v.tehsil_id) t[v.tehsil_id] = 1; }); let n = 0; Object.keys(t).forEach(x => n += chkFix15_(x, u)); if (o && typeof o === 'object') o.chk15_fixed = n; } catch (e) { err15_('chkFix15', e); } return o; }; }); }
+{ ['uploadApply', 'regApply'].forEach(a => { const _a = ACTIONS[a]; ACTIONS[a] = function (req, u) { const o = _a(req, u); if (req.more) return o; try { const t = {}; ((o && o.villages) || []).forEach(v => { if (v.tehsil_id) t[v.tehsil_id] = 1; }); let n = 0; Object.keys(t).forEach(x => n += chkFix15_(x, u)); if (o && typeof o === 'object') o.chk15_fixed = n; } catch (e) { err15_('chkFix15', e); } return o; }; }); }
 /* certificates wait while anything in the halqa is under check */
 { const _c = ACTIONS.cert14Status; ACTIONS.cert14Status = function (req, u) { const o = _c(req, u); try { const by = {}; o.halqas.forEach(h => { if (!by[h.tehsil_id]) by[h.tehsil_id] = chkItems15_(h.tehsil_id, null); const vs = h.villages.map(v => v.village_id); h.check = by[h.tehsil_id].filter(i => vs.indexOf(i.village_id) >= 0).length; if (h.check) h.ready = false; }); } catch (e) {} return o; }; }
 { const _g = ACTIONS.cert14Gen; ACTIONS.cert14Gen = function (req, u) { try { const p = read_('PHs').find(x => x.ph_id === req.ph_id); if (p) { const vs = read_('Villages').filter(v => v.ph_id === p.ph_id).map(v => v.village_id), n = chkItems15_(p.tehsil_id, vs).length; if (n) throw new Error('UNDER_CHECK|' + n); } } catch (e) { if (/^UNDER_CHECK\|/.test(e.message)) throw new Error(e.message.split('|')[1] + ' not-claimable bucket(s) in this halqa are under check. The Patwari answers them in Check first.'); }
@@ -7725,6 +7725,24 @@ function rep15_(req, u) {
   return { ok: 1, tehsil_id: tid, name: tehsilName_(tid), as_on: now_(), sum: s, rank: rank15_(tid), dc: dcx15_(tid), pmk: pmk15_(tid), ncs: ncs15_(tid), certs: cs, camps: camp15_({ tehsil_id: tid }, u).tehsils[0].villages, staff: { logins: des, field: pd, field_total: ppl.length }, nums: NUM13.map(r => [r[0], r[1], r[2]]) };
 }
 ACTIONS.rep15 = rep15_;
+
+/* ============================== 11.0.1 UPLOADS THAT DO NOT FAIL ON A BUSY SHEET ==============================
+ * "Service Spreadsheets failed while accessing document…" comes from one very large write or a busy moment.
+ * Writes now go in parts of 2,000 rows, every read and write tries again up to 3 times, and an upload that still
+ * meets a busy sheet answers BUSY| so the phone tries that one file again by itself.
+ */
+const BUSY15 = /Service Spreadsheets|Service error|timed out|Internal error|temporarily|try again later|Lock wait|Exceeded maximum execution/i;
+function retry15_(fn) { for (let i = 0; ; i++) { try { return fn(); } catch (e) { if (i >= 2 || !BUSY15.test(String((e && e.message) || e))) throw e; Utilities.sleep(1200 * (i + 1)); } } }
+writeAll_ = function (name, rows) {
+  const s = sheet_(name), h = SCHEMA[name], last = s.getLastRow(), CH = 2000;
+  if (rows.length) { ensureRows_(s, rows.length + 1, h.length);
+    for (let i = 0; i < rows.length; i += CH) { const part = rows.slice(i, i + CH); retry15_(() => s.getRange(2 + i, 1, part.length, h.length).setValues(part.map(r => h.map(k => cell_(r[k]))))); } }
+  if (last - 1 > rows.length) retry15_(() => s.getRange(rows.length + 2, 1, last - 1 - rows.length, h.length).clearContent());
+  rows.forEach((r, i) => r._row = i + 2); DB.cache[name] = rows;
+};
+{ const _r = read_; read_ = function (name) { return retry15_(() => _r(name)); }; }
+['uploadApply', 'regApply', 'pmkApply', 'dcx15Save', 'dcSheet10Save', 'uploadPreview'].forEach(a => { const _a = ACTIONS[a]; if (!_a) return; ACTIONS[a] = function (req, u) {
+  try { return _a(req, u); } catch (e) { const m = String((e && e.message) || e); if (BUSY15.test(m)) { err15_('busy:' + a, e); throw new Error('BUSY|The Google sheet was busy. The app tries this file again by itself.'); } throw e; } }; });
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
