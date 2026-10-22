@@ -1,5 +1,5 @@
-const CACHE = 'farmerid-v46';
-const SHELL = ['./', './index.html', './app.html', './dash.js', './logo.svg', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './fonts/geist-400.woff2', './fonts/geist-500.woff2', './fonts/geist-600.woff2', './fonts/geist-mono-500.woff2', './fonts/nunito-400.woff2', './fonts/nunito-700.woff2', './fonts/nunito-800.woff2', './fonts/nunito-900.woff2'];
+const CACHE = 'farmerid-v47';
+const SHELL = ['./', './index.html', './app.html', './dash.js', './logo.svg', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './fonts/geist-400.woff2', './fonts/geist-500.woff2', './fonts/geist-600.woff2', './fonts/geist-mono-500.woff2', './fonts/nunito-400.woff2', './fonts/nunito-700.woff2', './fonts/nunito-800.woff2', './fonts/nunito-900.woff2', './fonts/ah-400.woff2', './fonts/ah-700.woff2', './fonts/ah-800.woff2'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));

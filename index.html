@@ -14,7 +14,7 @@
 <meta property="og:url" content="https://tehsildarkastigarhdoda.github.io/farmerid/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/nunito-700.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="fonts/nunito-900.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Nunito;font-weight:400;font-display:swap;src:url(fonts/nunito-400.woff2) format("woff2")}@font-face{font-family:Nunito;font-weight:600;font-display:swap;src:url(fonts/nunito-600.woff2) format("woff2")}@font-face{font-family:Nunito;font-weight:700;font-display:swap;src:url(fonts/nunito-700.woff2) format("woff2")}@font-face{font-family:Nunito;font-weight:800;font-display:swap;src:url(fonts/nunito-800.woff2) format("woff2")}@font-face{font-family:Nunito;font-weight:900;font-display:swap;src:url(fonts/nunito-900.woff2) format("woff2")}</style><style>@font-face{font-family:Geist;font-weight:400;font-display:swap;src:url(fonts/geist-400.woff2) format("woff2")}@font-face{font-family:Geist;font-weight:500;font-display:swap;src:url(fonts/geist-500.woff2) format("woff2")}@font-face{font-family:Geist;font-weight:600 900;font-display:swap;src:url(fonts/geist-600.woff2) format("woff2")}@font-face{font-family:"Geist Mono";font-weight:400 900;font-display:swap;src:url(fonts/geist-mono-500.woff2) format("woff2")}</style>
-<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com"><link rel="preload" href="dash.js?v=10.4.0" as="script">
+<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com"><link rel="preload" href="dash.js?v=11.0.0" as="script">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -68,13 +68,19 @@ footer{color:#6A706C!important}footer .cr{color:#5B625E!important}
 .p10a{border-radius:22px;background:#fff;padding:14px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 3px rgba(30,36,34,.06)}.p10a b{font-size:16px;font-weight:900}.p10a small{font-size:13.5px;line-height:1.55;color:#3E4542}
 .p10b .t8-btn{border-radius:24px!important;font-weight:900!important}
 .p10e{font-size:12.5px;font-weight:700;color:#3E4542}
+</style><style id="pub15">@font-face{font-family:AH;font-weight:400;font-display:swap;src:url(fonts/ah-400.woff2) format("woff2")}@font-face{font-family:AH;font-weight:700;font-display:swap;src:url(fonts/ah-700.woff2) format("woff2")}@font-face{font-family:AH;font-weight:800;font-display:swap;src:url(fonts/ah-800.woff2) format("woff2")}
+body{font-family:AH,system-ui,sans-serif!important;background:radial-gradient(520px 400px at 92% -6%,#D6E3F6 0,transparent 66%),linear-gradient(180deg,#EEF5F7,#F4F7F4)!important;background-attachment:fixed!important;color:#10293A}
+body *{font-family:inherit}
+.p10c{background:rgba(255,255,255,.85)!important;border:1px solid #fff!important;border-radius:22px!important;box-shadow:0 10px 28px rgba(16,41,58,.07)!important}
+.p15{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(16,41,58,.08)}.p15 small{display:block;color:#557083;font-size:12.5px}
+.p15n{margin:16px 0;padding:14px 16px;border-radius:18px;background:#DDF2E8;color:#0B5E3F;display:grid;gap:4px}.p15n b{font-size:17px}
 </style></head>
 <body class="pub">
 <header class="top"><div class="in"><img src="logo.svg" alt=""><div class="nm"><b>Farmer ID Dashboard</b><small>Tehsil Assar &amp; Kastigarh · District Doda</small></div><a class="login" href="app.html">Admin login</a></div></header>
 <main><div class="upd" id="upd"></div><div id="msg"></div><div id="rc"></div><div id="dash" hidden></div></main>
 <footer>Figures are compiled from the Agristack portal files uploaded by the Tehsil offices and are indicative. The portal remains the official record.
 <div class="cr">Designed and developed by Pushpak Saroop, JKAS, Tehsildar Kastigarh.</div></footer>
-<script src="dash.js?v=10.4.0"></script>
+<script src="dash.js?v=11.0.0"></script>
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj5iSV5tNfr_EDCypcyu4TaTI96deXjPBXBg0IEWLgu39y/exec';
 (async () => {
@@ -118,7 +124,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwub02oM7BIpM6fDPr_LWvj
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
 </script>
-<script>(function () { var PV = '10.4.0', n = function (v) { return String(v || '0').split('.').map(Number).reduce(function (a, x) { return a * 1000 + (x || 0); }, 0); };
+<script>(function () { var PV = '11.0.0', n = function (v) { return String(v || '0').split('.').map(Number).reduce(function (a, x) { return a * 1000 + (x || 0); }, 0); };
   function chk() { fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { if (j && n(j.v) > n(PV)) location.replace(location.pathname + '?t=' + Date.now()); }).catch(function () {}); }
   setInterval(chk, 300000); setTimeout(chk, 5000); document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') chk(); }); })();</script>
 </body>
