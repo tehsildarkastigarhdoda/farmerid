@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '11.1.0';
+const APP_VERSION = '11.1.1';
 
 /* ============================== SCHEMA ============================== */
 
@@ -1010,7 +1010,7 @@ function detectDups_(tehsilId, all) {
     const eg = exact[b._ek], sg = skel[b._sk];
     if (eg && live(eg)) { b.dup_group = 'G' + shortHash_(b._ek); b.dup_conf = 'HIGH'; }
     else if (sg && live(sg)) { b.dup_group = 'G' + shortHash_(b._sk); b.dup_conf = 'MEDIUM'; }
-    else { b.dup_group = ''; b.dup_conf = ''; }
+    else { b.dup_group = ''; if (!/^(PMK|HEIR)/.test(b.dup_conf || '')) b.dup_conf = ''; }
   });
   pool.forEach(b => { delete b._ek; delete b._sk; });
 }
@@ -5117,7 +5117,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '11.1.0';
+const MIN_APP83 = '11.1.1';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -7824,10 +7824,13 @@ function fz15_(s) { return String(s || '').toLowerCase().replace(/[^a-z ]/g, ' '
 function lev15_(a, b) { if (a === b) return 1; const m = a.length, n = b.length; if (!m || !n) return 0; let p = Array.from({ length: n + 1 }, (_, j) => j);
   for (let i = 1; i <= m; i++) { const c = [i]; for (let j = 1; j <= n; j++) c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); p = c; } return 1 - p[n] / Math.max(m, n); }
 /** Certain marks are saved (land, ID made in another village); likely ones are pre-filled as the app's guess (PM Kisan farmer, inheritance). */
+const HUM16_ = ['EDIT', 'CONFIRM_SUGGESTION', 'NO16', 'CHECK15', 'RECHECK95', 'VERIFY95', 'FIX10'];
 function sort15_(tid, vids, u) {
   const all = read_('Buckets'), mine = all.filter(b => b.tehsil_id === tid && b.portal_state === 'UNCLAIMED' && b.status === 'NOT_SURVEYED' && (!vids || vids.indexOf(b.village_id) >= 0));
   if (!mine.length) return { auto: 0, sug: 0 };
   const now = now_(), today = today_(), ch = [], logs = [], locks = {}; let auto = 0, sug = 0;
+  // 11.1.1: a bucket a person has changed or said No to is never decided by the app again
+  const hum = {}; try { read_('Log').forEach(l => { if (l.bucket_id && HUM16_.indexOf(l.action) >= 0) hum[l.bucket_id] = 1; }); } catch (e) {}
   const locked = b => { if (locks[b.village_id] === undefined) locks[b.village_id] = lock14_(b.village_id) || null; return locks[b.village_id] && isLocked14_(b, locks[b.village_id]); };
   // ID made in another village: same name and father on a Farmer ID elsewhere in the tehsil (father from PM Kisan)
   const fa = {}; let pmk = []; try { pmk = read_('PMK').filter(k => k.active !== 'N' && k.tehsil_id === tid); } catch (e) {}
@@ -7837,7 +7840,7 @@ function sort15_(tid, vids, u) {
   const pk = {}; pmk.filter(k => !k.farmer_id).forEach(k => { const n = fz15_(k.name), f = fz15_(k.father); if (!n) return; const key = k.village_id + '|' + n.split(' ')[0]; (pk[key] = pk[key] || []).push({ n, f, m: !!k.mobile }); });
   // inheritance: the landholder appears as the father of another landholder on one of his khasras
   const fatherOf = {}; all.forEach(b => { if (b.tehsil_id !== tid || b.portal_state !== 'UNCLAIMED') return; const f = fz15_(b.parentage); if (!f) return; const k = b.village_id + '|' + f; (fatherOf[k] = fatherOf[k] || []).push(b); });
-  mine.forEach(b => { if (locked(b)) return; const n = fz15_(b.name), f = fz15_(b.parentage);
+  mine.forEach(b => { if (hum[b.bucket_id] || locked(b)) return; const n = fz15_(b.name), f = fz15_(b.parentage);
     // certain: land and joint entries by name
     const land = suggest_(b.name, b.parentage);
     if (land) { logs.push({ ts: now, user_id: 'AUTO15', bucket_id: b.bucket_id, action: 'AUTO15', field: 'reason_code', old_value: '', new_value: land });
@@ -7850,10 +7853,10 @@ function sort15_(tid, vids, u) {
     // likely: a PM Kisan farmer of this village (names spelt differently allowed)
     const c = pk[b.village_id + '|' + (n.split(' ')[0] || '')] || []; let best = 0, mob = false;
     c.forEach(x => { const s = (lev15_(n, x.n) + (f && x.f ? lev15_(f, x.f) : 0.6)) / 2; if (s > best) { best = s; mob = x.m; } });
-    if (best >= 0.86) { b.suggested_code = 'C03'; b.dup_conf = 'PMK' + Math.round(best * 100) + (mob ? 'M' : ''); ch.push(b); sug++; return; }
+    if (best >= 0.86) { b.suggested_code = 'C03'; if (!b.dup_group) b.dup_conf = 'PMK' + Math.round(best * 100) + (mob ? 'M' : ''); ch.push(b); sug++; return; }
     // likely: expired, heirs on the same khasra
     const heirs = (fatherOf[b.village_id + '|' + n] || []).filter(o => o !== b && khSet15_(o.khasras).some(k => khSet15_(b.khasras).indexOf(k) >= 0));
-    if (n && heirs.length) { b.suggested_code = 'A02'; b.dup_conf = 'HEIR' + heirs.length; ch.push(b); sug++; } });
+    if (n && heirs.length) { b.suggested_code = 'A02'; if (!b.dup_group) b.dup_conf = 'HEIR' + heirs.length; ch.push(b); sug++; } });
   if (ch.length) { writeRows_('Buckets', ch); if (logs.length) append_('Log', logs); }
   return { auto, sug };
 }
@@ -7906,10 +7909,11 @@ function setup15_(tid) {
 { const _c = closeDay_; closeDay_ = function (tid, date) { const o = _c(tid, date);
   try { const V = vs14_(tid), now = {}; V.forEach(v => now[v.village_id] = v.uns); const y = json15_('uns15_' + tid + '_' + addDays_(date, -1)) || {};
     setSetting_('uns15_' + tid + '_' + date, JSON.stringify(now));
-    const dir = read_('Dir14'), add = [];
-    V.forEach(v => { if (!v.uns || y[v.village_id] === undefined || v.uns < y[v.village_id] || !v.patwari_id) return;
+    const dir = read_('Dir14'), add = [], did = {};
+    read_('Buckets').forEach(b => { if (b.tehsil_id === tid && b.updated_by && b.updated_by !== 'AUTO15' && b.updated_by !== 'SYSTEM' && String(b.updated_at).slice(0, 10) === date) did[b.village_id] = 1; });
+    V.forEach(v => { if (!v.uns || y[v.village_id] === undefined || v.uns < y[v.village_id] || !v.patwari_id || did[v.village_id]) return;
       if (dir.some(d => d.kind === 'SORT' && d.target === v.village_id && d.status === 'OPEN')) return;
-      const row = {}; SCHEMA.Dir14.forEach(k => row[k] = ''); Object.assign(row, { dir_id: 'D' + Utilities.getUuid().replace(/-/g, '').slice(0, 10), tehsil_id: tid, to_user: v.patwari_id, kind: 'SORT', text: `Sort the buckets of ${v.name}: ${v.uns} not sorted, no progress since yesterday`, target: v.village_id, due: addDays_(date, 1) + ' 18:00', day: addDays_(date, 1), by: 'SYSTEM', at: now_(), status: 'OPEN' }); add.push(row); });
+      const row = {}; SCHEMA.Dir14.forEach(k => row[k] = ''); Object.assign(row, { dir_id: 'D' + Utilities.getUuid().replace(/-/g, '').slice(0, 10), tehsil_id: tid, to_user: v.patwari_id, kind: 'SORT', text: `No bucket of ${v.name} was sorted on ${date.split('-').reverse().join('-')} (${v.uns} not sorted). Sort some today`, target: v.village_id, due: addDays_(date, 1) + ' 18:00', day: addDays_(date, 1), by: 'SYSTEM', at: now_(), status: 'OPEN' }); add.push(row); });
     if (add.length) append_('Dir14', add); } catch (e) { err15_('ladder15', e); }
   return o; }; }
 
@@ -7941,6 +7945,30 @@ ACTIONS.health15 = health15_;
 
 /* data15 read quickly: kept for 2 minutes, recalculated after every change */
 { const _d = data15_; data15_ = function (req, u) { const k = 'd15:' + (OFFICE95(u) ? u.role + ':' + userTehsils_(u).join(',') + ':' + (req.tehsil_id || '') : u.user_id); return cached_(k, 120, () => _d(req, u)); }; ACTIONS.data15 = data15_; }
+
+/* ======================= 11.1.1 =======================
+ * 1. Directions: who gave it (the Tehsildar or the app); an app-made SORT direction ticks itself once some bucket of the village is sorted.
+ * 2. "No" to a suggestion is saved on the server, so the app never suggests or decides that bucket again.
+ */
+{ const _a = dirAuto14_; dirAuto14_ = function (d) {
+  if (d.kind === 'SORT' && d.by === 'SYSTEM' && d.target) { const at = String(d.at || '');
+    if (read_('Buckets').some(b => b.village_id === d.target && b.updated_by && b.updated_by !== 'AUTO15' && b.updated_by !== 'FULL15' && b.updated_by !== 'SYSTEM' && String(b.updated_at) >= at)) return true; }
+  return _a(d); }; }
+{ const _l = dir14List_; dir14List_ = function (req, u) { const o = _l(req, u), by = {};
+  read_('Dir14').forEach(d => by[d.dir_id] = d.by === 'SYSTEM' ? 'SYSTEM' : 'TEHSILDAR');
+  (o.mine || []).concat(o.given || []).forEach(d => { d.by = by[d.dir_id] || 'TEHSILDAR'; });
+  return o; }; ACTIONS.dir14List = dir14List_; }
+function sug16No_(req, u) {
+  const ids = (req.bucket_ids || []).map(String); if (!ids.length) return { ok: 1, n: 0 };
+  const vs = {}; read_('Villages').forEach(v => vs[v.village_id] = v);
+  const now = now_(), ch = [], logs = [];
+  read_('Buckets').forEach(b => { if (ids.indexOf(b.bucket_id) < 0) return; const v = vs[b.village_id]; if (!v || !canEdit_(u, v)) return;
+    logs.push({ ts: now, user_id: u.user_id, bucket_id: b.bucket_id, action: 'NO16', field: 'suggested_code', old_value: b.suggested_code || '', new_value: '' });
+    b.suggested_code = ''; if (/^(PMK|HEIR)/.test(b.dup_conf || '')) b.dup_conf = ''; ch.push(b); });
+  if (ch.length) { writeRows_('Buckets', ch); append_('Log', logs); }
+  return { ok: 1, n: ch.length };
+}
+ACTIONS.sug16No = sug16No_; WRITE_ACTIONS.push('sug16No'); UV_ACTIONS.push('sug16No');
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
