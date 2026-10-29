@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '11.1.1';
+const APP_VERSION = '11.2.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -282,7 +282,7 @@ function route_(req) {
   if (req.action === 'ping') return { pong: 1 };
   const t0 = Date.now(); let ok82 = true;
   try { return route2_(req); } catch (e) { ok82 = false;
-    const m0 = String(e.message || e); if (m0 !== 'SESSION_EXPIRED' && !/PIN|Upload today|Not allowed|Wrong name|not found|Type |Choose /.test(m0)) { try { append_('Errors', [{ ts: now_(), user_id: '', action: String(req.action || ''), error: String(e.message || e).slice(0, 300) }]); } catch (e2) {} }
+    const m0 = String(e.message || e); if (m0 !== 'SESSION_EXPIRED' && !/PIN|Upload today|Not allowed|Wrong name|not found|Type |Choose |OFF18/.test(m0)) { try { append_('Errors', [{ ts: now_(), user_id: '', action: String(req.action || ''), error: String(e.message || e).slice(0, 300) }]); } catch (e2) {} }
     throw e;
   } finally { perf82_(req.action, Date.now() - t0, ok82); }
 }
@@ -521,7 +521,7 @@ function ensurePractice_(tid, reset) {
 }
 
 function resetPractice_(req, u) {
-  const tid = u.role === 'ADMIN' ? (req.tehsil_id || 'T_ASSAR') : u.tehsil_id;
+  const tid = u.role === 'ADMIN' ? (req.tehsil_id || defT18_()) : u.tehsil_id;
   mustManage_(u, tid);
   ensurePractice_(tid, true);
   return {};
@@ -795,7 +795,7 @@ function mustManage_(u, tehsilId) { if (!canManage_(u, tehsilId)) throw new Erro
 
 function bootstrap_(req, u) {
   const mineT = userTehsils_(u);
-  const tehsils = read_('Tehsils').filter(t => t.active === 'Y' && mineT.indexOf(t.tehsil_id) >= 0);
+  const tehsils = read_('Tehsils').filter(t => (t.active === 'Y' || grace18_(t.tehsil_id)) && mineT.indexOf(t.tehsil_id) >= 0);
   const tIds = tehsils.map(t => t.tehsil_id);
   const prac = [];
   const mine = assignedVillageIds_(u).concat(prac).concat(isField_(u) ? phVillageIds_(u) : []), seeAlso = u.role === 'OPERATOR' ? phVillageIds_(u) : [];
@@ -1980,7 +1980,7 @@ function saveBucketing_(req, u) {
 
 /** Keeps a copy of every uploaded portal file in Drive: FarmerID Portal Files / tehsil / kind. */
 function archiveFile_(req, u) {
-  const tid = req.tehsil_id && canUpload_(u, req.tehsil_id) ? req.tehsil_id : (u.role === 'ADMIN' ? 'T_ASSAR' : u.tehsil_id); if (!canUpload_(u, tid)) throw new Error('Not allowed.');
+  const tid = req.tehsil_id && canUpload_(u, req.tehsil_id) ? req.tehsil_id : (u.role === 'ADMIN' ? defT18_() : u.tehsil_id); if (!canUpload_(u, tid)) throw new Error('Not allowed.');
   const tn = (read_('Tehsils').find(t => t.tehsil_id === tid) || {}).name || tid;
   const sub = { reg: 'Registered farmers lists', buckets: 'Unclaimed buckets lists', pmk: 'PM Kisan list', dcsheet: 'DC sheet rows', summary: 'Daily summaries', weekly: 'Weekly Excel' }[req.kind] || 'Other files';
   const f = driveFolder_(['Tehsil ' + tn, sub]);
@@ -2123,7 +2123,7 @@ function dcSheet_(req, u) {
 }
 
 function markSheetDone_(req, u) {
-  const tid = u.role === 'ADMIN' ? (req.tehsil_id || 'T_ASSAR') : u.tehsil_id; mustManage_(u, tid);
+  const tid = u.role === 'ADMIN' ? (req.tehsil_id || defT18_()) : u.tehsil_id; mustManage_(u, tid);
   append_('Snapshots', [{ date: today_(), tehsil_id: tid, village_id: 'DCSHEET', data: JSON.stringify({ at: now_(), by: u.user_id }) }]);
   return {};
 }
@@ -3251,7 +3251,7 @@ function portalDownToday_(tid) {
   return x && x.on ? x.at : '';
 }
 function portalDown74_(req, u) {
-  const tid = u.role === 'ADMIN' ? (req.tehsil_id || 'T_ASSAR') : u.tehsil_id; mustManage_(u, tid);
+  const tid = u.role === 'ADMIN' ? (req.tehsil_id || defT18_()) : u.tehsil_id; mustManage_(u, tid);
   append_('Snapshots', [{ date: today_(), tehsil_id: tid, village_id: 'PORTALDOWN', data: JSON.stringify({ on: !!req.on, at: now_(), by: u.user_id }) }]);
   return { on: !!req.on };
 }
@@ -5117,7 +5117,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '11.1.1';
+const MIN_APP83 = '11.2.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -6360,7 +6360,7 @@ function verifyPlan95_(tid, kind) {
 }
 function verify95Get_(req, u) {
   const kind = checkerKind95_(u); if (!kind && !OFFICE95(u)) throw new Error('Not allowed.');
-  const ts = userTehsils_(u), tid = req.tehsil_id && ts.indexOf(req.tehsil_id) >= 0 ? req.tehsil_id : (/\bAssar\b/i.test(u.designation || '') ? 'T_ASSAR' : ts[0]);
+  const ts = userTehsils_(u), tid = req.tehsil_id && ts.indexOf(req.tehsil_id) >= 0 ? req.tehsil_id : (/\bAssar\b/i.test(u.designation || '') && ts.indexOf('T_ASSAR') >= 0 ? 'T_ASSAR' : ts[0]);
   const K = req.kind || kind || 'NT', plan = verifyPlan95_(tid, K), add = [], now = now_(), today = today_();
   if (kind === K) plan.forEach(p => { const have = {}; p.picked.forEach(x => have[x.bucket_id] = 1);
     const short = p.need - p.picked.length; if (short <= 0) return;
@@ -7356,7 +7356,7 @@ function dir14Add_(req, u) {
 }
 /** Today's copies of the daily directions. */
 function dirDaily14_() { const all = read_('Dir14'), t = today_(), add = [];
-  all.filter(d => d.repeat === 'DAILY' && d.status !== 'STOPPED' && !d.parent).forEach(d => { if (all.some(x => x.parent === d.dir_id && x.day === t)) return;
+  all.filter(d => d.repeat === 'DAILY' && d.status !== 'STOPPED' && d.status !== 'PAUSED18' && !d.parent).forEach(d => { if (all.some(x => x.parent === d.dir_id && x.day === t)) return;
     add.push(Object.assign({}, d, { dir_id: d.dir_id + '_' + t.replace(/-/g, ''), parent: d.dir_id, repeat: '', day: t, status: 'OPEN', done_at: '', note: '', proof: '', read_at: '', due: d.due ? t + ' ' + String(d.due).slice(-5) : '' })); });
   if (add.length) { add.forEach(x => delete x._row); append_('Dir14', add); } }
 /** Done by itself where the app can see the work. */
@@ -7969,6 +7969,130 @@ function sug16No_(req, u) {
   return { ok: 1, n: ch.length };
 }
 ACTIONS.sug16No = sug16No_; WRITE_ACTIONS.push('sug16No'); UV_ACTIONS.push('sug16No');
+
+/* ======================= 11.2.0: a tehsil can be switched off and on again =======================
+ * Off: nothing is deleted. The tehsil leaves every screen, report, total, the public page and the hourly picture;
+ * its day close, directions, alerts, lateness and notice grounds stop; its own logins close 24 hours later
+ * (so work left on a phone still goes); shared staff keep only the other tehsil (their old details are kept for the way back).
+ * On: everything comes back as it was; the days it was off are never counted against anyone.
+ * The Tehsildar of Assar (a successor) can have his own login, Assar only; it is built but stays disabled until turned on.
+ */
+const off18_ = tid => !!setting_('toff18_' + tid);
+const grace18_ = tid => off18_(tid) && now_() < String(setting_('tgrace18_' + tid) || '');
+const succ18_ = u => !!u && u.role === 'ADMIN' && !!setting_('succ18_uid') && u.user_id === setting_('succ18_uid');
+const SUCC18T = 'T_ASSAR';
+let CUR18_ = null;
+function rawT18_(u) { if (succ18_(u)) return [SUCC18T]; if (!u || u.role === 'ADMIN') return [];
+  const l = String(u.tehsils || '').split(',').map(x => x.trim()).filter(Boolean); if (u.tehsil_id && l.indexOf(u.tehsil_id) < 0) l.unshift(u.tehsil_id); return l; }
+const locked18_ = u => { const r = rawT18_(u); return r.length > 0 && r.every(t => off18_(t) && !grace18_(t)); };
+const lockMsg18_ = u => 'OFF18|Tehsil ' + rawT18_(u).map(t => tehsilName_(t)).join(', ') + ' is not in this app’s charge now. Your login is closed. Ask the Tehsildar’s office.';
+function offDay18_(tid, date) { let P = []; try { P = JSON.parse(setting_('toffp18_' + tid) || '[]'); } catch (e) {} return P.some(p => date >= p[0] && (!p[1] || date <= p[1])); }
+
+/* who sees which tehsil */
+{ const _u = userTehsils_; userTehsils_ = function (u) {
+  if (succ18_(u)) return off18_(SUCC18T) ? [] : [SUCC18T];
+  const l = _u(u); if (!u || u.role === 'ADMIN') return l;
+  return l.filter(t => !off18_(t) || grace18_(t)); }; }
+{ const _m = canManage_; canManage_ = function (u, tid) { if (succ18_(u)) return tid === SUCC18T && !off18_(tid); return _m(u, tid); }; }
+{ const _v = canView_; canView_ = function (u, v) { if (succ18_(u)) return !!v && v.tehsil_id === SUCC18T; return _v(u, v); }; }
+{ const _e = canEdit_; canEdit_ = function (u, v) { if (succ18_(u)) return !!v && v.tehsil_id === SUCC18T; return _e(u, v); }; }
+/* the successor's requests see only his tehsil in the tehsil list */
+{ const _r = read_; read_ = function (name) { const o = _r(name); if (name === 'Tehsils' && CUR18_ && succ18_(CUR18_)) return o.filter(t => t.tehsil_id === SUCC18T); return o; }; }
+{ const _rt = route2_; route2_ = function (req) { CUR18_ = null; return _rt(req); }; }
+
+function defT18_() { const t = read_('Tehsils').find(x => x.active === 'Y' && !off18_(x.tehsil_id)); return t ? t.tehsil_id : 'T_KASTIGARH'; }
+const offOnly18_ = x => { const r = rawT18_(x); return r.length > 0 && r.every(off18_); };
+/* a switched-off tehsil asked for by name: the office's tehsil instead (its own staff keep it during the 24 hours) */
+{ const _rq = route2_; route2_ = function (req) {
+  if (req && req.tehsil_id && ['tehsil18Set', 'tehsil18Get'].indexOf(req.action) < 0 && off18_(String(req.tehsil_id))) { const tid = String(req.tehsil_id); let keep = false;
+    if (grace18_(tid)) { try { const s = read_('Sessions').find(z => z.token === req.token), uu = s && read_('Users').find(y => y.user_id === s.user_id); keep = !!uu && offOnly18_(uu); } catch (e) {} }
+    if (!keep) req.tehsil_id = defT18_(); }
+  return _rq(req); }; }
+/* people lists: the switched-off tehsil's own staff are out of sight (back when it is on) */
+{ const _l = listUsers_; listUsers_ = function (req, u) { const o = _l(req, u); if (o && o.users) { const us = {}; read_('Users').forEach(x => us[x.user_id] = x); o.users = o.users.filter(x => !us[x.user_id] || !offOnly18_(us[x.user_id])); } return o; }; ACTIONS.listUsers = listUsers_; }
+/* logins of a switched-off tehsil close after the 24 hours */
+{ const _a = auth_; auth_ = function (token, allowOff) { const u = _a(token, allowOff); if (locked18_(u)) throw new Error(lockMsg18_(u)); CUR18_ = u; return u; }; }
+{ const _l = login_; login_ = function (req) { const u = read_('Users').find(x => x.user_id === req.user_id); if (u && locked18_(u)) throw new Error(lockMsg18_(u)); return _l(req); }; PUBLIC_ACTIONS.login = login_; }
+{ const _ll = loginList_; loginList_ = function () { const o = _ll(), us = {}; read_('Users').forEach(x => us[x.user_id] = x);
+  o.users = (o.users || []).filter(x => !locked18_(us[x.user_id])).map(x => { if (succ18_(us[x.user_id])) x.tehsil = tehsilName_(SUCC18T); return x; }); return o; }; PUBLIC_ACTIONS.loginList = loginList_; }
+/* during the 24 hours: the tehsil's own staff still open it, with a warning */
+{ const _b = bootstrap_; bootstrap_ = function (req, u) { const o = _b(req, u);
+  try { if (o.users && !offOnly18_(u)) { const us = {}; read_('Users').forEach(x => us[x.user_id] = x); o.users = o.users.filter(x => !us[x.user_id] || !offOnly18_(us[x.user_id])); } } catch (e) {}
+  try { const r = rawT18_(u); if (r.length && r.every(off18_)) o.off18 = { names: r.map(tehsilName_).join(', '), until: r.map(t => setting_('tgrace18_' + t)).sort()[0] }; } catch (e) {}
+  return o; }; ACTIONS.bootstrap = bootstrap_; }
+
+/* a switched-off tehsil's bucket list is not needed */
+{ const _t = uploadTarget_; uploadTarget_ = function (req, u, g) { const v = read_('Villages').find(x => x.village_id === g.lgd);
+  if (v && off18_(v.tehsil_id)) throw new Error('OFF18|' + v.name + ' is in Tehsil ' + tehsilName_(v.tehsil_id) + ', which is switched off in this app. This file is not needed.'); return _t(req, u, g); }; }
+
+/* nothing is counted against anyone for the days a tehsil was off */
+{ const _s = scnBuild93_; scnBuild93_ = function (tid, date) { const o = _s(tid, date); if (offDay18_(tid, date) && o && o.list) o.list = []; return o; }; }
+{ const _c = closeDay_; closeDay_ = function (tid, date) { if (off18_(tid)) return { off18: 1 }; return _c(tid, date); }; }
+
+/* switching */
+function tehsil18Get_(req, u) { if (u.role !== 'ADMIN') throw new Error('Not allowed.');
+  const su = setting_('succ18_uid') ? read_('Users').find(x => x.user_id === setting_('succ18_uid')) : null;
+  return { tehsils: read_('Tehsils').map(t => ({ tehsil_id: t.tehsil_id, name: t.name, on: !off18_(t.tehsil_id), off_from: setting_('toff18_' + t.tehsil_id) || '', grace_until: grace18_(t.tehsil_id) ? setting_('tgrace18_' + t.tehsil_id) : '' })),
+    succ: { tehsil: tehsilName_(SUCC18T), exists: !!su, on: !!su && su.active === 'Y', name: su ? su.name : '' } }; }
+function tehsil18Set_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar switches a tehsil.');
+  const tid = String(req.tehsil_id || ''), T = read_('Tehsils').find(t => t.tehsil_id === tid); if (!T) throw new Error('Choose the tehsil.');
+  const today = today_(), users = read_('Users').filter(x => x.active !== 'DEL');
+  if (!req.on) {
+    if (off18_(tid)) return { ok: 1, already: 1 };
+    if (!read_('Tehsils').some(t => t.tehsil_id !== tid && t.active === 'Y' && !off18_(t.tehsil_id))) throw new Error('At least one tehsil must stay on.');
+    const until = Utilities.formatDate(new Date(Date.now() + 24 * 3600 * 1000), TZ, 'yyyy-MM-dd HH:mm:ss');
+    // shared staff keep only the other tehsil; their details are kept for the way back
+    const orig = {}, ch = [];
+    users.forEach(x => { if (x.role === 'ADMIN') return; const r = rawT18_(x); if (r.indexOf(tid) < 0) return; const rest = r.filter(t => t !== tid && !off18_(t)); if (!rest.length) return;
+      orig[x.user_id] = { tehsil_id: x.tehsil_id, tehsils: x.tehsils, designation: x.designation };
+      x.tehsils = rest.join(','); if (x.tehsil_id === tid) x.tehsil_id = rest[0];
+      x.designation = String(x.designation || '').replace(/\s*\(\s*Assar\s*\/\s*([^)]+)\)/i, ' $1').replace(/\s*\(\s*([^)]+?)\s*\/\s*Assar\s*\)/i, ' $1').replace(/\bAssar\s*\/\s*|\s*\/\s*Assar\b/gi, '');
+      if (x.role === 'NT' && !/Topneel/i.test(x.designation)) x.designation = 'Naib Tehsildar Topneel';
+      ch.push(x); });
+    if (ch.length) writeRows_('Users', ch);
+    setSetting_('torig18_' + tid, JSON.stringify(orig));
+    // open directions of the tehsil and of its own staff wait
+    const own = {}; users.forEach(x => { const r = rawT18_(x); if (x.role !== 'ADMIN' && r.length && r.every(t => t === tid || off18_(t))) own[x.user_id] = 1; });
+    try { const D = read_('Dir14').filter(d => d.status === 'OPEN' && (d.tehsil_id === tid || own[d.to_user])); D.forEach(d => d.status = 'PAUSED18'); if (D.length) writeRows_('Dir14', D); } catch (e) {}
+    const from = /^\d{4}-\d{2}-\d{2}$/.test(String(req.from || '')) && String(req.from) <= today ? String(req.from) : today;
+    let P = []; try { P = JSON.parse(setting_('toffp18_' + tid) || '[]'); } catch (e) {} P.push([from, '']); setSetting_('toffp18_' + tid, JSON.stringify(P));
+    setSetting_('toff18_' + tid, from); setSetting_('tgrace18_' + tid, until);
+    T.active = 'N'; writeRows_('Tehsils', [T]);
+    if (setting_('succ18_uid') && tid === SUCC18T) { const su = users.find(x => x.user_id === setting_('succ18_uid')); if (su && su.active === 'Y') { su.active = 'N'; writeRows_('Users', [su]); } }
+    try { sig15Bump_('tehsil18'); } catch (e) {}
+    return { ok: 1, off: tid, until, shared: ch.map(x => x.name) };
+  }
+  if (!off18_(tid)) return { ok: 1, already: 1 };
+  let orig = {}; try { orig = JSON.parse(setting_('torig18_' + tid) || '{}'); } catch (e) {}
+  const back = []; users.forEach(x => { const o = orig[x.user_id]; if (!o) return; x.tehsil_id = o.tehsil_id; x.tehsils = o.tehsils; x.designation = o.designation; back.push(x); });
+  if (back.length) writeRows_('Users', back); setSetting_('torig18_' + tid, '');
+  try { const D = read_('Dir14').filter(d => d.status === 'PAUSED18'); const tm = addDays_(today, 1) + ' 18:00';
+    D.forEach(d => { d.status = 'OPEN'; if (d.due && String(d.due) < now_().slice(0, 16)) d.due = tm; }); if (D.length) writeRows_('Dir14', D); } catch (e) {}
+  let P = []; try { P = JSON.parse(setting_('toffp18_' + tid) || '[]'); } catch (e) {} if (P.length && !P[P.length - 1][1]) P[P.length - 1][1] = today; setSetting_('toffp18_' + tid, JSON.stringify(P));
+  setSetting_('toff18_' + tid, ''); setSetting_('tgrace18_' + tid, '');
+  T.active = 'Y'; writeRows_('Tehsils', [T]);
+  try { sig15Bump_('tehsil18'); } catch (e) {}
+  return { ok: 1, on: tid, restored: back.map(x => x.name) };
+}
+/* the successor's login: made once, kept off until the Tehsildar turns it on (only while his tehsil is on) */
+function succ18Set_(req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Not allowed.');
+  let su = setting_('succ18_uid') ? read_('Users').find(x => x.user_id === setting_('succ18_uid')) : null;
+  if (!su) { const row = {}; SCHEMA.Users.forEach(k => row[k] = ''); Object.assign(row, { user_id: 'U' + Utilities.getUuid().replace(/-/g, '').slice(0, 10), name: 'Tehsildar ' + tehsilName_(SUCC18T), designation: 'Tehsildar', role: 'ADMIN', tehsil_id: SUCC18T, tehsils: SUCC18T, active: 'N', pin_hash: hash_('x', String(Math.random())), pin_changed: 'N' });
+    row.pin_hash = hash_(row.user_id, '1234'); append_('Users', [row]); setSetting_('succ18_uid', row.user_id); su = read_('Users').find(x => x.user_id === row.user_id); }
+  if (req.on && off18_(SUCC18T)) throw new Error('Switch Tehsil ' + tehsilName_(SUCC18T) + ' on first.');
+  su.active = req.on ? 'Y' : 'N'; writeRows_('Users', [su]);
+  if (!req.on) { try { writeAll_('Sessions', read_('Sessions').filter(s => s.user_id !== su.user_id)); } catch (e) {} }
+  return { ok: 1, on: su.active === 'Y', name: su.name };
+}
+ACTIONS.tehsil18Get = tehsil18Get_; ACTIONS.tehsil18Set = tehsil18Set_; ACTIONS.succ18Set = succ18Set_;
+WRITE_ACTIONS.push('tehsil18Set', 'succ18Set'); UV_ACTIONS.push('tehsil18Set', 'succ18Set');
+
+/* the successor may not change what belongs to both tehsils */
+['saveSettings', 'saveTehsil', 'startFresh', 'resetPractice', 'designationsSave', 'transferVillages', 'campaign', 'exportData', 'health15', 'tehsil18Get', 'tehsil18Set', 'succ18Set', 'deleteUser', 'dcx15Save', 'dcSheet', 'pmkApply'].forEach(a => {
+  const f = ACTIONS[a]; if (!f) return; ACTIONS[a] = function (req, u) { if (succ18_(u)) throw new Error('Not allowed.'); return f(req, u); }; });
+
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
