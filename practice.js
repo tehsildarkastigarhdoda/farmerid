@@ -52,7 +52,7 @@
  */
 
 const TZ = 'Asia/Kolkata';
-const APP_VERSION = '11.2.0';
+const APP_VERSION = '11.3.0';
 
 /* ============================== SCHEMA ============================== */
 
@@ -172,7 +172,7 @@ const SETTINGS_SEED = {
   hourly_to: '17:00',
   board_key: ''
 };
-const SCHEMA_VERSION = '33';
+const SCHEMA_VERSION = '34';
 
 const TEHSIL_SEED = [
   ['T_ASSAR', 'Assar', 'Summary of Farmer ID Generation in respect of Tehsil Assar', 'Tehsildar\nExecutive Magistrate 1st Class\nAssar', '', 'Y'],
@@ -282,7 +282,7 @@ function route_(req) {
   if (req.action === 'ping') return { pong: 1 };
   const t0 = Date.now(); let ok82 = true;
   try { return route2_(req); } catch (e) { ok82 = false;
-    const m0 = String(e.message || e); if (m0 !== 'SESSION_EXPIRED' && !/PIN|Upload today|Not allowed|Wrong name|not found|Type |Choose |OFF18/.test(m0)) { try { append_('Errors', [{ ts: now_(), user_id: '', action: String(req.action || ''), error: String(e.message || e).slice(0, 300) }]); } catch (e2) {} }
+    const m0 = String(e.message || e); if (m0 !== 'SESSION_EXPIRED' && !/PIN|Upload today|Not allowed|Wrong name|not found|Type |Choose |OFF18|MON18|already uploaded/.test(m0)) { try { append_('Errors', [{ ts: now_(), user_id: '', action: String(req.action || ''), error: String(e.message || e).slice(0, 300) }]); } catch (e2) {} }
     throw e;
   } finally { perf82_(req.action, Date.now() - t0, ok82); }
 }
@@ -387,6 +387,7 @@ function migrate_() {
     if (Number(ver) < 31) migrateV31_();
     if (Number(ver) < 32) migrateV32_();
     if (Number(ver) < 33) migrateV33_();
+    if (Number(ver) < 34) migrateV34_();
     if (Number(ver) < 5) { const all = read_('Buckets'); let ch = false; all.forEach(b => { if (b.status === 'NOT_SURVEYED') { const sg = suggest_(b.name, b.parentage); if (sg !== b.suggested_code) { b.suggested_code = sg; ch = true; } } }); if (ch) writeAll_('Buckets', all); }
     setSetting_('schema_version', SCHEMA_VERSION);
     CacheService.getScriptCache().put('dv', String(Date.now()), 21600);
@@ -741,9 +742,9 @@ function logout_(req) {
 
 function auth_(token, allowOff) {
   if (!token) throw new Error('SESSION_EXPIRED');
-  const s = read_('Sessions').find(x => x.token === token);
+  const s = sess16_(token);
   if (!s || s.expires < new Date().toISOString()) throw new Error('SESSION_EXPIRED');
-  const u = read_('Users').find(x => x.user_id === s.user_id && (x.active === 'Y' || (allowOff && x.active === 'N')));
+  const u = tab16_('Users').find(x => x.user_id === s.user_id && (x.active === 'Y' || (allowOff && x.active === 'N')));
   if (!u) throw new Error('SESSION_EXPIRED');
   return u;
 }
@@ -892,7 +893,7 @@ function saveBuckets_(req, u) {
     const b = idx[up.bucket_id];
     try {
       const et = entryTime(up); let day = et.slice(0, 10); if (day < addDays_(today, -7)) day = addDays_(today, -7);
-      if (b && b.updated_at && b.updated_by && b.updated_by !== u.user_id && et < b.updated_at) {
+      if (b && b.updated_at && b.updated_by && b.updated_by !== u.user_id && !/^(AUTO15|FULL15|SYSTEM|PORTAL)$/.test(b.updated_by) && et < b.updated_at) {
         results.push({ bucket_id: up.bucket_id, ok: false, stale: true, error: 'A newer answer was saved by ' + (((read_('Users').find(x => x.user_id === b.updated_by)) || {}).name || 'someone') + '.' });
         return;
       }
@@ -5117,7 +5118,7 @@ Object.assign(ACTIONS, { attSave: attSave82_, camp76: camp76c82_, live73: live73
  * The app proposes the notices; the Tehsildar ticks / unticks and approves; only then the Dealing Assistant can make and issue them.
  * Mobilisers (Lumberdar, Chowkidar, GRS, Anganwadi Worker) are never held to the village target.
  */
-const MIN_APP83 = '11.2.0';
+const MIN_APP83 = '11.3.0';
 const vnum83 = v => String(v || '0').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
 const NOTGT83 = /lumbardar|lumberdar|lambardar|numberdar|chowkidar|\bGRS\b|gram rozgar|anganwadi|\bAWW\b/i;
 const hash83 = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -7984,7 +7985,7 @@ const SUCC18T = 'T_ASSAR';
 let CUR18_ = null;
 function rawT18_(u) { if (succ18_(u)) return [SUCC18T]; if (!u || u.role === 'ADMIN') return [];
   const l = String(u.tehsils || '').split(',').map(x => x.trim()).filter(Boolean); if (u.tehsil_id && l.indexOf(u.tehsil_id) < 0) l.unshift(u.tehsil_id); return l; }
-const locked18_ = u => { const r = rawT18_(u); return r.length > 0 && r.every(t => off18_(t) && !grace18_(t)); };
+const locked18_ = u => { const r = rawT18_(u); return r.length > 0 && r.every(t => off18_(t) && !grace18_(t) && !(mon16_(t) && monUser16_(u))); };
 const lockMsg18_ = u => 'OFF18|Tehsil ' + rawT18_(u).map(t => tehsilName_(t)).join(', ') + ' is not in this app’s charge now. Your login is closed. Ask the Tehsildar’s office.';
 function offDay18_(tid, date) { let P = []; try { P = JSON.parse(setting_('toffp18_' + tid) || '[]'); } catch (e) {} return P.some(p => date >= p[0] && (!p[1] || date <= p[1])); }
 
@@ -8005,7 +8006,7 @@ const offOnly18_ = x => { const r = rawT18_(x); return r.length > 0 && r.every(o
 /* a switched-off tehsil asked for by name: the office's tehsil instead (its own staff keep it during the 24 hours) */
 { const _rq = route2_; route2_ = function (req) {
   if (req && req.tehsil_id && ['tehsil18Set', 'tehsil18Get'].indexOf(req.action) < 0 && off18_(String(req.tehsil_id))) { const tid = String(req.tehsil_id); let keep = false;
-    if (grace18_(tid)) { try { const s = read_('Sessions').find(z => z.token === req.token), uu = s && read_('Users').find(y => y.user_id === s.user_id); keep = !!uu && offOnly18_(uu); } catch (e) {} }
+    if (grace18_(tid) || mon16_(tid)) { try { const s = sess16_(req.token), uu = s && read_('Users').find(y => y.user_id === s.user_id); keep = !!uu && ((grace18_(tid) && offOnly18_(uu)) || (mon16_(tid) && monUser16_(uu))); } catch (e) {} }
     if (!keep) req.tehsil_id = defT18_(); }
   return _rq(req); }; }
 /* people lists: the switched-off tehsil's own staff are out of sight (back when it is on) */
@@ -8023,7 +8024,7 @@ const offOnly18_ = x => { const r = rawT18_(x); return r.length > 0 && r.every(o
 
 /* a switched-off tehsil's bucket list is not needed */
 { const _t = uploadTarget_; uploadTarget_ = function (req, u, g) { const v = read_('Villages').find(x => x.village_id === g.lgd);
-  if (v && off18_(v.tehsil_id)) throw new Error('OFF18|' + v.name + ' is in Tehsil ' + tehsilName_(v.tehsil_id) + ', which is switched off in this app. This file is not needed.'); return _t(req, u, g); }; }
+  if (v && off18_(v.tehsil_id) && !(mon16_(v.tehsil_id) && (monUser16_(u) || u.role === 'ADMIN'))) throw new Error('OFF18|' + v.name + ' is in Tehsil ' + tehsilName_(v.tehsil_id) + ', which is switched off in this app. This file is not needed.'); return _t(req, u, g); }; }
 
 /* nothing is counted against anyone for the days a tehsil was off */
 { const _s = scnBuild93_; scnBuild93_ = function (tid, date) { const o = _s(tid, date); if (offDay18_(tid, date) && o && o.list) o.list = []; return o; }; }
@@ -8093,6 +8094,211 @@ WRITE_ACTIONS.push('tehsil18Set', 'succ18Set'); UV_ACTIONS.push('tehsil18Set', '
 ['saveSettings', 'saveTehsil', 'startFresh', 'resetPractice', 'designationsSave', 'transferVillages', 'campaign', 'exportData', 'health15', 'tehsil18Get', 'tehsil18Set', 'succ18Set', 'deleteUser', 'dcx15Save', 'dcSheet', 'pmkApply'].forEach(a => {
   const f = ACTIONS[a]; if (!f) return; ACTIONS[a] = function (req, u) { if (succ18_(u)) throw new Error('Not allowed.'); return f(req, u); }; });
 
+
+/* ======================= 11.3.0 =======================
+ * A. Saves first: fetching directions only reads (no queue); its upkeep runs every 10 minutes, and only if the queue is free.
+ *    A person's save is never refused because the app (not a person) touched the bucket later.
+ * B. One request for many: phones send their reading calls together (multi16).
+ * C. Figures ready: the heavy screens are kept ready on the server for 5 minutes and refreshed by a 5-minute job.
+ * D. Lighter start: the session, the people list and the settings come from the cache, not the sheet, on every call.
+ * E. The speed log keeps its dates as text.  F. Kuthyarra 4297 is read as 4177.  Plain words for a portal file sent twice.
+ * Assar: a "monitoring" position between On and Off.
+ */
+const C16_ = () => CacheService.getScriptCache();
+/* ---------- D. lighter start ---------- */
+function sess16_(token) {
+  if (!token) return null; const k = 'se16:' + token; let hit = null; try { hit = C16_().get(k); } catch (e) {}
+  if (hit) { try { return JSON.parse(hit); } catch (e) {} }
+  const s = read_('Sessions').find(x => x.token === token); if (!s) return null;
+  const o = { token: s.token, user_id: s.user_id, expires: s.expires }; try { C16_().put(k, JSON.stringify(o), 300); } catch (e) {} return o;
+}
+function tab16_(name) {
+  if (DB.cache[name]) return DB.cache[name];
+  const v = String(C16_().get('tv16:' + name) || '0'), k = 't16:' + name + ':' + v; let hit = null; try { hit = C16_().get(k); } catch (e) {}
+  if (hit) { try { const rows = JSON.parse(hit); return rows; } catch (e) {} }
+  const rows = read_(name); try { const s = JSON.stringify(rows); if (s.length < 95000) C16_().put(k, s, 600); } catch (e) {} return rows;
+}
+const bumpT16_ = name => { if (['Users', 'Settings', 'Sessions'].indexOf(name) < 0) return; try { C16_().put('tv16:' + name, Date.now() + '-' + Math.random().toString(36).slice(2, 8), 21600); } catch (e) {} };
+{ const _w = writeRows_; writeRows_ = function (name, rows) { const o = _w(name, rows); bumpT16_(name); return o; }; }
+{ const _p = append_; append_ = function (name, rows) { const o = _p(name, rows); bumpT16_(name); return o; }; }
+{ const _a = writeAll_; writeAll_ = function (name, rows) { const o = _a(name, rows); bumpT16_(name); return o; }; }
+{ const _lo = logout_; logout_ = function (req) { try { C16_().remove('se16:' + req.token); } catch (e) {} return _lo(req); }; ACTIONS.logout = logout_; if (PUBLIC_ACTIONS.logout) PUBLIC_ACTIONS.logout = logout_; }
+
+/* ---------- E. the speed log keeps its dates as text ---------- */
+const ts16_ = s => { s = String(s || ''); if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s; const d = new Date(s); return isNaN(d) ? s : Utilities.formatDate(d, TZ, 'yyyy-MM-dd HH:mm:ss'); };
+perf82_ = function (action, ms, ok) {
+  if (ms < 2500 || action === 'ping' || action === 'ver') return;
+  try { const s = sheet_('Perf'), r = s.getLastRow() + 1; s.getRange(r, 1, 1, 4).setNumberFormat('@').setValues([[now_(), String(action), String(ms), ok ? 'Y' : 'N']]); } catch (e) {}
+};
+perfList_ = function (req, u) {
+  if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar sees this.');
+  const day = req.date || today_(), rows = read_('Perf').map(r => Object.assign({}, r, { ts: ts16_(r.ts) })).filter(r => r.ts.slice(0, 10) === day), by = {};
+  rows.forEach(r => { const x = by[r.action] = by[r.action] || { action: r.action, n: 0, sum: 0, max: 0, fail: 0 }; const ms = Number(r.ms) || 0; x.n++; x.sum += ms; x.max = Math.max(x.max, ms); if (r.ok === 'N') x.fail++; });
+  return { date: day, total: rows.length, actions: Object.keys(by).map(k => by[k]).map(x => ({ action: x.action, n: x.n, avg: Math.round(x.sum / x.n), max: x.max, fail: x.fail })).sort((a, b) => b.max - a.max).slice(0, 25) };
+};
+ACTIONS.perfList = perfList_;
+
+/* ---------- A. directions: reading never waits in the queue ---------- */
+{ const i = WRITE_ACTIONS.indexOf('dir14List'); if (i >= 0) WRITE_ACTIONS.splice(i, 1); }
+function dirKeep16_(force) {
+  const c = C16_(); if (!force && c.get('dirm16')) return; c.put('dirm16', '1', 600);
+  const l = LockService.getScriptLock(); if (!l.tryLock(1500)) { c.remove('dirm16'); return; }
+  try { DB.cache = {}; dirDaily14_(); const all = read_('Dir14'), ch = [];
+    all.forEach(d => { if (d.status === 'OPEN' && !(d.repeat === 'DAILY' && !d.parent)) { let done = false; try { done = dirAuto14_(d); } catch (e) {} if (done) { d.status = 'DONE'; d.done_at = now_(); d.note = 'Done (checked by the app)'; ch.push(d); } } });
+    if (ch.length) writeRows_('Dir14', ch);
+  } catch (e) { try { err15_('dirKeep16', e); } catch (x) {} } finally { l.releaseLock(); }
+}
+dir14List_ = function (req, u) {
+  try { dirKeep16_(!!req.fresh); } catch (e) {}
+  const all = read_('Dir14'), un = {}; tab16_('Users').forEach(x => un[x.user_id] = x.name);
+  const live = d => !(d.repeat === 'DAILY' && !d.parent), late = d => d.status === 'OPEN' && d.due && now_().slice(0, 16) > String(d.due).slice(0, 16);
+  const mine = all.filter(d => live(d) && d.to_user === u.user_id && d.status === 'OPEN');
+  const unread = mine.filter(d => !d.read_at);
+  if (unread.length) { const l = LockService.getScriptLock(); if (l.tryLock(500)) { try { unread.forEach(d => d.read_at = now_()); writeRows_('Dir14', unread); } catch (e) {} finally { l.releaseLock(); } } }
+  const by = d => d.by === 'SYSTEM' ? 'SYSTEM' : 'TEHSILDAR';
+  const view = d => ({ dir_id: d.dir_id, to: un[d.to_user] || '', to_user: d.to_user, kind: d.kind, text: d.text, target: d.target, due: d.due, day: d.day, status: d.status, done_at: d.done_at, note: d.note, read_at: d.read_at, late: late(d), daily: !!d.parent, by: by(d),
+    auto: ['UPLOAD_PORTAL', 'UPLOAD_LIST', 'CERT', 'SIGNED', 'NAMES', 'SORT'].indexOf(d.kind) >= 0 });
+  return { mine: mine.map(view), given: u.role === 'ADMIN' ? all.filter(d => live(d) && (d.day >= addDays_(today_(), -7) || d.status === 'OPEN')).map(view).sort((a, b) => (b.status === 'OPEN') - (a.status === 'OPEN') || String(b.day).localeCompare(a.day)) : [],
+    daily: u.role === 'ADMIN' ? all.filter(d => d.repeat === 'DAILY' && !d.parent && d.status !== 'STOPPED').map(d => ({ dir_id: d.dir_id, to: un[d.to_user] || '', text: d.text, due: String(d.due).slice(-5) })) : [], kinds: DIRK14 };
+};
+ACTIONS.dir14List = dir14List_;
+/* a direction given or answered: the list is checked again at once */
+['dir14Add', 'dir14Done'].forEach(a => { const f = ACTIONS[a]; if (!f) return; ACTIONS[a] = function (req, u) { const o = f(req, u); try { C16_().remove('dirm16'); } catch (e) {} return o; }; });
+
+/* ---------- C. heavy screens kept ready for 5 minutes ---------- */
+const HEAVY16 = ['today95', 'home', 'home82', 'data15', 'getStats', 'phStatus', 'vstat14'];
+const rkey16_ = (a, u, req) => { const o = {}; Object.keys(req || {}).sort().forEach(k => { if (['token', 'hb', 'client_now', 'req_id', 'action', 'v', 'fresh'].indexOf(k) < 0) o[k] = req[k]; });
+  return 'rc16:' + a + ':' + u.user_id + ':' + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, JSON.stringify(o))).slice(0, 16); };
+function rcPut16_(k, out) { try { let s = JSON.stringify({ at: Date.now(), out }); if (s.length > 95000) { const z = Utilities.base64Encode(Utilities.gzip(Utilities.newBlob(s)).getBytes()); if (z.length > 95000) return; s = 'Z' + z; } C16_().put(k, s, 900); } catch (e) {} }
+function rcGet16_(k) { try { let s = C16_().get(k); if (!s) return null; if (s[0] === 'Z') s = Utilities.ungzip(Utilities.newBlob(Utilities.base64Decode(s.slice(1)), 'application/x-gzip')).getDataAsString(); return JSON.parse(s); } catch (e) { return null; } }
+const lastW16_ = uid => Number(C16_().get('lw16:' + uid) || 0);
+function heavyNote16_(a, u, req) { try { const c = C16_(), L = JSON.parse(c.get('wl16') || '[]').filter(x => Date.now() - x.t < 20 * 60000 && !(x.a === a && x.u === u.user_id && x.k === rkey16_(a, u, req)));
+  const r = {}; Object.keys(req || {}).forEach(k => { if (['token', 'hb', 'client_now', 'req_id', 'action', 'fresh'].indexOf(k) < 0) r[k] = req[k]; });
+  L.push({ a, u: u.user_id, k: rkey16_(a, u, req), r, t: Date.now() }); c.put('wl16', JSON.stringify(L.slice(-24)), 21600); } catch (e) {} }
+HEAVY16.forEach(a => { const f = ACTIONS[a]; if (!f) return; ACTIONS[a] = function (req, u) {
+  if (req && req.date && req.date !== today_()) return f(req, u);
+  if (setting_('rc16_off') === 'Y') return f(req, u);
+  const k = rkey16_(a, u, req), hit = !req.fresh && rcGet16_(k);
+  if (hit && Date.now() - hit.at < 300000 && hit.at > lastW16_(u.user_id)) { heavyNote16_(a, u, req); return hit.out; }
+  const out = f(req, u); rcPut16_(k, out); heavyNote16_(a, u, req); return out; }; });
+/* the 5-minute job: the screens people looked at in the last 20 minutes are worked out again */
+function warm16() {
+  const t0 = Date.now(); let L = []; try { L = JSON.parse(C16_().get('wl16') || '[]'); } catch (e) {}
+  try { dirKeep16_(true); } catch (e) {}
+  try { monDue16_(); } catch (e) {}
+  DB.cache = {}; const us = {}; read_('Users').forEach(x => us[x.user_id] = x);
+  L.sort((a, b) => b.t - a.t).forEach(x => { if (Date.now() - t0 > 240000) return; const u = us[x.u]; if (!u || u.active !== 'Y' || !ACTIONS[x.a]) return;
+    try { CUR18_ = u; const f = ACTIONS[x.a]; f(Object.assign({}, x.r, { fresh: 1 }), u); } catch (e) {} finally { CUR18_ = null; } });
+}
+function warmSetup16_() {
+  if (setting_('warm16') === 'Y') return;
+  try { const has = ScriptApp.getProjectTriggers().some(t => t.getHandlerFunction() === 'warm16'); if (!has) ScriptApp.newTrigger('warm16').timeBased().everyMinutes(5).create(); setSetting_('warm16', 'Y'); } catch (e) {}
+}
+
+/* ---------- B. many reading calls in one request ---------- */
+function multi16_(req, u) {
+  const calls = (req.calls || []).slice(0, 12);
+  return { results: calls.map(c => { const a = String(c.action || '');
+    if (!ACTIONS[a] || WRITE_ACTIONS.indexOf(a) >= 0 || PUBLIC_ACTIONS[a] !== undefined || a === 'multi16') return { ok: false, error: 'Not allowed.' };
+    try { const r = route2_(Object.assign({}, c, { token: req.token, client_now: req.client_now })); return Object.assign({ ok: true }, r); } catch (e) { return { ok: false, error: String(e.message || e) }; } }) };
+}
+ACTIONS.multi16 = multi16_;
+
+/* ---------- the outer door: remember who wrote, keep the Tehsildar's 5-minute job installed, Kuthyarra's code ---------- */
+const KU16_ = { '4297': '4177' };
+const ku16_ = x => { const s = String(x === undefined || x === null ? '' : x).trim(); return KU16_[s] || x; };
+function fixRows16_(req) {
+  const R = req && Array.isArray(req.rows) ? req.rows : null; if (!R) return;
+  if (req.action === 'uploadApply') R.forEach(r => { if (Array.isArray(r) && r.length > 1) r[1] = ku16_(r[1]); });
+  else if (req.action === 'regApply') R.forEach(r => { if (Array.isArray(r) && r.length > 11) r[11] = ku16_(r[11]); });
+  else R.forEach(r => { if (r && typeof r === 'object' && !Array.isArray(r)) ['lgd', 'village_id', 'village_code', 'lgd_code'].forEach(k => { if (r[k] !== undefined) r[k] = ku16_(r[k]); }); });
+}
+{ const _r = route2_; route2_ = function (req) {
+  if (req && req.action) { try { fixRows16_(req); } catch (e) {} }
+  const s = req && req.token ? sess16_(req.token) : null, isW = WRITE_ACTIONS.indexOf(req.action) >= 0;
+  if (s && isW) { const uu = tab16_('Users').find(y => y.user_id === s.user_id);
+    if (uu && monBlock16_(uu, req.action)) throw new Error('MON18|' + monMsg16_(uu)); }
+  const out = _r(req);
+  if (s && isW) { try { C16_().put('lw16:' + s.user_id, String(Date.now()), 21600); } catch (e) {} }
+  if (s && req.action === 'bootstrap') { try { const uu = tab16_('Users').find(y => y.user_id === s.user_id); if (uu && uu.role === 'ADMIN') warmSetup16_(); } catch (e) {} }
+  if (!isW) { try { monDue16_(); } catch (e) {} }
+  return out; }; }
+/* the original sheets read on every call now come from the cache */
+settings_ = function () { const m = {}; tab16_('Settings').forEach(r => m[r.key] = r.value); Object.keys(SETTINGS_SEED).forEach(k => { if (m[k] === undefined || m[k] === '') m[k] = SETTINGS_SEED[k]; }); return m; };
+
+/* ---------- F. a portal file sent twice: plain words ---------- */
+{ const _ra = regApply_; regApply_ = function (req, u) { try { return _ra(req, u); } catch (e) { const m = String(e.message || e).match(/^DUP\|(.*)$/);
+  if (m) throw new Error('This portal file (' + m[1] + ') was already uploaded. Nothing more to do.'); throw e; } }; ACTIONS.regApply = regApply_; }
+
+/* ======================= Assar: monitoring view ======================= */
+function mon16_(tid) { return setting_('tmon18_' + tid) === 'Y'; }
+function monUser16_(u) {
+  if (!u || u.role === 'ADMIN') return false; const r = rawT18_(u); if (!r.some(mon16_)) return false;
+  if (u.role === 'DA') return true; return read_('PHs').some(p => p.patwari_user_id === u.user_id);
+}
+const MON_OK16 = ['uploadApply', 'regApply', 'dcx15Save', 'full15Save', 'pmkApply', 'saveSummary', 'logout', 'changePin', 'errorLog', 'logError', 'supLog', 'login'];
+function monBlock16_(u, action) { if (!monUser16_(u)) return false; const r = rawT18_(u); if (!r.length || !r.every(t => mon16_(t) || off18_(t))) return false;
+  if (action === 'uploadApply' || action === 'regApply' || action === 'dcx15Save' || action === 'full15Save' || action === 'pmkApply' || action === 'saveSummary') return u.role !== 'DA';
+  return MON_OK16.indexOf(action) < 0; }
+const monMsg16_ = u => 'Sorting and other work for Tehsil ' + rawT18_(u).filter(mon16_).map(tehsilName_).join(', ') + ' is kept in your office register. This app shows the figures.';
+/* their own tehsil stays in their app */
+{ const _u = userTehsils_; userTehsils_ = function (u) { const l = _u(u); if (monUser16_(u)) rawT18_(u).filter(mon16_).forEach(t => { if (l.indexOf(t) < 0) l.push(t); }); return l; }; }
+/* and is worked out for them as if it were on (it is off for everyone else) */
+{ const _r = read_; read_ = function (name) { const o = _r(name); if (name === 'Tehsils' && CUR18_ && monUser16_(CUR18_)) { const m = rawT18_(CUR18_).filter(mon16_); return o.filter(t => m.indexOf(t.tehsil_id) >= 0).map(t => Object.assign({}, t, { active: 'Y' })); } return o; }; }
+{ const _e = canEdit_; canEdit_ = function (u, v) { if (monUser16_(u) && v && mon16_(v.tehsil_id)) return false; return _e(u, v); }; }
+{ const _b = bootstrap_; bootstrap_ = function (req, u) { const o = _b(req, u); try { if (monUser16_(u)) { o.mon18 = { names: rawT18_(u).filter(mon16_).map(tehsilName_).join(', '), da: u.role === 'DA' }; delete o.off18; } } catch (e) {} return o; }; ACTIONS.bootstrap = bootstrap_; }
+/* switching: On / Monitoring / Off */
+const tehsil18Set18_ = tehsil18Set_;
+{ const _s = tehsil18Set_; tehsil18Set_ = function (req, u) {
+  if (succ18_(u)) throw new Error('Not allowed.'); if (u.role !== 'ADMIN') throw new Error('Only the Tehsildar switches a tehsil.');
+  const tid = String(req.tehsil_id || ''), mode = req.mode || (req.on ? 'ON' : 'OFF');
+  if (mode === 'ON') { setSetting_('tmonat18_' + tid, ''); const o = off18_(tid) ? _s(Object.assign({}, req, { on: true }), u) : { ok: 1, on: tid }; setSetting_('tmon18_' + tid, ''); DB.auditNote = { tehsil_id: tid, target: '', detail: 'Tehsil ' + tehsilName_(tid) + ' set On' }; return o; }
+  if (mode === 'OFF') { setSetting_('tmonat18_' + tid, ''); const o = off18_(tid) ? { ok: 1, off: tid } : _s(Object.assign({}, req, { on: false }), u); setSetting_('tmon18_' + tid, ''); DB.auditNote = { tehsil_id: tid, target: '', detail: 'Tehsil ' + tehsilName_(tid) + ' set Off' }; return o; }
+  if (mode === 'MON_AT') { const at = String(req.at || ''); if (!/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(at)) throw new Error('Give the date and time.'); setSetting_('tmonat18_' + tid, at); return { ok: 1, mon_at: at }; }
+  return monApply16_(tid, u, req.from);
+}; ACTIONS.tehsil18Set = tehsil18Set_; }
+function monApply16_(tid, u, from) {
+  setSetting_('tmonat18_' + tid, '');
+  if (!off18_(tid)) tehsil18Set18_({ tehsil_id: tid, on: false, from: from }, u || { role: 'ADMIN', user_id: 'SYSTEM' });
+  setSetting_('tgrace18_' + tid, now_()); setSetting_('tmon18_' + tid, 'Y');
+  try { const own = {}; read_('Users').forEach(x => { const r = rawT18_(x); if (x.role !== 'ADMIN' && r.length && r.every(t => t === tid || off18_(t))) own[x.user_id] = 1; });
+    const D = read_('Dir14').filter(d => (d.status === 'OPEN' || d.status === 'PAUSED18') && (d.tehsil_id === tid || own[d.to_user])); D.forEach(d => { d.status = 'CLOSED18'; d.note = 'Closed'; d.done_at = now_(); }); if (D.length) writeRows_('Dir14', D); } catch (e) {}
+  DB.auditNote = { tehsil_id: tid, target: '', detail: 'Tehsil ' + tehsilName_(tid) + ' set to monitoring view; data export available to its DA' };
+  try { append_('Audit', [{ ts: now_(), user_id: (u && u.user_id) || 'SYSTEM', action: 'tehsil18Set', tehsil_id: tid, target: '', detail: 'Tehsil ' + tehsilName_(tid) + ' set to monitoring view on ' + today_() + '; data export available to its DA' }]); } catch (e) {}
+  try { sig15Bump_('tehsil18'); } catch (e) {}
+  return { ok: 1, mon: tid };
+}
+/* the start fixed for a day after the release: done by the first call (or the 5-minute job) after that time */
+function monDue16_() {
+  read_('Tehsils').forEach(t => { const at = setting_('tmonat18_' + t.tehsil_id); if (!at || now_() < at) return;
+    const l = LockService.getScriptLock(); if (!l.tryLock(3000)) return;
+    try { DB.cache = {}; if (setting_('tmonat18_' + t.tehsil_id)) monApply16_(t.tehsil_id, null); } catch (e) { try { err15_('monDue16', e); } catch (x) {} } finally { l.releaseLock(); } });
+}
+{ const _g = tehsil18Get_; tehsil18Get_ = function (req, u) { const o = _g(req, u); (o.tehsils || []).forEach(t => { t.mode = mon16_(t.tehsil_id) ? 'MON' : off18_(t.tehsil_id) ? 'OFF' : 'ON'; t.mon_at = setting_('tmonat18_' + t.tehsil_id) || ''; }); return o; }; ACTIONS.tehsil18Get = tehsil18Get_; }
+/* the Assar DA's data to take away: every bucket on the list with its category; no Aadhaar, no mobile */
+function monExport16_(req, u) {
+  if (!(monUser16_(u) && u.role === 'DA') && u.role !== 'ADMIN') throw new Error('Not allowed.');
+  const tid = u.role === 'ADMIN' ? String(req.tehsil_id || defT18_()) : rawT18_(u).filter(mon16_)[0]; if (!tid || (u.role === 'ADMIN' && (succ18_(u) || (off18_(tid) && !mon16_(tid))))) throw new Error('Not allowed.');
+  const vs = {}; read_('Villages').forEach(v => { if (v.tehsil_id === tid && v.practice !== 'Y') vs[v.village_id] = v; });
+  const ph = {}; read_('PHs').forEach(p => ph[p.ph_id] = p.name);
+  const rows = read_('Buckets').filter(b => vs[b.village_id]).map(b => ({ village: vs[b.village_id].name, ph: ph[vs[b.village_id].ph_id] || '', name: b.name, father: b.parentage || '', khasras: b.khasras || '', status: b.status, reason_code: b.reason_code || '',
+    portal: b.portal_state || '', farmer_id: b.farmer_id || '', remarks: b.remarks || '', bucket_id: b.bucket_id }));
+  return { tehsil: tehsilName_(tid), at: now_(), rows };
+}
+ACTIONS.monExport16 = monExport16_;
+
+/* ---------- one-time update (schema 34) ---------- */
+function migrateV34_() {
+  try { kuth15_(); } catch (e) { err15_('migrateV34', e); }
+  try { const vv = read_('Villages'), bad = vv.find(v => v.village_id === '4297'); if (bad && bad.active !== 'N') { bad.active = 'N'; bad.kind = ''; writeRows_('Villages', [bad]); } } catch (e) {}
+  try { sheet_('Perf').getRange(1, 1, Math.max(2, sheet_('Perf').getMaxRows()), 4).setNumberFormat('@'); } catch (e) {}
+  try { const t = read_('Tehsils').find(x => x.tehsil_id === 'T_ASSAR'); if (t && t.active === 'Y' && !off18_('T_ASSAR') && !setting_('tmonat18_T_ASSAR') && !mon16_('T_ASSAR'))
+    setSetting_('tmonat18_T_ASSAR', Utilities.formatDate(new Date(Date.now() + 24 * 3600 * 1000), TZ, 'yyyy-MM-dd HH:mm:ss')); } catch (e) {}
+}
+
+/* the change signal does not name a tehsil the reader does not see */
+['sig15', 'data15'].forEach(a => { const f = ACTIONS[a]; if (!f) return; ACTIONS[a] = function (req, u) { const o = f(req, u);
+  try { if (o && o.sig && o.sig.tehsil_id && userTehsils_(u).indexOf(o.sig.tehsil_id) < 0) { o.sig = Object.assign({}, o.sig); delete o.sig.tehsil_id; o.sig.what = 'update'; } } catch (e) {} return o; }; });
 
 /* ======================= end of server code ======================= */
     ;return { setup, doPost, read_, writeAll_, append_, setSetting_, hash_, DB };
