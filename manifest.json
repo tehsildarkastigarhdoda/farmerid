@@ -1,6 +1,6 @@
 {
-  "name": "Farmer ID Dashboard",
-  "short_name": "Farmer ID",
+  "name": "TehsilOS",
+  "short_name": "TehsilOS",
   "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
