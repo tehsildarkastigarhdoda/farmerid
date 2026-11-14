@@ -5,7 +5,7 @@
  */
 "use strict";
 (function () {
-const V14 = '12.1.1';
+const V14 = '12.1.2';
 const C = { ink: '#1E2226', mute: '#5B6168', line: '#ECE6DF', terra: '#9A3F1C', green: '#1F6B42', greenBg: '#E3F2E9', amber: '#8A5A0B', amberBg: '#FBEFD9', teal: '#1D4F50', tealBg: '#E6F1F1' };
 const css = document.createElement('style');
 css.textContent = `
@@ -280,16 +280,34 @@ async function freezeFile(f, merge) {
       <p class="hint">${merge ? 'First the list is merged into Farmer ID: Patwari marks are kept, buckets gone from the list are taken as ID made, and the app sorts what it can. Then it is frozen as the register list.' : 'The list is frozen as the register list only (it is already uploaded in Farmer ID).'}</p>
       <button class="btn btn-primary" id="go">Merge and freeze</button>`,
       mount: e => { $('#x', e).onclick = () => closeSheet(); if (!merge) $('#go', e).textContent = 'Freeze';
-        $('#go', e).onclick = () => busy($('#go', e), 'Working – takes a minute', async () => {
-          if (merge) { const byL = {}; rows6.forEach(r => (byL[r[1]] = byL[r[1]] || []).push(r)); const ks = Object.keys(byL), bl = [], btn = $('#go', e);
-            for (let i = 0; i < ks.length; i++) { if (btn && btn.isConnected) btn.innerHTML = `<span class="spin"></span>Merging village ${i + 1} of ${ks.length}`;
-              const r = await api('uploadApply', { rows: byL[ks[i]], file_ts: fts, first: i === 0, more: i < ks.length - 1 }, 18e4);
-              (r.villages || []).forEach(v => { try { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); } catch (x) {} if (v.blocked) bl.push(v); }); }
-            if (bl.length) toast(bl.map(v => v.name + ': ' + (v.warnings || []).join(' ')).join(' · '), 'info'); }
-          const x = await api('reg14Freeze', { snap, file_ts: fts, list_at: at, file_name: f.name }, 12e4);
-          S.r14 = {}; S.r14myAt = 0; closeSheet(() => { toast(`Register list frozen: ${N(x.n)} buckets`); render(); }); }); } }));
+        $('#go', e).onclick = () => closeSheet(() => freezeRun(f, merge, rows6, snap, fts, at)); } }));
   } catch (e) { fail(e.message); }
 }
+
+/* merge village by village, then freeze; runs as a task so the result stays on screen. A slow village does not stop the others. */
+function freezeRun(f, merge, rows6, snap, fts, at) {
+  const byL = {}; rows6.forEach(r => (byL[r[1]] = byL[r[1]] || []).push(r));
+  const ks = Object.keys(byL).sort((a, b) => byL[a].length - byL[b].length);
+  const steps = (merge ? ks.map(k => 'Merging ' + (byL[k][0][2] || k) + ' (' + N(byL[k].length) + ' rows)') : []).concat(['Freezing the register list', 'App guesses for the Patwaris']);
+  return runTask('Register list · ' + f.name.slice(0, 40), steps, async (step, task) => {
+    const notes = []; let i = 0;
+    if (merge) for (; i < ks.length; i++) { step(i); const vn = byL[ks[i]][0][2] || ks[i];
+      try { const r = await api('uploadApply', { rows: byL[ks[i]], file_ts: fts, more: i < ks.length - 1 }, 24e4);
+        (r.villages || []).forEach(v => { try { delete S.buckets[v.lgd]; delete S.fetchedAt[v.lgd]; kdel('b:' + v.lgd); } catch (x) {} if (v.blocked) notes.push(vn + ': not merged – ' + ((v.warnings || [])[0] || 'a newer list is already in the app') + ' (fine)'); }); }
+      catch (x) { notes.push(vn + ': ' + (/time|network|fetch|internet/i.test(x.message) ? 'slow – the server finishes it on its own' : x.message)); } }
+    step(i); let x;
+    for (let t = 0; t < 3; t++) { try { x = await api('reg14Freeze', { snap, file_ts: fts, list_at: at, file_name: f.name }, 24e4); break; }
+      catch (y) { if (t === 2 || !/time|network|fetch|internet|busy|lock/i.test(y.message)) throw y; await new Promise(r => setTimeout(r, 20000)); } }
+    step(i + 1); let g = null; try { g = await api('reg14Guess', {}, 24e4); } catch (y) { notes.push('App guesses: will run with the next upload or from the register screen'); }
+    S.r14 = {}; S.r14myAt = 0; S.r14sumAt = 0; setTimeout(() => { const c = current(); if (c && c.name === 'reg14o') render(); }, 300);
+    return { msg: `Register list frozen ✓ ${N(x.n)} buckets, ${x.villages} villages${x.missing ? ' · ' + N(x.missing) + ' not in the app' : ''}${g ? ' · ' + N(g.sug14) + ' guesses for Patwaris' : ''}${notes.length ? ' · ' + notes.join(' · ') : ''}` };
+  });
+}
+/* errors in tasks show where they came from, so a screenshot is enough to fix them */
+const _rt14 = runTask;
+runTask = function (t, s, a) { return _rt14(t, s, async (...x) => { try { return await a(...x); } catch (e) {
+  if (e && /Cannot read|is not a function|undefined|null/.test(e.message || '') && e.stack && !/\]$/.test(e.message)) { const w = String(e.stack).split('\n').slice(1, 3).map(l => l.trim().replace(/^at /, '').replace(/\(?(?:https?|file):\/\/[^)]*\/([^/):?]+)(?:\?[^:]*)?:(\d+):(\d+)\)?/, '$1:$3')).join(' < '); try { e.message += ' [' + w + ']'; } catch (z) {} }
+  throw e; } }); };
 
 /* ---------- PDFs ---------- */
 const SHORT = { N1: 'Expired, mutation not attested', N2: 'ID already made, can\'t be made for these khasras', N3: 'Missing / untraceable', N4: 'State land', N5: 'Mobile not linked, not in village', N6: 'Paralysed / very old / face fails', N7: 'Residing outside, not coming for biometric', N8: 'Other reasons' };
@@ -464,5 +482,5 @@ setTimeout(async () => { try { if (!S.session || S.practice) return; const M = a
       <div class="nw83"><span>•</span><div><b>Signal nahi?</b><small>Save ho jayega, signal aane par apne aap jayega.</small></div></div>
       <button class="btn btn-primary" id="ok">Shuru karein</button>`, mount: e => { $('#x', e).onclick = () => closeSheet(); $('#ok', e).onclick = () => closeSheet(() => go('reg14', {})); } })); } }
 } catch (e) {} }, 2500);
-window.TOS14 = { v: V14, regPDF, gqPDF, letterPDF, campPDF, followPDF };
+window.TOS14 = { v: V14, regPDF, gqPDF, letterPDF, campPDF, followPDF, freezeRun };
 })();
