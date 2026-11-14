@@ -5,7 +5,7 @@
  */
 "use strict";
 (function () {
-const V14 = '12.1.0';
+const V14 = '12.1.1';
 const C = { ink: '#1E2226', mute: '#5B6168', line: '#ECE6DF', terra: '#9A3F1C', green: '#1F6B42', greenBg: '#E3F2E9', amber: '#8A5A0B', amberBg: '#FBEFD9', teal: '#1D4F50', tealBg: '#E6F1F1' };
 const css = document.createElement('style');
 css.textContent = `
@@ -50,6 +50,7 @@ const office = () => ['ADMIN', 'DA', 'NT'].indexOf(role()) >= 0;
 const isOQ = () => /\bOQ\b|Office Qanungo/i.test((me() || {}).designation || '');
 const NM = { mohd: 'mohammad', md: 'mohammad', muhammad: 'mohammad', mohammed: 'mohammad', mohamad: 'mohammad', gulam: 'ghulam', begam: 'begum', dei: 'devi', sing: 'singh', lall: 'lal' };
 const fz = s => String(s || '').toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/).filter(x => x && ['sh', 'shri', 'sri', 'smt', 'mst', 'late', 's', 'o', 'd', 'w', 'so', 'do', 'wo'].indexOf(x) < 0).map(x => NM[x] || x).join(' ');
+const kshort = s => { const a = String(s || '–').split(/\s*,\s*/); return a.length > 15 ? a.slice(0, 15).join(', ') + ` … (+${a.length - 15} more)` : a.join(', '); };
 const firstK = s => { const m = String(s || '').match(/\d+/); return m ? Number(m[0]) : 1e9; };
 const loading = t => { view().innerHTML = `<div class="t12 r14"><p class="sub">${esc(t || 'Loading…')}</p><div class="cd" style="height:90px"></div><div class="cd" style="height:140px"></div></div>`; };
 const tsIST = ms => { const d = new Date(Number(ms) + 5.5 * 3600e3); return isNaN(d) ? '' : d.toISOString().slice(0, 16).replace('T', ' '); };
@@ -60,13 +61,16 @@ function remarkOf(D, r) {
   const m = D.of[r.rc] || ['N8', ''], p = D.picks.find(x => x[0] === m[0]);
   let s = p[4], note = m[1]; if (m[0] === 'N8') { s = note || ''; note = ''; }
   if (note) s = s.replace(/\.$/, '') + ' – ' + note + '.';
-  const rm = String(r.rm || '').trim(); if (rm && rm !== 'Land record entry, not an individual' && s.indexOf(rm) < 0) s = (s ? s + ' ' : '') + rm + (/[.!?]$/.test(rm) ? '' : '.');
+  let rm = String(r.rm || '').trim();
+  if (m[0] === 'N1' && /^heirs recorded/i.test(rm)) { s = 'Owner expired; heirs recorded on these khasras – his remaining share to be mutated.'; rm = rm.replace(/^heirs recorded[^;.]*[;.]?\s*/i, ''); }
+  if (rm && rm !== 'Land record entry, not an individual' && s.indexOf(rm) < 0) s = (s ? s + ' ' : '') + rm + (/[.!?]$/.test(rm) ? '' : '.');
   return { side: p[1], pick: m[0], text: s || 'Other (remark not written).' };
 }
 function groups(D) {
   const g = {};
-  D.rows.forEach(r => { r.x = remarkOf(D, r); const k = fz(r.n) + '|' + fz(r.p); (g[k] = g[k] || { k, n: r.n, p: r.p, rows: [] }).rows.push(r); });
+  D.rows.forEach(r => { r.x = remarkOf(D, r); const k = r.fam || r.id; (g[k] = g[k] || { k, n: r.n, p: r.p, rows: [] }).rows.push(r); });
   return Object.keys(g).map(k => { const x = g[k], open = x.rows.filter(r => !r.x.side);
+    x.fam = x.rows.length > 1; x.names = x.rows.map(r => r.n); x.nilf = /^(nil|na|n a|none|)$/.test(fz(x.p));
     x.open = open.length; x.done = !open.length; x.sug = open.find(r => r.sg) || null; x.isNew = x.rows.some(r => r.fl === 'NEW' && !r.x.side);
     x.later = open.length > 0 && open.every(r => r.fl === 'LATER'); x.chg = x.rows.some(r => r.chg && !r.made);
     x.kh = Array.from(new Set(x.rows.map(r => String(r.k || '')).join(',').split(/\s*,\s*/).filter(Boolean)));
@@ -121,33 +125,41 @@ VIEWS.reg14v = async function (a) {
   const draw = () => {
     const G = groups(D), q = a.q.trim().toLowerCase();
     const cnt = { open: G.filter(g => !g.done && !g.later).length, sug: G.filter(g => g.sug).length, new: G.filter(g => g.isNew).length, later: G.filter(g => g.later).length, done: G.filter(g => g.done).length };
-    const L = G.filter(g => a.f === 'open' ? !g.done && !g.later : a.f === 'sug' ? !!g.sug : a.f === 'new' ? g.isNew : a.f === 'later' ? g.later : g.done)
-      .filter(g => !q || (g.n + ' ' + g.p).toLowerCase().indexOf(q) >= 0 || g.kh.some(k => String(k).toLowerCase() === q || String(k).toLowerCase().indexOf(q + '/') === 0));
+    const L = G.filter(g => a.kq ? g.kh.indexOf(a.kq) >= 0 : a.f === 'open' ? !g.done && !g.later : a.f === 'sug' ? !!g.sug : a.f === 'new' ? g.isNew : a.f === 'later' ? g.later : g.done)
+      .filter(g => !q || (g.names.join(' ') + ' ' + g.p).toLowerCase().indexOf(q) >= 0 || g.kh.some(k => String(k).toLowerCase() === q || String(k).toLowerCase().indexOf(q + '/') === 0));
     const tot = D.rows.length, mk = D.rows.filter(r => r.x.side).length, fl = G.filter(g => !g.done).length;
     const pickL = c => { const p = D.picks.find(x => x[0] === ((D.of[c] || [])[0])); return p ? p[2] : c; };
     const card = g => { const on = !!a.sel[g.k], marked = g.rows.filter(r => r.x.side);
       return `<div class="fc">${D.can_edit && !g.done ? `<input type="checkbox" class="ck" data-s="${esc(g.k)}" ${on ? 'checked' : ''} aria-label="Select ${esc(g.n)}">` : ''}
-        <div class="bd" data-g="${esc(g.k)}"><b>${esc(g.n)}</b> <span style="color:${C.mute}">s/o ${esc(g.p || '–')}</span>${g.isNew ? '<span class="tg n">NEW</span>' : ''}${g.chg ? '<span class="tg c">CHANGED</span>' : ''}${g.later ? '<span class="tg l">LATER</span>' : ''}${g.sug && !g.done ? '<span class="tg s">SUGGESTED</span>' : ''}
+        <div class="bd" data-g="${esc(g.k)}">${g.fam ? `<b>Family of ${esc(g.p)}</b> <span style="color:${C.mute}">· ${g.rows.length} members</span>` : `<b>${esc(g.n)}</b> <span style="color:${C.mute}">s/o ${esc(g.p || '–')}</span>`}${g.nilf ? '<span class="tg c">NO FATHER – CHECK NAME</span>' : ''}${g.isNew ? '<span class="tg n">NEW</span>' : ''}${g.chg ? '<span class="tg c">CHANGED</span>' : ''}${g.later ? '<span class="tg l">LATER</span>' : ''}${g.sug && !g.done ? '<span class="tg s">SUGGESTED</span>' : ''}
+        ${g.fam ? `<small style="color:${C.ink}">${g.rows.map(r => esc(r.n) + (r.x.side === 'made' ? ' ✓ID' : r.x.side ? ' ✓' : '')).join(', ')}</small>` : ''}
         <small>${g.rows.length} owner${g.rows.length > 1 ? 's' : ''} · khasra ${esc(g.kh.slice(0, 12).join(', '))}${g.kh.length > 12 ? ' …' : ''}</small>
         ${marked.length ? Array.from(new Set(marked.map(r => r.x.side + '|' + r.x.text))).slice(0, 2).map(t => `<div class="rm ${t.split('|')[0] === 'can' ? '' : 'not'}">✓ ${esc(t.split('|').slice(1).join('|'))}</div>`).join('') : ''}
         ${g.sug && !g.done ? `<div class="why"><b>App ka andaza:</b> ${esc(pickL(g.sug.sg))}${g.sug.why ? ' – ' + esc(g.sug.why) : ''}</div>` : ''}</div></div>
         ${g.sug && !g.done && D.can_edit ? `<div class="sa" style="margin:-4px 0 12px"><button class="y" data-cf="${esc(g.k)}">Sahi hai · Confirm</button><button data-g="${esc(g.k)}">Badlein · Change</button></div>` : ''}`; };
     const nSel = Object.keys(a.sel).filter(k => a.sel[k]).length;
+    const KH = {}; if (a.f === 'kh' && !a.kq) D.rows.forEach(r => String(r.k || '').split(/\s*,\s*/).filter(Boolean).forEach(k => { const x = KH[k] = KH[k] || { k, n: 0, left: 0 }; x.n++; if (!r.x.side) x.left++; }));
+    const KL = Object.keys(KH).map(k => KH[k]).filter(x => !q || String(x.k).toLowerCase().indexOf(q) === 0).sort((x, y) => firstK(x.k) - firstK(y.k) || String(x.k).localeCompare(String(y.k)));
+    const body = a.kq ? `<div class="note" style="background:#fff;display:flex;justify-content:space-between;align-items:center"><span><b>Khasra ${esc(a.kq)}</b> · ${N(L.reduce((x, g) => x + g.rows.length, 0))} owners</span><button class="btn12 gh" id="kb" style="padding:8px 12px;font-size:13px">‹ Khasra list</button></div>` + L.map(card).join('')
+      : a.f === 'kh' ? `<div class="cd" style="padding:4px 14px">${KL.slice(0, a.lim).map(x => `<button class="row" data-k="${esc(x.k)}"><span>Khasra ${esc(x.k)}<small>${N(x.n)} owners${x.left ? ' · ' + N(x.left) + ' baaki' : ' · ho gaya ✓'}</small></span><span>›</span></button>`).join('')}</div>${KL.length > a.lim ? `<button class="btn12 gh" id="more" style="width:100%">Aur dikhayein (${N(KL.length - a.lim)} more)</button>` : ''}`
+      : (L.length ? L.slice(0, a.lim).map(card).join('') : `<p class="lead" style="text-align:center;color:${C.mute}">${a.q ? 'Koi nahi mila.' : a.f === 'open' ? 'Sab ho gaya ✓' : 'Kuch nahi.'}</p>`) + (L.length > a.lim ? `<button class="btn12 gh" id="more" style="width:100%">Aur dikhayein (${N(L.length - a.lim)} more)</button>` : '');
     view().innerHTML = `<div class="t12 r14"><h1>${esc(D.name)}</h1>
       <p class="sub">${N(fl)} kisan baaki · ${N(mk)} of ${N(tot)} owners marked${D.due ? ' · due ' + esc(dmy(D.due)) : ''}${D.can_edit ? '' : ' · view only'}</p>
       <div class="bar" style="margin:0 0 12px"><i style="width:${tot ? 100 * mk / tot : 0}%"></i></div>
-      <input class="srch" id="q" type="search" placeholder="Naam ya khasra no. likhein · Search" value="${esc(a.q)}" aria-label="Search by name or khasra">
-      <div class="chips">${[['open', 'Baaki'], ['sug', 'App ka andaza'], ['new', 'Naye'], ['later', 'Baad mein'], ['done', 'Ho gaya']].map(c => `<button data-f="${c[0]}" class="${a.f === c[0] ? 'on' : ''}">${c[1]} ${cnt[c[0]]}</button>`).join('')}</div>
+      <input class="srch" id="q" type="search" placeholder="${a.f === 'kh' ? 'Khasra no. likhein' : 'Naam ya khasra no. likhein · Search'}" value="${esc(a.q)}" aria-label="Search by name or khasra">
+      <div class="chips">${[['open', 'Baaki'], ['sug', 'App ka andaza'], ['new', 'Naye'], ['later', 'Baad mein'], ['done', 'Ho gaya'], ['kh', 'Khasra-wise']].map(c => `<button data-f="${c[0]}" class="${a.f === c[0] && !a.kq ? 'on' : ''}">${c[1]}${cnt[c[0]] !== undefined ? ' ' + cnt[c[0]] : ''}</button>`).join('')}</div>
       ${a.f === 'sug' && D.can_edit && cnt.sug ? `<p class="hint">Andaza sahi ho to "Confirm" dabayein. Galat ho to "Change".</p>` : ''}
-      ${L.length ? L.slice(0, a.lim).map(card).join('') : `<p class="lead" style="text-align:center;color:${C.mute}">${a.q ? 'Koi nahi mila.' : a.f === 'open' ? 'Sab ho gaya ✓' : 'Kuch nahi.'}</p>`}
-      ${L.length > a.lim ? `<button class="btn12 gh" id="more" style="width:100%">Aur dikhayein (${N(L.length - a.lim)} more)</button>` : ''}
+      ${body}
       ${nSel ? `<div class="bulk"><div><span>${nSel} chune</span><button id="bm">Ek saath wajah</button><button class="gh" id="bc">Hatayein</button></div></div>` : ''}</div>`;
     const qi = $('#q'); qi.oninput = () => { a.q = qi.value; clearTimeout(draw._t); draw._t = setTimeout(() => { draw(); const n = $('#q'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 350); };
-    $$('[data-f]').forEach(b => b.onclick = () => { a.f = b.dataset.f; a.lim = 60; draw(); });
+    $$('[data-f]').forEach(b => b.onclick = () => { a.f = b.dataset.f; a.kq = ''; a.lim = 60; draw(); });
+    $$('[data-k]').forEach(b => b.onclick = () => { a.kq = b.dataset.k; a.q = ''; draw(); window.scrollTo(0, 0); });
+    if ($('#kb')) $('#kb').onclick = () => { a.kq = ''; draw(); };
     $$('[data-s]').forEach(c => c.onchange = () => { a.sel[c.dataset.s] = c.checked; draw(); });
     $$('[data-g]').forEach(c => c.onclick = () => markSheet(D, G.filter(g => g.k === c.dataset.g), L, draw, a));
     $$('[data-cf]').forEach(c => c.onclick = async () => { const g = G.find(x => x.k === c.dataset.cf); const rows = g.rows.filter(r => !r.x.side && r.sg);
-      const code = rows[0].sg; await saveMarks(D, rows, { status: 'REASON', reason_code: code }); toast('Saved: ' + pickL(code)); draw(); });
+      const code = rows[0].sg, same = rows.filter(r => r.sg === code), heirs = code === 'A02' && /heirs recorded/i.test(rows[0].why || '');
+      await saveMarks(D, same, Object.assign({ status: 'REASON', reason_code: code }, heirs ? { remarks: 'Heirs recorded, share left' } : {})); toast('Saved: ' + pickL(code)); draw(); });
     if ($('#more')) $('#more').onclick = () => { a.lim += 60; draw(); };
     if ($('#bm')) $('#bm').onclick = () => markSheet(D, G.filter(g => a.sel[g.k]), null, draw, a);
     if ($('#bc')) $('#bc').onclick = () => { a.sel = {}; draw(); };
@@ -159,12 +171,12 @@ VIEWS.reg14v = async function (a) {
 function markSheet(D, gs, list, redraw, a) {
   if (!D.can_edit) return info('Only the Patwari of this halqa marks reasons here.');
   const rows = []; gs.forEach(g => g.rows.forEach(r => { if (!r.made) rows.push(r); }));
-  const tick = {}; rows.forEach(r => tick[r.id] = !r.x.side || gs.length === 1);
+  const anyOpen = rows.some(r => !r.x.side), tick = {}; rows.forEach(r => tick[r.id] = !r.x.side || (gs.length === 1 && !anyOpen));
   const cur = rows.find(r => r.x.side && r.rc) || null, curPick = cur ? (D.of[cur.rc] || [])[0] : '';
   const st = { pick: curPick || '', land: cur && D.of[cur.rc] && (D.of[cur.rc][0] === 'N4') ? cur.rc : 'A05', note: gs.length === 1 && cur ? String(cur.rm || '').replace('Land record entry, not an individual', '') : '' };
-  const CH = { C1: ['Camp ki tareekh pata hai'], C2: ['Aayega', 'OTP dega', 'Jammu mein', 'Doda mein'], N1: ['Waris: ', 'Intqal pending'], N3: ['Kai saal se pata nahi'], N5: ['Jammu mein', 'Bahar naukri'],
+  const CH = { C1: ['Camp ki tareekh pata hai'], C2: ['Aayega', 'OTP dega', 'Jammu mein', 'Doda mein'], N1: ['Heirs recorded, share left', 'Waris: ', 'Intqal pending'], N3: ['Kai saal se pata nahi'], N5: ['Jammu mein', 'Bahar naukri'],
     N6: ['Bahut budhe', 'Lakwa'], N7: ['Jammu mein rehta', 'Shaadi ke baad bahar', 'Bahar naukri'], N8: ['Zameen bik gayi, intqal nahi', 'Court case', 'Nabalig', 'Consent se inkaar'] };
-  const one = gs.length === 1, title = one ? `${gs[0].n} s/o ${gs[0].p || '–'}` : `${gs.length} farmers together`;
+  const one = gs.length === 1, title = one ? (gs[0].fam ? `Family of ${gs[0].p} · ${gs[0].rows.length} members` : `${gs[0].n} s/o ${gs[0].p || '–'}`) : `${gs.length} cards together`;
   const idx = list && one ? list.findIndex(g => g.k === gs[0].k) : -1;
   const code = () => st.pick === 'N4' ? st.land : (D.picks.find(p => p[0] === st.pick) || [])[5];
   const preview = () => { if (!st.pick) return ''; const r = remarkOf(D, { st: 'REASON', rc: code(), rm: st.note }); return r.text; };
@@ -172,7 +184,7 @@ function markSheet(D, gs, list, redraw, a) {
   openSheet(() => ({ html: `<div class="m14"><div class="snav"><button id="x">Close</button><span></span><span></span></div>
     <h2 class="nm">${esc(title)}</h2>
     <p class="hint">${one ? 'Ek wajah sab tick kiye owners par lagegi. Alag owner ho to uska tick hatayein (split).' : 'Ek wajah sab chune hue kisanon par lagegi.'}<br>One reason for all ticked owners. Untick an owner who is different.</p>
-    <div class="cd" style="padding:6px 14px">${rows.map(r => `<label class="own"><input type="checkbox" data-o="${esc(r.id)}" ${tick[r.id] ? 'checked' : ''}><span>${one ? '' : '<b>' + esc(r.n) + '</b> s/o ' + esc(r.p) + ' · '}khasra ${esc(r.k || '–')}<small>${r.x.side ? '✓ ' + esc(r.x.text) : 'Not marked'}${r.inl ? '' : ' · new on the portal after the register list'}</small></span></label>`).join('')}</div>
+    <div class="cd" style="padding:6px 14px">${rows.map(r => `<label class="own"><input type="checkbox" data-o="${esc(r.id)}" ${tick[r.id] ? 'checked' : ''}><span>${rows.length > 1 ? '<b>' + esc(r.n) + '</b> s/o ' + esc(r.p) + ' · ' : ''}khasra ${esc(kshort(r.k))}<small>${r.x.side ? '✓ ' + esc(r.x.text) : 'Not marked'}${r.inl ? '' : ' · new on the portal after the register list'}</small></span></label>`).join('')}</div>
     <div class="grp can">ID BAN SAKTI HAI · CAN BE CLAIMED</div>
     ${D.picks.filter(p => p[1] === 'can').map(p => pk(p)).join('')}
     <div class="grp not">ID NAHI BAN SAKTI · CANNOT BE CLAIMED</div>
@@ -223,12 +235,15 @@ VIEWS.reg14o = async function () {
       <div class="k"><b>${N(T.can)}</b><span>Can be claimed</span></div><div class="k"><b>${N(T.not)}</b><span>Cannot be claimed</span></div></div>
     ${phs.map(ph => { const vs = D.villages.filter(v => (v.ph || '—') === ph), n = sm(vs, 'n'), mk = sm(vs, 'marked'), p = n ? Math.round(100 * mk / n) : 0;
       return `<div class="cd"><h3><span>PH ${esc(ph)}${vs[0].patwari ? ' · ' + esc(vs[0].patwari) : ''}</span><span class="pill ${p >= 100 ? 'ok' : p >= 80 ? 'wt' : 'ur'}">${p}% marked</span></h3>
-        ${vs.map(v => `<div class="row" style="cursor:default"><span>${esc(v.name)}<small>${N(v.n)} buckets · ${N(v.left)} not marked · ${N(v.can)} can · ${N(v.not)} cannot${v.made ? ' · ' + N(v.made) + ' ID made since' : ''}${v.auto ? ' · ' + N(v.auto) + ' by the app' : ''}</small></span>
-          <span class="acts" style="flex:none"><button class="btn12 ${v.left ? 'gh' : ''}" data-pr="${esc(v.village_id)}" style="min-width:0;padding:9px 12px;font-size:13px">Register PDF</button></span></div>`).join('')}
+        ${vs.map(v => `<div class="row" style="cursor:default;flex-wrap:wrap"><span>${esc(v.name)}<small>${N(v.n)} buckets · ${N(v.left)} not marked · ${N(v.can)} can · ${N(v.not)} cannot${v.made ? ' · ' + N(v.made) + ' ID made since' : ''}${v.auto ? ' · ' + N(v.auto) + ' by the app' : ''}</small>
+            ${v.dc_un != null && v.dc_un !== v.n ? `<small style="color:${C.terra}">Check: DC figure ${N(v.dc_un)} unclaimed${v.dc_as_on ? ' (as on ' + esc(dmy(v.dc_as_on)) + ')' : ''} vs ${N(v.n)} in the register – differs by ${N(Math.abs(v.dc_un - v.n))}</small>` : v.dc_un != null ? `<small style="color:${C.green}">Matches the DC figure ✓</small>` : ''}
+            ${v.fam && v.fam.families ? `<small>${N(v.fam.families)} families: ${N(v.fam.some)} with a member's ID made · ${N(v.fam.none)} with none${v.fam.done ? ' · ' + N(v.fam.done) + ' now complete' : ''}</small>` : ''}</span>
+          <span class="acts" style="flex:none"><button class="btn12 ${v.left ? 'gh' : ''}" data-pr="${esc(v.village_id)}" style="min-width:0;padding:9px 12px;font-size:13px">Register PDF</button><button class="btn12 gh" data-cl="${esc(v.village_id)}" style="min-width:0;padding:9px 12px;font-size:13px">Camp list</button></span></div>`).join('')}
         <div class="acts" style="margin-top:8px"><button class="btn12 gh" data-ph="${esc(ph)}">All ${vs.length} village PDFs</button><button class="btn12 gh" data-gq="${esc(ph)}">GQ check sheet</button></div></div>`; }).join('')}
     <div class="cd"><h3>For ACR Doda</h3>
       <button class="row" id="lt"><span>Forwarding letter (PDF)<small>Village-wise summary · Tehsildar's signature</small></span><span>›</span></button>
-      <button class="row" id="xl"><span>Excel copy<small>Every register line, one sheet per village</small></span><span>›</span></button></div>
+      <button class="row" id="xl"><span>Excel copy<small>Every register line, one sheet per village</small></span><span>›</span></button>
+      <button class="row" id="fu"><span>Follow-up report (PDF)<small>IDs made since the register list, by the reason marked</small></span><span>›</span></button></div>
     ${adm ? `<div class="cd"><h3>Settings</h3><div class="s12"><label for="du">Patwaris to finish marking by</label><input type="date" id="du" value="${esc(S.r14my && S.r14my.due || '')}">
       <label for="gq">Girdawar Qanungo (as printed)</label><input type="text" id="gq" value="${esc(D.gq)}"></div><button class="btn12 gh" id="ss" style="margin-top:10px">Save</button></div>` : ''}` : ''}</div>`;
   if ($('#fl')) $('#fl').onchange = e => { const f = e.target.files[0]; if (f) freezeFile(f, $('#mg').checked); e.target.value = ''; };
@@ -237,6 +252,9 @@ VIEWS.reg14o = async function () {
   $$('[data-gq]').forEach(b => b.onclick = () => busy(b, 'Making', () => gqPDF(D.villages.filter(v => (v.ph || '—') === b.dataset.gq), b.dataset.gq)));
   if ($('#lt')) $('#lt').onclick = () => busy($('#lt'), 'Making', () => letterPDF(D));
   if ($('#xl')) $('#xl').onclick = () => busy($('#xl'), 'Making', () => excelAll(D));
+  if ($('#fu')) $('#fu').onclick = () => busy($('#fu'), 'Making', () => followPDF(D));
+  $$('[data-cl]').forEach(b => b.onclick = () => busy(b, 'Making', () => campPDF(b.dataset.cl)));
+  const bad = D.villages.filter(v => v.dc_un != null && v.dc_un !== v.n); if ($('#lt') && bad.length) { const o = $('#lt').onclick; $('#lt').onclick = () => { if (confirm(`${bad.length} village(s) do not match the DC figure (${bad.map(v => v.name).join(', ')}). Make the letter anyway?`)) o(); }; }
   if ($('#ss')) $('#ss').onclick = () => busy($('#ss'), 'Saving', async () => { await api('reg14Set', { due: $('#du').value, gq: $('#gq').value }); S.r14myAt = 0; toast('Saved'); render(); });
   if (adm) { try { const M = await loadMy(); if ($('#du') && M.due) $('#du').value = M.due; } catch (e) {} }
 };
@@ -341,12 +359,47 @@ async function letterPDF(D) {
     head: [['S.No', 'Patwar Halqa', 'Village', 'Unclaimed buckets in the list', 'ID made since', 'Can be claimed', 'Cannot be claimed', 'Not marked']], body: rows.map(r => r.map(tx)),
     didParseCell: d => { if (d.section === 'body' && d.row.index === rows.length - 1) d.cell.styles.fontStyle = 'bold'; } });
   y = doc.lastAutoTable.finalY + 6;
+  const F = k => D.villages.reduce((a, v) => a + ((v.fam || {})[k] || 0), 0);
+  if (F('families')) { const fl = doc.splitTextToSize(tx(`These unclaimed owners belong to ${N(F('families'))} families (brothers / co-sharers on the same khasras). In ${N(F('some'))} families at least one member already has a Farmer ID; in ${N(F('none'))} families no member has one yet${F('done') ? `; in ${N(F('done'))} families all remaining members have got IDs since the list` : ''}. Each co-sharer holds a separate bucket and needs his own Farmer ID.`), W - 36);
+    doc.text(fl, 18, y, { align: 'justify', maxWidth: W - 36 }); y += fl.length * 5.2 + 4; }
   const pk = D.picks.filter(p => p[1] === 'not'), cnt = k => D.villages.reduce((a, v) => a + ((v.picks || {})[k] || 0), 0);
   const nb = doc.splitTextToSize(tx('Reasons where the Farmer ID cannot be made: ' + pk.map(p => `${SHORT[p[0]].toLowerCase().replace(/^id /, 'ID ')} ${N(cnt(p[0]))}`).join('; ') + '.'), W - 36);
   if (y + nb.length * 5 > 250) { doc.addPage(); y = 20; } doc.text(nb, 18, y); y += nb.length * 5.2 + 6;
   doc.text('Encl: Village-wise registers (signed).', 18, y); y += 22; if (y > 270) { doc.addPage(); y = 40; }
   doc.text('Yours faithfully,', W - 18, y - 10, { align: 'right' }); doc.setFont('times', 'bold'); doc.text('Tehsildar', W - 30, y + 6, { align: 'center' }); doc.setFont('times', 'normal'); doc.text('Kastigarh', W - 30, y + 11, { align: 'center' });
   deliverPDF(doc, `Forwarding letter – unclaimed buckets register – Kastigarh.pdf`);
+}
+/* camp call list: owners who can get the ID, family-wise, with the field-survey mobile */
+async function campPDF(vid) {
+  const R = await api('reg14Camp', { village_id: vid }, 90000); if (!R.rows.length) return info('No owner in ' + R.name + ' is marked "can be claimed" for a camp yet.');
+  await loadPDF(); const doc = new jspdf.jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' }), W = 210, tx = pdfText;
+  const fam = {}; R.rows.forEach(r => (fam[r.fam] = fam[r.fam] || []).push(r));
+  const F = Object.keys(fam).map(k => fam[k]).sort((a, b) => firstK(a[0].khasras) - firstK(b[0].khasras));
+  doc.setFont('times', 'bold'); doc.setFontSize(13); doc.text(tx(`Camp call list – ${R.name} (PH ${R.ph || '-'})`), W / 2, 14, { align: 'center' });
+  doc.setFont('times', 'normal'); doc.setFontSize(10); doc.text(tx(`${R.rows.length} owners in ${F.length} families who can get the Farmer ID · from the register marks of ${dmyt(R.at)} · for office and camp staff only`), W / 2, 20, { align: 'center' });
+  const body = []; let i = 0; F.forEach(g => { if (g.length > 1) body.push([{ content: tx('Family of ' + g[0].father + ' (' + g.length + ')'), colSpan: 6, styles: { fontStyle: 'bold', fillColor: [245, 245, 245] } }]);
+    g.forEach(r => body.push([String(++i), r.name, r.father, r.khasras, r.mobile || '', r.remark].map(tx))); });
+  doc.autoTable({ startY: 24, theme: 'grid', margin: { left: 10, right: 10 }, styles: { font: 'times', fontSize: 9, cellPadding: 1.3, lineColor: 0, lineWidth: 0.2, textColor: 0, valign: 'top' },
+    headStyles: { fillColor: [235, 235, 235], textColor: 0, fontStyle: 'bold' }, columnStyles: { 0: { cellWidth: 10 }, 1: { cellWidth: 32 }, 2: { cellWidth: 30 }, 3: { cellWidth: 42 }, 4: { cellWidth: 24 }, 5: { cellWidth: 52 } },
+    head: [['S.No', 'Owner', 'Father', 'Khasras', 'Mobile', 'Reason']], body });
+  pageNumbers(doc); deliverPDF(doc, `Camp call list – ${R.name}.pdf`);
+}
+/* follow-up: IDs made since the register list, by the reason that was marked */
+async function followPDF(D) {
+  await loadPDF(); const doc = new jspdf.jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' }), tx = pdfText, L = D.list || {};
+  const K = D.picks.map(p => p[0]).concat(['-']), lab = k => k === '-' ? 'Not marked' : (SHORT[k] || (D.picks.find(p => p[0] === k) || [])[2] || k);
+  doc.setFont('times', 'bold'); doc.setFontSize(13); doc.text(tx(`Farmer IDs made since the register list of ${dmy(L.list_at || L.at)} – Tehsil Kastigarh`), 148, 14, { align: 'center' });
+  doc.setFont('times', 'normal'); doc.setFontSize(10); doc.text(tx(`As on ${dmyt(new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 16).replace('T', ' '))} · by the reason the Patwari had marked`), 148, 20, { align: 'center' });
+  const used = K.filter(k => D.villages.some(v => (v.since || {})[k]));
+  const body = D.villages.map(v => [v.ph, v.name, N(v.n), N(v.made)].concat(used.map(k => N((v.since || {})[k] || 0))));
+  const T = k => D.villages.reduce((a, v) => a + ((v.since || {})[k] || 0), 0);
+  body.push(['', 'Total', N(D.villages.reduce((a, v) => a + v.n, 0)), N(D.villages.reduce((a, v) => a + v.made, 0))].concat(used.map(k => N(T(k)))));
+  doc.autoTable({ startY: 25, theme: 'grid', margin: { left: 10, right: 10 }, styles: { font: 'times', fontSize: 9.5, cellPadding: 1.5, lineColor: 0, lineWidth: 0.2, textColor: 0, halign: 'center' },
+    headStyles: { fillColor: [235, 235, 235], textColor: 0, fontStyle: 'bold', valign: 'middle' }, columnStyles: { 0: { halign: 'left' }, 1: { halign: 'left' } },
+    head: [['PH', 'Village', 'In the register', 'ID made since'].concat(used.map(lab))], body: body.map(r => r.map(tx)),
+    didParseCell: d => { if (d.section === 'body' && d.row.index === body.length - 1) d.cell.styles.fontStyle = 'bold'; } });
+  if (!used.length) { doc.setFontSize(11); doc.text('No Farmer ID has been made from the register list yet.', 10, doc.lastAutoTable.finalY + 8); }
+  deliverPDF(doc, `Follow-up – IDs made since the register list – Kastigarh.pdf`);
 }
 async function excelAll(D) {
   await loadXLSX(); const wb = XLSX.utils.book_new();
@@ -411,5 +464,5 @@ setTimeout(async () => { try { if (!S.session || S.practice) return; const M = a
       <div class="nw83"><span>•</span><div><b>Signal nahi?</b><small>Save ho jayega, signal aane par apne aap jayega.</small></div></div>
       <button class="btn btn-primary" id="ok">Shuru karein</button>`, mount: e => { $('#x', e).onclick = () => closeSheet(); $('#ok', e).onclick = () => closeSheet(() => go('reg14', {})); } })); } }
 } catch (e) {} }, 2500);
-window.TOS14 = { v: V14, regPDF, gqPDF, letterPDF };
+window.TOS14 = { v: V14, regPDF, gqPDF, letterPDF, campPDF, followPDF };
 })();
