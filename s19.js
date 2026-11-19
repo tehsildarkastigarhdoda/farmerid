@@ -62,6 +62,7 @@ Object.assign(TABOF10, { day19: 'tos12', assar19: 'tos12' });
 const _tos19 = VIEWS.tos12;
 if (_tos19) VIEWS.tos12 = async function (a) {
   await _tos19(a);
+  try { $$('[data-go="feat12"]', view()).forEach(b => { if (/Tehsil Assar/.test(b.textContent)) { b.dataset.go = 'assar19'; b.innerHTML = '<span>Tehsil Assar<small>Master switch (On / View only / Off) · Tehsildar Assar login</small></span><span>›</span>'; } }); } catch (e) {}
   try { if (['ADMIN', 'DA', 'NT'].indexOf(role()) < 0) return; const D = await loadDay(); if (current().name !== 'tos12' || $('#d19c')) return;
     const T = D.totals, el = document.createElement('div'); el.className = 'cd d19'; el.id = 'd19c'; el.style.cursor = 'pointer';
     el.innerHTML = `<h3><span>Today · ${esc(D.window.closed ? 'day closed 4:30 PM' : 'since 4:30 PM yesterday')}</span><span class="pill ${T.made + T.part ? 'ok' : 'ur'}">${N(T.made + T.part)} IDs</span></h3>
