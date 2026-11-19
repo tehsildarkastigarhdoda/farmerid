@@ -71,6 +71,7 @@ function groups(D) {
   D.rows.forEach(r => { r.x = remarkOf(D, r); const k = r.fam || r.id; (g[k] = g[k] || { k, n: r.n, p: r.p, rows: [] }).rows.push(r); });
   return Object.keys(g).map(k => { const x = g[k], open = x.rows.filter(r => !r.x.side);
     x.fam = x.rows.length > 1; x.names = x.rows.map(r => r.n); x.nilf = /^(nil|na|n a|none|)$/.test(fz(x.p));
+    x.ew = Math.max(0, ...x.rows.filter(r => !r.x.side || r.x.side === 'can').map(r => r.ew || 0)); x.lastbro = x.rows.some(r => r.lastbro && !r.x.side); x.area = x.rows.reduce((t, r) => t + (Number(r.area) || 0), 0);
     x.open = open.length; x.done = !open.length; x.sug = open.find(r => r.sg) || null; x.isNew = x.rows.some(r => r.fl === 'NEW' && !r.x.side);
     x.later = open.length > 0 && open.every(r => r.fl === 'LATER'); x.chg = x.rows.some(r => r.chg && !r.made);
     x.kh = Array.from(new Set(x.rows.map(r => String(r.k || '')).join(',').split(/\s*,\s*/).filter(Boolean)));
@@ -124,16 +125,17 @@ VIEWS.reg14v = async function (a) {
   a.f = a.f || 'open'; a.q = a.q || ''; a.sel = a.sel || {}; a.lim = a.lim || 60;
   const draw = () => {
     const G = groups(D), q = a.q.trim().toLowerCase();
-    const cnt = { open: G.filter(g => !g.done && !g.later).length, sug: G.filter(g => g.sug).length, new: G.filter(g => g.isNew).length, later: G.filter(g => g.later).length, done: G.filter(g => g.done).length };
-    const L = G.filter(g => a.kq ? g.kh.indexOf(a.kq) >= 0 : a.f === 'open' ? !g.done && !g.later : a.f === 'sug' ? !!g.sug : a.f === 'new' ? g.isNew : a.f === 'later' ? g.later : g.done)
+    const EW = G.filter(g => (g.ew > 0 || g.lastbro) && !g.done).sort((p, q) => q.lastbro - p.lastbro || q.ew - p.ew || q.area - p.area).slice(0, 25), EWk = {}; EW.forEach(g => EWk[g.k] = 1);
+    const cnt = { ew: EW.length, open: G.filter(g => !g.done && !g.later).length, sug: G.filter(g => g.sug).length, new: G.filter(g => g.isNew).length, later: G.filter(g => g.later).length, done: G.filter(g => g.done).length };
+    const L = a.f === 'ew' && !a.kq ? EW.filter(g => !a.q || (g.names.join(' ') + ' ' + g.p).toLowerCase().indexOf(a.q.trim().toLowerCase()) >= 0) : G.filter(g => a.kq ? g.kh.indexOf(a.kq) >= 0 : a.f === 'open' ? !g.done && !g.later : a.f === 'sug' ? !!g.sug : a.f === 'new' ? g.isNew : a.f === 'later' ? g.later : g.done)
       .filter(g => !q || (g.names.join(' ') + ' ' + g.p).toLowerCase().indexOf(q) >= 0 || g.kh.some(k => String(k).toLowerCase() === q || String(k).toLowerCase().indexOf(q + '/') === 0));
     const tot = D.rows.length, mk = D.rows.filter(r => r.x.side).length, fl = G.filter(g => !g.done).length;
     const pickL = c => { const p = D.picks.find(x => x[0] === ((D.of[c] || [])[0])); return p ? p[2] : c; };
     const card = g => { const on = !!a.sel[g.k], marked = g.rows.filter(r => r.x.side);
       return `<div class="fc">${D.can_edit && !g.done ? `<input type="checkbox" class="ck" data-s="${esc(g.k)}" ${on ? 'checked' : ''} aria-label="Select ${esc(g.n)}">` : ''}
-        <div class="bd" data-g="${esc(g.k)}">${g.fam ? `<b>Family of ${esc(g.p)}</b> <span style="color:${C.mute}">· ${g.rows.length} members</span>` : `<b>${esc(g.n)}</b> <span style="color:${C.mute}">s/o ${esc(g.p || '–')}</span>`}${g.nilf ? '<span class="tg c">NO FATHER – CHECK NAME</span>' : ''}${g.isNew ? '<span class="tg n">NEW</span>' : ''}${g.chg ? '<span class="tg c">CHANGED</span>' : ''}${g.later ? '<span class="tg l">LATER</span>' : ''}${g.sug && !g.done ? '<span class="tg s">SUGGESTED</span>' : ''}
+        <div class="bd" data-g="${esc(g.k)}">${g.fam ? `<b>Family of ${esc(g.p)}</b> <span style="color:${C.mute}">· ${g.rows.length} members</span>` : `<b>${esc(g.n)}</b> <span style="color:${C.mute}">s/o ${esc(g.p || '–')}</span>`}${g.nilf ? '<span class="tg c">NO FATHER – CHECK NAME</span>' : ''}${g.lastbro ? '<span class="tg s">LAST BROTHER</span>' : ''}${g.isNew ? '<span class="tg n">NEW</span>' : ''}${g.chg ? '<span class="tg c">CHANGED</span>' : ''}${g.later ? '<span class="tg l">LATER</span>' : ''}${g.sug && !g.done ? '<span class="tg s">SUGGESTED</span>' : ''}
         ${g.fam ? `<small style="color:${C.ink}">${g.rows.map(r => esc(r.n) + (r.x.side === 'made' ? ' ✓ID' : r.x.side ? ' ✓' : '')).join(', ')}</small>` : ''}
-        <small>${g.rows.length} owner${g.rows.length > 1 ? 's' : ''} · khasra ${esc(g.kh.slice(0, 12).join(', '))}${g.kh.length > 12 ? ' …' : ''}</small>
+        <small>${g.area ? (g.area < 0.01 ? '<b style="color:#8A5A0B">' + g.area.toFixed(3) + ' ha (very small)</b> · ' : g.area.toFixed(2) + ' ha · ') : ''}${g.rows.length} owner${g.rows.length > 1 ? 's' : ''} · khasra ${esc(g.kh.slice(0, 12).join(', '))}${g.kh.length > 12 ? ' …' : ''}</small>
         ${marked.length ? Array.from(new Set(marked.map(r => r.x.side + '|' + r.x.text))).slice(0, 2).map(t => `<div class="rm ${t.split('|')[0] === 'can' ? '' : 'not'}">✓ ${esc(t.split('|').slice(1).join('|'))}</div>`).join('') : ''}
         ${g.sug && !g.done ? `<div class="why"><b>App ka andaza:</b> ${esc(pickL(g.sug.sg))}${g.sug.why ? ' – ' + esc(g.sug.why) : ''}</div>` : ''}</div></div>
         ${g.sug && !g.done && D.can_edit ? `<div class="sa" style="margin:-4px 0 12px"><button class="y" data-cf="${esc(g.k)}">Sahi hai · Confirm</button><button data-g="${esc(g.k)}">Badlein · Change</button></div>` : ''}`; };
@@ -147,7 +149,7 @@ VIEWS.reg14v = async function (a) {
       <p class="sub">${N(fl)} kisan baaki · ${N(mk)} of ${N(tot)} owners marked${D.due ? ' · due ' + esc(dmy(D.due)) : ''}${D.can_edit ? '' : ' · view only'}</p>
       <div class="bar" style="margin:0 0 12px"><i style="width:${tot ? 100 * mk / tot : 0}%"></i></div>
       <input class="srch" id="q" type="search" placeholder="${a.f === 'kh' ? 'Khasra no. likhein' : 'Naam ya khasra no. likhein · Search'}" value="${esc(a.q)}" aria-label="Search by name or khasra">
-      <div class="chips">${[['open', 'Baaki'], ['sug', 'App ka andaza'], ['new', 'Naye'], ['later', 'Baad mein'], ['done', 'Ho gaya'], ['kh', 'Khasra-wise']].map(c => `<button data-f="${c[0]}" class="${a.f === c[0] && !a.kq ? 'on' : ''}">${c[1]}${cnt[c[0]] !== undefined ? ' ' + cnt[c[0]] : ''}</button>`).join('')}</div>
+      <div class="chips">${[['ew', 'Aaj ke 25'], ['open', 'Baaki'], ['sug', 'App ka andaza'], ['new', 'Naye'], ['later', 'Baad mein'], ['done', 'Ho gaya'], ['kh', 'Khasra-wise']].map(c => `<button data-f="${c[0]}" class="${a.f === c[0] && !a.kq ? 'on' : ''}">${c[1]}${cnt[c[0]] !== undefined ? ' ' + cnt[c[0]] : ''}</button>`).join('')}</div>
       ${a.f === 'sug' && D.can_edit && cnt.sug ? `<p class="hint">Andaza sahi ho to "Confirm" dabayein. Galat ho to "Change".</p>` : ''}
       ${body}
       ${nSel ? `<div class="bulk"><div><span>${nSel} chune</span><button id="bm">Ek saath wajah</button><button class="gh" id="bc">Hatayein</button></div></div>` : ''}</div>`;
