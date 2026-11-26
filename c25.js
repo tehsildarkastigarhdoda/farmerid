@@ -19,7 +19,7 @@ const r2 = x => Math.round(x * 100) / 100;
 const mask = s => String(s || '').replace(/\b(\d{4})[\s-]?(\d{4})[\s-]?(\d{4})\b/g, (m, a, b, c) => 'XXXX XXXX ' + c);
 
 /* ---------- who am I ---------- */
-const who = () => { const u = me() || {}; if (u.role === 'ADMIN') return 'teh'; if (u.role === 'NT') return 'nt'; if (u.role === 'DA') return 'da';
+const who = () => { const u = me() || {}; if (S.boot && S.boot.fid25) return ''; if (u.role === 'ADMIN') return 'teh'; if (u.role === 'NT') return 'nt'; if (u.role === 'DA') return 'da';
   const d = String(u.designation || ''); return /patwari/i.test(d) ? 'ph' : /\bGQ\b|girdawar/i.test(d) ? 'gq' : /\bBCG\b/i.test(d) ? 'da' : /\bOQ\b|office\s*qanungo/i.test(d) ? 'oq' : ''; };
 const WHO = { ph: 'Patwari', nt: 'Naib Tehsildar', gq: 'Girdawar Qanungo', da: 'BCG (Dealing Assistant)', teh: 'Tehsildar', oq: 'Office Qanungo' };
 

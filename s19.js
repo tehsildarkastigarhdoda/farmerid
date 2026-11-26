@@ -94,7 +94,7 @@ VIEWS.assar19 = async function () {
   view().innerHTML = `<div class="t12 a19"><p class="sub">Loading…</p></div>`;
   let A; try { A = await api('assar19Get', {}, 30000); } catch (e) { view().innerHTML = `<div class="t12"><p class="lead">${esc(e.message)}</p></div>`; return; }
   const t = A.tehsildar || { name: '', mobile: '', on: false };
-  const ML = { ON: ['On', 'Full app, as before'], MON: ['View only', 'Hidden from you. Its DA uploads; its staff and Tehsildar view figures and the hourly status'], OFF: ['Off', 'Every Assar login closed; data kept'] };
+  const ML = { ON: ['Farmer ID', 'Assar staff and Tehsildar Assar get full Farmer ID: uploads, marking, sorting, reports. Nothing else of the app is shown to them'], MON: ['View only', 'Hidden from you. Its DA uploads; its staff and Tehsildar view figures and the hourly status'], OFF: ['Off', 'Every Assar login closed; data kept'] };
   view().innerHTML = `<div class="t12 a19"><h1>Tehsil Assar</h1><p class="sub">Not in your charge. You keep the master switch.</p>
     <div class="cd"><h3>Master switch</h3><div class="md">${['ON', 'MON', 'OFF'].map(m => `<button data-m="${m}" class="${A.mode === m ? 'on' : ''}">${ML[m][0]}</button>`).join('')}</div><p class="hint">${esc(ML[A.mode][1])}.</p></div>
     ${A.mode === 'MON' ? `<div class="cd"><h3>Closing date ${A.off_at ? '<span class="pill ur">Set</span>' : ''}</h3>${A.off_at ? `<p class="lead" style="font-size:15px">Assar goes Off on <b>${esc(A.off_at.slice(8, 10) + '-' + A.off_at.slice(5, 7) + '-' + A.off_at.slice(0, 4) + ' at ' + A.off_at.slice(11, 16))}</b>. Until then its logins see the date and its DA and Tehsildar can download their data.</p><div class="acts"><button class="btn12 gh" id="ca19">Remove closing date</button></div>`

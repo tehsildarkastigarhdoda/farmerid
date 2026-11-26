@@ -460,7 +460,7 @@ updateBnav = function () {
   const want = svmOn() && office() ? TABS_OS : TABS_ORIG, sig = want.map(x => x[0]).join(',');
   if (TABS10.map(x => x[0]).join(',') !== sig) { TABS10.length = 0; want.forEach(x => TABS10.push(x.slice())); const n = $('#nav10'); if (n) n.remove(); }
   _ub12();
-  const n10 = $('#nav10'); if (n10) { const br = $('.br', n10); if (br && br.textContent !== 'TehsilOS') br.textContent = 'TehsilOS'; }
+  const n10 = $('#nav10'); if (n10) { const br = $('.br', n10); const nm = S.boot && S.boot.fid25 ? 'Farmer ID' : 'TehsilOS'; if (br && br.textContent !== nm) br.textContent = nm; }
   const pw = $('#pwn95');
   if (pw && svmOn() && !$('[data-pw="svm12"]', pw)) {
     const b = document.createElement('button'); b.dataset.pw = 'svm12'; b.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${P10.map}"/></svg><span>SVAMITVA</span>`;
