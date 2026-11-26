@@ -97,6 +97,8 @@ VIEWS.assar19 = async function () {
   const ML = { ON: ['On', 'Full app, as before'], MON: ['View only', 'Hidden from you. Its DA uploads; its staff and Tehsildar view figures and the hourly status'], OFF: ['Off', 'Every Assar login closed; data kept'] };
   view().innerHTML = `<div class="t12 a19"><h1>Tehsil Assar</h1><p class="sub">Not in your charge. You keep the master switch.</p>
     <div class="cd"><h3>Master switch</h3><div class="md">${['ON', 'MON', 'OFF'].map(m => `<button data-m="${m}" class="${A.mode === m ? 'on' : ''}">${ML[m][0]}</button>`).join('')}</div><p class="hint">${esc(ML[A.mode][1])}.</p></div>
+    ${A.mode === 'MON' ? `<div class="cd"><h3>Closing date ${A.off_at ? '<span class="pill ur">Set</span>' : ''}</h3>${A.off_at ? `<p class="lead" style="font-size:15px">Assar goes Off on <b>${esc(A.off_at.slice(8, 10) + '-' + A.off_at.slice(5, 7) + '-' + A.off_at.slice(0, 4) + ' at ' + A.off_at.slice(11, 16))}</b>. Until then its logins see the date and its DA and Tehsildar can download their data.</p><div class="acts"><button class="btn12 gh" id="ca19">Remove closing date</button></div>`
+      : `<p class="hint">Assar logins are told the date and can download their data till then. At that time Assar switches Off by itself.</p><label class="hint" for="at19">Goes Off on</label><input type="datetime-local" id="at19" value="${(() => { const d = new Date(Date.now() + 5.5 * 3600e3 + 864e5); return d.toISOString().slice(0, 16); })()}"><div class="acts"><button class="btn12" id="sa19">Set closing date</button></div>`}</div>` : ''}
     <div class="cd"><h3>Tehsildar Assar login <span class="pill ${t.on ? 'ok' : 'nu'}">${t.on ? 'On' : 'Off'}</span></h3><p class="hint">View only: figures and the hourly status of Assar. No switches, settings, uploads or reports.</p>
       <label class="hint" for="n19">Name</label><input type="text" id="n19" value="${esc(t.name)}" placeholder="Name of the Tehsildar Assar">
       <label class="hint" for="m19">Mobile (for the login list)</label><input type="tel" id="m19" placeholder="${esc(t.mobile || '10-digit mobile')}" inputmode="numeric">
@@ -104,6 +106,8 @@ VIEWS.assar19 = async function () {
     <div class="cd"><h3>Assar staff with a login</h3>${A.staff.length ? A.staff.map(x => `<div class="row" style="cursor:default"><span>${esc(x.name)}<small>${esc(x.designation)}</small></span></div>`).join('') : '<p class="hint">None.</p>'}</div></div>`;
   $$('[data-m]').forEach(b => b.onclick = () => { const m = b.dataset.m; if (m === A.mode) return; if (!confirm(`Set Tehsil Assar to "${ML[m][0]}"?`)) return;
     busy(b, 'Switching', async () => { await api('tehsil18Set', { tehsil_id: 'T_ASSAR', mode: m }, 60000); toast('Tehsil Assar: ' + ML[m][0] + ' ✓'); render(); }); });
+  if ($('#sa19')) $('#sa19').onclick = () => busy($('#sa19'), 'Setting', async () => { const v = $('#at19').value; if (!v) throw new Error('Choose the date and time.'); await api('tehsil18Set', { tehsil_id: 'T_ASSAR', mode: 'OFF_AT', at: v.replace('T', ' ') + ':00' }, 30000); toast('Closing date set ✓'); render(); });
+  if ($('#ca19')) $('#ca19').onclick = () => busy($('#ca19'), 'Removing', async () => { await api('tehsil18Set', { tehsil_id: 'T_ASSAR', mode: 'OFF_AT', at: '' }, 30000); toast('Closing date removed'); render(); });
   const save = (on, extra) => api('succ19Set', Object.assign({ name: $('#n19').value, mobile: $('#m19').value, on }, extra || {}), 30000);
   $('#s19').onclick = () => busy($('#s19'), 'Saving', async () => { if (!$('#n19').value.trim()) throw new Error('Type the name.'); await save(true); toast('Tehsildar Assar login on ✓ (PIN 1234 on first login)'); render(); });
   if ($('#o19')) $('#o19').onclick = () => busy($('#o19'), 'Turning off', async () => { await save(false); toast('Login off'); render(); });
@@ -119,3 +123,9 @@ if (_f19) VIEWS.feat12 = async function (a) {
 };
 window.TOS19 = { v: V19 };
 })();
+
+/* 12.5.2: closing date notice on the monitoring strip of a View-only tehsil */
+setInterval(() => { try { const m = S.boot && S.boot.mon18, el = document.getElementById('ml16'); if (!m || !m.closes || !el || el.querySelector('.cl25')) return;
+  const c = m.closes, d = c.slice(8, 10) + '-' + c.slice(5, 7) + '-' + c.slice(0, 4), t = c.slice(11, 16);
+  const p = document.createElement('b'); p.className = 'cl25'; p.style.cssText = 'display:block;margin-bottom:6px;font-size:14px';
+  p.textContent = 'TehsilOS for Tehsil ' + m.names + ' closes on ' + d + ' at ' + t + '.' + (m.da ? ' Download your data before then.' : ''); el.insertBefore(p, el.firstChild); } catch (e) {} }, 2000);
