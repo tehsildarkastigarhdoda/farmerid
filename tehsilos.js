@@ -486,4 +486,6 @@ document.title = 'TehsilOS';
 try { const t = $('#title'); if (t && t.textContent === 'Farmer ID') t.textContent = 'TehsilOS'; } catch (e) {}
 try { if (typeof current === 'function' && current()) render(); } catch (e) {}
 window.TOS12 = { v: V12 };
+/* 12.6.0: shared with the new home (ui26.js) */
+window.T12X = { svmLoad, needs, svmOn, office, TABS_OS };
 })();

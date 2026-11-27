@@ -424,7 +424,7 @@ VIEWS.c25 = async function () {
     <div class="cd"><label class="f" for="c25app">Application No.</label><input id="c25app" placeholder="JK-REV-EWS/2026/24523" autocomplete="off" autocapitalize="characters">
       <div id="c25sv" class="mu" style="margin-top:6px">Paste from JanSugam.</div><button class="btn12" id="c25go" style="width:100%;margin-top:10px">${w === 'ph' ? 'Start / open report' : 'Open'}</button></div>
     ${S2 ? `<div class="g4" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;text-align:center;margin-bottom:10px">${[['Patwari', S2.ph], ['NT / GQ', S2.nt], ['BCG', S2.da], ['Tehsildar', S2.teh]].map(x => `<div class="cd" style="padding:8px 4px;margin:0"><b style="font-size:20px">${x[1]}</b><div class="mu">${x[0]}</div></div>`).join('')}</div>
-      ${S2.byPh.length ? `<div class="cd"><h3>By halqa</h3><table class="tt"><tr><th>Halqa</th><th>Open</th><th>Overdue</th><th>Returned</th></tr>${S2.byPh.map(p => `<tr><td>${esc(p.ph)}</td><td>${p.open}</td><td style="color:${p.overdue ? '#A1261B' : 'inherit'};font-weight:${p.overdue ? 800 : 400}">${p.overdue}</td><td>${p.returns}</td></tr>`).join('')}</table></div>` : ''}` : ''}
+      ${(S2.byPh || []).length ? `<div class="cd"><h3>By halqa</h3><table class="tt"><tr><th>Halqa</th><th>Open</th><th>Overdue</th><th>Returned</th></tr>${S2.byPh.map(p => `<tr><td>${esc(p.ph)}</td><td>${p.open}</td><td style="color:${p.overdue ? '#A1261B' : 'inherit'};font-weight:${p.overdue ? 800 : 400}">${p.overdue}</td><td>${p.returns}</td></tr>`).join('')}</table></div>` : ''}` : ''}
     <div class="cd"><h3>${w === 'ph' ? 'My cases – to finish' : 'Waiting for you'} <span class="pill ${todo.length ? 'ur' : 'ok'}">${todo.length}</span></h3>${todo.map(card).join('') || '<p class="mu">Nothing waiting.</p>'}</div>
     ${rest.length ? `<div class="cd"><h3>Others</h3>${rest.map(card).join('')}</div>` : ''}
     ${w !== 'gq' ? `<button class="cd row" data-go="c25b" style="display:block;border:0;width:100%;text-align:left"><h3>Blank proformas <span>›</span></h3><div class="mu">Any service · Word or PDF · no Application No. needed · model sample</div></button>` : ''}
@@ -656,7 +656,10 @@ updateBnav = function () {
 };
 const _t25 = VIEWS.tos12;
 if (_t25) VIEWS.tos12 = async function (a) {
-  await _t25(a);
+  const pr = _t25(a);
+  try { if (who() && !$('#c25q')) { const h = $('.t12', view()); if (h) { const q = document.createElement('button'); q.id = 'c25q'; q.className = 'cd row'; q.style.cssText = 'display:block;border:0;width:100%;text-align:left';
+    q.innerHTML = '<h3>Certificates <span>›</span></h3><div class="lbl">Open while the tehsil status loads</div>'; q.onclick = () => go('c25', {}); h.insertBefore(q, h.firstChild); } } } catch (e) {}
+  await pr;
   try { if (current().name !== 'tos12' || $('#c25t') || !who()) return; const host = $('.t12', view()); if (!host) return;
     const b = document.createElement('button'); b.id = 'c25t'; b.className = 'cd row'; b.style.cssText = 'display:block;border:0;width:100%;text-align:left';
     b.innerHTML = `<h3>Certificates <span class="pill ok">New</span></h3><div class="lbl">JanSugam reports and remarks – Patwari → NT / GQ → BCG → you</div><div class="lbl" style="margin-top:6px">Open ›</div>`;
