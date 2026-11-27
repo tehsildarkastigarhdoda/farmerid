@@ -77,7 +77,7 @@ body.ui26 .bk26{display:none}
 .h26 .of{font-size:13.5px;color:#5E6B63}
 .h26 .gain{display:inline-block;font-size:12.5px;font-weight:600;color:#0E5E3B;background:#E8F2EC;border-radius:999px;padding:3px 10px;margin-left:6px}
 .h26 .acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
-@media (min-width:1100px){.h26 .hro .acts{display:flex;flex-direction:column;width:190px;margin-top:0}}
+@media (min-width:1100px){.h26 .hro{flex-wrap:nowrap}.h26 .hro .acts{display:flex;flex-direction:column;width:190px;margin-top:0}}
 .h26 .b1,.h26 .b2{height:46px;border-radius:12px;font:600 14px Inter,sans-serif;cursor:pointer;padding:0 14px}
 .h26 .b1{border:0;background:#0F1A14;color:#fff}.h26 .b2{border:1px solid #D5DBD6;background:#fff;color:#0F1A14}
 .h26 .minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:18px;padding-top:16px;border-top:1px solid #EEF0EE}
@@ -152,7 +152,7 @@ const _r26 = render;
 render = async function () {
   try { const c = current(); document.body.classList.toggle('t26', !!c && c.name === 'tos12'); } catch (e) {}
   const out = await _r26.apply(this, arguments);
-  try { if (on26() && NAV.stack.length > 1 && !$('.bk26', view())) { const b = document.createElement('button'); b.className = 'bk26'; b.innerHTML = '‹ Back'; b.onclick = () => history.back(); view().insertBefore(b, view().firstChild); } } catch (e) {}
+  try { if (on26() && NAV.stack.length > 1 && current().name !== 'tos12' && !$('.bk26', view())) { const b = document.createElement('button'); b.className = 'bk26'; b.innerHTML = '‹ Back'; b.onclick = () => history.back(); view().insertBefore(b, view().firstChild); } } catch (e) {}
   return out;
 };
 
@@ -198,7 +198,9 @@ function needsList() {
     if (od.length) L.push({ c: 'r', t: `${od.length} certificate report${od.length > 1 ? 's' : ''} overdue`, s: 'Certificates · PSGA', b: 'Open', k: 1, go: ['c25', {}] });
     if (mine.length) L.push({ c: 'a', t: `${mine.length} certificate${mine.length > 1 ? 's' : ''} waiting for you`, s: 'Certificates', b: 'Open', k: !od.length, go: ['c25', {}] });
     const ret = R.filter(r => r.ph_status === 'RETURNED').length; if (ret) L.push({ c: '', t: `BCG returned ${ret} report${ret > 1 ? 's' : ''}`, s: 'Certificates · with the Patwari', b: 'View', go: ['c25', {}] }); }
-  if (A && A.alerts) A.alerts.forEach(x => L.push({ c: x.k === 'upload' || x.k === 'check' ? 'a' : '', t: x.t, s: 'Farmer ID', b: 'View', go: x.k === 'upload' ? [VIEWS.portal ? 'portal' : 'pp19', {}] : x.k === 'patwari' ? ['reg14', {}] : ['day19', {}] }));
+  if (A && A.alerts) { const st = A.alerts.filter(x => x.k === 'stall');
+    if (st.length > 1) L.push({ c: 'a', t: `${st.length} villages: no new Farmer ID in 2 days`, s: st.map(x => String(x.t).split(':')[0]).join(', '), b: 'View', go: ['day19', {}] });
+    A.alerts.filter(x => !(st.length > 1 && x.k === 'stall')).forEach(x => L.push({ c: x.k === 'upload' || x.k === 'check' ? 'a' : '', t: x.t, s: 'Farmer ID', b: 'View', go: x.k === 'upload' ? [VIEWS.portal ? 'portal' : 'pp19', {}] : x.k === 'patwari' ? ['reg14', {}] : ['day19', {}] })); }
   if (V && V.needs) V.needs.forEach(n => L.push({ c: '', t: n.t, s: 'SVAMITVA · ' + n.k, b: 'Open', go: n.a }));
   return L;
 }
