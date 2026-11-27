@@ -4,7 +4,7 @@
  */
 "use strict";
 (function () {
-const V26 = '12.8.0';
+const V26 = '12.9.0';
 const view = () => $('#view');
 const isDesk = () => window.matchMedia('(min-width: 900px)').matches;
 const istNow = () => new Date(Date.now() + 5.5 * 3600e3);
@@ -122,17 +122,24 @@ document.head.appendChild(css);
 /* ---------- shell ---------- */
 const ICO = { cert: 'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6', camp: 'M4 20l8-16 8 16zM10 20l2-4 2 4', ins: 'M4 20V10M10 20V4M16 20v-7M22 20H2', ppl: 'M9 11.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.7.9 2.7 2.7 3 5.2',
   cov: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z', set: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
-  map: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15', meet: 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4M7 14h4M7 17h7', court: 'M12 3v18M5 21h14M4 8h16M6 8l-3 6a3 3 0 0 0 6 0zM18 8l-3 6a3 3 0 0 0 6 0z', land: 'M3 20l5-9 4 6 3-4 6 7zM16 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4z', dak: 'M3 6h18v12H3zM3 6l9 7 9-7', griev: 'M4 5h16v11H9l-5 4zM12 8v3M12 13.5v.01', fid: 'M12 21c-4-3-7-6-7-10a7 7 0 0 1 14 0c0 4-3 7-7 10zM12 8v6M9 11h6', sw: 'M7 7h10M7 7l3-3M7 7l3 3M17 17H7M17 17l-3-3M17 17l-3 3' };
+  map: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15', doc: 'M7 3h10v18H7zM10 8h4M10 12h4M10 16h2', meet: 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4M7 14h4M7 17h7', court: 'M12 3v18M5 21h14M4 8h16M6 8l-3 6a3 3 0 0 0 6 0zM18 8l-3 6a3 3 0 0 0 6 0z', land: 'M3 20l5-9 4 6 3-4 6 7zM16 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4z', dak: 'M3 6h18v12H3zM3 6l9 7 9-7', griev: 'M4 5h16v11H9l-5 4zM12 8v3M12 13.5v.01', fid: 'M12 21c-4-3-7-6-7-10a7 7 0 0 1 14 0c0 4-3 7-7 10zM12 8v6M9 11h6', sw: 'M7 7h10M7 7l3-3M7 7l3 3M17 17H7M17 17l-3-3M17 17l-3 3' };
 const svg = (k, s) => `<svg width="${s || 18}" height="${s || 18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICO[k]}"/></svg>`;
 try { P10.cert = ICO.cert; } catch (e) {}
 const X = () => window.T12X || {};
-const on26 = () => !!(S.session && S.boot && X().svmOn && X().svmOn() && X().office() && !S.boot.fid25);
-try { const TABS_OS = X().TABS_OS; if (TABS_OS) { TABS_OS.length = 0; [['tos12', 'Home', 'os'], ['home', 'Farmer ID', 'home'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'm28'], ['mods28', 'More', 'mods28']].forEach(x => TABS_OS.push(x)); } } catch (e) {}
+const on26 = () => !!(S.session && S.boot && X().shell && X().shell() && !S.boot.fid25);
+const RK = () => (X().rk29 && X().rk29()) || 'teh';
+const BARS = { teh: [['tos12', 'Home', 'os'], ['home', 'Farmer ID', 'home'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'm28'], ['mods28', 'More', 'mods28']],
+  nt: [['tos12', 'Home', 'os'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'm28'], ['home', 'Farmer ID', 'home'], ['mods28', 'More', 'mods28']],
+  da: [['tos12', 'Home', 'os'], ['m28', 'Meetings', 'm28'], ['c25', 'Certificates', 'cert'], ['home', 'Farmer ID', 'home'], ['mods28', 'More', 'mods28']],
+  oq: [['tos12', 'Home', 'os'], ['svm12', 'SVAMITVA', 'map'], ['m28', 'Meetings', 'm28'], ['c25', 'Certificates', 'cert'], ['mods28', 'More', 'mods28']],
+  gq: [['tos12', 'Home', 'os'], ['home', 'Farmer ID', 'home'], ['m28', 'Meetings', 'm28'], ['svm12', 'SVAMITVA', 'map'], ['mods28', 'More', 'mods28']] };
+const setBar = () => { try { const T = X().TABS_OS, want = BARS[RK()] || BARS.teh; if (T && T.map(x => x[0]).join() !== want.map(x => x[0]).join()) { T.length = 0; want.forEach(x => T.push(x.slice())); } } catch (e) {} };
+setBar();
 try { Object.assign(TABOF10, { c25: 'c25', c25f: 'c25', c25p: 'c25', c25d: 'c25', c25r: 'c25', c25b: 'c25' }); } catch (e) {}
-const EXTRA = () => [['cov10', 'Coverage', 'cov'], ['camps10', 'Camps', 'camp'], ['ins19', 'Insights', 'ins'], ['ppl83', 'People', 'ppl']].concat(role() === 'ADMIN' ? [['mast12', 'Settings & masters', 'set'], ['assar19', 'Tehsil Assar', 'sw']] : []);
+const EXTRA = () => (RK() === 'gq' ? [['cov10', 'Coverage', 'cov']] : RK() === 'oq' ? [['cov10', 'Coverage', 'cov'], ['ins19', 'Insights', 'ins']] : [['cov10', 'Coverage', 'cov'], ['camps10', 'Camps', 'camp'], ['ins19', 'Insights', 'ins'], ['ppl83', 'People', 'ppl']]).concat(role() === 'ADMIN' ? [['mast12', 'Settings & masters', 'set'], ['assar19', 'Tehsil Assar', 'sw']] : []);
 const _ub26 = updateBnav;
 updateBnav = function () {
-  _ub26();
+  setBar(); _ub26();
   const want = on26(); document.body.classList.toggle('ui26', want);
   if (!want) return;
   const n = $('#nav10'); if (!n) return;
@@ -163,6 +170,7 @@ const SRC = {
   al: f => api('alerts19', f ? { fresh: 1 } : {}, 45000),
   c25: () => api('cert25List', {}, 45000),
   m28: () => (window.M28X ? window.M28X.needs(true) : Promise.resolve(null)),
+  h29: () => api('home29', {}, 45000),
   svm: f => X().svmLoad(f).then(D => ({ totals: D.totals, needs: X().needs(D).slice(0, 6) }))
 };
 const H = { data: {}, err: {}, busy: {}, at: 0, vil: 'all' };
@@ -178,7 +186,25 @@ const errRow = (k, what) => `<div class="er"><span>Couldn't load ${what}.</span>
 const ring = (pct, size, sw, col, tint, label) => { const r = (size - sw) / 2, c = 2 * Math.PI * r, d = Math.max(0, Math.min(1, pct)) * c;
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" ${label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true"'} style="flex:none"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${tint}" stroke-width="${sw}"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${d.toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>${label && size > 60 ? `<text x="${size / 2}" y="${size / 2 + 6}" text-anchor="middle" font-family="Inter,sans-serif" font-size="${size > 110 ? 24 : 17}" font-weight="600" fill="#0F1A14">${Math.round(pct * 100)}%</text>` : ''}</svg>`; };
 function totals(ins) { return (ins.villages || []).reduce((a, v) => { a.total += v.total || 0; a.claimed += v.claimed || 0; a.part += v.part || 0; return a; }, { total: 0, claimed: 0, part: 0 }); }
+const heroG = o => `<div class="cd"><div class="hro">${o.pct != null ? ring(o.pct, 96, 9, '#0E5E3B', '#E8F2EC', Math.round(o.pct * 100) + ' percent') : ''}
+    <div class="nm26"><div class="lb">${o.label}</div><div style="margin-top:4px"><span class="bg26">${o.big}</span></div><div class="of">${o.of || ''}</div></div>
+    <div class="acts">${o.b.map((b, i) => `<button class="${i ? 'b2' : 'b1'}" data-go="${b[0]}" ${b[2] ? `data-args="${esc(JSON.stringify(b[2]))}"` : ''}>${b[1]}</button>`).join('')}</div></div></div>`;
+const heroSk = k => `<div class="cd">${H.err[k] ? errRow(k, 'figures') : `${sk(14, '40%')}<div style="height:10px"></div>${sk(46, '55%')}<div style="height:10px"></div>${sk(14, '30%')}`}</div>`;
+function heroRole(K) {
+  const C = H.data.c25, MG = H.data.m28, V = H.data.svm, G = H.data.h29, td = istNow().toISOString().slice(0, 10);
+  if (K === 'nt') { if (!C) return heroSk('c25'); const ch = C.rows.filter(r => r.fresh && r.mine).length;
+    return heroG({ label: 'Certificates · new Patwari reports for you', big: N(C.fresh || 0), of: ch ? ch + ' changed after your report' : 'Whole tehsil', b: [['c25', 'Open Certificates'], ['m28', 'Meetings']] }); }
+  if (K === 'da') { const up = MG && MG.rows ? MG.rows.filter(r => r.date >= td && r.of).sort((a, b) => a.date.localeCompare(b.date))[0] : null;
+    if (up) return heroG({ pct: up.got / up.of, label: esc(up.title) + ' · information received', big: up.got + ' of ' + up.of, of: (up.of - up.got) + ' not received · meeting ' + String(up.date).slice(8, 10) + '-' + String(up.date).slice(5, 7), b: [['m28m', 'Response board', { id: up.mtg_id }], ['m28', 'Meetings']] });
+    if (!C) return heroSk('c25'); return heroG({ label: 'Certificates · files ready for scrutiny', big: N(C.fresh || 0), of: 'Patwari and NT reports in', b: [['c25', 'Open Certificates'], ['m28', 'Meetings']] }); }
+  if (K === 'oq') { if (!V || !V.totals) return heroSk('svm'); const t = V.totals;
+    return heroG({ pct: t.props ? t.cards / t.props : 0, label: 'SVAMITVA · property cards', big: N(t.cards), of: 'of ' + N(t.props) + ' · ' + N(t.pending) + ' pending', b: [['svm12', 'Open SVAMITVA'], ['m28', 'Meetings']] }); }
+  if (K === 'gq') { if (!G) return heroSk('h29'); const f = G.fid, made = f.claimed + f.part;
+    return heroG({ pct: f.total ? made / f.total : 0, label: 'Farmer ID · ' + esc(G.scope), big: N(made), of: 'of ' + N(f.total) + (G.gain != null ? `<span class="gain">+${N(G.gain)} today</span>` : ''), b: [['home', 'Farmer ID'], ['m28', 'Meetings']] }); }
+  return '';
+}
 function heroCard() {
+  const K = RK(); if (K !== 'teh') return heroRole(K);
   const I = H.data.ins, D = H.data.day;
   if (!I) return `<div class="cd">${H.err.ins ? errRow('ins', 'Farmer ID figures') : `${sk(14, '40%')}<div style="height:10px"></div>${sk(46, '55%')}<div style="height:10px"></div>${sk(14, '30%')}`}</div>`;
   const T = totals(I), made = T.claimed + T.part, today = D ? (D.totals.made + D.totals.part) : null, pct = T.total ? made / T.total : 0;
@@ -205,7 +231,7 @@ function needsList() {
   return L;
 }
 function needsCard() {
-  const L = needsList(), wait = ['c25', 'al', 'svm', 'm28'].some(k => H.busy[k] && !H.data[k]);
+  const L = needsList(), wait = ['c25', 'al', 'svm', 'm28', 'h29'].some(k => H.busy[k] && !H.data[k]);
   const errs = ['c25', 'al', 'svm'].filter(k => H.err[k] && !H.data[k]);
   return `<div class="cd"><div class="hd"><b>Needs you</b>${L.length > 6 ? `<button class="lk" data-go="inbox12">All ${L.length}</button>` : `<span>${L.length ? L.length + ' item' + (L.length > 1 ? 's' : '') : ''}</span>`}</div>
     ${L.slice(0, 6).map((n, i) => `<div class="nd"><i class="c ${n.c}"></i><div class="t"><b>${esc(n.t)}</b><span>${esc(n.s)}</span></div><button class="pb ${n.k ? 'k' : ''}" data-nd="${i}">${n.b}</button></div>`).join('')}
@@ -234,6 +260,13 @@ function tilesCard() {
   const t = (go, ic, bg, fg, name, sub) => `<button class="tile" data-go="${go}"><span class="ic" style="background:${bg};color:${fg}">${svg(ic, 19)}</span><span><b>${name}</b><span class="s">${sub}</span></span></button>`;
   const MG = H.data.m28, up = MG && MG.rows ? MG.rows.filter(r => r.date >= istNow().toISOString().slice(0, 10)).sort((a, b) => a.date.localeCompare(b.date))[0] : null, c25on = !!(window.C25X && window.C25X.who && window.C25X.who());
   const SOON = [['Revenue Court Cases', 'court'], ['State Land & Encroachment', 'land'], ['Dak Section', 'dak'], ['Grievances', 'griev']];
+  const K = RK(), mt = window.M28X && window.M28X.who() ? t('m28', 'meet', '#F0EEF7', '#5B4B8A', 'Meetings', up ? esc(up.title.length > 22 ? up.title.slice(0, 21) + '…' : up.title) + ' · ' + Number(up.date.slice(8, 10)) + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Number(up.date.slice(5, 7)) - 1] : 'Notices, brief, minutes') : '';
+  const cert = sub => c25on ? t('c25', 'cert', '#E8F2EC', '#0E5E3B', 'Certificates', sub || (mine ? 'New for you' : 'Reports and remarks')) : '', fidT = sub => t('home', 'fid', '#E8F2EC', '#0E5E3B', 'Farmer ID', sub), svT = sub => X().svmOn() ? t('svm12', 'map', '#EAF0F8', '#2F5D9E', 'SVAMITVA', sub || (V && V.totals ? N(V.totals.cards) + ' of ' + N(V.totals.props) + ' cards' : 'Abadi deh, cards')) : '';
+  const all = `<button class="cd row26" data-go="mods28" style="width:100%;margin-top:12px;padding:14px 20px"><span>All modules<small>${role() === 'ADMIN' ? '5 live · 11 coming' : 'Everything in TehsilOS'}</small></span><span>›</span></button>`;
+  if (K === 'nt') return `<div class="tiles">${cert()}${mt}${fidT('Whole tehsil · view')}${svT('View')}</div>${all}`;
+  if (K === 'da') return `<div class="tiles">${mt}${cert()}${fidT('4:30 report, camps')}${t('rep8', 'doc', '#F1F3F1', '#3F4A44', 'Reports', 'Daily, weekly')}</div>${all}`;
+  if (K === 'oq') return `<div class="tiles">${svT()}${mt}${cert('View')}${fidT('View')}</div>${all}`;
+  if (K === 'gq') return `<div class="tiles">${fidT('Your circle')}${svT('View')}${mt}</div>${all}`;
   return `<div class="tiles">${c25on ? t('c25', 'cert', '#E8F2EC', '#0E5E3B', 'Certificates', C ? (mine ? 'New for you' : 'Reports and remarks') : 'Reports and remarks') : ''}
     ${window.M28X && window.M28X.who() ? t('m28', 'meet', '#F0EEF7', '#5B4B8A', 'Meetings', up ? esc(up.title.length > 22 ? up.title.slice(0, 21) + '…' : up.title) + ' · ' + Number(up.date.slice(8, 10)) + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Number(up.date.slice(5, 7)) - 1] : 'Notices, brief, minutes') : ''}
     ${t('svm12', 'map', '#EAF0F8', '#2F5D9E', 'SVAMITVA', V && V.totals ? N(V.totals.cards) + ' of ' + N(V.totals.props) + ' cards' : 'Abadi deh, cards')}
@@ -242,9 +275,14 @@ function tilesCard() {
     ${role() === 'ADMIN' ? `<div class="hd" style="margin:18px 0 10px"><b>Coming soon</b><span>Only you see these</span></div><div class="tiles">${SOON.map(s => `<button class="tile" data-go="mods28" style="opacity:.55;position:relative"><span class="ic" style="background:#F1F3F1;color:#5E6B63">${svg(s[1], 19)}</span><span><b>${s[0]}</b><span class="s">Planned</span></span></button>`).join('')}</div>` : ''}
     <button class="cd row26" data-go="mods28" style="width:100%;margin-top:12px;padding:14px 20px"><span>All modules<small>${role() === 'ADMIN' ? '5 live · 11 coming' : 'Everything in TehsilOS'}</small></span><span>›</span></button>`;
 }
+function gqVill() {
+  const G = H.data.h29; if (!G) return H.err.h29 ? '' : `<div class="cd">${sk(16, '25%')}${[1, 2, 3].map(() => '<div style="height:14px"></div>' + sk(14)).join('')}</div>`;
+  return `<div class="cd"><div class="hd"><b>Villages</b><span>${esc(G.scope)}</span></div><table><thead><tr><th style="width:40%">Village</th><th>Claimed</th></tr></thead><tbody>
+    ${G.villages.map(v => { const p = v.total ? v.done * 100 / v.total : 0; return `<tr><td style="font-weight:600">${esc(v.name)}</td><td><div class="vb"><i><u style="width:${p.toFixed(1)}%"></u></i><em>${Math.round(p)}%</em></div></td></tr>`; }).join('')}</tbody></table></div>`;
+}
 function moreCard() {
   return `<div class="cd" style="padding:8px 20px"><button class="row26" data-go="cov10"><span>Coverage<small>Village-wise status</small></span><span>›</span></button>
-    <button class="row26" data-go="ppl83"><span>People<small>Staff, logins, villages</small></span><span>›</span></button>
+    ${['teh', 'nt', 'da'].indexOf(RK()) >= 0 ? '<button class="row26" data-go="ppl83"><span>People<small>Staff, logins, villages</small></span><span>›</span></button>' : ''}
     ${role() === 'ADMIN' ? `<button class="row26" data-go="mast12"><span>Settings &amp; masters<small>Villages, halqas, card prefixes, modules</small></span><span>›</span></button>
     <button class="row26" data-go="assar19"><span>Tehsil Assar<small>Master switch · closing date</small></span><span>›</span></button>` : ''}
     <button class="row26" data-go="set8"><span>My settings<small>PIN, text size, language · Log out</small></span><span>›</span></button></div>`;
@@ -256,19 +294,21 @@ function draw() {
   const desk = window.innerWidth >= 1100;
   view().innerHTML = `<div class="h26">
     <div class="top"><div><div class="dt">Tehsil Kastigarh · ${d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })}</div>
-      <h1>${h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}${firstName() ? ', ' + esc(firstName()) : ''}</h1></div>
+      <h1>${h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}${firstName() ? ', ' + esc(firstName()) : ''}</h1>${RK() !== 'teh' ? `<div class="dt" style="margin-top:2px">${esc(desig())}${RK() === 'nt' ? ' · whole tehsil' : ''}</div>` : ''}</div>
       <div class="up ${busy ? 'ld' : ''}"><i></i>${when}${busy && H.at ? ' · refreshing' : ''}${!busy ? ` · <button class="lk" id="rf26">Refresh</button>` : ''}</div></div>
-    <div class="grid">${desk ? `<div class="col">${heroCard()}${villCard()}</div><div class="col">${needsCard()}${weekCard()}${tilesCard()}${moreCard()}</div>`
+    <div class="grid">${RK() === 'gq' || RK() === 'oq' ? (desk ? `<div class="col">${heroCard()}${gqVill()}</div><div class="col">${needsCard()}${tilesCard()}${moreCard()}</div>` : `<div class="col">${heroCard()}${needsCard()}${tilesCard()}${gqVill()}${moreCard()}</div>`)
+      : desk ? `<div class="col">${heroCard()}${villCard()}</div><div class="col">${needsCard()}${weekCard()}${tilesCard()}${moreCard()}</div>`
       : `<div class="col">${heroCard()}${needsCard()}${tilesCard()}${weekCard()}${villCard()}${moreCard()}</div>`}</div>
     <div class="ft">TehsilOS ${esc(V26)}</div></div>`;
   const L = needsList();
-  on(view(), '[data-go]', 'click', b => { const n = b.dataset.go; if (n === 'home') { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); } else go(n, {}); });
+  on(view(), '[data-go]', 'click', b => { const n = b.dataset.go; if (b.dataset.args) { go(n, JSON.parse(b.dataset.args)); return; } if (n === 'home') { NAV.stack = [{ name: 'home', args: {} }]; history.replaceState({}, ''); render(); } else go(n, {}); });
   on(view(), '[data-nd]', 'click', b => { const n = L[Number(b.dataset.nd)]; if (n && n.go) go(n.go[0], n.go[1] || {}); });
   on(view(), '[data-retry]', 'click', b => fetchOne(b.dataset.retry, draw));
   const rf = $('#rf26'); if (rf) rf.onclick = () => loadAll(true);
 }
 function loadAll(f) {
-  const ks = ['ins', 'day', 'al', 'svm', 'm28'].concat(['ADMIN', 'NT', 'DA'].indexOf(role()) >= 0 || /patwari|gq|bcg|oq/i.test((me() || {}).designation || '') ? ['c25'] : []);
+  const K = RK(), sv = X().svmOn() ? ['svm'] : [], cert = window.C25X && window.C25X.who && window.C25X.who() ? ['c25'] : [];
+  const ks = K === 'gq' ? ['h29', 'm28'].concat(sv) : K === 'oq' ? ['h29', 'm28'].concat(sv, cert) : ['ins', 'day', 'al', 'm28'].concat(sv, cert);
   ks.forEach(k => fetchOne(k, draw, f));
 }
 let rz = 0; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (current() && current().name === 'tos12' && document.body.classList.contains('ui26')) draw(); }, 200); });

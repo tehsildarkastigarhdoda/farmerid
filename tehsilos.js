@@ -55,6 +55,11 @@ const todayL = () => { const n = new Date(Date.now() + 5.5 * 3600e3); return n.t
 const T12 = () => (S.boot && S.boot.tos12) || {};
 const svmOn = () => !!(T12().svm && T12().svm.view);
 const office = () => { const r = role(); return ['ADMIN', 'DA', 'NT'].indexOf(r) >= 0; };
+/* 12.9.0: the role on the TehsilOS shell (the main NT only; BCG, OQ and GQ logins too) */
+const rk29 = () => { if (!S.boot || S.boot.fid25) return ''; if (S.boot.rk29 != null) return S.boot.rk29; const u = me() || {}, d = String(u.designation || '');
+  if (u.role === 'ADMIN') return 'teh'; if (u.role === 'NT') return S.boot.m28 && !S.boot.m28.ntMain ? '' : 'nt'; if (u.role === 'DA' || /\bBCG\b/i.test(d)) return 'da';
+  if (/\bOQ\b|office\s*qanungo/i.test(d)) return 'oq'; if (/\bGQ\b|girdawar/i.test(d)) return 'gq'; if (/patwari/i.test(d)) return 'ph'; return u.role === 'COMP' ? 'comp' : ''; };
+const shell = () => { const k = rk29(); return (k === 'teh' || k === 'nt' || k === 'da') ? svmOn() && (office() || k === 'da') : (k === 'oq' || k === 'gq') && !!(S.boot && S.boot.tos12); };
 const wideOn = t => { setHeader(t); document.body.classList.add('wide'); };
 const view = () => $('#view');
 const loading = t => { view().innerHTML = `<div class="t12"><p class="sub">${esc(t || 'Loading…')}</p><div class="cd" style="height:90px"></div><div class="cd" style="height:140px"></div></div>`; };
@@ -457,7 +462,7 @@ Object.assign(TABOF10, { tos12: 'tos12', inbox12: 'tos12', mast12: 'tos12', feat
 Object.assign(PWV95, { svm12: 'svm12', svmv12: 'svm12', svmk12: 'svm12', svmc12: 'svm12', svmr12: 'svm12', svml12: 'svm12' });
 const _ub12 = updateBnav;
 updateBnav = function () {
-  const want = svmOn() && office() ? TABS_OS : TABS_ORIG, sig = want.map(x => x[0]).join(',');
+  const want = shell() ? TABS_OS : TABS_ORIG, sig = want.map(x => x[0]).join(',');
   if (TABS10.map(x => x[0]).join(',') !== sig) { TABS10.length = 0; want.forEach(x => TABS10.push(x.slice())); const n = $('#nav10'); if (n) n.remove(); }
   _ub12();
   const n10 = $('#nav10'); if (n10) { const br = $('.br', n10); const nm = S.boot && S.boot.fid25 ? 'Farmer ID' : 'TehsilOS'; if (br && br.textContent !== nm) br.textContent = nm; }
@@ -473,7 +478,7 @@ updateBnav = function () {
 const _render12 = render;
 render = async function () {
   const c = current();
-  if (c && c.name === 'home' && NAV.stack.length === 1 && S.session && S.boot && svmOn() && office() && !S.t12Landed) { S.t12Landed = 1; try { applyFeats(); } catch (e) {} go('tos12', {}); return; }
+  if (c && c.name === 'home' && NAV.stack.length === 1 && S.session && S.boot && shell() && !S.t12Landed) { S.t12Landed = 1; try { applyFeats(); } catch (e) {} go('tos12', {}); return; }
   if (S.boot && !S.t12Feats) { S.t12Feats = 1; try { applyFeats(); } catch (e) {} }
   return _render12();
 };
@@ -487,5 +492,5 @@ try { const t = $('#title'); if (t && t.textContent === 'Farmer ID') t.textConte
 try { if (typeof current === 'function' && current()) render(); } catch (e) {}
 window.TOS12 = { v: V12 };
 /* 12.6.0: shared with the new home (ui26.js) */
-window.T12X = { svmLoad, needs, svmOn, office, TABS_OS };
+window.T12X = { svmLoad, needs, svmOn, office, TABS_OS, rk29, shell };
 })();

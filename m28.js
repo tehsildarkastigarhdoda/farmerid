@@ -323,9 +323,10 @@ const MODS = [['SCHEMES', [['home', 'Farmer ID', 'Agristack buckets, camps, 4:30
   ['MAGISTERIAL AND OTHER DUTIES', [['', 'Magisterial', 'Istegasa, BNSS 126/136'], ['', 'Relief', 'SDRF ex-gratia cases'], ['', 'Elections (AERO)', 'Forms 6/7/8, BLOs'], ['', 'Census', 'HLO Phase-I']]],
   ['TOOLS', [['rep8', 'Reports', 'Daily, weekly, DC formats'], ['camps10', 'Camps', 'Daily camps, deployment'], ['ins19', 'Insights', 'Rank, pace, villages'], ['cov10', 'Coverage', 'Village-wise status'], ['ppl83', 'People', 'Staff, logins, villages'], ['set8', 'My settings', 'PIN, text size · Log out']]]];
 VIEWS.mods28 = async function () {
-  wideOn('All modules'); const teh = role() === 'ADMIN';
+  wideOn('All modules'); const teh = role() === 'ADMIN', rk = (window.T12X && window.T12X.rk29 && window.T12X.rk29()) || '', field = rk === 'gq' || rk === 'oq';
+  const hide = { camps10: field, ins19: rk === 'gq', ppl83: field, svm12: !(window.T12X && window.T12X.svmOn && window.T12X.svmOn()), dir14: !teh && rk !== 'nt' && rk !== 'da' };
   view().innerHTML = `<div class="t12 c25 m28"><p class="sub" style="margin:0">TehsilOS</p><h1>All modules</h1>
-    ${MODS.map(g => { const L = g[1].filter(m => m[0] ? (m[0] !== 'm28' || W28()) && (m[0] !== 'c25' || !!(window.C25X && window.C25X.who && window.C25X.who())) : teh); if (!L.length) return '';
+    ${MODS.map(g => { const L = g[1].filter(m => m[0] ? !hide[m[0]] && (m[0] !== 'm28' || W28()) && (m[0] !== 'c25' || !!(window.C25X && window.C25X.who && window.C25X.who())) : teh); if (!L.length) return '';
       return `<div class="cd"><p class="mu" style="margin:0 0 4px;font-weight:700;letter-spacing:.3px;font-size:12px">${g[0]}</p>${L.map(m => `<button class="row" ${m[0] ? `data-g="${m[0]}"` : 'disabled'} style="width:100%;${m[0] ? '' : 'opacity:.6'}"><span>${esc(m[1])}<small>${esc(m[2])}</small></span><span>${m[0] ? '›' : pill('Soon', '')}</span></button>`).join('')}</div>`; }).join('')}
     ${teh ? '<p class="hint">Only you see the modules marked Soon.</p>' : ''}</div>`;
   on(view(), '[data-g]', 'click', b => { const n = b.dataset.g; if (n === 'home') { NAV.stack = [{ name: 'home', args: {} }]; render(); } else go(n, {}); });
@@ -334,7 +335,6 @@ VIEWS.mods28 = async function () {
 /* ---------- navigation ---------- */
 try { Object.assign(TABOF10, { m28: 'm28', m28e: 'm28', m28m: 'm28', m28r: 'm28', mods28: 'mods28' }); } catch (e) {}
 try { P10.m28 = 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4M7 14h4M7 17h7'; P10.mods28 = 'M5 12h.01M12 12h.01M19 12h.01'; } catch (e) {}
-try { const T = window.T12X && window.T12X.TABS_OS; if (T) { const want = [['tos12', 'Home', 'os'], ['home', 'Farmer ID', 'home'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'm28'], ['mods28', 'More', 'mods28']]; T.length = 0; want.forEach(x => T.push(x)); } } catch (e) {}
 
 /* ---------- requests on the home of the Patwaris, GQs, NT, BCG and OQ ---------- */
 let N28 = { at: 0, d: null, u: '' };
@@ -344,14 +344,24 @@ async function needs28(fresh) {
 }
 window.M28X = { needs: needs28, who: W28 };
 const _r28 = render;
+let C28 = { at: 0, d: null, u: '' };
 render = async function () {
   const out = await _r28.apply(this, arguments);
-  try { const c = current(); if (!c || !W28() || (c.name !== 'home' && c.name !== 'tos12') || document.body.classList.contains('ui26') && c.name === 'tos12') return out;
-    const L = await needs28(); if (current() !== c || $('#m28h')) return out; const n = L.needs || []; if (!n.length && W28() === 'resp') return out;
-    const host = $('.t12', view()) || view().firstElementChild || view(); const b = document.createElement('div'); b.id = 'm28h'; b.className = 'cd'; b.style.cssText = 'margin:0 0 12px';
-    b.innerHTML = `<h3 style="display:flex;justify-content:space-between"><span>Meetings</span><button class="lk" id="m28all" style="background:none;border:0;color:#0E5E3B;font-weight:700">Open ›</button></h3>${n.slice(0, 3).map((x, i) => `<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #EEF0EE"><div style="flex:1;min-width:0"><b style="font-size:14px">${esc(x.t)}</b><div style="font-size:12px;color:#5E6B63">${x.due ? 'Due ' + due(x.due) : x.date ? nice(x.date) : ''}</div></div><button class="btn12" data-n28="${i}" style="padding:6px 14px;font-size:13px">${x.k === 'reply' ? 'Submit' : x.k === 'approve' ? 'Review' : 'Open'}</button></div>`).join('') || '<div class="mu">Nothing waiting.</div>'}`;
+  try { const c = current(); if (!c || !W28() || c.name !== 'home' || (window.T12X && window.T12X.shell && window.T12X.shell())) return out;
+    const L = await needs28(), ph = W28() === 'resp' && /patwari/i.test((me() || {}).designation || '');
+    let C = null; if (ph && X().who && X().who() === 'ph') { const uid = (me() || {}).user_id; if (C28.u === uid && Date.now() - C28.at < 120000) C = C28.d; else { try { C = await api('cert25List', {}, 45000); C28 = { at: Date.now(), d: C, u: uid }; } catch (e) {} } }
+    if (current() !== c || $('#m28h')) return out;
+    const n = (L.needs || []).map(x => ({ t: x.t, s: x.due ? 'Meetings · due ' + due(x.due) : x.date ? 'Meetings · ' + nice(x.date) : 'Meetings', b: x.k === 'reply' ? 'Submit' : x.k === 'approve' ? 'Review' : 'Open', go: [W28() === 'resp' ? 'm28r' : 'm28m', { id: x.mtg_id }], r: x.k === 'reply' }));
+    if (C && C.drafts) n.push({ t: C.drafts + ' draft report' + (C.drafts > 1 ? 's' : ''), s: 'Certificates', b: 'Open', go: ['c25', {}] });
+    const up = (L.rows || []).filter(r => r.date >= today()).sort((a, b) => a.date.localeCompare(b.date))[0];
+    if (!n.length && !ph) return out;
+    const host = $('.t12', view()) || view().firstElementChild || view(); const b = document.createElement('div'); b.id = 'm28h'; b.style.cssText = 'margin:0 0 12px';
+    const tile = (g, t2, s2) => `<button class="cd" data-g28="${g}" style="border:0;text-align:left;margin:0;padding:12px 14px"><b style="display:block;font-size:14px">${t2}</b><span style="font-size:12px;color:#5E6B63">${esc(s2)}</span></button>`;
+    b.innerHTML = `<div class="cd" style="margin:0 0 10px"><h3 style="display:flex;justify-content:space-between"><span>Needs you</span><span style="font-size:12px;color:#5E6B63;font-weight:500">${n.length ? n.length + ' item' + (n.length > 1 ? 's' : '') : ''}</span></h3>
+      ${n.slice(0, 4).map((x, i) => `<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #EEF0EE"><i style="width:10px;height:10px;border-radius:9px;border:2px solid ${x.r ? '#B42318' : '#B26B00'};flex:none"></i><div style="flex:1;min-width:0"><b style="font-size:14px">${esc(x.t)}</b><div style="font-size:12px;color:#5E6B63">${esc(x.s)}</div></div><button class="btn12" data-n28="${i}" style="padding:6px 14px;font-size:13px">${x.b}</button></div>`).join('') || '<div class="mu">Nothing waiting on you.</div>'}</div>
+      ${ph ? `<div style="display:grid;grid-template-columns:repeat(${window.T12X && window.T12X.svmOn && window.T12X.svmOn() ? 3 : 2},minmax(0,1fr));gap:8px">${tile('c25', 'Certificates', C && C.drafts ? C.drafts + ' draft' + (C.drafts > 1 ? 's' : '') : 'Reports')}${tile('m28', 'Meetings', up ? nice(up.date) : 'Requests')}${window.T12X && window.T12X.svmOn && window.T12X.svmOn() ? tile('svm12', 'SVAMITVA', 'Your halqa') : ''}</div>` : ''}`;
     host.insertBefore(b, host.firstChild);
-    $('#m28all').onclick = () => go('m28', {}); on(b, '[data-n28]', 'click', x => { const it = n[Number(x.dataset.n28)]; go(W28() === 'resp' ? 'm28r' : 'm28m', { id: it.mtg_id }); });
+    on(b, '[data-n28]', 'click', x => { const it = n[Number(x.dataset.n28)]; go(it.go[0], it.go[1]); }); on(b, '[data-g28]', 'click', x => go(x.dataset.g28, {}));
   } catch (e) {}
   return out;
 };
