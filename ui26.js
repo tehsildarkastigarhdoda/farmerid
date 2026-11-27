@@ -4,7 +4,7 @@
  */
 "use strict";
 (function () {
-const V26 = '12.6.0';
+const V26 = '12.7.0';
 const view = () => $('#view');
 const isDesk = () => window.matchMedia('(min-width: 900px)').matches;
 const istNow = () => new Date(Date.now() + 5.5 * 3600e3);
@@ -128,7 +128,7 @@ try { P10.cert = ICO.cert; } catch (e) {}
 const X = () => window.T12X || {};
 const on26 = () => !!(S.session && S.boot && X().svmOn && X().svmOn() && X().office() && !S.boot.fid25);
 try { const TABS_OS = X().TABS_OS; if (TABS_OS) { TABS_OS.length = 0; [['tos12', 'Home', 'os'], ['home', 'Farmer ID', 'home'], ['c25', 'Certificates', 'cert'], ['svm12', 'SVAMITVA', 'map'], ['rep8', 'Reports', 'doc']].forEach(x => TABS_OS.push(x)); } } catch (e) {}
-try { Object.assign(TABOF10, { c25: 'c25', c25p: 'c25', c25d: 'c25', c25r: 'c25', c25b: 'c25' }); } catch (e) {}
+try { Object.assign(TABOF10, { c25: 'c25', c25f: 'c25', c25p: 'c25', c25d: 'c25', c25r: 'c25', c25b: 'c25' }); } catch (e) {}
 const EXTRA = () => [['cov10', 'Coverage', 'cov'], ['camps10', 'Camps', 'camp'], ['ins19', 'Insights', 'ins'], ['ppl83', 'People', 'ppl']].concat(role() === 'ADMIN' ? [['mast12', 'Settings & masters', 'set'], ['assar19', 'Tehsil Assar', 'sw']] : []);
 const _ub26 = updateBnav;
 updateBnav = function () {
@@ -192,12 +192,10 @@ function heroCard() {
 }
 function needsList() {
   const L = [], C = H.data.c25, A = H.data.al, V = H.data.svm;
-  if (C && C.rows) { const R = C.rows, w = C.who;
-    const mine = R.filter(r => w === 'teh' ? r.ph_status === 'DONE' && r.da && r.da !== 'RET' && !r.teh : w === 'da' ? r.ph_status === 'DONE' && !r.da : (w === 'nt' || w === 'gq') ? r.ph_status === 'DONE' && !r[w] : false);
-    const od = R.filter(r => r.overdue);
-    if (od.length) L.push({ c: 'r', t: `${od.length} certificate report${od.length > 1 ? 's' : ''} overdue`, s: 'Certificates · PSGA', b: 'Open', k: 1, go: ['c25', {}] });
-    if (mine.length) L.push({ c: 'a', t: `${mine.length} certificate${mine.length > 1 ? 's' : ''} waiting for you`, s: 'Certificates', b: 'Open', k: !od.length, go: ['c25', {}] });
-    const ret = R.filter(r => r.ph_status === 'RETURNED').length; if (ret) L.push({ c: '', t: `BCG returned ${ret} report${ret > 1 ? 's' : ''}`, s: 'Certificates · with the Patwari', b: 'View', go: ['c25', {}] }); }
+  if (C && C.rows) { const w = C.who, n = Number(C.fresh) || 0, d = Number(C.drafts) || 0, pl = (k, x) => k + ' ' + x + (k > 1 ? 's' : '');
+    const T = { nt: `${pl(n, 'new Patwari report')} for you`, da: `${pl(n, 'file')} ready for scrutiny`, teh: `${pl(n, 'file')} ready for your remark` };
+    if (n && T[w]) L.push({ c: 'a', t: T[w], s: 'Certificates', b: 'Open', k: 1, go: ['c25', {}] });
+    if (d && w === 'ph') L.push({ c: '', t: `${pl(d, 'draft report')}`, s: 'Certificates', b: 'Open', go: ['c25', {}] }); }
   if (A && A.alerts) { const st = A.alerts.filter(x => x.k === 'stall');
     if (st.length > 1) L.push({ c: 'a', t: `${st.length} villages: no new Farmer ID in 2 days`, s: st.map(x => String(x.t).split(':')[0]).join(', '), b: 'View', go: ['day19', {}] });
     A.alerts.filter(x => !(st.length > 1 && x.k === 'stall')).forEach(x => L.push({ c: x.k === 'upload' || x.k === 'check' ? 'a' : '', t: x.t, s: 'Farmer ID', b: 'View', go: x.k === 'upload' ? [VIEWS.portal ? 'portal' : 'pp19', {}] : x.k === 'patwari' ? ['reg14', {}] : ['day19', {}] })); }
@@ -232,7 +230,7 @@ function villCard() {
 function tilesCard() {
   const C = H.data.c25, V = H.data.svm, mine = needsList().filter(n => n.go && n.go[0] === 'c25').length;
   const t = (go, ic, bg, fg, name, sub) => `<button class="tile" data-go="${go}"><span class="ic" style="background:${bg};color:${fg}">${svg(ic, 19)}</span><span><b>${name}</b><span class="s">${sub}</span></span></button>`;
-  return `<div class="tiles">${t('c25', 'cert', '#E8F2EC', '#0E5E3B', 'Certificates', C ? (mine ? 'Items waiting' : 'Nothing waiting') : 'JanSugam reports')}
+  return `<div class="tiles">${t('c25', 'cert', '#E8F2EC', '#0E5E3B', 'Certificates', C ? (mine ? 'New for you' : 'Reports and remarks') : 'Reports and remarks')}
     ${t('svm12', 'map', '#EAF0F8', '#2F5D9E', 'SVAMITVA', V && V.totals ? N(V.totals.cards) + ' of ' + N(V.totals.props) + ' cards' : 'Abadi deh, cards')}
     ${t('camps10', 'camp', '#FFF4E0', '#8A5300', 'Camps', 'Daily camps, deployment')}
     ${t('ins19', 'ins', '#F0EEF7', '#5B4B8A', 'Insights', 'Rank, pace, villages')}</div>`;

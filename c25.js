@@ -20,7 +20,7 @@ const mask = s => String(s || '').replace(/\b(\d{4})[\s-]?(\d{4})[\s-]?(\d{4})\b
 
 /* ---------- who am I ---------- */
 const who = () => { const u = me() || {}; if (S.boot && S.boot.fid25) return ''; if (u.role === 'ADMIN') return 'teh'; if (u.role === 'NT') return 'nt'; if (u.role === 'DA') return 'da';
-  const d = String(u.designation || ''); return /patwari/i.test(d) ? 'ph' : /\bGQ\b|girdawar/i.test(d) ? 'gq' : /\bBCG\b/i.test(d) ? 'da' : /\bOQ\b|office\s*qanungo/i.test(d) ? 'oq' : ''; };
+  const d = String(u.designation || ''); return /patwari/i.test(d) ? 'ph' : /\bGQ\b|girdawar/i.test(d) ? '' : /\bBCG\b/i.test(d) ? 'da' : /\bOQ\b|office\s*qanungo/i.test(d) ? 'oq' : ''; };
 const WHO = { ph: 'Patwari', nt: 'Naib Tehsildar', gq: 'Girdawar Qanungo', da: 'BCG (Dealing Assistant)', teh: 'Tehsildar', oq: 'Office Qanungo' };
 
 /* ---------- the 25 services ---------- */
@@ -232,7 +232,7 @@ function phRemark(row, D) {
 const facts = (row) => { const D = row.ph || {}, c = calc(D); return `Income FY ${c.fy} ₹${N(c.incTotal)}; family ${c.inFam.length}; land ${r2(c.landK)} kanal; house ${N(c.built)} sq ft; plot ${N(Math.round(c.plotYd))} sq yd`; };
 const VITEMS = [['fam', 'Family composition'], ['inc', 'Family income and its basis'], ['land', 'Agricultural land and share'], ['out', 'Land/property outside the halqa'], ['house', 'House built-up area'], ['plot', 'Plot area'], ['wit', 'Witnesses']];
 function ntRemark(row, X, part) {
-  const ph = row.ph || {}, by = X.by || me() || {}, V = X.v || {}, ok = VITEMS.filter(v => V[v[0]] && V[v[0]].s === 'Y').map(v => v[1].toLowerCase()), no = VITEMS.filter(v => V[v[0]] && V[v[0]].s === 'N').map(v => v[1].toLowerCase() + (V[v[0]].h ? ' (' + V[v[0]].h + ')' : ''));
+  const ph = row.ph || {}, by = X.by || me() || {}, V = X.vi || {}, ok = VITEMS.filter(v => V[v[0]] && V[v[0]].s === 'Y').map(v => v[1].toLowerCase()), no = VITEMS.filter(v => V[v[0]] && V[v[0]].s === 'N').map(v => v[1].toLowerCase() + (V[v[0]].h ? ' (' + V[v[0]].h + ')' : ''));
   return fit([`Report of Patwari ${row.ph_name || ''} dated ${dmy((ph.done_at || '').slice(0, 10))} examined. ${facts(row)}.`, ok.length ? `Verified: ${ok.join(', ')}.` : '', no.length ? `Not verified: ${no.join('; ')}.` : '',
     `Own check: ${X.own}.`, `${recW(X.rec)} – ${X.why}${X.rec === 'N' ? ' (' + X.rule + ')' : ''}.`, `– ${by.name || ''}, ${part === 'gq' ? 'Girdawar Qanungo' : 'Naib Tehsildar'}, ${by.user_id || ''}, ${dmy(today())}`]);
 }
@@ -246,7 +246,7 @@ function daFlags(row, fam) {
     if (f.family != null && f.service === 'EWS' && f.family !== c.inFam.length) F.push(`Family case ${f.app_no} counts ${f.family} members, this one ${c.inFam.length}.`); });
   if (nt.at && nt.rec && D.rec && nt.rec !== D.rec) F.push('NT recommendation differs from the Patwari\'s.');
   if (nt.at && nt.own && phRemark(row, D).indexOf(String(nt.own).slice(0, 40)) >= 0) F.push('NT\'s own check repeats the Patwari\'s text.');
-  if (!nt.at) F.push('NT has not given his remark yet.');
+  const bo = nt.based_on || {}; if (nt.at && bo.ph != null && bo.ph < Number(D.v || 0)) F.push(`NT's report is based on the Patwari's v${bo.ph}; the Patwari has since made v${D.v}.`);
   return F;
 }
 function daRemark(row, X) {
@@ -282,7 +282,7 @@ function docPH(row, D, opt) {
     B.h('FIELD VERIFICATION REPORT – EWS (INCOME & ASSETS CERTIFICATE)'), B.small('Patwari Halqa ' + (blank ? '__________' : ph) + ', Tehsil Kastigarh, District Doda · Proforma P5-EWS v1.0'), B.small('Law applied: ' + REFS),
     B.h('A. Application and applicant'),
     B.kv([['Application No.', blank ? '' : row.app_no], ['Applicant', bl(D.name)], ['Father / husband', bl(D.father)], ['Village', bl(D.village)],
-      ['Category applied', blank ? '[  ] Central   [  ] UT   [  ] Both' : D.cat], ['Application marked on', blank ? '' : dmy(D.recv)], ['Due date (JanSugam)', blank ? '' : dmy(D.due)], ['Date of spot visit', blank ? '' : dmy(D.visit)]]),
+      ['Category applied', blank ? '[  ] Central   [  ] UT   [  ] Both' : D.cat], ['Application marked on', blank ? '' : dmy(D.recv)], ['Date of spot visit', blank ? '' : dmy(D.visit)]]),
     B.h('B. Family (as per ration card No. ' + bl(D.rc, 14) + ')'), B.small('Counted: applicant, parents, spouse, brothers/sisters and children below 18 (DoPT FAQ 25–26). Persons 18+ other than parents/spouse are not counted.'),
     B.t(['#', 'Name', 'Relation', 'Age', 'Counted / not counted (reason)'], fam, [6, 30, 16, 10, 38]),
     B.h('C. Gross family income – FY ' + (blank ? '20__-__' : c.fy) + ' (year before the application)'), B.t(['#', 'Member', 'Source', 'Basis (slip, rate × days, crop × area × rate, PPO)', 'Amount'], inc, [6, 20, 18, 38, 18]),
@@ -308,7 +308,7 @@ function docPH(row, D, opt) {
   return out;
 }
 function docNT(row, X, part, opt) {
-  opt = opt || {}; const blank = !!opt.blank, D = row.ph || {}, c = calc(D), by = X.by || {}, V = X.v || {};
+  opt = opt || {}; const blank = !!opt.blank, D = row.ph || {}, c = calc(D), by = X.by || {}, V = X.vi || {};
   const pf = { fam: c.inFam.length + ' counted', inc: 'Rs ' + N(c.incTotal), land: r2(c.landK) + ' kanal', out: D.out === 'Y' ? 'Yes' : D.out === 'N' ? 'No' : '', house: N(c.built) + ' sq ft', plot: N(Math.round(c.plotYd)) + ' sq yd', wit: (D.wit || []).filter(w => has(w.n)).length + ' named' };
   const ttl = part === 'gq' ? 'GIRDAWAR QANUNGO' : 'NAIB TEHSILDAR';
   return [B.h(ttl + ' VERIFICATION REPORT – EWS'), B.small('Tehsil Kastigarh, District Doda · Proforma P5-' + (part === 'gq' ? 'GQ' : 'NT') + ' v1.0'),
@@ -408,37 +408,74 @@ const load = async app => { const R = await api('cert25Get', { app_no: app }, 45
 const save = async (app, part, data, final, service) => { const R = await api('cert25Save', { app_no: app, part, data, final: !!final, service: service || 'EWS' }, 60000); S.c25 = S.c25 || {}; S.c25[app] = { found: true, row: R.row, family: R.family }; return R; };
 const lgBar = () => `<div class="lg" role="group" aria-label="Help language">${LANGS.map(l => `<button type="button" data-lg="${l[0]}" class="${lang === l[0] ? 'on' : ''}">${l[1]}</button>`).join('')}</div>`;
 const bindLg = (host, re) => on(host, '[data-lg]', 'click', b => { lang = b.dataset.lg; try { localStorage.setItem('c25lang', lang); } catch (e) {} re(); });
-const stLbl = r => r.ph_status === 'RETURNED' ? ['Returned by BCG', 'ur'] : r.ph_status !== 'DONE' ? ['Patwari: draft', 'wt'] : r.teh ? [r.teh === 'R' ? 'Approved' : 'Rejected', 'ok'] : r.da === 'RET' ? ['Returned', 'ur'] : r.da ? ['With Tehsildar', 'wt'] : r.nt ? ['With BCG', 'wt'] : ['With NT / GQ', 'wt'];
-const daysLeft = d => { if (!d) return ''; const n = Math.round((new Date(d + 'T00:00:00Z') - new Date(today() + 'T00:00:00Z')) / 864e5); return n < 0 ? Math.abs(n) + ' days late' : n === 0 ? 'due today' : n + ' days left'; };
+const vtag = o => o ? 'v' + (o.v || 1) : '';
+const recPill = r => r === 'R' ? '<span class="pill ok">Recommended</span>' : r === 'N' ? '<span class="pill ur">Not recommended</span>' : '';
+const made = r => [r.nt ? 'NT' : '', r.da ? 'BCG' : '', r.teh ? 'Tehsildar' : ''].filter(Boolean);
 
-/* 1. Home */
+/* 1. Certificates page – what exists, newest first; no status, no dates due */
 VIEWS.c25 = async function () {
   wideOn('Certificates'); loading('Certificates…');
-  const w = who(); if (!w) { view().innerHTML = `<div class="t12 c25"><h1>Certificates</h1><div class="cd">Your login has no role here. Ask the Tehsildar to set your designation (Patwari, GQ, BCG).</div></div>`; return; }
-  let L = { rows: [], stats: null }; try { L = await api('cert25List', {}, 45000); } catch (e) { toast(e.message, 'err'); }
+  const w = who(); if (!w) { view().innerHTML = `<div class="t12 c25"><h1>Certificates</h1><div class="cd">Certificates are made by the Patwari, Naib Tehsildar, BCG and Tehsildar. Your login is not one of these.</div></div>`; return; }
+  let L = { rows: [] }; try { L = await api('cert25List', {}, 45000); } catch (e) { toast(e.message, 'err'); }
   if (current().name !== 'c25') return;
-  const act = r => w === 'ph' ? r.ph_status !== 'DONE' : w === 'nt' || w === 'gq' ? r.ph_status === 'DONE' && !r[w] : w === 'da' ? r.ph_status === 'DONE' && !r.da : w === 'teh' ? r.ph_status === 'DONE' && r.da && r.da !== 'RET' && !r.teh : false;
-  const todo = L.rows.filter(act), rest = L.rows.filter(r => !act(r)).slice(0, 25), S2 = L.stats;
-  const card = r => { const s = stLbl(r); return `<button class="row" data-app="${esc(r.app_no)}"><span>${esc(r.applicant || '(no name yet)')} · ${esc(r.service || '')}<small>${esc(r.app_no)} · ${esc(r.village || '')}${r.defects ? ' · ' + r.defects + ' defects' : ''}</small></span><span style="text-align:right"><span class="pill ${s[1]}">${s[0]}</span>${r.due && !r.teh ? `<small style="display:block;color:${r.overdue ? '#A1261B' : '#5B6168'}">${daysLeft(r.due)}</small>` : ''}</span></button>`; };
-  view().innerHTML = `<div class="t12 c25"><p class="sub" style="margin:0">${esc((me() || {}).name || '')} · ${WHO[w]}</p><h1>Certificates</h1>
-    <div class="cd"><label class="f" for="c25app">Application No.</label><input id="c25app" placeholder="JK-REV-EWS/2026/24523" autocomplete="off" autocapitalize="characters">
-      <div id="c25sv" class="mu" style="margin-top:6px">Paste from JanSugam.</div><button class="btn12" id="c25go" style="width:100%;margin-top:10px">${w === 'ph' ? 'Start / open report' : 'Open'}</button></div>
-    ${S2 ? `<div class="g4" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;text-align:center;margin-bottom:10px">${[['Patwari', S2.ph], ['NT / GQ', S2.nt], ['BCG', S2.da], ['Tehsildar', S2.teh]].map(x => `<div class="cd" style="padding:8px 4px;margin:0"><b style="font-size:20px">${x[1]}</b><div class="mu">${x[0]}</div></div>`).join('')}</div>
-      ${(S2.byPh || []).length ? `<div class="cd"><h3>By halqa</h3><table class="tt"><tr><th>Halqa</th><th>Open</th><th>Overdue</th><th>Returned</th></tr>${S2.byPh.map(p => `<tr><td>${esc(p.ph)}</td><td>${p.open}</td><td style="color:${p.overdue ? '#A1261B' : 'inherit'};font-weight:${p.overdue ? 800 : 400}">${p.overdue}</td><td>${p.returns}</td></tr>`).join('')}</table></div>` : ''}` : ''}
-    <div class="cd"><h3>${w === 'ph' ? 'My cases – to finish' : 'Waiting for you'} <span class="pill ${todo.length ? 'ur' : 'ok'}">${todo.length}</span></h3>${todo.map(card).join('') || '<p class="mu">Nothing waiting.</p>'}</div>
-    ${rest.length ? `<div class="cd"><h3>Others</h3>${rest.map(card).join('')}</div>` : ''}
-    ${w !== 'gq' ? `<button class="cd row" data-go="c25b" style="display:block;border:0;width:100%;text-align:left"><h3>Blank proformas <span>›</span></h3><div class="mu">Any service · Word or PDF · no Application No. needed · model sample</div></button>` : ''}
-    <p class="hint" style="text-align:center">Certificates ${V25} · EWS now; other services one by one</p></div>`;
-  const inp = $('#c25app'), sv = $('#c25sv');
-  const show = () => { const a = normApp(inp.value), s = svc(svcOf(a)); sv.innerHTML = !a ? 'Paste from JanSugam.' : !appOk(a) ? '<span style="color:#A1261B">Format: JK-REV-EWS/2026/24523</span>' : s ? `<b style="color:#1F6B42">${esc(s.name)} · ${s.pf}</b>${s.live ? '' : ' – proforma comes in the next update'}` : 'New prefix – you will choose the service once.'; };
-  inp.oninput = show;
-  const open = async app => { app = normApp(app); if (!appOk(app)) return toast('Format: JK-REV-EWS/2026/24523', 'err');
-    let code = svcOf(app); if (!code) { code = await pickSvc(app); if (!code) return; }
-    if (!svc(code).live) return info(svc(code).name + ': the proforma comes in the next update. Use Blank proformas → this service when it is listed.');
-    if (w === 'ph') go('c25p', { app, i: 0 }); else go('c25r', { app }); };
-  $('#c25go').onclick = () => open(inp.value);
-  on(view(), '[data-app]', 'click', b => go(w === 'ph' ? 'c25p' : 'c25r', { app: b.dataset.app, i: 0 }));
-  on(view(), '[data-go]', 'click', b => go(b.dataset.go, {}));
+  const st = S.c25l || (S.c25l = { f: w === 'ph' || w === 'oq' ? 'all' : 'new', q: '' });
+  const TITLE = { ph: 'My reports', nt: 'From your Patwaris', oq: 'Reports made', da: 'Files with Patwari and NT reports', teh: 'Files with a scrutiny note' };
+  function rows() { const q = st.q.toLowerCase(); return L.rows.filter(r => (st.f === 'new' ? r.fresh : st.f === 'mine' ? r.mine : true) && (!q || (r.app_no + ' ' + r.applicant + ' ' + r.village).toLowerCase().indexOf(q) >= 0)); }
+  const line = r => { const docs = made(r);
+    const sub = w === 'ph' ? `…/${esc(r.app_no.split('/').pop())} · ${r.ph ? vtag(r.ph) + ' · ' + dmy(r.ph.at.slice(0, 10)) : 'draft'}${docs.length ? ' · ' + docs.join(', ') + ' made' : ''}`
+      : `Patwari ${esc(r.ph_name)} · ${vtag(r.ph)} · ${dmy(((r.ph || {}).at || '').slice(0, 10))}${r.mine && r.fresh ? ' · changed after your report' : ''}`;
+    const chip = w === 'ph' ? (r.draft ? '<span class="pill wt">Draft</span>' : '<span class="pill ok">Generated</span>') : r.mine && !r.fresh ? '<span class="pill ok">Made by you</span>' : r.mine ? '<span class="pill wt">New version</span>' : recPill(r.ph && r.ph.rec);
+    return `<button class="row" data-app="${esc(r.app_no)}"><span>${r.fresh ? '<i style="display:inline-block;width:8px;height:8px;border-radius:9px;background:#0E5E3B;margin-right:6px"></i>' : ''}${esc(r.applicant || '(no name yet)')} · ${esc(r.service || '')}<small>${sub}</small></span><span>${chip}</span></button>`; };
+  function draw() {
+    const R = rows();
+    view().innerHTML = `<div class="t12 c25"><p class="sub" style="margin:0">${esc((me() || {}).name || '')} · ${WHO[w]}</p><h1>Certificates</h1>
+      ${w === 'ph' ? `<div class="cd"><label class="f" for="c25app" style="margin-top:0">Make a report – Application No.</label><input id="c25app" placeholder="JK-REV-EWS/2026/24523" autocomplete="off" autocapitalize="characters">
+        <div id="c25sv" class="mu" style="margin-top:6px">Paste from JanSugam.</div><button class="btn12" id="c25go" style="width:100%;margin-top:10px">New report</button></div>` : ''}
+      <input id="c25q" type="search" placeholder="Search – Application No. or name" aria-label="Search" value="${esc(st.q)}" style="margin-bottom:10px">
+      ${w !== 'ph' ? `<div class="seg" style="margin-bottom:12px">${[['new', 'New for you · ' + L.rows.filter(r => r.fresh).length], ['all', 'All'], ['mine', 'Made by me']].filter(x => w !== 'oq' || x[0] === 'all').map(x => `<button type="button" data-f="${x[0]}" class="${st.f === x[0] ? 'on' : ''}">${x[1]}</button>`).join('')}</div>` : ''}
+      <div class="cd"><h3>${TITLE[w]} <span class="mu">${R.length}</span></h3>${R.slice(0, 60).map(line).join('') || `<p class="mu">${st.f === 'new' ? 'Nothing new for you.' : 'None yet.'}</p>`}</div>
+      <button class="cd row" data-go="c25b" style="display:block;border:0;width:100%;text-align:left"><h3>Blank proformas <span>›</span></h3><div class="mu">All 25 services · Word or PDF · model samples</div></button>
+      <p class="hint" style="text-align:center">TehsilOS makes the reports and remark text only. All action stays on JanSugam / Revenue Plus.</p></div>`;
+    const q = $('#c25q'); q.oninput = () => { st.q = q.value; const pos = q.selectionStart; draw(); const q2 = $('#c25q'); q2.focus(); try { q2.setSelectionRange(pos, pos); } catch (e) {} };
+    on(view(), '[data-f]', 'click', b => { st.f = b.dataset.f; draw(); });
+    on(view(), '[data-app]', 'click', b => go('c25f', { app: b.dataset.app }));
+    on(view(), '[data-go]', 'click', b => go(b.dataset.go, {}));
+    const inp = $('#c25app'); if (inp) { const sv = $('#c25sv');
+      inp.oninput = () => { const a = normApp(inp.value), s = svc(svcOf(a)); sv.innerHTML = !a ? 'Paste from JanSugam.' : !appOk(a) ? '<span style="color:#A1261B">Format: JK-REV-EWS/2026/24523</span>' : s ? `<b style="color:#1F6B42">${esc(s.name)} · ${s.pf}</b>${s.live ? '' : ' – proforma comes in the next update'}` : 'New prefix – you will choose the service once.'; };
+      $('#c25go').onclick = async () => { const app = normApp(inp.value); if (!appOk(app)) return toast('Format: JK-REV-EWS/2026/24523', 'err');
+        let code = svcOf(app); if (!code) { code = await pickSvc(app); if (!code) return; }
+        if (!svc(code).live) return info(svc(code).name + ': the proforma comes in the next update. Use Blank proformas for now.');
+        go('c25p', { app, i: 0 }); }; }
+  }
+  draw();
+};
+
+/* 2. The file – every document made for one application, newest version first */
+VIEWS.c25f = async function (a) {
+  const app = a.app, w = who(); wideOn('File'); loading('Opening ' + app + '…');
+  let R; try { R = await load(app); } catch (e) { fail(e.message); return; } if (current().name !== 'c25f') return;
+  if (!R.found) { if (w === 'ph') return go('c25p', { app, i: 0 }); view().innerHTML = `<div class="t12 c25"><h1>${esc(app)}</h1><div class="cd">The Patwari has not made a report for this application yet.</div></div>`; return; }
+  const row = R.row, P = row.ph || {}, gen = !!P.done_at;
+  const steps = [['ph', 'Patwari report', P.done_at, P], ['nt', 'NT report', row.nt && row.nt.at, row.nt], ['da', 'BCG scrutiny note', row.da && row.da.at, row.da], ['teh', 'Tehsildar remark', row.teh && row.teh.at, row.teh]];
+  const behind = (k, o) => { const b = (o && o.based_on) || {}; const out = []; if (k !== 'ph' && b.ph != null && b.ph < Number(P.v || 0)) out.push(`Patwari v${b.ph}`); if ((k === 'da' || k === 'teh') && b.nt != null && b.nt < Number((row.nt || {}).v || 0)) out.push(`NT v${b.nt}`); if (k === 'teh' && b.da != null && b.da < Number((row.da || {}).v || 0)) out.push(`BCG v${b.da}`); return out; };
+  const docBtns = k => `<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">${k !== 'teh' ? `<button class="btn12 gh" data-d="${k}" data-t="pdf" style="padding:6px 12px;font-size:12.5px">PDF</button><button class="btn12 gh" data-d="${k}" data-t="doc" style="padding:6px 12px;font-size:12.5px">Word</button>` : ''}<button class="btn12 gh" data-d="${k}" data-t="cp" style="padding:6px 12px;font-size:12.5px">Copy remark</button></div>`;
+  const mineK = w === 'ph' ? 'ph' : w === 'oq' ? '' : w;
+  const canMake = mineK && (mineK === 'ph' || (gen && (mineK === 'nt' || (mineK === 'da' && row.nt && row.nt.at) || (mineK === 'teh' && row.da && row.da.at))));
+  const myDoc = mineK ? (mineK === 'ph' ? (gen ? P : null) : row[mineK] && row[mineK].at ? row[mineK] : null) : null;
+  view().innerHTML = `<div class="t12 c25"><p class="sub" style="margin:0">${esc(app)}</p><h1 style="margin-bottom:2px">${esc(row.applicant || '')}</h1><p class="mu" style="margin:0 0 12px">${esc(P.father ? 'D/o / S/o ' + P.father + ' · ' : '')}${esc(row.village || '')} · ${esc(row.service || 'EWS')} · Halqa ${esc(row.ph_name || '')}</p>
+    <div class="cd">${steps.map((s, i) => { const o = s[3] || {}, has2 = !!s[2], bh = has2 ? behind(s[0], o) : [];
+      return `<div class="rw" style="display:flex;gap:12px"><span style="width:24px;height:24px;flex:none;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;${has2 ? 'background:#0E5E3B;color:#fff' : 'border:2px dashed #C9D0CB;color:#8A948E'}">${i + 1}</span>
+        <div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b style="font-size:14.5px;${has2 ? '' : 'color:#5E6B63'}">${s[1]}${has2 ? ' · v' + (o.v || 1) : ''}</b>${has2 ? recPill(o.rec) : ''}</div>
+        <div class="mu" style="margin-top:3px">${has2 ? esc((o.by || {}).name || '') + ' · ' + dmy(String(s[2]).slice(0, 10)) + ' ' + String(s[2]).slice(11, 16) + ((o.prev || []).length ? ' · ' + o.prev.length + ' earlier version' + (o.prev.length > 1 ? 's' : '') + ' kept' : '') : s[0] === 'ph' && P.name ? 'Draft – not generated yet' : 'Not made yet'}</div>
+        ${s[0] === 'ph' && P.next ? '<div class="wrn">The Patwari is preparing a new version (draft).</div>' : ''}
+        ${bh.length ? `<div class="wrn">Based on ${bh.join(' and ')} – a newer version exists.</div>` : ''}${has2 ? docBtns(s[0]) : ''}</div></div>`; }).join('')}</div>
+    ${canMake ? `<button class="btn12" id="mk" style="width:100%">${myDoc ? 'Make a new version of my ' + (mineK === 'ph' ? 'report' : mineK === 'da' ? 'scrutiny note' : mineK === 'teh' ? 'remark' : 'report') : mineK === 'ph' ? 'Continue my report' : mineK === 'da' ? 'Make my scrutiny note' : mineK === 'teh' ? 'Make my remark' : 'Make my report'}</button>` : ''}
+    <p class="hint" style="text-align:center;margin-top:12px">Send-backs and approvals happen on JanSugam. Here you only make a new version when asked.</p></div>`;
+  const mk = $('#mk'); if (mk) mk.onclick = () => go(mineK === 'ph' ? 'c25p' : 'c25r', { app, i: 0 });
+  on(view(), '[data-d]', 'click', b => busy(b, 'Making', async () => { const k = b.dataset.d, t = b.dataset.t, o = row[k];
+    if (t === 'cp') { const txt = k === 'ph' ? phRemark(row, P) : k === 'da' ? daRemark(row, o) : k === 'teh' ? tehRemark(row, o) : ntRemark(row, o, 'nt'); toast(await copyText(txt) ? 'Remark copied' : 'Could not copy', 'ok'); return; }
+    const blocks = k === 'ph' ? docPH(row, P) : k === 'da' ? docDA(row, o) : docNT(row, o, 'nt'), nm = { ph: 'EWS Patwari report', nt: 'EWS NT report', da: 'EWS scrutiny note' }[k];
+    if (t === 'pdf') await toPDF(blocks, fname(row, nm, 'pdf'), FOOT[k] + ' · ' + row.app_no + ' · v' + (o.v || 1)); else toDOCX(blocks, fname(row, nm, 'docx'), FOOT[k] + ' · ' + row.app_no + ' · v' + (o.v || 1)); }));
 };
 function pickSvc(app) {
   const pre = /^JK-[A-Z]+-([A-Z]+)\//.exec(app)[1];
@@ -453,8 +490,10 @@ VIEWS.c25p = async function (a) {
   let R = (S.c25 || {})[app]; if (!R) { try { R = await load(app); } catch (e) { fail(e.message); return; } }
   if (current().name !== 'c25p') return;
   const row = R.found ? R.row : { app_no: app, ph_status: '', ph_name: '' };
-  let D = Object.assign(blankPH(), row.ph || {}); let local = null; try { local = await kget('c25:' + app); } catch (e) {}
-  if (local && (!row.updated_at || local.t > row.updated_at) && row.ph_status !== 'DONE') D = Object.assign(D, local.D);
+  const src = Object.assign({}, (row.ph || {}).next || row.ph || {}); ['prev', 'next', 'v', 'based_on', 'draft_next', 'done_at', 'by', 'at'].forEach(k => delete src[k]);
+  let D = Object.assign(blankPH(), src); let local = null; try { local = await kget('c25:' + app); } catch (e) {}
+  if (local && (!row.updated_at || local.t > row.updated_at)) D = Object.assign(D, local.D);
+  const newV = !!(row.ph && row.ph.done_at);
   let i = Math.min(Math.max(0, Number(a.i) || 0), 6);
   const keep = () => { try { kput('c25:' + app, { t: new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 19).replace('T', ' '), D }); } catch (e) {} };
   const set = (path, v) => { const p = path.split('.'); let o = D; for (let k = 0; k < p.length - 1; k++) { if (o[p[k]] == null) o[p[k]] = /^\d+$/.test(p[k + 1]) ? [] : {}; o = o[p[k]]; } o[p[p.length - 1]] = v; keep(); };
@@ -467,7 +506,7 @@ VIEWS.c25p = async function (a) {
     const c = calc(D);
     if (i === 0) return `<div class="cd">${fld('name', 'Applicant\'s name', 'name')}${fld('father', 'Father / husband', 'father')}${fld('village', 'Village', '')}
       <label class="f">Category applied for</label><p class="hl">${tl(H.cat)}</p>${seg('cat', [['Central', 'Central'], ['UT', 'UT'], ['Both', 'Both']])}
-      <div class="g2">${fld('recv', 'Marked to you on', 'recv', 'date')}${fld('due', 'Due date (JanSugam)', 'due', 'date')}</div>${fld('visit', 'Date of your visit', 'visit', 'date', `max="${today()}"`)}</div>`;
+      ${fld('recv', 'Marked to you on', 'recv', 'date')}${fld('visit', 'Date of your visit', 'visit', 'date', `max="${today()}"`)}</div>`;
     if (i === 1) return `<div class="cd">${fld('rc', 'Ration card No.', 'rc')}<label class="f">Members</label><p class="hl">${tl(H.fam)}</p>
       ${D.fam.map((m, k) => `<div class="rw"><div class="g3"><input data-k="fam.${k}.n" value="${esc(m.n || '')}" placeholder="Name" aria-label="Name" style="grid-column:span 2"><input data-k="fam.${k}.age" value="${esc(m.age || '')}" inputmode="numeric" placeholder="Age" aria-label="Age"></div>
         <div style="display:flex;gap:8px;align-items:center;margin-top:6px">${sel('fam.' + k + '.rel', RELS, m.rel)}<span class="pill ${counts(m) ? 'ok' : 'wt'}" style="flex:none">${has(m.n) ? counts(m) ? 'Counted' : 'Not counted' : ''}</span>${k ? `<button type="button" class="del" data-del="fam.${k}">Remove</button>` : ''}</div></div>`).join('')}
@@ -507,11 +546,11 @@ VIEWS.c25p = async function (a) {
   function draw() {
     const E = errs(i, D), AE = allErrs(D);
     view().innerHTML = `<div class="t12 c25"><p class="sub" style="margin:0">${esc(app)}${row.ph_name ? ' · Halqa ' + esc(row.ph_name) : ''}</p><h1 style="margin-bottom:2px">${esc(D.name || 'EWS report')}</h1>
-      ${row.ph_status === 'RETURNED' && row.ph && row.ph.returned ? `<div class="cd" style="border:2px solid #A1261B"><h3 style="color:#A1261B">Returned by BCG</h3>${row.ph.returned.defects.map(d => `<div class="mu" style="color:#1E2226">• ${esc(d)}</div>`).join('')}</div>` : ''}
+      ${newV ? `<div class="wrn" style="margin-bottom:10px">New version v${Number(row.ph.v || 1) + 1}. v${row.ph.v || 1} stays in the file until you generate this one.</div>` : ''}
       <div class="bar">${PARTS.map((p, k) => `<i class="${k === i ? 'c' : AE[k].length ? '' : 'd'}"></i>`).join('')}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><span class="mu">Part ${i + 1} of 7 · ${esc(T(PARTS[i][1]))}</span>${lgBar()}</div>
       ${body()}<div id="c25e">${E.map(e => `<div class="err">${tl(e)}</div>`).join('')}</div>
-      <div class="ft"><button class="btn12 gh" id="c25b">${i ? 'Back' : 'Save draft'}</button><button class="btn12" id="c25n">${i < 6 ? 'Next' : 'Generate report'}</button></div>${doubts()}</div>`;
+      <div class="ft"><button class="btn12 gh" id="c25b">${i ? 'Back' : 'Save draft'}</button><button class="btn12" id="c25n">${i < 6 ? 'Next' : newV ? 'Generate v' + (Number(row.ph.v || 1) + 1) : 'Generate report'}</button></div>${doubts()}</div>`;
     bindLg(view(), draw);
     on(view(), '[data-k]', 'input', el => { set(el.dataset.k, el.value); live(); });
     on(view(), 'select[data-k]', 'change', el => { set(el.dataset.k, el.value); draw(); });
@@ -536,23 +575,24 @@ VIEWS.c25d = async function (a) {
   const app = a.app; wideOn('Report ready'); let R = (S.c25 || {})[app]; if (!R) { loading(); try { R = await load(app); } catch (e) { fail(e.message); return; } }
   const row = R.row, D = row.ph, txt = phRemark(row, D);
   view().innerHTML = `<div class="t12 c25"><p class="sub" style="margin:0">${esc(app)}</p><h1>Report ready</h1>
-    <div class="okb" style="margin-bottom:10px">Sent to the NT, GQ and BCG. They see your figures already filled.</div>
+    <div class="okb" style="margin-bottom:10px">v${D.v || 1} generated. The NT, BCG and Tehsildar can now see it in TehsilOS.</div>
     <div class="cd"><h3>1 · Upload on JanSugam ("Upload Report")</h3><div style="display:flex;gap:8px"><button class="btn12" id="pdf" style="flex:1">PDF</button><button class="btn12 gh" id="doc" style="flex:1">Word</button></div><p class="mu" style="margin-top:6px">Print, sign every page, scan with the annexures, upload.</p></div>
     <div class="cd"><h3>2 · Paste in "Patwari Report" <span class="mu">${txt.length} / ${LIM}</span></h3><div class="tx">${esc(txt)}</div><button class="btn12" id="cp" style="width:100%;margin-top:10px">Copy text</button></div>
-    <div style="display:flex;gap:8px"><button class="btn12 gh" id="ed" style="flex:1">Edit report</button><button class="btn12 gh" id="hm" style="flex:1">All cases</button></div></div>`;
-  $('#pdf').onclick = e => busy(e.target, 'Making', () => toPDF(docPH(row, D), fname(row, 'EWS Patwari report', 'pdf'), FOOT.ph + ' · ' + row.app_no));
-  $('#doc').onclick = e => busy(e.target, 'Making', async () => toDOCX(docPH(row, D), fname(row, 'EWS Patwari report', 'docx'), FOOT.ph + ' · ' + row.app_no));
+    <div style="display:flex;gap:8px"><button class="btn12 gh" id="fl" style="flex:1">Open the file</button><button class="btn12 gh" id="hm" style="flex:1">Certificates</button></div></div>`;
+  $('#pdf').onclick = e => busy(e.target, 'Making', () => toPDF(docPH(row, D), fname(row, 'EWS Patwari report', 'pdf'), FOOT.ph + ' · ' + row.app_no + ' · v' + (D.v || 1)));
+  $('#doc').onclick = e => busy(e.target, 'Making', async () => toDOCX(docPH(row, D), fname(row, 'EWS Patwari report', 'docx'), FOOT.ph + ' · ' + row.app_no + ' · v' + (D.v || 1)));
   $('#cp').onclick = async () => toast(await copyText(txt) ? 'Copied – paste in JanSugam' : 'Could not copy', 'ok');
-  $('#ed').onclick = () => go('c25p', { app, i: 6 }); $('#hm').onclick = () => { NAV.stack = NAV.stack.filter(x => x.name === 'tos12' || x.name === 'home').slice(0, 1); go('c25', {}); };
+  $('#fl').onclick = () => go('c25f', { app }); $('#hm').onclick = () => { NAV.stack = NAV.stack.filter(x => x.name === 'tos12' || x.name === 'home').slice(0, 1); go('c25', {}); };
 };
 
-/* 4. NT / GQ / BCG / Tehsildar */
+/* 4. NT / BCG / Tehsildar */
 VIEWS.c25r = async function (a) {
   const app = a.app, w = who(); wideOn('Certificate'); loading('Opening ' + app + '…');
   let R; try { R = await load(app); } catch (e) { fail(e.message); return; } if (current().name !== 'c25r') return;
   if (!R.found) { view().innerHTML = `<div class="t12 c25"><h1>${esc(app)}</h1><div class="cd">The Patwari has not started this application in TehsilOS yet.</div></div>`; return; }
   const row = R.row, fam = R.family || [], D = row.ph || {}, c = calc(D);
-  const part = w === 'oq' ? '' : w; const X = Object.assign({ v: {}, docs: {}, defects: [], own: '', rec: '', why: '', rule: '', pages: '' }, part ? row[part] || {} : {});
+  const part = w === 'oq' ? '' : w; const mineOld = part ? row[part] || {} : {}, seen = (mineOld.based_on || {}).ph, ntSeen = ((row.nt || {}).based_on || {}).ph;
+  const X = Object.assign({ vi: {}, docs: {}, defects: [], own: '', rec: '', why: '', rule: '', pages: '' }, mineOld); delete X.prev; delete X.based_on; if (typeof X.v === 'object') { X.vi = X.v; } delete X.v;
   const sum = `<div class="cd"><h3>Patwari's facts <span class="pill ${D.rec === 'R' ? 'ok' : 'ur'}">${D.rec === 'R' ? 'Recommended' : D.rec === 'N' ? 'Not recommended' : '–'}</span></h3>
     <p class="mu" style="color:#1E2226">${esc(row.applicant)} · ${esc(row.village)} · Halqa ${esc(row.ph_name || '')} · report ${dmy((D.done_at || '').slice(0, 10))}</p>
     <table class="tt">${c.tests.map(t => `<tr><td>${esc(t.label)}</td><td style="text-align:right">${esc(t.found)} <span class="pill ${t.ok ? 'ok' : 'ur'}">${t.ok ? 'Within' : 'Exceeds'}</span></td></tr>`).join('')}
@@ -561,7 +601,12 @@ VIEWS.c25r = async function (a) {
     <tr><td>Witnesses</td><td style="text-align:right">${esc((D.wit || []).filter(x => has(x.n)).map(x => x.n + ' (' + x.r + ')').join(', '))}</td></tr></table>
     ${fam.filter(f => f.income != null).map(f => `<div class="wrn">Family case ${esc(f.app_no)} (${esc(f.applicant)}, ${esc(f.service)}): income ₹${N(f.income)}${f.family != null ? ', ' + f.family + ' counted' : ''}${Math.abs(f.income - c.incTotal) > 1 ? ' – differs from this case' : ''}.</div>`).join('')}
     <button class="btn12 gh" id="phpdf" style="width:100%;margin-top:10px">Patwari's report (PDF)</button></div>`;
-  const others = ['nt', 'gq', 'da', 'teh'].filter(k => k !== part && row[k] && row[k].at).map(k => `<div class="mu" style="margin-top:4px"><b>${WHO[k]}:</b> ${row[k].ret ? 'returned to Patwari' : recW(row[k].rec)} – ${esc(row[k].why || '')} (${dmy(row[k].at.slice(0, 10))})</div>`).join('');
+  const pv = n => n == null ? null : Number(D.v || 1) === n ? D : (D.prev || []).find(o => Number(o.v || 1) === n) || null;
+  const facts = o => { const k = calc(o); return [['Income', '₹' + N(k.incTotal)], ['Family', String(k.inFam.length)], ['Land', r2(k.landK) + ' kanal'], ['House', N(k.built) + ' sq ft'], ['Plot', N(Math.round(k.plotYd)) + ' sq yd'], ['Patwari says', o.rec === 'R' ? 'Recommended' : o.rec === 'N' ? 'Not recommended' : '–']]; };
+  const cmp = (n, who2) => { const o = pv(n); if (!o || n >= Number(D.v || 1)) return ''; const a = facts(o), b = facts(D);
+    return `<div class="cd"><h3>Patwari v${n} → v${D.v || 1}</h3><p class="mu" style="margin:0 0 6px">${who2} saw v${n}. Changes in red.</p><table class="tt"><tr><td class="mu">Item</td><td class="mu">v${n}</td><td class="mu">v${D.v || 1}</td></tr>${a.map((x, k) => `<tr><td>${x[0]}</td><td>${esc(x[1])}</td><td style="${x[1] !== b[k][1] ? 'color:#B42318;font-weight:700' : ''}">${esc(b[k][1])}</td></tr>`).join('')}</table></div>`; };
+  const verNote = part && mineOld.at && seen != null && seen < Number(D.v || 1) ? `<div class="wrn">Your v${mineOld.v || 1} was based on Patwari v${seen}. The Patwari has since made v${D.v}. Check the changes and make a new version.</div>${cmp(seen, 'Your last report')}` : '';
+  const ntCmp = part === 'da' || part === 'teh' ? cmp(ntSeen, 'The NT') : '';
   const recSeg = () => `<div class="seg ${X.rec === 'N' ? 'r' : 'g'}" data-rec><button type="button" data-v="R" class="${X.rec === 'R' ? 'on' : ''}">Recommended</button><button type="button" data-v="N" class="${X.rec === 'N' ? 'on' : ''}">Not recommended</button></div>`;
   const common = lbl => `<label class="f" for="own">${lbl}</label><p class="hl">A fact not in the reports below you – a call made, a record checked, a mismatch found. Remarks without it are not produced.</p><textarea id="own" data-x="own">${esc(X.own || '')}</textarea>
     <label class="f">Recommendation</label>${recSeg()}<label class="f" for="why">Reason</label><input id="why" data-x="why" value="${esc(X.why || '')}">${X.rec === 'N' ? `<label class="f" for="rule">Rule / clause failed</label><input id="rule" data-x="rule" value="${esc(X.rule || '')}">` : ''}`;
@@ -578,14 +623,14 @@ VIEWS.c25r = async function (a) {
   function draw() {
     let mid = '', outBtns = '';
     if (part === 'nt' || part === 'gq') {
-      mid = `<div class="cd"><h3>Items you checked</h3>${VITEMS.map(v => { const s = (X.v[v[0]] || {}).s || ''; return `<div class="rw"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span style="font-size:14px;font-weight:700">${v[1]}</span><div class="seg" data-vi="${v[0]}" style="flex:none;width:170px"><button type="button" data-v="Y" class="${s === 'Y' ? 'on' : ''}">Verified</button><button type="button" data-v="N" class="${s === 'N' ? 'on' : ''}">Not</button></div></div>${s ? `<input data-vh="${v[0]}" value="${esc((X.v[v[0]] || {}).h || '')}" placeholder="How – record, call, visit" aria-label="How verified" style="margin-top:6px">` : ''}</div>`; }).join('')}</div>
+      mid = `<div class="cd"><h3>Items you checked</h3>${VITEMS.map(v => { const s = (X.vi[v[0]] || {}).s || ''; return `<div class="rw"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span style="font-size:14px;font-weight:700">${v[1]}</span><div class="seg" data-vi="${v[0]}" style="flex:none;width:170px"><button type="button" data-v="Y" class="${s === 'Y' ? 'on' : ''}">Verified</button><button type="button" data-v="N" class="${s === 'N' ? 'on' : ''}">Not</button></div></div>${s ? `<input data-vh="${v[0]}" value="${esc((X.vi[v[0]] || {}).h || '')}" placeholder="How – record, call, visit" aria-label="How verified" style="margin-top:6px">` : ''}</div>`; }).join('')}</div>
         <div class="cd">${common('Your own check (required)')}</div>`;
       outBtns = `<div style="display:flex;gap:8px;margin-top:10px"><button class="btn12 gh" data-out="pdf" style="flex:1">${part === 'gq' ? 'GQ' : 'NT'} report PDF</button><button class="btn12 gh" data-out="doc" style="flex:1">Word</button></div>`;
     } else if (part === 'da') {
       const F = daFlags(row, fam);
       mid = `<div class="cd"><h3 style="color:${F.length ? '#A1261B' : '#1F6B42'}">${F.length ? 'App found ' + F.length + ' problem' + (F.length > 1 ? 's' : '') : 'App found no problem'}</h3>${F.map(f => `<div class="mu" style="color:#1E2226;padding:4px 0">• ${esc(f)}</div>`).join('')}</div>
-        <div class="cd"><h3>Return to Patwari?</h3><p class="hl">Tick the defects. Return makes the memo (WhatsApp + print) and puts the case back with the Patwari.</p>${F.concat(DADEF).map((d, k) => `<label class="rw" style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px"><input type="checkbox" data-df="${esc(d)}" ${X.defects.indexOf(d) >= 0 ? 'checked' : ''} style="width:22px;height:22px;flex:none">${esc(d)}</label>`).join('')}
-          <input data-dfo placeholder="Other defect (optional)" aria-label="Other defect" style="margin-top:6px"><button class="btn12" id="ret" style="width:100%;margin-top:10px;background:#A1261B">Return to Patwari</button></div>
+        <div class="cd"><h3>Return memo (if needed)</h3><p class="hl">Tick the defects to make a memo for WhatsApp or print. Send the case back on JanSugam yourself – nothing is saved here.</p>${F.concat(DADEF).map((d, k) => `<label class="rw" style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px"><input type="checkbox" data-df="${esc(d)}" ${X.defects.indexOf(d) >= 0 ? 'checked' : ''} style="width:22px;height:22px;flex:none">${esc(d)}</label>`).join('')}
+          <input data-dfo placeholder="Other defect (optional)" aria-label="Other defect" style="margin-top:6px"><button class="btn12 gh" id="ret" style="width:100%;margin-top:10px">Make return memo</button></div>
         <div class="cd"><h3>Or: all clear</h3>${DADOCS.map((d, k) => `<label class="rw" style="display:flex;gap:10px;align-items:center;font-size:13.5px"><input type="checkbox" data-doc="${k}" ${X.docs[k] ? 'checked' : ''} style="width:22px;height:22px;flex:none">${esc(d)}</label>`).join('')}
           <label class="f" for="pg">Pages uploaded on JanSugam (Patwari listed ${c.pages})</label><input id="pg" data-x="pages" inputmode="numeric" value="${esc(X.pages || '')}">${common('Your own check (required)')}</div>`;
       outBtns = `<div style="display:flex;gap:8px;margin-top:10px"><button class="btn12 gh" data-out="pdf" style="flex:1">Scrutiny note PDF</button><button class="btn12 gh" data-out="doc" style="flex:1">Word</button></div>`;
@@ -595,21 +640,21 @@ VIEWS.c25r = async function (a) {
         ${X.rec === 'N' ? `<label class="f" for="rule">Rule / clause</label><input id="rule" data-x="rule" value="${esc(X.rule || '')}"><label class="f" for="nt2">Notice to applicant issued on</label><input id="nt2" type="date" data-x="notice" value="${esc(X.notice || '')}"><label class="f" for="rp">Reply received (if any)</label><input id="rp" data-x="reply" value="${esc(X.reply || '')}">` : ''}</div>`;
     }
     view().innerHTML = `<div class="t12 c25"><p class="sub" style="margin:0">${esc(app)} · ${WHO[w]}</p><h1>${esc(row.applicant || '')} · EWS</h1>${sum}
-      ${others ? `<div class="cd"><h3>Others so far</h3>${others}</div>` : ''}${row.ph_status !== 'DONE' ? `<div class="wrn">The Patwari's report is ${row.ph_status === 'RETURNED' ? 'returned to him' : 'still a draft'}.</div>` : mid}
+      ${verNote}${ntCmp}${row.ph_status !== 'DONE' ? `<div class="wrn">The Patwari has not generated his report yet.</div>` : mid}
       ${part && row.ph_status === 'DONE' ? `<div class="cd"><div id="c25o">${oBox()}</div>${part !== 'teh' ? outBtns : ''}</div>` : ''}</div>`;
     $('#phpdf').onclick = e => busy(e.target, 'Making', () => toPDF(docPH(row, D), fname(row, 'EWS Patwari report', 'pdf'), FOOT.ph + ' · ' + row.app_no));
     on(view(), '[data-x]', 'input', el => { X[el.dataset.x] = el.value; out(); });
     on(view(), '[data-rec] button', 'click', b => { X.rec = b.dataset.v; draw(); });
-    on(view(), '[data-vi] button', 'click', b => { const k = b.parentNode.dataset.vi; X.v[k] = Object.assign(X.v[k] || {}, { s: b.dataset.v }); draw(); });
-    on(view(), '[data-vh]', 'input', el => { X.v[el.dataset.vh].h = el.value; out(); });
+    on(view(), '[data-vi] button', 'click', b => { const k = b.parentNode.dataset.vi; X.vi[k] = Object.assign(X.vi[k] || {}, { s: b.dataset.v }); draw(); });
+    on(view(), '[data-vh]', 'input', el => { X.vi[el.dataset.vh].h = el.value; out(); });
     on(view(), '[data-doc]', 'change', el => { X.docs[el.dataset.doc] = el.checked; out(); });
     on(view(), '[data-df]', 'change', el => { const d = el.dataset.df; X.defects = X.defects.filter(x => x !== d); if (el.checked) X.defects.push(d); });
     const ret = $('#ret'); if (ret) ret.onclick = e => { const o = ($('[data-dfo]') || {}).value; const defects = X.defects.concat(has(o) ? [o.trim()] : []); if (!defects.length) return toast('Tick at least one defect', 'err');
-      busy(e.target, 'Returning', async () => { const M = { ret: 1, defects }; await save(app, 'da', M); const t = memoText(Object.assign({}, row), M);
-        openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">Returned to Patwari</h2><div class="tx c25" style="margin:10px 0">${esc(t)}</div><button class="btn12" id="wa" style="width:100%">Send on WhatsApp</button><button class="btn12 gh" id="mp" style="width:100%;margin-top:8px">Memo PDF</button>`,
-          mount: el => { $('#x', el).onclick = () => closeSheet(() => go('c25', {})); $('#wa', el).onclick = () => sendWA(t); $('#mp', el).onclick = ev => busy(ev.target, 'Making', () => toPDF(docMemo(row, M), fname(row, 'Return memo', 'pdf'), FOOT.memo + ' · ' + row.app_no)); } })); }); };
-    on(view(), '#c25o', 'click', (box, ev) => { const e = { target: ev.target.closest('#cp') }; if (!e.target || e.target.disabled) return; const txt = calcOut().txt; busy(e.target, 'Saving', async () => { if (part === 'da') X.flags = daFlags(row, fam); const Y = Object.assign({}, X); delete Y.by; delete Y.at; if (part !== 'da') { delete Y.docs; delete Y.defects; delete Y.pages; } if (part !== 'nt' && part !== 'gq') delete Y.v;
-      await save(app, part, Y); toast(await copyText(txt) ? 'Saved and copied – paste in JanSugam' : 'Saved', 'ok'); }); });
+      const M = { defects }, t = memoText(Object.assign({}, row), M);
+        openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">Return memo</h2><p class="mu">Send the case back on JanSugam. This memo is not saved in TehsilOS.</p><div class="tx c25" style="margin:10px 0">${esc(t)}</div><button class="btn12" id="wa" style="width:100%">Send on WhatsApp</button><button class="btn12 gh" id="mp" style="width:100%;margin-top:8px">Memo PDF</button>`,
+          mount: el => { $('#x', el).onclick = () => closeSheet(); $('#wa', el).onclick = () => sendWA(t); $('#mp', el).onclick = ev => busy(ev.target, 'Making', () => toPDF(docMemo(row, M), fname(row, 'Return memo', 'pdf'), FOOT.memo + ' · ' + row.app_no)); } })); };
+    on(view(), '#c25o', 'click', (box, ev) => { const e = { target: ev.target.closest('#cp') }; if (!e.target || e.target.disabled) return; const txt = calcOut().txt; busy(e.target, 'Saving', async () => { if (part === 'da') X.flags = daFlags(row, fam); const Y = Object.assign({}, X); delete Y.by; delete Y.at; if (part !== 'da') { delete Y.docs; delete Y.defects; delete Y.pages; } if (part !== 'nt') delete Y.vi; delete Y.v; delete Y.prev; delete Y.based_on;
+      await save(app, part, Y); toast(await copyText(txt) ? 'Saved and copied – paste in JanSugam' : 'Saved', 'ok'); NAV.stack = NAV.stack.filter(x => x.name !== 'c25r' && x.name !== 'c25f'); go('c25f', { app }); }); });
     on(view(), '[data-out]', 'click', b => busy(b, 'Making', async () => { const Y = Object.assign({}, X, { by: me() }); const blocks = part === 'da' ? docDA(row, Object.assign(Y, { flags: daFlags(row, fam) })) : docNT(row, Y, part);
       const nm = part === 'da' ? 'EWS scrutiny note' : part === 'gq' ? 'EWS GQ report' : 'EWS NT report'; if (b.dataset.out === 'pdf') await toPDF(blocks, fname(row, nm, 'pdf'), FOOT[part] + ' · ' + row.app_no); else toDOCX(blocks, fname(row, nm, 'docx'), FOOT[part] + ' · ' + row.app_no); }));
   }
@@ -635,8 +680,8 @@ VIEWS.c25b = async function () {
 };
 
 /* ---------- entry points ---------- */
-Object.assign(TABOF10, { c25: 'tos12', c25p: 'tos12', c25d: 'tos12', c25r: 'tos12', c25b: 'tos12' });
-Object.assign(PWV95, { c25: 'c25', c25p: 'c25', c25d: 'c25', c25r: 'c25', c25b: 'c25' });
+Object.assign(TABOF10, { c25: 'tos12', c25f: 'tos12', c25p: 'tos12', c25d: 'tos12', c25r: 'tos12', c25b: 'tos12' });
+Object.assign(PWV95, { c25: 'c25', c25f: 'c25', c25p: 'c25', c25d: 'c25', c25r: 'c25', c25b: 'c25' });
 if (typeof WRITE_API !== 'undefined' && WRITE_API.indexOf('cert25Save') < 0) WRITE_API.push('cert25Save');
 Object.assign(HELP, {
   c25: { en: ['Certificates', 'Type the JanSugam Application No. to open its report.', 'The Patwari fills it first; the NT, GQ, BCG and Tehsildar then add their own check.'], hi: ['Certificates', 'JanSugam ka Application No. likhein.', 'Pehle Patwari bharega; phir NT, GQ, BCG aur Tehsildar apni jaanch jodenge.'] },
@@ -657,12 +702,12 @@ updateBnav = function () {
 const _t25 = VIEWS.tos12;
 if (_t25) VIEWS.tos12 = async function (a) {
   const pr = _t25(a);
-  try { if (who() && !$('#c25q')) { const h = $('.t12', view()); if (h) { const q = document.createElement('button'); q.id = 'c25q'; q.className = 'cd row'; q.style.cssText = 'display:block;border:0;width:100%;text-align:left';
+  try { if (who() && !$('#c25q0')) { const h = $('.t12', view()); if (h) { const q = document.createElement('button'); q.id = 'c25q0'; q.className = 'cd row'; q.style.cssText = 'display:block;border:0;width:100%;text-align:left';
     q.innerHTML = '<h3>Certificates <span>›</span></h3><div class="lbl">Open while the tehsil status loads</div>'; q.onclick = () => go('c25', {}); h.insertBefore(q, h.firstChild); } } } catch (e) {}
   await pr;
   try { if (current().name !== 'tos12' || $('#c25t') || !who()) return; const host = $('.t12', view()); if (!host) return;
     const b = document.createElement('button'); b.id = 'c25t'; b.className = 'cd row'; b.style.cssText = 'display:block;border:0;width:100%;text-align:left';
-    b.innerHTML = `<h3>Certificates <span class="pill ok">New</span></h3><div class="lbl">JanSugam reports and remarks – Patwari → NT / GQ → BCG → you</div><div class="lbl" style="margin-top:6px">Open ›</div>`;
+    b.innerHTML = `<h3>Certificates <span class="pill ok">New</span></h3><div class="lbl">JanSugam reports and remarks – Patwari → NT → BCG → you</div><div class="lbl" style="margin-top:6px">Open ›</div>`;
     b.onclick = () => go('c25', {}); const more = $$('.cd', host).find(c => /^More/.test(($('h3', c) || {}).textContent || '')); host.insertBefore(b, more || null); } catch (e) {}
 };
 })();
