@@ -4,7 +4,7 @@
  */
 "use strict";
 (function () {
-const V26 = '12.7.0';
+const V26 = '12.8.0';
 const view = () => $('#view');
 const isDesk = () => window.matchMedia('(min-width: 900px)').matches;
 const istNow = () => new Date(Date.now() + 5.5 * 3600e3);
@@ -122,12 +122,12 @@ document.head.appendChild(css);
 /* ---------- shell ---------- */
 const ICO = { cert: 'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6', camp: 'M4 20l8-16 8 16zM10 20l2-4 2 4', ins: 'M4 20V10M10 20V4M16 20v-7M22 20H2', ppl: 'M9 11.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.7.9 2.7 2.7 3 5.2',
   cov: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z', set: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
-  map: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15', fid: 'M12 21c-4-3-7-6-7-10a7 7 0 0 1 14 0c0 4-3 7-7 10zM12 8v6M9 11h6', sw: 'M7 7h10M7 7l3-3M7 7l3 3M17 17H7M17 17l-3-3M17 17l-3 3' };
+  map: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15', meet: 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4M7 14h4M7 17h7', court: 'M12 3v18M5 21h14M4 8h16M6 8l-3 6a3 3 0 0 0 6 0zM18 8l-3 6a3 3 0 0 0 6 0z', land: 'M3 20l5-9 4 6 3-4 6 7zM16 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4z', dak: 'M3 6h18v12H3zM3 6l9 7 9-7', griev: 'M4 5h16v11H9l-5 4zM12 8v3M12 13.5v.01', fid: 'M12 21c-4-3-7-6-7-10a7 7 0 0 1 14 0c0 4-3 7-7 10zM12 8v6M9 11h6', sw: 'M7 7h10M7 7l3-3M7 7l3 3M17 17H7M17 17l-3-3M17 17l-3 3' };
 const svg = (k, s) => `<svg width="${s || 18}" height="${s || 18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICO[k]}"/></svg>`;
 try { P10.cert = ICO.cert; } catch (e) {}
 const X = () => window.T12X || {};
 const on26 = () => !!(S.session && S.boot && X().svmOn && X().svmOn() && X().office() && !S.boot.fid25);
-try { const TABS_OS = X().TABS_OS; if (TABS_OS) { TABS_OS.length = 0; [['tos12', 'Home', 'os'], ['home', 'Farmer ID', 'home'], ['c25', 'Certificates', 'cert'], ['svm12', 'SVAMITVA', 'map'], ['rep8', 'Reports', 'doc']].forEach(x => TABS_OS.push(x)); } } catch (e) {}
+try { const TABS_OS = X().TABS_OS; if (TABS_OS) { TABS_OS.length = 0; [['tos12', 'Home', 'os'], ['home', 'Farmer ID', 'home'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'm28'], ['mods28', 'More', 'mods28']].forEach(x => TABS_OS.push(x)); } } catch (e) {}
 try { Object.assign(TABOF10, { c25: 'c25', c25f: 'c25', c25p: 'c25', c25d: 'c25', c25r: 'c25', c25b: 'c25' }); } catch (e) {}
 const EXTRA = () => [['cov10', 'Coverage', 'cov'], ['camps10', 'Camps', 'camp'], ['ins19', 'Insights', 'ins'], ['ppl83', 'People', 'ppl']].concat(role() === 'ADMIN' ? [['mast12', 'Settings & masters', 'set'], ['assar19', 'Tehsil Assar', 'sw']] : []);
 const _ub26 = updateBnav;
@@ -162,6 +162,7 @@ const SRC = {
   day: f => api('day19', f ? { fresh: 1 } : {}, 60000),
   al: f => api('alerts19', f ? { fresh: 1 } : {}, 45000),
   c25: () => api('cert25List', {}, 45000),
+  m28: () => (window.M28X ? window.M28X.needs(true) : Promise.resolve(null)),
   svm: f => X().svmLoad(f).then(D => ({ totals: D.totals, needs: X().needs(D).slice(0, 6) }))
 };
 const H = { data: {}, err: {}, busy: {}, at: 0, vil: 'all' };
@@ -199,11 +200,12 @@ function needsList() {
   if (A && A.alerts) { const st = A.alerts.filter(x => x.k === 'stall');
     if (st.length > 1) L.push({ c: 'a', t: `${st.length} villages: no new Farmer ID in 2 days`, s: st.map(x => String(x.t).split(':')[0]).join(', '), b: 'View', go: ['day19', {}] });
     A.alerts.filter(x => !(st.length > 1 && x.k === 'stall')).forEach(x => L.push({ c: x.k === 'upload' || x.k === 'check' ? 'a' : '', t: x.t, s: 'Farmer ID', b: 'View', go: x.k === 'upload' ? [VIEWS.portal ? 'portal' : 'pp19', {}] : x.k === 'patwari' ? ['reg14', {}] : ['day19', {}] })); }
+  const MG = H.data.m28; if (MG && MG.needs) MG.needs.forEach(n => L.unshift({ c: n.k === 'approve' ? 'r' : n.k === 'back' ? 'r' : 'a', t: n.t, s: 'Meetings' + (n.due ? ' · due ' + String(n.due).slice(8, 10) + '-' + String(n.due).slice(5, 7) + ' ' + String(n.due).slice(11, 16) : n.date ? ' · ' + String(n.date).slice(8, 10) + '-' + String(n.date).slice(5, 7) : ''), b: n.k === 'approve' ? 'Review' : n.k === 'reply' ? 'Submit' : 'Open', k: 1, go: [n.k === 'reply' ? 'm28r' : 'm28m', { id: n.mtg_id }] }));
   if (V && V.needs) V.needs.forEach(n => L.push({ c: '', t: n.t, s: 'SVAMITVA · ' + n.k, b: 'Open', go: n.a }));
   return L;
 }
 function needsCard() {
-  const L = needsList(), wait = ['c25', 'al', 'svm'].some(k => H.busy[k] && !H.data[k]);
+  const L = needsList(), wait = ['c25', 'al', 'svm', 'm28'].some(k => H.busy[k] && !H.data[k]);
   const errs = ['c25', 'al', 'svm'].filter(k => H.err[k] && !H.data[k]);
   return `<div class="cd"><div class="hd"><b>Needs you</b>${L.length > 6 ? `<button class="lk" data-go="inbox12">All ${L.length}</button>` : `<span>${L.length ? L.length + ' item' + (L.length > 1 ? 's' : '') : ''}</span>`}</div>
     ${L.slice(0, 6).map((n, i) => `<div class="nd"><i class="c ${n.c}"></i><div class="t"><b>${esc(n.t)}</b><span>${esc(n.s)}</span></div><button class="pb ${n.k ? 'k' : ''}" data-nd="${i}">${n.b}</button></div>`).join('')}
@@ -230,10 +232,15 @@ function villCard() {
 function tilesCard() {
   const C = H.data.c25, V = H.data.svm, mine = needsList().filter(n => n.go && n.go[0] === 'c25').length;
   const t = (go, ic, bg, fg, name, sub) => `<button class="tile" data-go="${go}"><span class="ic" style="background:${bg};color:${fg}">${svg(ic, 19)}</span><span><b>${name}</b><span class="s">${sub}</span></span></button>`;
-  return `<div class="tiles">${t('c25', 'cert', '#E8F2EC', '#0E5E3B', 'Certificates', C ? (mine ? 'New for you' : 'Reports and remarks') : 'Reports and remarks')}
+  const MG = H.data.m28, up = MG && MG.rows ? MG.rows.filter(r => r.date >= istNow().toISOString().slice(0, 10)).sort((a, b) => a.date.localeCompare(b.date))[0] : null, c25on = !!(window.C25X && window.C25X.who && window.C25X.who());
+  const SOON = [['Revenue Court Cases', 'court'], ['State Land & Encroachment', 'land'], ['Dak Section', 'dak'], ['Grievances', 'griev']];
+  return `<div class="tiles">${c25on ? t('c25', 'cert', '#E8F2EC', '#0E5E3B', 'Certificates', C ? (mine ? 'New for you' : 'Reports and remarks') : 'Reports and remarks') : ''}
+    ${window.M28X && window.M28X.who() ? t('m28', 'meet', '#F0EEF7', '#5B4B8A', 'Meetings', up ? esc(up.title.length > 22 ? up.title.slice(0, 21) + '…' : up.title) + ' · ' + Number(up.date.slice(8, 10)) + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Number(up.date.slice(5, 7)) - 1] : 'Notices, brief, minutes') : ''}
     ${t('svm12', 'map', '#EAF0F8', '#2F5D9E', 'SVAMITVA', V && V.totals ? N(V.totals.cards) + ' of ' + N(V.totals.props) + ' cards' : 'Abadi deh, cards')}
     ${t('camps10', 'camp', '#FFF4E0', '#8A5300', 'Camps', 'Daily camps, deployment')}
-    ${t('ins19', 'ins', '#F0EEF7', '#5B4B8A', 'Insights', 'Rank, pace, villages')}</div>`;
+    ${t('ins19', 'ins', '#F0EEF7', '#5B4B8A', 'Insights', 'Rank, pace, villages')}</div>
+    ${role() === 'ADMIN' ? `<div class="hd" style="margin:18px 0 10px"><b>Coming soon</b><span>Only you see these</span></div><div class="tiles">${SOON.map(s => `<button class="tile" data-go="mods28" style="opacity:.55;position:relative"><span class="ic" style="background:#F1F3F1;color:#5E6B63">${svg(s[1], 19)}</span><span><b>${s[0]}</b><span class="s">Planned</span></span></button>`).join('')}</div>` : ''}
+    <button class="cd row26" data-go="mods28" style="width:100%;margin-top:12px;padding:14px 20px"><span>All modules<small>${role() === 'ADMIN' ? '5 live · 11 coming' : 'Everything in TehsilOS'}</small></span><span>›</span></button>`;
 }
 function moreCard() {
   return `<div class="cd" style="padding:8px 20px"><button class="row26" data-go="cov10"><span>Coverage<small>Village-wise status</small></span><span>›</span></button>
@@ -261,7 +268,7 @@ function draw() {
   const rf = $('#rf26'); if (rf) rf.onclick = () => loadAll(true);
 }
 function loadAll(f) {
-  const ks = ['ins', 'day', 'al', 'svm'].concat(['ADMIN', 'NT', 'DA'].indexOf(role()) >= 0 || /patwari|gq|bcg|oq/i.test((me() || {}).designation || '') ? ['c25'] : []);
+  const ks = ['ins', 'day', 'al', 'svm', 'm28'].concat(['ADMIN', 'NT', 'DA'].indexOf(role()) >= 0 || /patwari|gq|bcg|oq/i.test((me() || {}).designation || '') ? ['c25'] : []);
   ks.forEach(k => fetchOne(k, draw, f));
 }
 let rz = 0; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (current() && current().name === 'tos12' && document.body.classList.contains('ui26')) draw(); }, 200); });

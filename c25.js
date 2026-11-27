@@ -19,7 +19,7 @@ const r2 = x => Math.round(x * 100) / 100;
 const mask = s => String(s || '').replace(/\b(\d{4})[\s-]?(\d{4})[\s-]?(\d{4})\b/g, (m, a, b, c) => 'XXXX XXXX ' + c);
 
 /* ---------- who am I ---------- */
-const who = () => { const u = me() || {}; if (S.boot && S.boot.fid25) return ''; if (u.role === 'ADMIN') return 'teh'; if (u.role === 'NT') return 'nt'; if (u.role === 'DA') return 'da';
+const who = () => { const u = me() || {}; if (S.boot && S.boot.fid25) return ''; if (u.role === 'ADMIN') return 'teh'; if (u.role === 'NT') return S.boot && S.boot.m28 && !S.boot.m28.ntMain ? '' : 'nt'; if (u.role === 'DA') return 'da';
   const d = String(u.designation || ''); return /patwari/i.test(d) ? 'ph' : /\bGQ\b|girdawar/i.test(d) ? '' : /\bBCG\b/i.test(d) ? 'da' : /\bOQ\b|office\s*qanungo/i.test(d) ? 'oq' : ''; };
 const WHO = { ph: 'Patwari', nt: 'Naib Tehsildar', gq: 'Girdawar Qanungo', da: 'BCG (Dealing Assistant)', teh: 'Tehsildar', oq: 'Office Qanungo' };
 
@@ -710,4 +710,6 @@ if (_t25) VIEWS.tos12 = async function (a) {
     b.innerHTML = `<h3>Certificates <span class="pill ok">New</span></h3><div class="lbl">JanSugam reports and remarks – Patwari → NT → BCG → you</div><div class="lbl" style="margin-top:6px">Open ›</div>`;
     b.onclick = () => go('c25', {}); const more = $$('.cd', host).find(c => /^More/.test(($('h3', c) || {}).textContent || '')); host.insertBefore(b, more || null); } catch (e) {}
 };
+/* 12.8.0: shared with Meetings (m28.js) */
+window.C25X = { B, toPDF, toDOCX, who };
 })();
