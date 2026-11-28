@@ -32,6 +32,7 @@ const SRC = {
   m28: () => api('mtg28List', {}),
   h29: () => api('home29', {}),
   out: () => api('out30List', { limit: 120 }),
+  fid: () => api('fid30Today', {}, { timeout: 90000 }),
   svm: () => api('svm12Get', {}, { timeout: 60000 }).then(D => ({ totals: D.totals, needs: svmNeeds(D).slice(0, 6) })),
 };
 const H = { data: {}, err: {}, busy: {}, at: 0, uid: '' };
@@ -41,7 +42,7 @@ const errRow = (k, what) => `<div class="er26"><span>Couldn't load ${what}.</spa
 const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function keys() { const K = rk(), sv = svmOn() ? ['svm'] : [], cert = certWho() ? ['c25'] : [], mt = mtgWho() ? ['m28'] : [], ob = outWho() ? ['out'] : [];
-  return K === 'gq' ? ['h29'].concat(mt, sv) : K === 'oq' ? ['h29'].concat(mt, ob, sv, cert) : ['ins', 'day', 'al'].concat(mt, ob, sv, cert); }
+  return K === 'gq' ? ['h29'].concat(mt, sv) : K === 'oq' ? ['h29'].concat(mt, ob, sv, cert) : ['ins', 'day', 'al'].concat(mt, ob, sv, cert, K === 'teh' || K === 'nt' ? ['fid'] : []); }
 async function fetchOne(k, f) {
   H.busy[k] = 1; paint();
   try { const d = await SRC[k](f); H.data[k] = d; H.err[k] = ''; H.at = Date.now(); kput(kk(k), { t: Date.now(), d }); }
@@ -87,6 +88,7 @@ export function needsList(data) {
   if (MG && MG.needs) MG.needs.forEach(n => L.unshift({ c: n.k === 'approve' || n.k === 'back' ? 'r' : 'a', t: n.t, s: 'Meetings' + (n.due ? ' · due ' + dmy(n.due).slice(0, 5) + ' ' + String(n.due).slice(11, 16) : n.date ? ' · ' + dmy(n.date).slice(0, 5) : ''), b: n.k === 'approve' ? 'Review' : n.k === 'reply' ? 'Submit' : 'Open', k: 1, go: [n.k === 'reply' ? 'm28r' : 'm28m', { id: n.mtg_id }] }));
   if (V && V.needs) V.needs.forEach(n => L.push({ c: '', t: n.t, s: 'SVAMITVA · ' + n.k, b: 'Open', go: n.a }));
   outNeeds(data.out).reverse().forEach(n => L.unshift(n));
+  if (data.fid && data.fid.unconfirmed) L.unshift({ c: 'a', t: `${data.fid.unconfirmed} camp${data.fid.unconfirmed > 1 ? 's' : ''}: attendance not confirmed`, s: 'Farmer ID · due 1 PM', b: 'View', go: ['os-fid', {}] });
   return L;
 }
 function needsCard() {
@@ -125,7 +127,7 @@ function tiles() {
   const up = MG && MG.rows ? MG.rows.filter(r => r.date >= today()).sort((a, b) => a.date.localeCompare(b.date))[0] : null;
   const mt = mtgWho() ? tile('m28', 'meet', '#F0EEF7', '#5B4B8A', 'Meetings', up ? esc(up.title.length > 22 ? up.title.slice(0, 21) + '…' : up.title) + ' · ' + Number(up.date.slice(8, 10)) + ' ' + MO[Number(up.date.slice(5, 7)) - 1] : 'Notices, brief, minutes') : '';
   const cert = sub => certWho() ? tile('c25', 'cert', '#E8F2EC', '#0E5E3B', 'Certificates', sub || (mine ? 'New for you' : 'Reports and remarks')) : '';
-  const fid = sub => tile('home', 'fid', '#E8F2EC', '#0E5E3B', 'Farmer ID', sub);
+  const fid = sub => tile('os-fid', 'fid', '#E8F2EC', '#0E5E3B', 'Farmer ID', sub);
   const sv = sub => svmOn() ? tile('svm12', 'map', '#EAF0F8', '#2F5D9E', 'SVAMITVA', sub || (V && V.totals ? N(V.totals.cards) + ' of ' + N(V.totals.props) + ' cards' : 'Abadi deh, cards')) : '';
   const all = `<button class="cd rowc" data-go="os-mods"><span>All modules<small>${role() === 'ADMIN' ? '5 live · 11 coming' : 'Everything in TehsilOS'}</small></span><span>›</span></button>`;
   if (K === 'nt') return `<div class="tiles">${cert()}${mt}${fid('Whole tehsil · view')}${sv('View')}</div>${all}`;

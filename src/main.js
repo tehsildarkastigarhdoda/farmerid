@@ -2,7 +2,7 @@
 import './core/style.css';
 import { $, esc, initials } from './core/dom.js';
 import { kget, kput, kdel } from './core/store.js';
-import { S, me, loadSession, saveSession, saveBoot, clearSession, inShell } from './core/session.js';
+import { S, me, rk, loadSession, saveSession, saveBoot, clearSession, inShell } from './core/session.js';
 import { api, onApi } from './core/api.js';
 import { reset, current, register } from './core/router.js';
 import { mountShell, paintChrome } from './core/shell.js';
@@ -15,6 +15,8 @@ import './modules/needs.js';
 import './modules/mods.js';
 import './modules/staff.js';
 import './modules/outbox.js';
+import './modules/fid.js';
+import './modules/patwari.js';
 
 const q = new URLSearchParams(location.search);
 const toLegacy = () => location.replace('legacy.html' + location.search + location.hash);
@@ -24,7 +26,7 @@ async function land() {
   if (!inShell()) return toLegacy();
   try { await kput('new129:' + me().user_id, 1); } catch (e) {}   // the 12.9 "What's new" is replaced by the new shell
   try { const Q = await kget('queue:' + me().user_id); if (Q && Q.length) legacyWarm(); } catch (e) {}
-  return reset('os-home');
+  return reset(rk() === 'ph' ? 'os-aaj' : 'os-home');
 }
 register('os-retry', { title: 'TehsilOS', form: true, render(el, a) {
   const u = me() || {};
@@ -37,7 +39,7 @@ register('os-retry', { title: 'TehsilOS', form: true, render(el, a) {
 } });
 async function logout(skipAsk) {
   if (!skipAsk) {
-    let n = 0; try { n = ((await kget('queue:' + me().user_id)) || []).length; } catch (e) {}
+    let n = 0; try { n = ((await kget('queue:' + me().user_id)) || []).length + ((await kget('oq30:' + me().user_id)) || []).length; } catch (e) {}
     if (!confirm(n ? `${n} changes are not uploaded yet. They stay on this phone and upload after you log in again.\n\nLog out anyway?` : 'Log out of TehsilOS on this phone?')) return;
   }
   try { if (navigator.onLine) await api('logout', {}, { timeout: 15000 }); } catch (e) {}

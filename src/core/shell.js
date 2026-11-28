@@ -12,13 +12,15 @@ import { VERSION } from './config.js';
 
 /* the five tabs per role (frozen 27.11) */
 const BARS = {
-  teh: [['os-home', 'Home', 'home'], ['home', 'Farmer ID', 'fid'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'meet'], ['os-mods', 'More', 'more']],
-  nt: [['os-home', 'Home', 'home'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'meet'], ['home', 'Farmer ID', 'fid'], ['os-mods', 'More', 'more']],
-  da: [['os-home', 'Home', 'home'], ['m28', 'Meetings', 'meet'], ['c25', 'Certificates', 'cert'], ['home', 'Farmer ID', 'fid'], ['os-mods', 'More', 'more']],
+  teh: [['os-home', 'Home', 'home'], ['os-fid', 'Farmer ID', 'fid'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'meet'], ['os-mods', 'More', 'more']],
+  nt: [['os-home', 'Home', 'home'], ['c25', 'Certificates', 'cert'], ['m28', 'Meetings', 'meet'], ['os-fid', 'Farmer ID', 'fid'], ['os-mods', 'More', 'more']],
+  da: [['os-home', 'Home', 'home'], ['m28', 'Meetings', 'meet'], ['c25', 'Certificates', 'cert'], ['os-fid', 'Farmer ID', 'fid'], ['os-mods', 'More', 'more']],
   oq: [['os-home', 'Home', 'home'], ['svm12', 'SVAMITVA', 'map'], ['m28', 'Meetings', 'meet'], ['c25', 'Certificates', 'cert'], ['os-mods', 'More', 'more']],
-  gq: [['os-home', 'Home', 'home'], ['home', 'Farmer ID', 'fid'], ['m28', 'Meetings', 'meet'], ['svm12', 'SVAMITVA', 'map'], ['os-mods', 'More', 'more']],
+  gq: [['os-home', 'Home', 'home'], ['os-fid', 'Farmer ID', 'fid'], ['m28', 'Meetings', 'meet'], ['svm12', 'SVAMITVA', 'map'], ['os-mods', 'More', 'more']],
+  ph: [['os-aaj', 'Aaj', 'home'], ['os-reg', 'Register', 'doc'], ['os-25', 'Aaj ke 25', 'ppl'], ['c25', 'Certificates', 'cert'], ['os-mods', 'More', 'more']],
 };
 const EXTRA = () => { const k = rk(), r = role();
+  if (k === 'ph') return [['home', 'Farmer ID (old)', 'fid']];
   const L = k === 'gq' ? [['cov10', 'Coverage', 'cov']] : k === 'oq' ? [['cov10', 'Coverage', 'cov'], ['ins19', 'Insights', 'ins']]
     : [['cov10', 'Coverage', 'cov'], ['camps10', 'Camps', 'camp'], ['ins19', 'Insights', 'ins'], ['ppl83', 'People', 'ppl']];
   if (['teh', 'da', 'nt', 'oq'].indexOf(k) >= 0) L.push(['os-out', 'Outbox', 'doc']);
@@ -26,8 +28,8 @@ const EXTRA = () => { const k = rk(), r = role();
   if (r === 'ADMIN') L.push(['mast12', 'Settings & masters', 'set']);
   return L; };
 /* which tab a screen belongs to */
-const TAB_OF = { 'os-home': 'os-home', 'os-needs': 'os-home', 'os-mods': 'os-mods', 'os-staff': 'os-mods', 'os-person': 'os-mods', 'os-pin': 'os-mods', 'os-out': 'os-mods', 'os-out-new': 'os-mods', 'os-sign': 'os-mods', 'os-out-letter': 'os-mods', 'os-signature': 'os-mods',
-  home: 'home', cov10: 'home', camps10: 'home', ins19: 'home', ppl83: 'home', c25: 'c25', c25f: 'c25', c25p: 'c25', c25r: 'c25', c25d: 'c25', c25b: 'c25',
+const TAB_OF = { 'os-fid': 'os-fid', 'os-camp': 'os-fid', 'os-close': 'os-fid', 'os-aaj': 'os-aaj', 'os-reg': 'os-reg', 'os-reg-list': 'os-reg', 'os-card': 'os-reg', 'os-25': 'os-25', 'os-home': 'os-home', 'os-needs': 'os-home', 'os-mods': 'os-mods', 'os-staff': 'os-mods', 'os-person': 'os-mods', 'os-pin': 'os-mods', 'os-out': 'os-mods', 'os-out-new': 'os-mods', 'os-sign': 'os-mods', 'os-out-letter': 'os-mods', 'os-signature': 'os-mods',
+  home: 'os-fid', cov10: 'os-fid', camps10: 'os-fid', ins19: 'os-fid', ppl83: 'os-fid', portal: 'os-fid', day19: 'os-fid', c25: 'c25', c25f: 'c25', c25p: 'c25', c25r: 'c25', c25d: 'c25', c25b: 'c25',
   m28: 'm28', m28e: 'm28', m28m: 'm28', m28r: 'm28', svm12: 'svm12', svmv12: 'svm12', svmk12: 'svm12', svmc12: 'svm12', svmr12: 'svm12', svml12: 'svm12' };
 /* older screens that now live in the new core */
 export const NATIVE_OF = { tos12: 'os-home', inbox12: 'os-needs', mods28: 'os-mods', users: 'os-staff', staff94: 'os-staff' };

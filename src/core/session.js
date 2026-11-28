@@ -21,7 +21,7 @@ export function rk() {
   if (/\bGQ\b|girdawar/i.test(d)) return 'gq'; if (/patwari/i.test(d)) return 'ph'; return u.role === 'COMP' ? 'comp' : '';
 }
 /** Stage 1: the new shell is for the office roles; field staff keep the older Farmer ID screens until Stage 2. */
-export const inShell = () => ['teh', 'nt', 'da', 'oq', 'gq'].indexOf(rk()) >= 0;
+export const inShell = () => ['teh', 'nt', 'da', 'oq', 'gq', 'ph'].indexOf(rk()) >= 0;
 export const firstName = () => String((me() || {}).name || '').split(' ')[0];
 /** module switches as the server gives them */
 export const svmOn = () => !!(S.boot && S.boot.tos12 && S.boot.tos12.svm && S.boot.tos12.svm.view);

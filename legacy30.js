@@ -2,7 +2,7 @@
 "use strict";
 (function () {
 const Q = new URLSearchParams(location.search), EMBED = Q.has('embed') && window.parent !== window;
-const SHELL = ['teh', 'nt', 'da', 'oq', 'gq'];
+const SHELL = ['teh', 'nt', 'da', 'oq', 'gq', 'ph'];
 const rk = () => { try { return (window.T12X && T12X.rk29 && T12X.rk29()) || ''; } catch (e) { return ''; } };
 const _login = VIEWS.login;
 /* a front-end patch (13.1.1) runs on the 13.1 server: only a different major.minor means the server needs pasting */
@@ -13,7 +13,7 @@ if (!EMBED) {
   /* the log-in lives in the new app; office staff use the new app */
   VIEWS.login = function () { if (!S.session) { location.replace('app.html'); return; } return _login.apply(this, arguments); };
   const _r = render; let checked = false;
-  render = async function () { if (!checked && S.session && S.boot) { checked = true; if (SHELL.indexOf(rk()) >= 0) { location.replace('app.html'); return; } } return _r.apply(this, arguments); };
+  render = async function () { if (!checked && S.session && S.boot) { checked = true; let noph = false; try { noph = !!sessionStorage.getItem('os:noph'); } catch (e) {} if (SHELL.indexOf(rk()) >= 0 && !(noph && rk() === 'ph')) { location.replace('app.html'); return; } } return _r.apply(this, arguments); };
   return;
 }
 
