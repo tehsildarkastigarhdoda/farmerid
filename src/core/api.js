@@ -12,7 +12,7 @@ const listeners = { expired: [], busy: [] };
 export const onApi = (ev, fn) => listeners[ev].push(fn);
 let inflight = 0; const busyN = d => { inflight = Math.max(0, inflight + d); listeners.busy.forEach(f => f(inflight)); };
 
-const READS = new Set(['ins19', 'day19', 'alerts19', 'cert25List', 'mtg28List', 'svm12Get', 'home29', 'listUsers', 'sig15', 'dir14List', 'staff30', 'outbox30List']);
+const READS = new Set(['ins19', 'day19', 'alerts19', 'cert25List', 'mtg28List', 'svm12Get', 'home29', 'listUsers', 'sig15', 'dir14List', 'staff30', 'out30List', 'out30Get']);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 async function raw(action, data, timeout) {
