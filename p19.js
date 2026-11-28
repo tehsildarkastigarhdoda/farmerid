@@ -75,13 +75,13 @@ VIEWS.pp19 = async function () {
     ${L ? `<div class="cd"><h3>Last time · ${esc(dmy(L.at.slice(0, 10)))} ${esc(L.at.slice(11, 16))}</h3>${res19(L)}</div>` : ''}</div>`; window.scrollTo(0, 0);
   $('#f19').onchange = async e => { const fs = Array.from(e.target.files || []); e.target.value = ''; if (!fs.length) return; const box = $('#pk19'); box.innerHTML = '<div class="cd"><p class="hint"><span class="spin"></span> Reading ' + fs.length + ' files…</p></div>'; box.scrollIntoView({ block: 'start' });
     try { const parts = []; const names = []; for (const f of fs) { const p = await readFile(f); p.forEach(x => { x.file = f.name; parts.push(x); }); names.push([f.name, p.map(x => KL[x.kind]).join(', ') || 'not recognised']); }
-      const C = compact(parts); C.fts = String(Math.max(0, ...parts.filter(x => x.kind === 'uncl').map(x => Number((String(x.file).match(/(\d{13})/) || [])[1]) || 0)) || ''); const cnt = { reg: C.reg.length, claim: C.claim.length, uncl: C.uncl.length, area: C.area.length, sumv: C.sumv.length, sumd: C.sumd.length };
+      const C = compact(parts); C.regFiles = fs.filter(f => parts.some(x => x.file === f.name && x.kind === 'reg')); C.fts = String(Math.max(0, ...parts.filter(x => x.kind === 'uncl').map(x => Number((String(x.file).match(/(\d{13})/) || [])[1]) || 0)) || ''); const cnt = { reg: C.reg.length, claim: C.claim.length, uncl: C.uncl.length, area: C.area.length, sumv: C.sumv.length, sumd: C.sumd.length };
       box.innerHTML = `<div class="cd"><h3>${fs.length} files</h3>
         <div class="fl"><span><b>Will send</b><small>${Object.keys(cnt).filter(k => cnt[k]).map(k => KL[k] + ': ' + N(cnt[k])).join(' · ')}</small></span></div>
-        ${cnt.claim && cnt.uncl ? '' : '<p class="hint" style="color:#9A3F1C">Claimed and unclaimed details both are needed to work out claimed / part-claimed / unclaimed. With only one of them, the app stores it and waits.</p>'}
+        ${(cnt.claim && cnt.uncl) || !(cnt.claim || cnt.uncl) ? '' : '<p class="hint" style="color:#9A3F1C">Claimed and unclaimed details both are needed to work out claimed / part-claimed / unclaimed. With only one of them, the app stores it and waits.</p>'}
         <button class="btn btn-primary" id="go19" style="margin:8px 0 10px;width:100%">Upload and work it out</button>
         ${names.map(n => `<div class="fl"><span>${esc(n[0])}<small>${esc(n[1])}</small></span><span class="${/not rec/.test(n[1]) ? 'no' : 'ok'}">${/not rec/.test(n[1]) ? '✗' : '✓'}</span></div>`).join('')}</div>`;
-      box.scrollIntoView({ block: 'start' }); $('#go19').onclick = () => { $('#go19').disabled = true; $('#go19').textContent = 'Uploading… progress at the bottom right'; run19(C, cnt); }; } catch (x) { box.innerHTML = `<div class="cd"><p class="no">${esc(x.message)}</p></div>`; } };
+      box.scrollIntoView({ block: 'start' }); $('#go19').onclick = () => { $('#go19').disabled = true; $('#go19').textContent = 'Uploading… see the progress box'; run19(C, cnt); }; } catch (x) { box.innerHTML = `<div class="cd"><p class="no">${esc(x.message)}</p></div>`; } };
 };
 function res19(r) {
   const rc = r.rc || [], bad = rc.filter(x => x.dc_claimed != null && x.dc_claimed !== x.app_claimed);
@@ -93,18 +93,47 @@ function res19(r) {
     ${rc.length ? `<table class="t" style="margin-top:8px"><tr><th>Village</th><th>App claimed</th><th>DC claimed</th><th>App pending</th><th>DC pending</th></tr>${rc.map(x => `<tr><td>${esc(x.name)}</td><td>${N(x.app_claimed)}</td><td class="${x.dc_claimed != null && x.dc_claimed !== x.app_claimed ? 'bad' : ''}">${x.dc_claimed == null ? '–' : N(x.dc_claimed)}</td><td>${N(x.app_pending)}</td><td>${x.dc_pending == null ? '–' : N(x.dc_pending)}</td></tr>`).join('')}</table>
     <p class="hint">${bad.length ? bad.length + ' village(s) differ from the DC summary – usually the summary is a little older or newer than the detail files.' : 'Matches the DC summary ✓'}</p>` : ''}`;
 }
+/* the hourly registered-farmers file: same checks as before (old file, stale file, too many new IDs), asked here */
+async function reg29(f, q) {
+  let extra = {};
+  for (let t = 0; t < 3; t++) {
+    try { return await api('regApply', Object.assign({}, q, extra), 18e4); }
+    catch (e) { const m = String(e.message || ''), p = m.split('|');
+      if (p[0] === 'OLDFILE') { if (!confirm(`${f.name}\n\nThis file was downloaded on ${p[1]}, not today.\n\nUpload it as OLDER data (it will not count for today)?`)) return null; extra = { backlog: 1 }; }
+      else if (p[0] === 'STALE') { if (!confirm(`${f.name}\n\nThis file was downloaded from the portal at ${p[1]}, more than an hour ago. Its IDs still count for today, but not for this hour's upload window.\n\nOK = upload it anyway`)) return null; extra = Object.assign(extra, { confirm: 1 }); }
+      else if (p[0] === 'MANY') { extra = confirm(`${f.name}\n\nThis file has ${p[1]} new IDs, more than one day can produce. Did you choose TODAY as both the "from" and "to" date on the portal?\n\nOK = yes, only today's IDs\nCancel = no, it has earlier days (they will not count for today)`) ? Object.assign(extra, { confirm: 1 }) : { backlog: 1 }; }
+      else throw e; } }
+  throw new Error(f.name + ': could not be applied.');
+}
+/* the day's IDs as a WhatsApp message (same figures as Home: hourly file, 8 PM to 8 PM) */
+async function wa29() {
+  let D; try { D = await api('day19', { fresh: 1 }, 60000); } catch (e) { toast(e.message, 'err'); return; }
+  const V = D.villages || [], T = D.totals || {}, got = V.filter(v => v.made).sort((a, b) => b.made - a.made), none = V.filter(v => !v.made);
+  const t = (D.at || '').slice(11, 16), lines = [`*Farmer ID · Tehsil ${D.name}*`, `${D.window.label}`, '', `*IDs made: ${N(T.made)}*`];
+  if (got.length) lines.push(got.map(v => `${v.name} ${N(v.made)}`).join(' · '));
+  if (none.length) lines.push(`No ID yet: ${none.map(v => v.name).join(', ')}`);
+  lines.push('', `Pending in all: ${N(T.pending)}`, `As on ${t} · TehsilOS`);
+  const txt = lines.join('\n');
+  try { if (navigator.share) { await navigator.share({ text: txt }); return; } } catch (e) { if (e.name === 'AbortError') return; }
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
 function run19(C, cnt) {
   const order = ['reg', 'claim', 'uncl', 'area', 'sumv', 'sumd'].filter(k => cnt[k]); const since = istNow(Date.now() - 180000);
   const byV = {}; (C.uncl || []).forEach(r => (byV[r[1]] = byV[r[1]] || []).push([r[0], r[1], '', String(r[2] || '').split(', ').join('\u001f'), r[3], r[4]]));
   const vs = Object.keys(byV), pre = vs.length ? 1 : 0;
   closeAllSheets();
-  return runTask('Portal reports', (pre ? ['Bucket lists: ' + vs.length + ' villages'] : []).concat(order.map(k => 'Sending ' + KL[k] + ' (' + N(cnt[k]) + ')')).concat(['Working it out']), async step => {
-    if (pre) { step(0); for (let i = 0; i < vs.length; i++) await api('uploadApply', { rows: byV[vs[i]], file_ts: C.fts, more: i < vs.length - 1 ? 1 : 0 }, 33e4); }
-    for (let i = 0; i < order.length; i++) { step(pre + i); await api('pp19Put', { kind: order[i], rows: C[order[i]] }, 24e4); }
-    step(pre + order.length); let r = null;
+  const rf = C.regFiles || [], pr = rf.length ? 1 : 0;
+  return runTask('Portal reports', (rf.length ? ['Registered farmers: IDs made (' + rf.length + ' file' + (rf.length > 1 ? 's' : '') + ')'] : []).concat(pre ? ['Bucket lists: ' + vs.length + ' villages'] : []).concat(order.map(k => 'Sending ' + KL[k] + ' (' + N(cnt[k]) + ')')).concat(['Working it out']), async step => {
+    let newIds = 0; if (pr) { step(0); for (const f of rf) { const e = await parsePortalFile(f); if (e.type !== 'reg') continue; const n = await reg29(f, { rows: e.rows, file_ts: e.file_ts, file_name: f.name }); if (!n) continue;
+      try { archiveUpload(f, 'reg', (n.villages[0] || {}).tehsil_id || me().tehsil_id); } catch (x) {} (n.villages || []).forEach(v => newIds += Number(v.new) || 0); } }
+    if (pre) { step(pr); for (let i = 0; i < vs.length; i++) await api('uploadApply', { rows: byV[vs[i]], file_ts: C.fts, more: i < vs.length - 1 ? 1 : 0 }, 33e4); }
+    for (let i = 0; i < order.length; i++) { step(pr + pre + i); await api('pp19Put', { kind: order[i], rows: C[order[i]] }, 24e4); }
+    step(pr + pre + order.length); let r = null;
     if (cnt.claim && cnt.uncl) { for (let t = 0; t < 2; t++) { try { r = await api('pp19Finish', { since }, 3e5); break; } catch (e) { if (t || !/time|internet|network/i.test(e.message)) throw e; await new Promise(z => setTimeout(z, 20000)); } } }
     S.i19At = 0; S.r14 = {}; S.r14myAt = 0; setTimeout(() => { const c = current(); if (c && (c.name === 'pp19' || c.name === 'ins19')) render(); }, 400);
-    return { msg: r ? `Done ✓ ${r.villages.length} villages · ${N(r.part)} part-claimed · ${N(r.claimed)} claimed · ${N(r.reverted)} reverted · ${N(r.added)} added · ${N(r.conflict + r.name + r.age)} to check` : 'Stored ✓ (send claimed and unclaimed details together to work it out)' };
+    const idl = pr ? `${N(newIds)} new Farmer IDs counted. ` : '';
+    const actions = pr ? [{ label: 'Share to WhatsApp group', fn: () => wa29() }] : [];
+    return { actions, msg: r ? `Done ✓ ${idl}DC list: ${r.villages.length} villages · ${N(r.part)} part-claimed · ${N(r.claimed)} claimed · ${N(r.reverted)} reverted · ${N(r.added)} added · ${N(r.conflict + r.name + r.age)} to check` : (cnt.claim || cnt.uncl) ? 'Done ✓ ' + idl + '(send claimed and unclaimed details together to work out the DC list)' : 'Done ✓ ' + idl };
   });
 }
 

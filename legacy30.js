@@ -42,7 +42,7 @@ document.documentElement.classList.add('emb30');
 const st = document.createElement('style');
 st.textContent = 'html.emb30 #bar,html.emb30 #nav10,html.emb30 #bnav,html.emb30 #netbar,html.emb30 #upd,html.emb30 #up30,html.emb30 #m28h{display:none!important}'
   + 'html.emb30 body,html.emb30 body.ui26{padding:0!important;margin:0!important}html.emb30 #view{padding-top:0!important;margin-left:0!important;padding-left:0!important;padding-bottom:24px!important;max-width:none!important}@media (max-width:899px){html.emb30 #view{padding-bottom:110px!important}}'
-  + 'html.emb30 body.ui26 #view{margin-left:0!important;padding-left:0!important}@media (min-width:900px){html.emb30 body.ui26 #view,html.emb30 #view{margin-left:0!important}}';
+  + '@media (max-width:899px){html.emb30 #task7{top:8px!important;bottom:auto!important;z-index:99}}' + 'html.emb30 body.ui26 #view{margin-left:0!important;padding-left:0!important}@media (min-width:900px){html.emb30 body.ui26 #view,html.emb30 #view{margin-left:0!important}}';
 document.head.appendChild(st);
 const post = m => { try { parent.postMessage(m, location.origin); } catch (e) {} };
 const NATIVE = { tos12: 1, inbox12: 1, mods28: 1, users: 1, staff94: 1, pin: 'os-pin' };

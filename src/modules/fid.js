@@ -33,7 +33,9 @@ register('os-fid', { title: 'Farmer ID', async render(el, a, ctx) {
           <i class="bar30"><i style="width:${Math.max(3, Math.round(q * 100))}%;background:${col(v.ids, v.target)}"></i></i></span><span class="num"><b>${v.ids}</b> / ${v.target}</span></button>`; }).join('') || '<p class="sub" style="padding:14px 16px;margin:0">No camps posted today.</p>'}</div>
       ${stale.length && T.window.to.slice(11, 13) >= '13' ? `<div class="note r"><b>No ID yet today:</b> ${stale.map(v => esc(v.name)).join(', ')}.</div>` : ''}
       ${['ADMIN', 'DA', 'NT'].indexOf(role()) >= 0 ? `<button class="btn o w" data-go="os-close">Day close · ${below} village${below === 1 ? '' : 's'} below half</button>` : ''}
-      <p class="ft">Older Farmer ID screens: <button class="lk" data-go="home">open</button> · Updated ${hm(TAT || Date.now())}</p></div>`; };
+      <button class="btn w" id="wa30" style="margin-top:10px">Share to WhatsApp group</button>
+      <p class="ft">Older Farmer ID screens: <button class="lk" data-go="home">open</button> · Updated ${hm(TAT || Date.now())}</p></div>`;
+    const w = el.querySelector('#wa30'); if (w) w.onclick = () => share30(T); };
   on(el, '[data-go]', 'click', b => go(b.dataset.go, {}));
   on(el, '[data-v]', 'click', b => go('os-camp', { vid: b.dataset.v }));
   draw();
@@ -94,3 +96,16 @@ register('os-close', { title: 'Day close', async render(el, a, ctx) {
     toast(r.made.length + ' notice' + (r.made.length > 1 ? 's' : '') + ' to sign'); go('os-sign', {}, { replace: true }); }));
   draw();
 } });
+
+/* the day's figures as a WhatsApp message: IDs from the hourly file (8 PM to 8 PM), camps against target */
+async function share30(T) {
+  const S = T.totals, V = T.villages || [], run = V.filter(v => v.running), got = V.filter(v => v.ids).sort((a, b) => b.ids - a.ids), none = run.filter(v => !v.ids);
+  const L = [`*Farmer ID · Tehsil Kastigarh*`, T.window.label, '', `*IDs made: ${N(S.ids)}*` + (S.target ? ` (camps' target ${N(S.target)})` : '')];
+  if (got.length) L.push(got.map(v => `${v.name} ${N(v.ids)}` + (v.running && v.target ? `/${N(v.target)}` : '')).join(' · '));
+  if (none.length) L.push(`No ID yet: ${none.map(v => v.name).join(', ')}`);
+  L.push('', `Camps: ${S.camps} · present ${S.present}${S.absent ? ' · absent ' + S.absent : ''}`, `Pending in all: ${N(S.pending)} · can still get ${N(S.can)}`);
+  if (T.last_file) L.push(`As on the ${T.last_file.slice(11, 16)} portal file`);
+  const txt = L.join('\n');
+  try { if (navigator.share) { await navigator.share({ text: txt }); return; } } catch (e) { if (e.name === 'AbortError') return; }
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
