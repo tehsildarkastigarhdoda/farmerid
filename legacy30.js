@@ -5,6 +5,8 @@ const Q = new URLSearchParams(location.search), EMBED = Q.has('embed') && window
 const SHELL = ['teh', 'nt', 'da', 'oq', 'gq'];
 const rk = () => { try { return (window.T12X && T12X.rk29 && T12X.rk29()) || ''; } catch (e) { return ''; } };
 const _login = VIEWS.login;
+/* a front-end patch (13.1.1) runs on the 13.1 server: only a different major.minor means the server needs pasting */
+try { const _sb = srvBar92; srvBar92 = function () { try { const mm = v => String(v || '').split('.').slice(0, 2).join('.'); if (S.srv92 && mm(S.srv92) === mm(APP_V)) S.srv92 = APP_V; } catch (e) {} return _sb.apply(this, arguments); }; } catch (e) {}
 
 if (!EMBED) {
   if (Q.has('board') || Q.has('practice')) return;
@@ -42,6 +44,7 @@ render = async function () {
 };
 VIEWS.login = function () { $('#view').innerHTML = ''; if (hadSession || gotGo) post({ cmd: S.session ? 'logout' : 'expired' }); ready(); };
 try { afterLoginCards = function () {}; } catch (e) {}
+try { upd83 = function () {}; } catch (e) {}   // the shell shows the update banner
 try { needPin = function () { return false; }; } catch (e) {}
 
 window.addEventListener('message', e => {

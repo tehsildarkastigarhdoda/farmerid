@@ -5,5 +5,7 @@ const V = /VERSION = '([^']+)'/.exec(readFileSync('src/core/config.js', 'utf8'))
 await build({ entryPoints: { app: 'src/main.js' }, bundle: true, format: 'esm', minify: true, target: ['es2020', 'safari14'], outdir: 'os', external: ['*.woff2'], legalComments: 'none', logLevel: 'warning' });
 writeFileSync('version.json', JSON.stringify({ v: V }) + '\n');
 let h = readFileSync('app.html', 'utf8').replace(/os\/app\.(css|js)\?v=[^"]+/g, (m, x) => 'os/app.' + x + '?v=' + V); writeFileSync('app.html', h);
+/* the older screens carry the same version, or they ask for an update forever */
+let lg = readFileSync('legacy.html', 'utf8').replace(/APP_V="[^"]+"/, 'APP_V="' + V + '"').replace(/(\.js)\?v=1[0-9.]+"/g, '$1?v=' + V + '"'); writeFileSync('legacy.html', lg);
 let sw = readFileSync('sw.js', 'utf8').replace(/os\/app\.(css|js)\?v=[^']+/g, (m, x) => 'os/app.' + x + '?v=' + V); writeFileSync('sw.js', sw);
 console.log('built', V);
