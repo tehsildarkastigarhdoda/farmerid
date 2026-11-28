@@ -5,6 +5,12 @@ const Q = new URLSearchParams(location.search), EMBED = Q.has('embed') && window
 const SHELL = ['teh', 'nt', 'da', 'oq', 'gq', 'ph'];
 const rk = () => { try { return (window.T12X && T12X.rk29 && T12X.rk29()) || ''; } catch (e) { return ''; } };
 const _login = VIEWS.login;
+/* 13.2.1: portal files may take the server a few minutes; wait for them, and never call a slow server "no internet" */
+const SLOW30 = /^(uploadApply|regApply|pmkApply|uploadReg|uploadPreview|dcx15Save|dcSheet10Save)$/;
+try { const _api0 = api; api = async function (a, p, t) {
+  if (SLOW30.test(a)) t = Math.max(Number(t) || 0, 330000);
+  try { return await _api0.call(this, a, p, t); }
+  catch (e) { if (SLOW30.test(a) && navigator.onLine && /No internet connection/i.test(String(e && e.message))) throw new Error('The server took too long to answer. It may still be working on the file: wait 3 minutes and look at the dates on this page before trying again.'); throw e; } }; } catch (e) {}
 /* a front-end patch (13.1.1) runs on the 13.1 server: only a different major.minor means the server needs pasting */
 try { const _sb = srvBar92; srvBar92 = function () { try { const mm = v => String(v || '').split('.').slice(0, 2).join('.'); if (S.srv92 && mm(S.srv92) === mm(APP_V)) S.srv92 = APP_V; } catch (e) {} return _sb.apply(this, arguments); }; } catch (e) {}
 

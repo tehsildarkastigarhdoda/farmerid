@@ -22,7 +22,7 @@ async function raw(action, data, timeout) {
   busyN(1);
   let out;
   try { const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', signal: ctl.signal, body: JSON.stringify(body) }); out = await r.json(); }
-  catch (e) { throw new NetError(ctl.signal.aborted ? 'The server is slow to answer. Try again in a minute.' : 'No internet connection. Try again when you have signal.'); }
+  catch (e) { throw new NetError(ctl.signal.aborted ? 'The server is slow to answer. Try again in a minute.' : navigator.onLine ? 'Could not reach the server. It may be busy: try again in a minute.' : 'No internet connection. Try again when you have signal.'); }
   finally { clearTimeout(t); busyN(-1); }
   return out;
 }
