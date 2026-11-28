@@ -5,6 +5,12 @@ const Q = new URLSearchParams(location.search), EMBED = Q.has('embed') && window
 const SHELL = ['teh', 'nt', 'da', 'oq', 'gq', 'ph'];
 const rk = () => { try { return (window.T12X && T12X.rk29 && T12X.rk29()) || ''; } catch (e) { return ''; } };
 const _login = VIEWS.login;
+/* 13.2.2: a DC office report (village / village claimed / sub-district summary) chosen in Portal data › Bucket lists is saved as a DC report, not refused */
+try { const _ppf = parsePortalFile; parsePortalFile = async function (file) {
+  try { return await _ppf.apply(this, arguments); }
+  catch (e) { let k = null; try { k = OFFICE8() && typeof dcKind15 === 'function' ? await dcKind15(file) : null; } catch (x) {}
+    if (k && k.rows && k.rows.length) { await dcx15Upload(file, k); throw new Error('This is a DC office ' + (k.kind === 'SUBDIST' ? 'sub-district' : 'village') + ' report, not a bucket list. It has been saved to the DC figures (Home and the DC pack use it). Nothing to apply here.'); }
+    throw e; } }; } catch (e) {}
 /* 13.2.1: portal files may take the server a few minutes; wait for them, and never call a slow server "no internet" */
 const SLOW30 = /^(uploadApply|regApply|pmkApply|uploadReg|uploadPreview|dcx15Save|dcSheet10Save)$/;
 try { const _api0 = api; api = async function (a, p, t) {
