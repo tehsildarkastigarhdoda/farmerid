@@ -7,6 +7,10 @@ const rk = () => { try { return (window.T12X && T12X.rk29 && T12X.rk29()) || '';
 const _login = VIEWS.login;
 /* 13.2.2: a DC office report (village / village claimed / sub-district summary) chosen in Portal data › Bucket lists is saved as a DC report, not refused */
 try { const _ppf = parsePortalFile; parsePortalFile = async function (file) {
+  /* 13.2.4: the claimed-details file has every bucket-list column too; taken as an unclaimed list it marks the whole village "ID made" */
+  let cl = false; try { const wb = XLSX.read(await file.arrayBuffer(), { type: 'array', sheetRows: 8 }), A = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '' });
+    cl = A.some(r => { const h = r.map(x => String(x).trim().toLowerCase()); return h.indexOf('bucket id') >= 0 && (h.indexOf('aadhaar name') >= 0 || h.indexOf('enrollement number') >= 0 || h.indexOf('farmer id') >= 0); }); } catch (x) {}
+  if (cl) throw new Error(file.name + ' is the portal’s CLAIMED details file (it has Aadhaar Name / Farmer ID). Bucket lists take only the UNCLAIMED details file. Upload claimed and unclaimed files together in Portal reports.');
   try { return await _ppf.apply(this, arguments); }
   catch (e) { let k = null; try { k = OFFICE8() && typeof dcKind15 === 'function' ? await dcKind15(file) : null; } catch (x) {}
     if (k && k.rows && k.rows.length) { await dcx15Upload(file, k); throw new Error('This is a DC office ' + (k.kind === 'SUBDIST' ? 'sub-district' : 'village') + ' report, not a bucket list. It has been saved to the DC figures (Home and the DC pack use it). Nothing to apply here.'); }
@@ -16,7 +20,10 @@ const SLOW30 = /^(uploadApply|regApply|pmkApply|uploadReg|uploadPreview|dcx15Sav
 try { const _api0 = api; api = async function (a, p, t) {
   if (SLOW30.test(a)) t = Math.max(Number(t) || 0, 330000);
   try { return await _api0.call(this, a, p, t); }
-  catch (e) { if (SLOW30.test(a) && navigator.onLine && /No internet connection/i.test(String(e && e.message))) throw new Error('The server took too long to answer. It may still be working on the file: wait 3 minutes and look at the dates on this page before trying again.'); throw e; } }; } catch (e) {}
+  catch (e) { const m = String(e && e.message || '');
+    if (a === 'uploadApply' && /^BIGDROP: /.test(m)) { const txt = m.replace(/^BIGDROP: /, '');
+      if (rk() === 'teh' && window.confirm(txt + '\n\nApply anyway? Only if you are sure this is the complete UNCLAIMED list.')) return await _api0.call(this, a, Object.assign({}, p, { force: 1 }), t);
+      throw new Error(txt + (rk() === 'teh' ? '' : ' Ask the Tehsildar if this file is right.')); } if (SLOW30.test(a) && navigator.onLine && /No internet connection/i.test(String(e && e.message))) throw new Error('The server took too long to answer. It may still be working on the file: wait 3 minutes and look at the dates on this page before trying again.'); throw e; } }; } catch (e) {}
 /* a front-end patch (13.1.1) runs on the 13.1 server: only a different major.minor means the server needs pasting */
 try { let _sv = S.srv92; const mm = x => String(x || '').split('.').slice(0, 2).join('.');
   Object.defineProperty(S, 'srv92', { configurable: true, get: () => _sv, set: v => { _sv = v && mm(v) === mm(APP_V) ? APP_V : v; } }); S.srv92 = _sv; } catch (e) {}

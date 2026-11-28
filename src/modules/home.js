@@ -70,7 +70,7 @@ function hero() {
   const I = H.data.ins, D = H.data.day; if (!I) return heroSk('ins');
   const T = totals(I), made = T.claimed + T.part, tdy = D ? (D.totals.made + D.totals.part) : null, pct = T.total ? made / T.total : 0, big = desk();
   return `<div class="cd"><div class="hro">${ring(pct, big ? 132 : 96, big ? 12 : 9, '#0E5E3B', '#E8F2EC', Math.round(pct * 100) + ' percent of buckets claimed')}
-    <div class="nm"><div class="lb">Farmer ID · buckets claimed</div><div class="big">${N(made)}</div><div class="of">of ${N(T.total)}${tdy != null ? `<span class="gain">+${N(tdy)} today</span>` : ''}</div></div>
+    <div class="nm"><div class="lb">Farmer ID · buckets claimed</div><div class="big">${N(made)}</div><div class="of">of ${N(T.total)}${tdy != null ? `<span class="gain">+${N(tdy)} today</span>` : ''}</div>${D && D.totals.catch ? `<div class="of" style="font-size:12.5px">+${N(D.totals.catch)} older (catch-up from lists not uploaded daily: ${esc((D.villages || []).filter(v => v.catch).map(v => v.name + ' since ' + v.catch_since).join(', '))})</div>` : ''}</div>
     <div class="acts"><button class="btn" data-go="portal">Upload portal files</button><button class="btn o" data-go="day19">Today's report</button></div></div>
     <div class="minis"><button class="mini" data-go="ins19">${ring(T.total ? T.part / T.total : 0, 30, 4, '#B26B00', '#FFF1DC')}<span><b>${N(T.part)}</b><span>Part-claimed</span></span></button>
       <button class="mini" data-go="ins19">${ring(I.ids && I.ids.made ? I.ids.pending / I.ids.made : 0, 30, 4, '#2F5D9E', '#E8EEF7')}<span><b>${N(I.ids ? I.ids.pending : 0)}</b><span>Approval due</span></span></button>
@@ -109,12 +109,12 @@ function weekCard() {
 }
 function villCard() {
   const I = H.data.ins, D = H.data.day; if (!I) return H.err.ins ? '' : `<div class="cd">${sk(16, '25%')}${[1, 2, 3, 4].map(() => '<div style="height:14px"></div>' + sk(14)).join('')}</div>`;
-  const tdy = {}; if (D && D.villages) D.villages.forEach(v => tdy[v.name] = (v.made || 0) + (v.part || 0));
+  const tdy = {}; if (D && D.villages) D.villages.forEach(v => tdy[v.name] = (v.made || 0) + (v.part || 0)); const cu = {}; if (D && D.villages) D.villages.forEach(v => cu[v.name] = v.catch || 0);
   const V = (I.villages || []).map(v => ({ name: v.name, pct: v.total ? (v.claimed + v.part) * 100 / v.total : 0, pend: v.pending || 0 })).sort((a, b) => b.pct - a.pct);
   const avg = V.length ? V.reduce((a, v) => a + v.pct, 0) / V.length : 0;
   return `<div class="cd"><div class="hd"><b>Villages</b><button class="lk" data-go="ins19">Insights ›</button></div>
     <table class="vt"><thead><tr><th style="width:34%">Village</th><th>Claimed</th><th class="r" style="width:16%">Pending</th><th class="r" style="width:14%">Today</th></tr></thead><tbody>
-    ${V.map(v => `<tr><td><b>${esc(v.name)}</b></td><td><div class="vb"><i><u class="${v.pct < avg * 0.8 ? 'a' : ''}" style="width:${v.pct.toFixed(1)}%"></u></i><em>${Math.round(v.pct)}%</em></div></td><td class="r">${N(v.pend)}</td><td class="r">${tdy[v.name] != null ? '+' + N(tdy[v.name]) : '–'}</td></tr>`).join('')}</tbody></table></div>`;
+    ${V.map(v => `<tr><td><b>${esc(v.name)}</b></td><td><div class="vb"><i><u class="${v.pct < avg * 0.8 ? 'a' : ''}" style="width:${v.pct.toFixed(1)}%"></u></i><em>${Math.round(v.pct)}%</em></div></td><td class="r">${N(v.pend)}</td><td class="r">${tdy[v.name] != null ? '+' + N(tdy[v.name]) + (cu[v.name] ? `<br><small style="color:#8A5300">+${N(cu[v.name])} older</small>` : '') : '–'}</td></tr>`).join('')}</tbody></table></div>`;
 }
 function gqVill() {
   const G = H.data.h29; if (!G) return H.err.h29 ? '' : `<div class="cd">${sk(16, '25%')}${[1, 2, 3].map(() => '<div style="height:14px"></div>' + sk(14)).join('')}</div>`;
