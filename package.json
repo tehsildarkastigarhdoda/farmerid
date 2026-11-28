@@ -1,0 +1,26 @@
+{
+  "name": "farmerid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "c25.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tehsildarkastigarhdoda/farmerid.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tehsildarkastigarhdoda/farmerid/issues"
+  },
+  "homepage": "https://github.com/tehsildarkastigarhdoda/farmerid#readme",
+  "devDependencies": {
+    "esbuild": "^0.24.2"
+  }
+}
