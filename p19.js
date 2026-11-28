@@ -71,16 +71,17 @@ VIEWS.pp19 = async function () {
   let L = null; try { L = (await api('ins19', {}, 60000)).last; } catch (e) {}
   view().innerHTML = `<div class="t12 p19"><h1>Portal reports</h1><p class="sub">Whenever the DC office gives the full set. Pick all the files at once; the app knows each one.</p>
     <div class="cd"><label class="btn12" style="display:block;cursor:pointer;text-align:center">Choose the files<input type="file" id="f19" multiple accept=".xlsx,.xls,.csv" hidden></label>
-      <p class="hint" style="margin-top:8px">Unclaimed details · Claimed details · Registered farmers (CSV) · Village-wise bucket data · Village and sub-district summaries. Aadhaar numbers and mobiles are removed on this phone; they are never sent.</p></div>
-    ${L ? `<div class="cd"><h3>Last time · ${esc(dmy(L.at.slice(0, 10)))} ${esc(L.at.slice(11, 16))}</h3>${res19(L)}</div>` : ''}<div id="pk19"></div></div>`;
-  $('#f19').onchange = async e => { const fs = Array.from(e.target.files || []); e.target.value = ''; if (!fs.length) return; const box = $('#pk19'); box.innerHTML = '<div class="cd"><p class="hint">Reading the files…</p></div>';
+      <p class="hint" style="margin-top:8px">Unclaimed details · Claimed details · Registered farmers (CSV) · Village-wise bucket data · Village and sub-district summaries. Aadhaar numbers and mobiles are removed on this phone; they are never sent.</p></div><div id="pk19"></div>
+    ${L ? `<div class="cd"><h3>Last time · ${esc(dmy(L.at.slice(0, 10)))} ${esc(L.at.slice(11, 16))}</h3>${res19(L)}</div>` : ''}</div>`; window.scrollTo(0, 0);
+  $('#f19').onchange = async e => { const fs = Array.from(e.target.files || []); e.target.value = ''; if (!fs.length) return; const box = $('#pk19'); box.innerHTML = '<div class="cd"><p class="hint"><span class="spin"></span> Reading ' + fs.length + ' files…</p></div>'; box.scrollIntoView({ block: 'start' });
     try { const parts = []; const names = []; for (const f of fs) { const p = await readFile(f); p.forEach(x => { x.file = f.name; parts.push(x); }); names.push([f.name, p.map(x => KL[x.kind]).join(', ') || 'not recognised']); }
-      const C = compact(parts), cnt = { reg: C.reg.length, claim: C.claim.length, uncl: C.uncl.length, area: C.area.length, sumv: C.sumv.length, sumd: C.sumd.length };
-      box.innerHTML = `<div class="cd"><h3>${fs.length} files</h3>${names.map(n => `<div class="fl"><span>${esc(n[0])}<small>${esc(n[1])}</small></span><span class="${/not rec/.test(n[1]) ? 'no' : 'ok'}">${/not rec/.test(n[1]) ? '✗' : '✓'}</span></div>`).join('')}
+      const C = compact(parts); C.fts = String(Math.max(0, ...parts.filter(x => x.kind === 'uncl').map(x => Number((String(x.file).match(/(\d{13})/) || [])[1]) || 0)) || ''); const cnt = { reg: C.reg.length, claim: C.claim.length, uncl: C.uncl.length, area: C.area.length, sumv: C.sumv.length, sumd: C.sumd.length };
+      box.innerHTML = `<div class="cd"><h3>${fs.length} files</h3>
         <div class="fl"><span><b>Will send</b><small>${Object.keys(cnt).filter(k => cnt[k]).map(k => KL[k] + ': ' + N(cnt[k])).join(' · ')}</small></span></div>
         ${cnt.claim && cnt.uncl ? '' : '<p class="hint" style="color:#9A3F1C">Claimed and unclaimed details both are needed to work out claimed / part-claimed / unclaimed. With only one of them, the app stores it and waits.</p>'}
-        <button class="btn btn-primary" id="go19" style="margin-top:8px">Upload and work it out</button></div>`;
-      $('#go19').onclick = () => run19(C, cnt); } catch (x) { box.innerHTML = `<div class="cd"><p class="no">${esc(x.message)}</p></div>`; } };
+        <button class="btn btn-primary" id="go19" style="margin:8px 0 10px;width:100%">Upload and work it out</button>
+        ${names.map(n => `<div class="fl"><span>${esc(n[0])}<small>${esc(n[1])}</small></span><span class="${/not rec/.test(n[1]) ? 'no' : 'ok'}">${/not rec/.test(n[1]) ? '✗' : '✓'}</span></div>`).join('')}</div>`;
+      box.scrollIntoView({ block: 'start' }); $('#go19').onclick = () => { $('#go19').disabled = true; $('#go19').textContent = 'Uploading… progress at the bottom right'; run19(C, cnt); }; } catch (x) { box.innerHTML = `<div class="cd"><p class="no">${esc(x.message)}</p></div>`; } };
 };
 function res19(r) {
   const rc = r.rc || [], bad = rc.filter(x => x.dc_claimed != null && x.dc_claimed !== x.app_claimed);
@@ -94,10 +95,13 @@ function res19(r) {
 }
 function run19(C, cnt) {
   const order = ['reg', 'claim', 'uncl', 'area', 'sumv', 'sumd'].filter(k => cnt[k]); const since = istNow(Date.now() - 180000);
+  const byV = {}; (C.uncl || []).forEach(r => (byV[r[1]] = byV[r[1]] || []).push([r[0], r[1], '', String(r[2] || '').split(', ').join('\u001f'), r[3], r[4]]));
+  const vs = Object.keys(byV), pre = vs.length ? 1 : 0;
   closeAllSheets();
-  return runTask('Portal reports', order.map(k => 'Sending ' + KL[k] + ' (' + N(cnt[k]) + ')').concat(['Working it out']), async step => {
-    for (let i = 0; i < order.length; i++) { step(i); await api('pp19Put', { kind: order[i], rows: C[order[i]] }, 24e4); }
-    step(order.length); let r = null;
+  return runTask('Portal reports', (pre ? ['Bucket lists: ' + vs.length + ' villages'] : []).concat(order.map(k => 'Sending ' + KL[k] + ' (' + N(cnt[k]) + ')')).concat(['Working it out']), async step => {
+    if (pre) { step(0); for (let i = 0; i < vs.length; i++) await api('uploadApply', { rows: byV[vs[i]], file_ts: C.fts, more: i < vs.length - 1 ? 1 : 0 }, 33e4); }
+    for (let i = 0; i < order.length; i++) { step(pre + i); await api('pp19Put', { kind: order[i], rows: C[order[i]] }, 24e4); }
+    step(pre + order.length); let r = null;
     if (cnt.claim && cnt.uncl) { for (let t = 0; t < 2; t++) { try { r = await api('pp19Finish', { since }, 3e5); break; } catch (e) { if (t || !/time|internet|network/i.test(e.message)) throw e; await new Promise(z => setTimeout(z, 20000)); } } }
     S.i19At = 0; S.r14 = {}; S.r14myAt = 0; setTimeout(() => { const c = current(); if (c && (c.name === 'pp19' || c.name === 'ins19')) render(); }, 400);
     return { msg: r ? `Done ✓ ${r.villages.length} villages · ${N(r.part)} part-claimed · ${N(r.claimed)} claimed · ${N(r.reverted)} reverted · ${N(r.added)} added · ${N(r.conflict + r.name + r.age)} to check` : 'Stored ✓ (send claimed and unclaimed details together to work it out)' };

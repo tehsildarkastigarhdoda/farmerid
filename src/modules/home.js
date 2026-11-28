@@ -71,7 +71,7 @@ function hero() {
   const T = totals(I), made = T.claimed + T.part, tdy = D ? (D.totals.made + D.totals.part) : null, pct = T.total ? made / T.total : 0, big = desk();
   return `<div class="cd"><div class="hro">${ring(pct, big ? 132 : 96, big ? 12 : 9, '#0E5E3B', '#E8F2EC', Math.round(pct * 100) + ' percent of buckets claimed')}
     <div class="nm"><div class="lb">Farmer ID · buckets claimed</div><div class="big">${N(made)}</div><div class="of">of ${N(T.total)}${tdy != null ? `<span class="gain">+${N(tdy)} today</span>` : ''}</div>${D && D.totals.catch ? `<div class="of" style="font-size:12.5px">+${N(D.totals.catch)} older (catch-up from lists not uploaded daily: ${esc((D.villages || []).filter(v => v.catch).map(v => v.name + ' since ' + v.catch_since).join(', '))})</div>` : ''}</div>
-    <div class="acts"><button class="btn" data-go="portal">Upload portal files</button><button class="btn o" data-go="day19">Today's report</button></div></div>
+    <div class="acts"><button class="btn" data-go="pp19">Upload portal files</button><button class="btn o" data-go="day19">Today's report</button></div></div>
     <div class="minis"><button class="mini" data-go="ins19">${ring(T.total ? T.part / T.total : 0, 30, 4, '#B26B00', '#FFF1DC')}<span><b>${N(T.part)}</b><span>Part-claimed</span></span></button>
       <button class="mini" data-go="ins19">${ring(I.ids && I.ids.made ? I.ids.pending / I.ids.made : 0, 30, 4, '#2F5D9E', '#E8EEF7')}<span><b>${N(I.ids ? I.ids.pending : 0)}</b><span>Approval due</span></span></button>
       <button class="mini" data-go="ins19">${ring(T.total ? (T.total - made) / T.total : 0, 30, 4, '#5E6B63', '#EEF0EE')}<span><b>${N(T.total - made)}</b><span>Unclaimed</span></span></button></div></div>`;
