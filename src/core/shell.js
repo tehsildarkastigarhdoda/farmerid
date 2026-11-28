@@ -21,11 +21,12 @@ const BARS = {
 const EXTRA = () => { const k = rk(), r = role();
   const L = k === 'gq' ? [['cov10', 'Coverage', 'cov']] : k === 'oq' ? [['cov10', 'Coverage', 'cov'], ['ins19', 'Insights', 'ins']]
     : [['cov10', 'Coverage', 'cov'], ['camps10', 'Camps', 'camp'], ['ins19', 'Insights', 'ins'], ['ppl83', 'People', 'ppl']];
+  if (['teh', 'da', 'nt', 'oq'].indexOf(k) >= 0) L.push(['os-out', 'Outbox', 'doc']);
   if (r === 'ADMIN' || r === 'DA') L.push(['os-staff', 'Staff & logins', 'lock']);
   if (r === 'ADMIN') L.push(['mast12', 'Settings & masters', 'set']);
   return L; };
 /* which tab a screen belongs to */
-const TAB_OF = { 'os-home': 'os-home', 'os-needs': 'os-home', 'os-mods': 'os-mods', 'os-staff': 'os-mods', 'os-person': 'os-mods', 'os-pin': 'os-mods',
+const TAB_OF = { 'os-home': 'os-home', 'os-needs': 'os-home', 'os-mods': 'os-mods', 'os-staff': 'os-mods', 'os-person': 'os-mods', 'os-pin': 'os-mods', 'os-out': 'os-mods', 'os-out-new': 'os-mods', 'os-sign': 'os-mods', 'os-out-letter': 'os-mods', 'os-signature': 'os-mods',
   home: 'home', cov10: 'home', camps10: 'home', ins19: 'home', ppl83: 'home', c25: 'c25', c25f: 'c25', c25p: 'c25', c25r: 'c25', c25d: 'c25', c25b: 'c25',
   m28: 'm28', m28e: 'm28', m28m: 'm28', m28r: 'm28', svm12: 'svm12', svmv12: 'svm12', svmk12: 'svm12', svmc12: 'svm12', svmr12: 'svm12', svml12: 'svm12' };
 /* older screens that now live in the new core */
@@ -82,6 +83,7 @@ function accountSheet() {
     <p class="mu" style="margin:-6px 0 14px">${esc(u.designation || '')}${S.boot && S.boot.tehsils ? ' · ' + esc(S.boot.tehsils.map(t => t.name).join(', ')) : ''}</p>
     <div class="list"><button class="row" data-g="set8"><span>My settings<small>Text size, language</small></span>›</button>
       <button class="row" data-g="os-pin"><span>Change my PIN<small>4 digits</small></span>›</button>
+      ${u.role === 'ADMIN' ? '<button class="row" data-g="os-signature"><span>My signature<small>For signing letters in the Outbox</small></span>›</button>' : ''}
       <button class="row" data-out style="color:#B42318"><span>Log out</span>${svg('out', 18)}</button></div>
     <p class="mu" style="text-align:center;margin-top:14px;font-size:12px">TehsilOS ${VERSION}</p>`, p => {
     on(p, '[data-x]', 'click', () => closeSheet());

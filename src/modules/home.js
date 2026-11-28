@@ -8,6 +8,7 @@ import { kget, kput } from '../core/store.js';
 import { S, me, role, rk, svmOn, mtgWho, certWho, desig, firstName } from '../core/session.js';
 import { register, go, reset, current } from '../core/router.js';
 import { VERSION } from '../core/config.js';
+import { outWho, outNeeds } from './outbox.js';
 
 const addD = (d, n) => { const x = new Date(d + 'T00:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 /** SVAMITVA items that need someone (same rules as 12.0) */
@@ -30,6 +31,7 @@ const SRC = {
   c25: () => api('cert25List', {}),
   m28: () => api('mtg28List', {}),
   h29: () => api('home29', {}),
+  out: () => api('out30List', { limit: 120 }),
   svm: () => api('svm12Get', {}, { timeout: 60000 }).then(D => ({ totals: D.totals, needs: svmNeeds(D).slice(0, 6) })),
 };
 const H = { data: {}, err: {}, busy: {}, at: 0, uid: '' };
@@ -38,8 +40,8 @@ const desk = () => window.innerWidth >= 1100;
 const errRow = (k, what) => `<div class="er26"><span>Couldn't load ${what}.</span><button class="btn s o" data-retry="${k}">Retry</button></div>`;
 const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-function keys() { const K = rk(), sv = svmOn() ? ['svm'] : [], cert = certWho() ? ['c25'] : [], mt = mtgWho() ? ['m28'] : [];
-  return K === 'gq' ? ['h29'].concat(mt, sv) : K === 'oq' ? ['h29'].concat(mt, sv, cert) : ['ins', 'day', 'al'].concat(mt, sv, cert); }
+function keys() { const K = rk(), sv = svmOn() ? ['svm'] : [], cert = certWho() ? ['c25'] : [], mt = mtgWho() ? ['m28'] : [], ob = outWho() ? ['out'] : [];
+  return K === 'gq' ? ['h29'].concat(mt, sv) : K === 'oq' ? ['h29'].concat(mt, ob, sv, cert) : ['ins', 'day', 'al'].concat(mt, ob, sv, cert); }
 async function fetchOne(k, f) {
   H.busy[k] = 1; paint();
   try { const d = await SRC[k](f); H.data[k] = d; H.err[k] = ''; H.at = Date.now(); kput(kk(k), { t: Date.now(), d }); }
@@ -84,15 +86,16 @@ export function needsList(data) {
     A.alerts.filter(x => !(st.length > 1 && x.k === 'stall')).forEach(x => L.push({ c: x.k === 'upload' || x.k === 'check' ? 'a' : '', t: x.t, s: 'Farmer ID', b: 'View', go: x.k === 'upload' ? ['portal', {}] : x.k === 'patwari' ? ['reg14', {}] : ['day19', {}] })); }
   if (MG && MG.needs) MG.needs.forEach(n => L.unshift({ c: n.k === 'approve' || n.k === 'back' ? 'r' : 'a', t: n.t, s: 'Meetings' + (n.due ? ' · due ' + dmy(n.due).slice(0, 5) + ' ' + String(n.due).slice(11, 16) : n.date ? ' · ' + dmy(n.date).slice(0, 5) : ''), b: n.k === 'approve' ? 'Review' : n.k === 'reply' ? 'Submit' : 'Open', k: 1, go: [n.k === 'reply' ? 'm28r' : 'm28m', { id: n.mtg_id }] }));
   if (V && V.needs) V.needs.forEach(n => L.push({ c: '', t: n.t, s: 'SVAMITVA · ' + n.k, b: 'Open', go: n.a }));
+  outNeeds(data.out).reverse().forEach(n => L.unshift(n));
   return L;
 }
 function needsCard() {
   const L = needsList(H.data), wait = keys().some(k => H.busy[k] && !H.data[k]);
-  const errs = ['c25', 'al', 'svm', 'm28'].filter(k => H.err[k] && !H.data[k]);
+  const errs = ['c25', 'al', 'svm', 'm28', 'out'].filter(k => H.err[k] && !H.data[k]);
   return `<div class="cd"><div class="hd"><b>Needs you</b>${L.length > 6 ? `<button class="lk" data-go="os-needs">All ${L.length}</button>` : `<span>${L.length ? L.length + ' item' + (L.length > 1 ? 's' : '') : ''}</span>`}</div>
     ${L.slice(0, 6).map((n, i) => `<div class="nd"><i class="c ${n.c}"></i><div class="t"><b>${esc(n.t)}</b><span>${esc(n.s)}</span></div><button class="btn s${n.k ? '' : ' o'}" data-nd="${i}">${n.b}</button></div>`).join('')}
     ${!L.length && wait ? `${sk(16)}<div style="height:12px"></div>${sk(16, '70%')}` : ''}${!L.length && !wait && !errs.length ? '<div class="sub" style="padding:6px 0">Nothing is waiting on you.</div>' : ''}
-    ${errs.length ? `<div style="margin-top:8px">${errRow(errs[0], errs.map(k => ({ c25: 'certificates', al: 'alerts', svm: 'SVAMITVA', m28: 'meetings' }[k])).join(', '))}</div>` : ''}</div>`;
+    ${errs.length ? `<div style="margin-top:8px">${errRow(errs[0], errs.map(k => ({ c25: 'certificates', al: 'alerts', svm: 'SVAMITVA', m28: 'meetings', out: 'Outbox' }[k])).join(', '))}</div>` : ''}</div>`;
 }
 function weekCard() {
   const I = H.data.ins; if (!I) return H.err.ins ? '' : `<div class="cd">${sk(16, '30%')}<div style="height:14px"></div>${sk(60)}</div>`;

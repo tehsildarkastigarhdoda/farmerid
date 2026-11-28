@@ -14,6 +14,7 @@ import './modules/home.js';
 import './modules/needs.js';
 import './modules/mods.js';
 import './modules/staff.js';
+import './modules/outbox.js';
 
 const q = new URLSearchParams(location.search);
 const toLegacy = () => location.replace('legacy.html' + location.search + location.hash);

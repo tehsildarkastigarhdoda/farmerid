@@ -17,7 +17,7 @@ export const ICON = {
   dak: 'M3 6h18v12H3zM3 6l9 7 9-7', griev: 'M4 5h16v11H9l-5 4zM12 8v3M12 13.5v.01', lock: 'M5 11h14v10H5zM8 11V8a4 4 0 0 1 8 0v3',
   check: 'M4 12l5 5L20 6', back: 'M15 18l-6-6 6-6', out: 'M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4M16 17l5-5-5-5M21 12H9',
   phone: 'M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2', wa: 'M4 20l1.5-4A8 8 0 1 1 9 19z',
-  plus: 'M12 5v14M5 12h14', x: 'M6 6l12 12M18 6L6 18', del: 'M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM18 9l-6 6M12 9l6 6',
+  plus: 'M12 5v14M5 12h14', pen: 'M3 17c3-1 4-8 7-8s1 6 4 6 3-3 7-3M3 21h18', x: 'M6 6l12 12M18 6L6 18', del: 'M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM18 9l-6 6M12 9l6 6',
 };
 export const svg = (k, s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICON[k] || ICON.more}"/></svg>`;
 
