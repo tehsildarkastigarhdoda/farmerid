@@ -4,7 +4,7 @@
  */
 "use strict";
 (function () {
-const V26 = '12.9.0';
+const V26 = '12.9.1';
 const view = () => $('#view');
 const isDesk = () => window.matchMedia('(min-width: 900px)').matches;
 const istNow = () => new Date(Date.now() + 5.5 * 3600e3);
@@ -283,6 +283,7 @@ function gqVill() {
 function moreCard() {
   return `<div class="cd" style="padding:8px 20px"><button class="row26" data-go="cov10"><span>Coverage<small>Village-wise status</small></span><span>›</span></button>
     ${['teh', 'nt', 'da'].indexOf(RK()) >= 0 ? '<button class="row26" data-go="ppl83"><span>People<small>Staff, logins, villages</small></span><span>›</span></button>' : ''}
+    ${['ADMIN', 'DA'].indexOf(role()) >= 0 ? '<button class="row26" data-go="users"><span>Staff &amp; logins<small>Add people, reset PINs, switch off</small></span><span>›</span></button>' : ''}
     ${role() === 'ADMIN' ? `<button class="row26" data-go="mast12"><span>Settings &amp; masters<small>Villages, halqas, card prefixes, modules</small></span><span>›</span></button>
     <button class="row26" data-go="assar19"><span>Tehsil Assar<small>Master switch · closing date</small></span><span>›</span></button>` : ''}
     <button class="row26" data-go="set8"><span>My settings<small>PIN, text size, language · Log out</small></span><span>›</span></button></div>`;

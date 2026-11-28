@@ -482,10 +482,11 @@ render = async function () {
   if (S.boot && !S.t12Feats) { S.t12Feats = 1; try { applyFeats(); } catch (e) {} }
   return _render12();
 };
-setTimeout(async () => { try { if (!S.session || S.practice || !svmOn()) return; const k = 'new120:' + me().user_id; if (await kget(k)) return; await kput(k, 1);
-  const L = [['TehsilOS', 'The Farmer ID app is now TehsilOS: one app for the tehsil. Farmer ID works exactly as before.'], ['SVAMITVA', 'Every abadi map, step by step: Map 1.0 → Map 2.0 → final data → cards → distribution. Tap a khasra to mark the next step.'],
-    ['Property cards', 'Generated cards come from the Revenue Plus page. Mark each card given when it is handed over.'], ['Reports', 'The DC row, the review PDF, the SOI reminder and the WhatsApp text – all from the same figures.']];
-  openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">What’s new · TehsilOS ${V12}</h2>${L.map(e => `<div class="nw83"><span>•</span><div><b>${esc(e[0])}</b><small>${esc(e[1])}</small></div></div>`).join('')}<button class="btn btn-primary" id="ok">Got it</button>`,
+setTimeout(async () => { try { if (!S.session || S.practice || !shell()) return; const k = 'new129:' + me().user_id; if (await kget(k)) return; await kput(k, 1);
+  const K = rk29(), L = [['Home', 'Your own home: what needs you today, with a button beside each item.'], ['Meetings', K === 'teh' ? 'Notices, agenda, information from the staff, your brief to approve, minutes and directions – in one place.' : 'Requests for information for a meeting come to your home. Fill and submit in the app.']]
+    .concat(K === 'teh' || K === 'nt' || K === 'da' ? [['Certificates', 'Reports and remarks for JanSugam: Patwari → NT → BCG → Tehsildar. Every version kept.']] : [])
+    .concat([['More', 'All the modules of TehsilOS in one list.']]);
+  openSheet(() => ({ html: `<div class="snav"><button id="x">Close</button><span></span><span></span></div><h2 class="nm">What’s new in TehsilOS</h2>${L.map(e => `<div class="nw83"><span>•</span><div><b>${esc(e[0])}</b><small>${esc(e[1])}</small></div></div>`).join('')}<button class="btn btn-primary" id="ok">Got it</button>`,
     mount: e => { $('#x', e).onclick = $('#ok', e).onclick = () => closeSheet(); } })); } catch (e) {} }, 4000);
 document.title = 'TehsilOS';
 try { const t = $('#title'); if (t && t.textContent === 'Farmer ID') t.textContent = 'TehsilOS'; } catch (e) {}
