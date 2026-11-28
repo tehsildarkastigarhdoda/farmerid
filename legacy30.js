@@ -18,7 +18,8 @@ try { const _api0 = api; api = async function (a, p, t) {
   try { return await _api0.call(this, a, p, t); }
   catch (e) { if (SLOW30.test(a) && navigator.onLine && /No internet connection/i.test(String(e && e.message))) throw new Error('The server took too long to answer. It may still be working on the file: wait 3 minutes and look at the dates on this page before trying again.'); throw e; } }; } catch (e) {}
 /* a front-end patch (13.1.1) runs on the 13.1 server: only a different major.minor means the server needs pasting */
-try { const _sb = srvBar92; srvBar92 = function () { try { const mm = v => String(v || '').split('.').slice(0, 2).join('.'); if (S.srv92 && mm(S.srv92) === mm(APP_V)) S.srv92 = APP_V; } catch (e) {} return _sb.apply(this, arguments); }; } catch (e) {}
+try { let _sv = S.srv92; const mm = x => String(x || '').split('.').slice(0, 2).join('.');
+  Object.defineProperty(S, 'srv92', { configurable: true, get: () => _sv, set: v => { _sv = v && mm(v) === mm(APP_V) ? APP_V : v; } }); S.srv92 = _sv; } catch (e) {}
 
 if (!EMBED) {
   if (Q.has('board') || Q.has('practice')) return;
