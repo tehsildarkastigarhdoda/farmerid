@@ -21,7 +21,7 @@ register('os-fid', { title: 'Farmer ID', async render(el, a, ctx) {
     if (!T) { el.innerHTML = `<div class="pg nr st30">${sk(24, '50%')}<div class="cd">${sk(140)}</div><div class="cd">${sk(220)}</div></div>`; return; }
     const S = T.totals, run = T.villages.filter(v => v.running), p = S.target ? Math.min(1, S.ids / S.target) : 0;
     const below = run.filter(v => v.target && v.ids < v.target / 2).length, stale = run.filter(v => v.ids === 0);
-    el.innerHTML = `<div class="pg nr st30 fid30"><div class="hd0"><div class="sub">Today = DC day · ${esc(T.window.label)}${T.days_left ? ' · ' + T.days_left + ' day' + (T.days_left > 1 ? 's' : '') + ' to ' + d5(T.cfg.deadline) : ''}</div><h1 class="t">Kastigarh today</h1></div>
+    el.innerHTML = `<div class="pg nr st30 fid30"><div class="hd0"><div class="sub">Today · ${esc(T.window.label)}${T.days_left ? ' · ' + T.days_left + ' day' + (T.days_left > 1 ? 's' : '') + ' to ' + d5(T.cfg.deadline) : ''}</div><h1 class="t">Kastigarh today</h1></div>
       <div class="cd"><div class="hro2">${ring(p, 92, 9, '#0E5E3B', '#E8F2EC', Math.round(p * 100) + ' percent')}<div><small>IDs made today</small><div class="big">${N(S.ids)}</div><div class="of">of <b>${N(S.target)}</b> camps' target</div></div></div>
         <div class="note" style="margin-top:12px">Camps' target = ${S.present} officials present × ${T.cfg.per}. Patwaris: ${T.cfg.ph} a village (${N(S.ph_target)} in all).${T.last_file ? ' As on the ' + h12(T.last_file.slice(11, 16)) + ' portal file.' : ''}</div>
         <div class="minis3"><div><b>${I && I.ids ? N(I.ids.pending) : '–'}</b><span>Approvals due (yours)</span></div><div><b>${N(S.can)}</b><span>Can still get</span></div><div><b>${N(S.pending)}</b><span>Pending in all</span></div></div></div>
@@ -77,7 +77,7 @@ register('os-close', { title: 'Day close', async render(el, a, ctx) {
     C.absent.filter(o => abs[o.key]).forEach(o => people[o.key] = o.department);
     const depts = Array.from(new Set(Object.keys(people).map(k => people[k])));
     const vrow = v => `<label class="pr ck30"><input type="checkbox" data-v="${esc(v.village_id)}" ${pick[v.village_id] ? 'checked' : ''} ${C.can_issue ? '' : 'disabled'}><span class="nm"><b>${esc(v.name)}</b><small>${v.camps.map(c => esc(c.camp) + ' ' + c.present + ' present').join(' · ')}${v.patwari ? ' · PH ' + esc(v.patwari.name) : ''}<br>${v.officials.map(o => esc(o.name) + ' (' + esc(o.designation) + ')').join(', ') || 'No official counted'}</small></span><b class="num" style="color:${col(v.ids, v.target)}">${v.ids}/${v.target}</b></label>`;
-    el.innerHTML = `<div class="pg nr st30"><div class="hd0"><div class="sub">DC day ${esc(C.window.label)}</div><h1 class="t">${B.length} village${B.length === 1 ? '' : 's'} below half</h1></div>
+    el.innerHTML = `<div class="pg nr st30"><div class="hd0"><div class="sub">Day ${esc(C.window.label)}</div><h1 class="t">${B.length} village${B.length === 1 ? '' : 's'} below half</h1></div>
       ${C.issued ? `<div class="note g">Notices for this day are made (${C.issued} officials). Outbox › To sign.</div>` : ''}
       <p class="sub" style="margin:-6px 0 0">${C.can_issue ? 'Tick the villages whose camps get notices. The officials present there and the Patwari of the village are added by themselves.' : 'The Tehsildar picks the villages.'}</p>
       <div class="cd pl0">${B.map(vrow).join('') || '<p class="sub" style="padding:14px 16px;margin:0">None below half.</p>'}</div>
