@@ -46,11 +46,11 @@ try { new MutationObserver(() => { clearTimeout(hideMaster._t); hideMaster._t = 
 async function loadDay(force) { if (!force && S.d19 && Date.now() - S.d19At < 120000) return S.d19; S.d19 = await api('day19', {}, 60000); S.d19At = Date.now(); return S.d19; }
 function dayTable(D) {
   const T = D.totals, ar = (a, b) => a < b ? `<span class="up">↓ ${N(b - a)}</span>` : a > b ? `<span class="dn">↑ ${N(a - b)}</span>` : '–';
-  return `<div class="big"><div><b>${N(T.made + T.part)}</b><span>IDs made (buckets claimed)</span></div><div><b>${N(T.marked)}</b><span>Buckets marked by Patwaris</span></div><div><b>${N(T.pending)}</b><span>Pending now ${ar(T.pending, T.pending_start)}</span></div></div>
-    <div style="overflow-x:auto"><table class="tb"><tr><th>Village</th><th>Claimed</th><th>of which part</th><th>Marked</th><th>Pending</th><th>Change</th><th>Unsorted</th></tr>
-    ${D.villages.map(v => `<tr><td>${esc(v.name)}</td><td>${N(v.made + v.part)}</td><td>${v.part ? N(v.part) : '–'}</td><td>${N(v.marked)}</td><td>${N(v.pending)}</td><td>${ar(v.pending, v.pending_start)}</td><td>${N(v.unsorted)}</td></tr>`).join('')}
-    <tr class="t"><td>Total</td><td>${N(T.made + T.part)}</td><td>${T.part ? N(T.part) : '–'}</td><td>${N(T.marked)}</td><td>${N(T.pending)}</td><td>${ar(T.pending, T.pending_start)}</td><td>${N(T.unsorted)}</td></tr></table></div>
-    <p class="hint" style="margin-top:8px">${D.best ? `Best: <b>${esc(D.best.name)}</b> (${N(D.best.n)} claimed). ` : ''}${D.weak ? `Weakest: <b>${esc(D.weak.name)}</b> (${N(D.weak.n)} claimed, ${N(D.weak.pending)} pending). ` : ''}${D.totals.fresh ? N(D.totals.fresh) + ' new buckets appeared on the portal list. ' : ''}Counted from the portal lists uploaded in this period.</p>`;
+  return `<div class="big"><div><b>${N(T.made + T.part)}</b><span>IDs made (hourly file)</span></div><div><b>${N(T.marked)}</b><span>Buckets marked by Patwaris</span></div><div><b>${N(T.pending)}</b><span>Pending now ${ar(T.pending, T.pending_start)}</span></div></div>
+    <div style="overflow-x:auto"><table class="tb"><tr><th>Village</th><th>IDs made</th><th>DC list (not today)</th><th>Marked</th><th>Pending</th><th>Change</th><th>Unsorted</th></tr>
+    ${D.villages.map(v => `<tr><td>${esc(v.name)}</td><td>${N(v.made + v.part)}</td><td>${v.catch ? N(v.catch) : '–'}</td><td>${N(v.marked)}</td><td>${N(v.pending)}</td><td>${ar(v.pending, v.pending_start)}</td><td>${N(v.unsorted)}</td></tr>`).join('')}
+    <tr class="t"><td>Total</td><td>${N(T.made + T.part)}</td><td>${T.catch ? N(T.catch) : '–'}</td><td>${N(T.marked)}</td><td>${N(T.pending)}</td><td>${ar(T.pending, T.pending_start)}</td><td>${N(T.unsorted)}</td></tr></table></div>
+    <p class="hint" style="margin-top:8px">${D.best ? `Best: <b>${esc(D.best.name)}</b> (${N(D.best.n)} IDs). ` : ''}${D.weak ? `Weakest: <b>${esc(D.weak.name)}</b> (${N(D.weak.n)} IDs, ${N(D.weak.pending)} pending). ` : ''}${D.totals.fresh ? N(D.totals.fresh) + ' new buckets appeared on the portal list. ' : ''}IDs made = new Farmer IDs in the hourly registered-farmers file. DC list = buckets the DC office claimed/unclaimed files show claimed since the earlier list; not counted as today.</p>`;
 }
 VIEWS.day19 = async function () {
   setHeader('Today'); document.body.classList.add('wide');
@@ -66,7 +66,7 @@ if (_tos19) VIEWS.tos12 = async function (a) {
   try { if (['ADMIN', 'DA', 'NT'].indexOf(role()) < 0) return; const D = await loadDay(); if (current().name !== 'tos12' || $('#d19c')) return;
     const T = D.totals, el = document.createElement('div'); el.className = 'cd d19'; el.id = 'd19c'; el.style.cursor = 'pointer';
     el.innerHTML = `<h3><span>Today · ${esc(D.window.closed ? 'day closed 4:30 PM' : 'since 4:30 PM yesterday')}</span><span class="pill ${T.made + T.part ? 'ok' : 'ur'}">${N(T.made + T.part)} IDs</span></h3>
-      <div class="big" style="margin-bottom:0"><div><b>${N(T.made + T.part)}</b><span>Claimed</span></div><div><b>${N(T.marked)}</b><span>Marked</span></div><div><b>${N(T.pending)}</b><span>Pending ${T.pending < T.pending_start ? '↓ ' + N(T.pending_start - T.pending) : ''}</span></div></div>
+      <div class="big" style="margin-bottom:0"><div><b>${N(T.made + T.part)}</b><span>IDs made</span></div><div><b>${N(T.marked)}</b><span>Marked</span></div><div><b>${N(T.pending)}</b><span>Pending ${T.pending < T.pending_start ? '↓ ' + N(T.pending_start - T.pending) : ''}</span></div></div>
       <small class="hint">${D.best ? 'Best: ' + esc(D.best.name) + ' · ' : ''}tap for village-wise</small>`;
     el.onclick = () => go('day19', {}); const host = $('.t12', view()); if (host) { const h = $('h1', host); const after = h && h.nextElementSibling; host.insertBefore(el, after ? after.nextElementSibling : host.firstChild); } } catch (e) {}
 };
@@ -77,14 +77,14 @@ if (typeof reportPdf90 === 'function') { const _rp = reportPdf90; reportPdf90 = 
     doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(tx(`Tehsil ${D.name} · today's progress`), 36, y); y += 18;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(90); doc.text(tx(D.window.label + (D.window.closed ? ' (day as counted by the DC office)' : ' (running)')), 36, y); doc.setTextColor(0); y += 22;
     const box = (x, v, l) => { doc.setFillColor(247, 244, 240); doc.roundedRect(x, y, (W - 72 - 20) / 3, 52, 6, 6, 'F'); doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text(N(v), x + 10, y + 26); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(tx(l), x + 10, y + 42); };
-    const bw = (W - 72 - 20) / 3; box(36, T.made + T.part, 'IDs made (buckets claimed)'); box(36 + bw + 10, T.marked, 'Buckets marked by Patwaris'); box(36 + 2 * (bw + 10), T.pending, `Pending now (start ${N(T.pending_start)})`); y += 68;
+    const bw = (W - 72 - 20) / 3; box(36, T.made + T.part, 'IDs made (hourly file)'); box(36 + bw + 10, T.marked, 'Buckets marked by Patwaris'); box(36 + 2 * (bw + 10), T.pending, `Pending now (start ${N(T.pending_start)})`); y += 68;
     const ch = (a, b) => a < b ? '-' + N(b - a) : a > b ? '+' + N(a - b) : '0';
     doc.autoTable({ startY: y, margin: { left: 36, right: 36 }, theme: 'grid', styles: { fontSize: 9.5, cellPadding: 4, halign: 'right' }, headStyles: { fillColor: [30, 34, 38], textColor: 255 }, columnStyles: { 0: { halign: 'left' } },
-      head: [['Village', 'Claimed', 'of which part', 'Marked', 'Pending', 'Change', 'Unsorted']],
-      body: D.villages.map(v => [v.name, N(v.made + v.part), v.part ? N(v.part) : '-', N(v.marked), N(v.pending), ch(v.pending, v.pending_start), N(v.unsorted)]).concat([['Total', N(T.made + T.part), T.part ? N(T.part) : '-', N(T.marked), N(T.pending), ch(T.pending, T.pending_start), N(T.unsorted)]]).map(r => r.map(tx)),
+      head: [['Village', 'IDs made', 'DC list (not today)', 'Marked', 'Pending', 'Change', 'Unsorted']],
+      body: D.villages.map(v => [v.name, N(v.made + v.part), v.catch ? N(v.catch) : '-', N(v.marked), N(v.pending), ch(v.pending, v.pending_start), N(v.unsorted)]).concat([['Total', N(T.made + T.part), T.catch ? N(T.catch) : '-', N(T.marked), N(T.pending), ch(T.pending, T.pending_start), N(T.unsorted)]]).map(r => r.map(tx)),
       didParseCell: d => { if (d.section === 'body' && d.row.index === D.villages.length) d.cell.styles.fontStyle = 'bold'; } });
     y = doc.lastAutoTable.finalY + 16; doc.setFontSize(10);
-    const line = (D.best ? `Best: ${D.best.name} (${D.best.n} claimed). ` : '') + (D.weak ? `Weakest: ${D.weak.name} (${D.weak.n} claimed, ${D.weak.pending} pending). ` : '') + (T.fresh ? `${T.fresh} new buckets appeared on the portal list. ` : '') + 'Counted from the portal lists uploaded in this period.';
+    const line = (D.best ? `Best: ${D.best.name} (${D.best.n} IDs). ` : '') + (D.weak ? `Weakest: ${D.weak.name} (${D.weak.n} IDs, ${D.weak.pending} pending). ` : '') + (T.fresh ? `${T.fresh} new buckets appeared on the portal list. ` : '') + 'IDs made = new Farmer IDs in the hourly registered-farmers file. DC list = buckets the DC office claimed/unclaimed files show claimed since the earlier list; not counted as today.';
     doc.text(doc.splitTextToSize(tx(line), W - 72), 36, y);
   } catch (x) { try { console.error(x); } catch (z) {} } return doc; }; }
 
